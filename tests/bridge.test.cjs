@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
+  .replace('__ENDOWMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/endowments.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PRODUCTION_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/production.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PAPYRUS_ROUTER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/papyrus-router.js'),'utf8').split('\nif(typeof module')[0])
@@ -14,7 +15,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
 
 function harness(nativeGlobal=false) {
   const handlers = new Map(), notifications=[], requests=[], looks=[];
-  let respond=()=>null,clock=10000;
+  let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
     getPositionX:()=>1,getPositionY:()=>2,getPositionZ:()=>3,setLookAt:(...args)=>looks.push(args)};
   const cell={getName:()=> 'Test cell',getFormID:()=>107135,getNumRefs:filter=>{assert.equal(filter,43);return 1;},getNthRef:()=>actor};
@@ -23,10 +24,10 @@ function harness(nativeGlobal=false) {
     unsubscribe:key=>handlers.delete(key), Actor:{from:value=>value},Game:{getPlayer:()=>player,getFormEx:id=>id===123?actor:null},
     enableFreeCamera:()=>{},setFreeCameraPosition:()=>{},
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
-    HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body)})}); } }};
+    HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
   const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock}});
   vm.runInContext(source,context);
-  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:()=>{clock+=2100;},setResponse:fn=>{respond=fn;},reload:()=>vm.runInContext(source,context)};
+  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:()=>{clock+=2100;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(source,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 
@@ -36,6 +37,21 @@ test('heartbeat is built from observed game state',async()=>{
   assert.equal(h.requests[0].ready,true);
   assert.equal(h.requests[0].residents[0].id,123);
   assert.equal(h.requests[0].selected.id,123);
+});
+
+test('accounting observations do not turn an unloaded actor into a visible resident',async()=>{
+  const h=harness();
+  h.actor.hasKeyword=()=>true;h.actor.getItemCount=()=>2;
+  h.sp.Keyword={from:x=>x};
+  const unseen={...h.actor,getFormID:()=>124,is3DLoaded:()=>false,getItemCount:()=>7};
+  h.sp.Actor.from=value=>value===h.actor||value===unseen?value:null;
+  h.sp.Game.getFormEx=id=>id===123?h.actor:id===124?unseen:{getFormID:()=>id};
+  const original=h.requests;
+  h.setPresentation({society:{checkpoint:0,town:{residents:{'124':{id:124}}}}});
+  h.handlers.get('update')();await settle();h.advance();h.handlers.get('update')();await settle();
+  const observation=original.at(-1);
+  assert.equal(observation.residents.some(a=>a.id===124),false);
+  assert.deepEqual(JSON.parse(JSON.stringify(observation.inventory_observations)),[{id:124,isPerson:true,loaded:false,baseId:null,inventory:{gold:7,bread:7,grain:7}}]);
 });
 test('commands are applied on update, never in HTTP callback',async()=>{
   const h=harness();h.handlers.get('activate')({caster:h.player,target:h.actor});

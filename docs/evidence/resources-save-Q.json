@@ -1,0 +1,191 @@
+{
+  "name": "WS-Resources-20261024-Q",
+  "checkpoint": 192,
+  "files": {
+    "WS-Resources-20261024-Q.ess": {
+      "bytes": 2535227,
+      "sha256": "fa9f7fccc1570748fa277bbc000cc3826ca7c408d102771b978286670035bc11"
+    },
+    "WS-Resources-20261024-Q.skse": {
+      "bytes": 439,
+      "sha256": "21c81d13e7c623a5d8789e6ae95375a48c9f595f3221dbf48a4af27212e0cf96"
+    }
+  },
+  "expected_inventory": {
+    "108169": {
+      "gold": 29,
+      "bread": 2,
+      "grain": 0
+    },
+    "108156": {
+      "gold": 7,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 10,
+      "bread": 0,
+      "grain": 0
+    },
+    "108138": {
+      "gold": 14,
+      "bread": 0,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 4,
+      "bread": 0,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 0,
+      "bread": 0,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 0,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "expected_asset_inventory": null,
+  "restores": [
+    {
+      "at": 1792825513.7115464,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true
+      },
+      "actual_inventory": {
+        "108169": {
+          "gold": 29,
+          "bread": 2,
+          "grain": 0
+        },
+        "108156": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "108138": {
+          "gold": 14,
+          "bread": 0,
+          "grain": 0
+        },
+        "225366": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "182543": {
+          "gold": 4,
+          "bread": 0,
+          "grain": 0
+        },
+        "1048823": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "225390": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      "actual_asset_inventory": null,
+      "inventory_differences": {}
+    },
+    {
+      "at": 1792825553.4287884,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": false
+      },
+      "actual_inventory": {
+        "108169": {
+          "gold": 29,
+          "bread": 2,
+          "grain": 0
+        },
+        "108156": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "108138": {
+          "gold": 14,
+          "bread": 0,
+          "grain": 0
+        },
+        "225366": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "182543": {
+          "gold": 4,
+          "bread": 0,
+          "grain": 0
+        },
+        "1048823": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "225390": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      "actual_asset_inventory": null,
+      "inventory_differences": {
+        "1048823": {
+          "expected": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          }
+        },
+        "225366": {
+          "expected": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    }
+  ]
+}

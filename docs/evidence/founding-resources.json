@@ -1,0 +1,1648 @@
+{
+  "scope": "Native resource grants, not production, wages or physical activity",
+  "checkpoint": 248,
+  "batch_elapsed_seconds": 126.074,
+  "batch_recipients": 27,
+  "total_recipients": 29,
+  "capacity": {
+    "bread": 100,
+    "gold": 1000,
+    "grain": 100
+  },
+  "remaining": {
+    "bread": 42,
+    "gold": 340,
+    "grain": 80
+  },
+  "delivered": {
+    "bread": 58,
+    "gold": 660,
+    "grain": 20
+  },
+  "grants": [
+    {
+      "actor": 1048823,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 1048823,
+        "after": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 8,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-1048823",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-1048823",
+          "inventory": {
+            "bread": 2,
+            "gold": 28,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108138,
+      "name": "Amren",
+      "command": {
+        "actor": 108138,
+        "after": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 14,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108138",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108138",
+          "inventory": {
+            "bread": 2,
+            "gold": 34,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108140,
+      "name": "Saffir",
+      "command": {
+        "actor": 108140,
+        "after": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 8,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108140",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108140",
+          "inventory": {
+            "bread": 2,
+            "gold": 28,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108149,
+      "name": "Carlotta Valentia",
+      "command": {
+        "actor": 108149,
+        "after": {
+          "bread": 6,
+          "gold": 106,
+          "grain": 21
+        },
+        "before": {
+          "bread": 4,
+          "gold": 6,
+          "grain": 1
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 100,
+          "grain": 20
+        },
+        "id": "founding-resources-v1-108149",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108149",
+          "inventory": {
+            "bread": 6,
+            "gold": 106,
+            "grain": 21
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 6,
+          "gold": 106,
+          "grain": 21
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108156,
+      "name": "Adrianne Avenicci",
+      "command": {
+        "actor": 108156,
+        "after": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 7,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108156",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108156",
+          "inventory": {
+            "bread": 2,
+            "gold": 27,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108160,
+      "name": "Anoriath",
+      "command": {
+        "actor": 108160,
+        "after": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 7,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108160",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108160",
+          "inventory": {
+            "bread": 2,
+            "gold": 27,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108162,
+      "name": "Heimskr",
+      "command": {
+        "actor": 108162,
+        "after": {
+          "bread": 2,
+          "gold": 56,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 36,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108162",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108162",
+          "inventory": {
+            "bread": 2,
+            "gold": 56,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 56,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108164,
+      "name": "Fralia Gray-Mane",
+      "command": {
+        "actor": 108164,
+        "after": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 14,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108164",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108164",
+          "inventory": {
+            "bread": 2,
+            "gold": 34,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108165,
+      "name": "Olfina Gray-Mane",
+      "command": {
+        "actor": 108165,
+        "after": {
+          "bread": 2,
+          "gold": 33,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 13,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108165",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108165",
+          "inventory": {
+            "bread": 2,
+            "gold": 33,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 33,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108167,
+      "name": "Olfrid Battle-Born",
+      "command": {
+        "actor": 108167,
+        "after": {
+          "bread": 2,
+          "gold": 26,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 6,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108167",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108167",
+          "inventory": {
+            "bread": 2,
+            "gold": 26,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 26,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108168,
+      "name": "Bergritte Battle-Born",
+      "command": {
+        "actor": 108168,
+        "after": {
+          "bread": 2,
+          "gold": 35,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 15,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108168",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108168",
+          "inventory": {
+            "bread": 2,
+            "gold": 35,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 35,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108169,
+      "name": "Idolaf Battle-Born",
+      "command": {
+        "actor": 108169,
+        "after": {
+          "bread": 2,
+          "gold": 29,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 9,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108169",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108169",
+          "inventory": {
+            "bread": 2,
+            "gold": 29,
+            "grain": 0
+          },
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 29,
+          "grain": 0
+        },
+        "session": "1792825493451-0.6516352167243373"
+      }
+    },
+    {
+      "actor": 108170,
+      "name": "Jon Battle-Born",
+      "command": {
+        "actor": 108170,
+        "after": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 14,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108170",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108170",
+          "inventory": {
+            "bread": 2,
+            "gold": 34,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 34,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108183,
+      "name": "Aela the Huntress",
+      "command": {
+        "actor": 108183,
+        "after": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 0,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108183",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108183",
+          "inventory": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108185,
+      "name": "Olava the Feeble",
+      "command": {
+        "actor": 108185,
+        "after": {
+          "bread": 2,
+          "gold": 29,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 9,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108185",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108185",
+          "inventory": {
+            "bread": 2,
+            "gold": 29,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 29,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108186,
+      "name": "Ysolda",
+      "command": {
+        "actor": 108186,
+        "after": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 8,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108186",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108186",
+          "inventory": {
+            "bread": 2,
+            "gold": 28,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108196,
+      "name": "Nazeem",
+      "command": {
+        "actor": 108196,
+        "after": {
+          "bread": 2,
+          "gold": 54,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 34,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108196",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108196",
+          "inventory": {
+            "bread": 2,
+            "gold": 54,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 54,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108197,
+      "name": "Ahlam",
+      "command": {
+        "actor": 108197,
+        "after": {
+          "bread": 2,
+          "gold": 38,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 18,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108197",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108197",
+          "inventory": {
+            "bread": 2,
+            "gold": 38,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 38,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 108248,
+      "name": "Ria",
+      "command": {
+        "actor": 108248,
+        "after": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 0,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-108248",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-108248",
+          "inventory": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 1106614,
+      "name": "Lillith Maiden-Loom",
+      "command": {
+        "actor": 1106614,
+        "after": {
+          "bread": 2,
+          "gold": 60,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 40,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-1106614",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-1106614",
+          "inventory": {
+            "bread": 2,
+            "gold": 60,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 60,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 182543,
+      "name": "Brenuin",
+      "command": {
+        "actor": 182543,
+        "after": {
+          "bread": 2,
+          "gold": 24,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 4,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-182543",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-182543",
+          "inventory": {
+            "bread": 2,
+            "gold": 24,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 24,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225366,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225366,
+        "after": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 8,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225366",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225366",
+          "inventory": {
+            "bread": 2,
+            "gold": 28,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 28,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225368,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225368,
+        "after": {
+          "bread": 2,
+          "gold": 24,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 4,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225368",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225368",
+          "inventory": {
+            "bread": 2,
+            "gold": 24,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 24,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225386,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225386,
+        "after": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 0,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225386",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225386",
+          "inventory": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225390,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225390,
+        "after": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 0,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225390",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225390",
+          "inventory": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "loaded": true,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225392,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225392,
+        "after": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 7,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225392",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225392",
+          "inventory": {
+            "bread": 2,
+            "gold": 27,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 27,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225408,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225408,
+        "after": {
+          "bread": 2,
+          "gold": 25,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 5,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225408",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225408",
+          "inventory": {
+            "bread": 2,
+            "gold": 25,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 25,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 225409,
+      "name": "Whiterun Guard",
+      "command": {
+        "actor": 225409,
+        "after": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 0,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-225409",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-225409",
+          "inventory": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    },
+    {
+      "actor": 843123,
+      "name": "Sigurd",
+      "command": {
+        "actor": 843123,
+        "after": {
+          "bread": 2,
+          "gold": 30,
+          "grain": 0
+        },
+        "before": {
+          "bread": 0,
+          "gold": 10,
+          "grain": 0
+        },
+        "grant": {
+          "bread": 2,
+          "gold": 20,
+          "grain": 0
+        },
+        "id": "founding-resources-v1-843123",
+        "kind": "inventory_endowment",
+        "source": "founding-resources-v1"
+      },
+      "evidence": {
+        "ack": {
+          "id": "founding-resources-v1-843123",
+          "inventory": {
+            "bread": 2,
+            "gold": 30,
+            "grain": 0
+          },
+          "loaded": false,
+          "scope": "native inventory only; no movement or animation claimed",
+          "source": "founding-resources-v1",
+          "status": "applied"
+        },
+        "actual": {
+          "bread": 2,
+          "gold": 30,
+          "grain": 0
+        },
+        "session": "1792825714548-0.6202042817333633"
+      }
+    }
+  ],
+  "native_accounts": [
+    {
+      "id": 108138,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 34,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108140,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 28,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108149,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 106,
+        "bread": 6,
+        "grain": 21
+      }
+    },
+    {
+      "id": 108156,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 27,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108160,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 27,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108162,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 56,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108164,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 34,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108165,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 33,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108167,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 26,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108168,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 35,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108169,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 29,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108170,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 34,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108183,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108185,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 29,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108186,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 28,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108196,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 54,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108197,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 38,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 108248,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 182543,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 24,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225366,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 28,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225368,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 24,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225386,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225390,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225392,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 27,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225408,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 25,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 225409,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 843123,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 30,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 1048823,
+      "isPerson": true,
+      "loaded": true,
+      "baseId": null,
+      "inventory": {
+        "gold": 28,
+        "bread": 2,
+        "grain": 0
+      }
+    },
+    {
+      "id": 1106614,
+      "isPerson": true,
+      "loaded": false,
+      "baseId": null,
+      "inventory": {
+        "gold": 60,
+        "bread": 2,
+        "grain": 0
+      }
+    }
+  ]
+}

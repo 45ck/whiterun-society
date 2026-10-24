@@ -121,6 +121,7 @@ window.drawTown=()=>{
  text('town-population',town.counts.residents+' lives in the ledger');
  const rows=document.getElementById('town-needs');rows.replaceChildren();
  for(const [label,count] of [['Hungry',people.filter(p=>p.needs.hunger>=.6).length],['Quiet interval',people.filter(p=>p.agency.state==='quiet_interval').length],['Currently unloaded',people.filter(p=>p.agency.state==='unloaded').length],['Executable decisions queued',pending.length]]){const row=document.createElement('div');row.textContent=label+' · '+count;rows.append(row);}
+ const resources=town.resource_program;if(resources){const row=document.createElement('div');row.textContent='Founding grants · '+Object.keys(resources.grants).length+' recipients · '+(resources.capacity.gold-resources.remaining.gold)+' gold / '+(resources.capacity.bread-resources.remaining.bread)+' bread / '+(resources.capacity.grain-resources.remaining.grain)+' grain delivered';rows.append(row);}
  text('town-next',pending.length?'Next: '+state.society.people[String(pending[0].actor)].profile.name+' considers food':'No feasible decision queued. No model is running.');
  text('notice','Town review '+daily.sequence+' · '+(state.weather?.label||'Weather unknown'));
 };

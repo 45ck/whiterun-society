@@ -16,7 +16,9 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Daily-life milestone:** the roster has expanded to 29 residents. Game-clock reviews advance needs, preserve quiet periods and queue feasible decisions without constant model calls. Live reviews and the later save restored correctly; an earlier restore exposed differing guard purses, so whole-town inventory persistence remains unresolved. The Papyrus router is now deployed and connected to decisions; see the newer routing experiment below. [Daily life, limitations and evidence](docs/daily-life.md).
 
-**Latest routing experiment:** Idolaf took an owned task outside the original three-resident system, travelled from 3,840 to 247 units and returned to a vanilla package. Separate Jev trials selected a nearby visit and a deferral. The daily planner can now offer supported food errands to other loaded adults. Save P restored all compared fields; save N exposed gold differences in named residents as well as guards. [Routing, decisions and retained failures](docs/papyrus-routing.md).
+**Routing experiment:** Idolaf took an owned task outside the original three-resident system, travelled from 3,840 to 247 units and returned to a vanilla package. Separate Jev trials selected a nearby visit and a deferral. The daily planner can now offer supported food errands to other loaded adults. Save P restored all compared fields; save N exposed gold differences in named residents as well as guards. [Routing, decisions and retained failures](docs/papyrus-routing.md).
+
+**Latest resource milestone:** all 29 initialized residents received finite, once-per-lineage native grants: 660 gold, 58 bread and 20 grain in total, with 340 gold, 42 bread and 80 grain left in the explicit external pool. A cold restart restored all 29 funded inventories exactly. A subsequent game-clock review led a guard, Amren and Adrianne to choose and consume one loaf each; the post-meal save also restored correctly. Earlier unfunded guard-purse failures remain documented. [Resources, scheduled meals and evidence](docs/founding-resources.md).
 
 ## Run the tests
 
@@ -25,7 +27,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/production.test.cjs tests/speech.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.
@@ -55,7 +57,7 @@ After completing the portable Mod Organizer setup with profile-specific saves an
 python tools/launch_demo.py --root D:\WhiterunLab
 ```
 
-The helper starts the local service, deploys the bridge, and launches the isolated profile. It waits up to three minutes for a new game session to report a loaded player, cell and actor. A stale heartbeat cannot prove a new launch succeeded. Progress and timings appear in the console; `runtime/last-launch.json` records readiness evidence. The profile starts a fresh Whiterun observation scenario automatically, bypassing character creation and Helgen. It does not load a campaign save.
+The helper starts the local service, deploys the bridge, and launches the isolated profile. It waits up to three minutes for a new game session to report a loaded player, cell and actor. A stale heartbeat cannot prove a new launch succeeded. Progress and timings appear in the console; `runtime/last-launch.json` records readiness evidence. By default the profile starts a fresh Whiterun observation scenario automatically, bypassing character creation and Helgen. Add `--save WS-YOUR-SAVE` to restore an existing managed scenario and verify its recorded local proof. This does not import a campaign save.
 
 Observer mode protects the player from combat and uses a raised free camera. The game runs while unfocused so development does not stop NPC routines. Nearby actors are read from the engine, filtered for loaded 3D, and reported every two seconds. Only numeric form IDs survive between frames; native handles are reacquired before commands. The separate economic simulation is not yet driving those actors. A prepared playable character and a return-to-player control are future work.
 

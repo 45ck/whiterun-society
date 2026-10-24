@@ -1,0 +1,474 @@
+{
+  "status": "complete",
+  "before_checkpoint": 248,
+  "after_checkpoint": 267,
+  "reviews": [
+    {
+      "checkpoint": 249,
+      "new_events": [
+        "daily-6-1048823",
+        "daily-6-108138",
+        "daily-6-108156",
+        "daily-6-108162",
+        "daily-6-108169",
+        "daily-6-182543",
+        "daily-6-225366"
+      ],
+      "next_review_day": 1.2335691849390666
+    }
+  ],
+  "events": [
+    {
+      "event": {
+        "id": "daily-6-1048823",
+        "actor": 1048823,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      "name": "Whiterun Guard",
+      "decisions": [
+        {
+          "actor_id": 1048823,
+          "claim_id": "38fc6f64c2d8feefe3e4021a",
+          "context": {
+            "actor_id": 1048823,
+            "event": {
+              "id": "daily-6-1048823",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "need_review"
+            },
+            "memories": [
+              {
+                "event_id": "town-router-guard-001",
+                "kind": "deferred",
+                "other": null,
+                "source": "own decision"
+              },
+              {
+                "event_id": "founding-resources-v1-1048823",
+                "kind": "starting_resources_received",
+                "resources": {
+                  "bread": 2,
+                  "gold": 20,
+                  "grain": 0
+                },
+                "source": "Observed finite external founding grant; not trade or wages"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 2,
+              "gold": 28,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                "id": "eat_bread"
+              },
+              {
+                "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              }
+            ],
+            "own_food_allocation": {
+              "allocated": false,
+              "unallocated": 2
+            },
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "uses familiar options first when tired or uncertain",
+              "big_five": {
+                "agreeableness": 0.777,
+                "conscientiousness": 0.706,
+                "extraversion": 0.55,
+                "neuroticism": 0.755,
+                "openness": 0.225
+              },
+              "name": "Whiterun Guard",
+              "priorities": [
+                "meet household needs",
+                "maintain important relationships",
+                "fulfil commitments"
+              ],
+              "provenance": "Seeded scenario interpretation, not a measurement or canonical biography",
+              "role": "guard"
+            },
+            "scenario_state": {
+              "needs": {
+                "comfort": 0.565,
+                "fatigue": 0.637788,
+                "hunger": 1,
+                "safety": 0.512,
+                "social_contact": 1
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792825919824-0.11994555491172232",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "eat_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+          },
+          "elapsed_seconds": 0.719,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.02,
+            "eat_bread": 0.9299999999999999,
+            "visit_adrianne": 0.05
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.9182e-05,
+            "input_tokens": 1171,
+            "output_tokens": 46
+          }
+        }
+      ],
+      "consumption": {
+        "command": {
+          "actor": 1048823,
+          "after": {
+            "bread": 1,
+            "gold": 28
+          },
+          "before": {
+            "bread": 2,
+            "gold": 28
+          },
+          "id": "consume-daily-6-1048823",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-daily-6-1048823",
+            "inventory": {
+              "bread": 1,
+              "gold": 28
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 1,
+            "gold": 28
+          },
+          "session": "1792825919824-0.11994555491172232"
+        },
+        "id": "consume-daily-6-1048823",
+        "status": "committed"
+      },
+      "hunger_before_decision": 1,
+      "hunger_after": 0.4
+    },
+    {
+      "event": {
+        "id": "daily-6-108138",
+        "actor": 108138,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      "name": "Amren",
+      "decisions": [
+        {
+          "actor_id": 108138,
+          "claim_id": "1f7b31f7dc6b41f3ca407d8a",
+          "context": {
+            "actor_id": 108138,
+            "event": {
+              "id": "daily-6-108138",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "need_review"
+            },
+            "memories": [
+              {
+                "event_id": "founding-resources-v1-108138",
+                "kind": "starting_resources_received",
+                "resources": {
+                  "bread": 2,
+                  "gold": 20,
+                  "grain": 0
+                },
+                "source": "Observed finite external founding grant; not trade or wages"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 2,
+              "gold": 34,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                "id": "eat_bread"
+              },
+              {
+                "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              }
+            ],
+            "own_food_allocation": {
+              "allocated": false,
+              "unallocated": 2
+            },
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "uses familiar options first when tired or uncertain",
+              "big_five": {
+                "agreeableness": 0.749,
+                "conscientiousness": 0.23,
+                "extraversion": 0.553,
+                "neuroticism": 0.559,
+                "openness": 0.471
+              },
+              "name": "Amren",
+              "priorities": [
+                "meet household needs",
+                "maintain important relationships",
+                "fulfil commitments"
+              ],
+              "provenance": "Seeded scenario interpretation, not a measurement or canonical biography",
+              "role": "resident; occupation not yet assigned"
+            },
+            "scenario_state": {
+              "needs": {
+                "comfort": 0.317,
+                "fatigue": 0.750788,
+                "hunger": 1,
+                "safety": 0.468,
+                "social_contact": 1
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792825919824-0.11994555491172232",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "eat_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+          },
+          "elapsed_seconds": 0.547,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.01,
+            "eat_bread": 0.93,
+            "visit_adrianne": 0.06
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.7376e-05,
+            "input_tokens": 1128,
+            "output_tokens": 46
+          }
+        }
+      ],
+      "consumption": {
+        "command": {
+          "actor": 108138,
+          "after": {
+            "bread": 1,
+            "gold": 34
+          },
+          "before": {
+            "bread": 2,
+            "gold": 34
+          },
+          "id": "consume-daily-6-108138",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-daily-6-108138",
+            "inventory": {
+              "bread": 1,
+              "gold": 34
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 1,
+            "gold": 34
+          },
+          "session": "1792825919824-0.11994555491172232"
+        },
+        "id": "consume-daily-6-108138",
+        "status": "committed"
+      },
+      "hunger_before_decision": 1,
+      "hunger_after": 0.4
+    },
+    {
+      "event": {
+        "id": "daily-6-108156",
+        "actor": 108156,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      "name": "Adrianne Avenicci",
+      "decisions": [
+        {
+          "actor_id": 108156,
+          "claim_id": "677ebe844d28a857fbc7b32c",
+          "context": {
+            "actor_id": 108156,
+            "event": {
+              "id": "daily-6-108156",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "need_review"
+            },
+            "memories": [
+              {
+                "event_id": "founding-resources-v1-108156",
+                "kind": "starting_resources_received",
+                "resources": {
+                  "bread": 2,
+                  "gold": 20,
+                  "grain": 0
+                },
+                "source": "Observed finite external founding grant; not trade or wages"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 2,
+              "gold": 27,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                "id": "eat_bread"
+              }
+            ],
+            "own_food_allocation": {
+              "allocated": false,
+              "unallocated": 2
+            },
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "sticks to an established routine even when news changes",
+              "big_five": {
+                "agreeableness": 0.5,
+                "conscientiousness": 0.9,
+                "extraversion": 0.45,
+                "neuroticism": 0.25,
+                "openness": 0.4
+              },
+              "name": "Adrianne Avenicci",
+              "priorities": [
+                "finish promised work",
+                "maintain a reliable household"
+              ],
+              "role": "blacksmith"
+            },
+            "scenario_state": {
+              "needs": {
+                "comfort": 0.278,
+                "fatigue": 0.792788,
+                "hunger": 1,
+                "safety": 0.614,
+                "social_contact": 0.766703
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792825919824-0.11994555491172232",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "eat_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+          },
+          "elapsed_seconds": 0.516,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.11,
+            "eat_bread": 0.89
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.3806e-05,
+            "input_tokens": 1043,
+            "output_tokens": 36
+          }
+        }
+      ],
+      "consumption": {
+        "command": {
+          "actor": 108156,
+          "after": {
+            "bread": 1,
+            "gold": 27
+          },
+          "before": {
+            "bread": 2,
+            "gold": 27
+          },
+          "id": "consume-daily-6-108156",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-daily-6-108156",
+            "inventory": {
+              "bread": 1,
+              "gold": 27
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 1,
+            "gold": 27
+          },
+          "session": "1792825919824-0.11994555491172232"
+        },
+        "id": "consume-daily-6-108156",
+        "status": "committed"
+      },
+      "hunger_before_decision": 1,
+      "hunger_after": 0.4
+    }
+  ],
+  "before_native_totals": {
+    "gold": 964,
+    "bread": 62,
+    "grain": 21
+  },
+  "after_native_totals": {
+    "gold": 964,
+    "bread": 59,
+    "grain": 21
+  },
+  "model_calls": 3,
+  "reported_cost": 0.000140364
+}

@@ -5,6 +5,8 @@
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
 __TRANSFER_FACTORY__
 const transfers=createInventoryTransfers(()=>sp);
+__ENDOWMENT_FACTORY__
+const endowments=createEndowmentController(()=>sp);
 __PRODUCTION_FACTORY__
 const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
@@ -51,6 +53,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  endowments.reset();
   speech.reset();
   session = Date.now() + '-' + Math.random();
   selected = 0; pending = null; ack = null; completed.clear(); announced = false;
@@ -187,6 +190,12 @@ on('update', () => {
           speech.start(command);cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
           completed.add(command.id);
         }
+        else if(command.kind==='inventory_endowment'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Endowment checkpoint mismatch');
+          const result=endowments.step(command);
+          if(!result.done)pending=command;
+          else {ack=result.ack;completed.add(command.id);}
+        }
         else if (command.kind === 'walk_to') {
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
           cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
@@ -228,12 +237,13 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
   const activeConversation=presentation.society?.conversation;
-  const cadence=activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000;
+  const activeDelivery=presentation.society?.resource_delivery?.status==='pending';
+  const cadence=activeDelivery?250:(activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000);
   if (busy || Date.now()-lastSent<cadence) return;
   const currentSession = session;
   residents = [];
@@ -270,6 +280,21 @@ on('update', () => {
   const distance=r=>(r.x-player.getPositionX())**2+(r.y-player.getPositionY())**2+(r.z-player.getPositionZ())**2;
   residents.sort((a,b)=>distance(a)-distance(b));
   residents=residents.slice(0,40);
+  // Accounting observations are not perception or evidence of physical action.
+  // Persistent actor inventories can be inspected even when 3D is unloaded.
+  const inventoryObservations=[];
+  for(const key of Object.keys(presentation.society?.town?.residents||{}).slice(0,128)){
+    const id=Number(key);if(!Number.isInteger(id)||id<=0)continue;
+    try{
+      const owner=sp.Actor.from(sp.Game.getFormEx(id));
+      if(!owner||owner.isDead()||owner.isChild()||typeof owner.getItemCount!=='function')continue;
+      const keyword=sp.Keyword?.from(sp.Game.getFormEx(0x13794));
+      if(!keyword||!owner.hasKeyword(keyword))continue;
+      const inventory={};for(const [item,form] of Object.entries(economyForms))inventory[item]=owner.getItemCount(sp.Game.getFormEx(form));
+      const base=typeof owner.getActorBase==='function'?owner.getActorBase():null;
+      inventoryObservations.push({id,isPerson:true,loaded:owner.is3DLoaded(),baseId:base?base.getFormID():null,inventory});
+    }catch(_){} // Missing references are not assigned fictitious empty purses.
+  }
   const perception={};
   for(const id of [108149,108186,108156]){
     const eye=sp.Actor.from(sp.Game.getFormEx(id));
@@ -326,7 +351,7 @@ on('update', () => {
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,perception,gameDays,weather,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

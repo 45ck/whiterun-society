@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -34,6 +35,7 @@ def main():
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--timeout',type=int,default=180)
     parser.add_argument('--audio-diagnostic',action='store_true')
+    parser.add_argument('--save',help='Restore this existing managed WS- save and verify its recorded proof')
     args=parser.parse_args()
     if os.name!='nt': raise RuntimeError('The observer launcher currently requires Windows')
     root=args.root.resolve()
@@ -50,6 +52,8 @@ def main():
         raise RuntimeError('Another Skyrim installation is running; it has been left untouched')
     runtime=root/'runtime'
     runtime.mkdir(exist_ok=True)
+    if args.save and (not re.fullmatch(r'WS-[A-Za-z0-9_-]{1,48}',args.save) or not (runtime/(args.save+'-plan-proof.json')).is_file()):
+        raise RuntimeError('A named existing managed save proof is required')
     config_path=runtime/'bridge-config.json'
     port=json.loads(config_path.read_text())['port'] if config_path.exists() else 17841
     if type(port) is not int or not 1024 <= port <= 65535:
@@ -101,8 +105,12 @@ def main():
         stage='observer ready' if ready else ('waiting for loaded residents' if fresh else 'waiting for game and bridge')
         if stage!=previous: progress(stage);previous=stage
         if ready:
+            if args.save:
+                progress('Restoring and verifying the named society save')
+                subprocess.run([sys.executable,str(SOURCE/'tools/verify_plan_save.py'),'--root',str(root),'--name',args.save,'--restore'],check=True)
+                state=request(port,'/state',config['token']);health=request(port,'/health')
             evidence={'elapsed_seconds':round(time.monotonic()-started,2),'health':health,'audio_mode':mode,
-                      'observation':state['bridge']['observation']}
+                      'observation':state['bridge']['observation'],'restored_save':args.save}
             (runtime/'last-launch.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
             progress('Whiterun is ready to observe. No character setup or playthrough required.')
             return

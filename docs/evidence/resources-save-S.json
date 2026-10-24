@@ -1,0 +1,413 @@
+{
+  "name": "WS-Resources-20261024-S",
+  "checkpoint": 248,
+  "files": {
+    "WS-Resources-20261024-S.ess": {
+      "bytes": 2529429,
+      "sha256": "996c48a30ae31d2d97b8532ae024b99a69dd0b840e284df237d705ac03e6242a"
+    },
+    "WS-Resources-20261024-S.skse": {
+      "bytes": 439,
+      "sha256": "21c81d13e7c623a5d8789e6ae95375a48c9f595f3221dbf48a4af27212e0cf96"
+    }
+  },
+  "expected_inventory": {
+    "108169": {
+      "gold": 29,
+      "bread": 2,
+      "grain": 0
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 2,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "108138": {
+      "gold": 34,
+      "bread": 2,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 2,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 2,
+      "grain": 0
+    }
+  },
+  "expected_asset_inventory": {
+    "108138": {
+      "gold": 34,
+      "bread": 2,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 6,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 2,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 2,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 2,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 2,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 2,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 2,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 2,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 2,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 2,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 2,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 2,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 2,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 2,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 2,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 2,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 2,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 2,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 2,
+      "grain": 0
+    }
+  },
+  "restores": [
+    {
+      "at": 1792825922.4675636,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "actual_inventory": {
+        "108169": {
+          "gold": 29,
+          "bread": 2,
+          "grain": 0
+        },
+        "108156": {
+          "gold": 27,
+          "bread": 2,
+          "grain": 0
+        },
+        "108138": {
+          "gold": 34,
+          "bread": 2,
+          "grain": 0
+        },
+        "225366": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "1048823": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "182543": {
+          "gold": 24,
+          "bread": 2,
+          "grain": 0
+        },
+        "108164": {
+          "gold": 34,
+          "bread": 2,
+          "grain": 0
+        },
+        "108162": {
+          "gold": 56,
+          "bread": 2,
+          "grain": 0
+        }
+      },
+      "actual_asset_inventory": {
+        "108138": {
+          "gold": 34,
+          "bread": 2,
+          "grain": 0
+        },
+        "108140": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "108149": {
+          "gold": 106,
+          "bread": 6,
+          "grain": 21
+        },
+        "108156": {
+          "gold": 27,
+          "bread": 2,
+          "grain": 0
+        },
+        "108160": {
+          "gold": 27,
+          "bread": 2,
+          "grain": 0
+        },
+        "108162": {
+          "gold": 56,
+          "bread": 2,
+          "grain": 0
+        },
+        "108164": {
+          "gold": 34,
+          "bread": 2,
+          "grain": 0
+        },
+        "108165": {
+          "gold": 33,
+          "bread": 2,
+          "grain": 0
+        },
+        "108167": {
+          "gold": 26,
+          "bread": 2,
+          "grain": 0
+        },
+        "108168": {
+          "gold": 35,
+          "bread": 2,
+          "grain": 0
+        },
+        "108169": {
+          "gold": 29,
+          "bread": 2,
+          "grain": 0
+        },
+        "108170": {
+          "gold": 34,
+          "bread": 2,
+          "grain": 0
+        },
+        "108183": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "108185": {
+          "gold": 29,
+          "bread": 2,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "108196": {
+          "gold": 54,
+          "bread": 2,
+          "grain": 0
+        },
+        "108197": {
+          "gold": 38,
+          "bread": 2,
+          "grain": 0
+        },
+        "108248": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "182543": {
+          "gold": 24,
+          "bread": 2,
+          "grain": 0
+        },
+        "225366": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "225368": {
+          "gold": 24,
+          "bread": 2,
+          "grain": 0
+        },
+        "225386": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "225390": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "225392": {
+          "gold": 27,
+          "bread": 2,
+          "grain": 0
+        },
+        "225408": {
+          "gold": 25,
+          "bread": 2,
+          "grain": 0
+        },
+        "225409": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "843123": {
+          "gold": 30,
+          "bread": 2,
+          "grain": 0
+        },
+        "1048823": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "1106614": {
+          "gold": 60,
+          "bread": 2,
+          "grain": 0
+        }
+      },
+      "inventory_differences": {}
+    }
+  ]
+}

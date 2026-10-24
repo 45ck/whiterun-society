@@ -14,7 +14,7 @@ import urllib.request
 
 
 def snapshot(state):
-    return {'checkpoint': state['society']['checkpoint'],
+    result={'checkpoint': state['society']['checkpoint'],
             'plan': state['society']['plan'], 'people': state['society']['people'],
             'world': state['world'],
             'consumptions': state['society'].get('consumptions', []),
@@ -26,6 +26,10 @@ def snapshot(state):
             'inventory': {str(a['id']): a['inventory']
                 for a in state['bridge']['observation']['residents']
                 if str(a['id']) in state['society']['people']}}
+    if 'inventory_observations' in state['bridge']['observation']:
+        result['asset_inventory']={str(a['id']):a['inventory'] for a in state['bridge']['observation']['inventory_observations']
+            if str(a['id']) in state['society']['people']}
+    return result
 
 
 def main():
@@ -53,7 +57,9 @@ def main():
         seen = state['bridge']['last_seen']
         error_ok=not state['society']['error'] or (allow_uninitialized and state['society']['checkpoint']==0
             and state['society']['error']=='New world: initialize society or load a managed save')
-        return (seen and time.time()-seen < 8 and error_ok
+        observation=state['bridge']['observation']
+        inventory_ready='inventory_checkpoint' not in observation or observation['inventory_checkpoint']==state['society']['checkpoint']
+        return (seen and time.time()-seen < 8 and error_ok and inventory_ready
                 and not state['society']['transition'] and not state['bridge']['command'])
 
     def wait(predicate, timeout=60, allow_uninitialized=False):
@@ -87,6 +93,8 @@ def main():
     if evidence_path.exists() or any(file.exists() for file in files):
         raise ValueError('Refusing to overwrite an existing save or proof')
     plan = before['society']['plan']
+    if before['society'].get('resource_delivery'):
+        raise ValueError('Record a settled resource delivery, not a partial grant')
     if plan and (plan['phase'] not in ('complete', 'held') or plan.get('release_required')):
         raise ValueError('This probe records settled plans only; active-plan recovery needs separate qualification')
     expected = snapshot(before)

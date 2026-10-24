@@ -65,7 +65,7 @@ def main():
                 return self.reply(401,{'error':'unauthorized'})
             try:
                 length=int(self.headers.get('Content-Length','0'))
-                if not 0<length<=16384: raise ValueError('invalid body size')
+                if not 0<length<=65536: raise ValueError('invalid body size')
                 data=json.loads(self.rfile.read(length))
                 if not isinstance(data,dict): raise ValueError('expected object')
                 if self.path=='/heartbeat':
@@ -76,6 +76,8 @@ def main():
                     ack=data.get('ack')
                     if ack is not None and not isinstance(ack,dict): raise ValueError('invalid acknowledgement')
                     if not isinstance(data.get('residents',[]),list): raise ValueError('invalid residents')
+                    assets=data.get('inventory_observations',[])
+                    if not isinstance(assets,list) or len(assets)>128:raise ValueError('invalid bounded inventory observations')
                     bridge.update(last_seen=time.time(),observation=data,session=session)
                     world.observe(data)
                     if ack:
@@ -113,12 +115,13 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
-                elif self.path in ('/town/initialize','/town/review'):
+                elif self.path in ('/town/initialize','/town/review','/town/endow'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
-                    result=(world.initialize_population(data['id'],data['seed'],bridge['observation'])
-                            if self.path=='/town/initialize' else world.review_population(bridge['observation']))
+                    if self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
+                    elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
+                    else:result=world.review_population(bridge['observation'])
                     self.reply(202,result)
                 elif self.path.startswith('/conversation/'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
