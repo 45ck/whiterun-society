@@ -146,3 +146,12 @@ part. Neither a refusal nor a higher price reveals the seller's hidden motive.
 No refusal automatically damages trust. The longer-term requirement remains
 learning which alternatives to try across days, with outside options, personal
 commitments and household versus business stock represented explicitly.
+
+## Choosing paid work
+
+Residents can now independently offer or decline a small production contract and
+accept or reject its terms. The live employer and worker agreed; observed labour
+attendance, grain conversion and a conserved wage then changed their material
+situation and memories. [Evidence and authored assumptions](paid-work.md).
+This adds a consequential choice about livelihood. It does not yet simulate
+fatigue, skill, competing shifts, wage negotiation or a changing labour market.

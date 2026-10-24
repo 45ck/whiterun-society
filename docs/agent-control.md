@@ -218,3 +218,8 @@ The generic bridge acknowledgement previously could overwrite a pending
 `release_routine` result. It now waits for confirmed removal of the owned package,
 with a regression test. Earlier acknowledgements alone should not be treated as
 release proof. A new live qualification of the corrected release is still open.
+
+The subsequent [paid-work experiment](paid-work.md) now qualifies that corrected
+release: the bridge observed package removal and returned `released: true` before
+the plan cleared its release requirement. It also demonstrates a separate
+employer offer, worker consent, owned attendance and physical production/payment.

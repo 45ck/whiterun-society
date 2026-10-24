@@ -167,3 +167,20 @@ Correction to earlier release evidence: a generic bridge acknowledgement could
 precede actual package removal. This path is fixed and regression-tested, but the
 fix still needs a new live release qualification. Earlier walking and arrival
 observations are unaffected; release acknowledgements alone were insufficient.
+
+## Paid work with finite inputs
+
+The next live run independently selected employer offer and worker acceptance.
+Observed attendance for 30 game minutes preceded conversion of one grain into two
+loaves and a conserved two-gold wage. Both people remembered the result. Actual
+before/after saves restored the matching production, imports, inventory and
+memories. Duplicate event delivery did not repeat inference or pay again.
+The corrected native release path now has a successful in-game acknowledgement
+after the package disappeared. [Detailed evidence](paid-work.md).
+
+Current local validation: **59 Python and 43 JavaScript tests passed**. A new audio
+stack crash occurred while loading the older food save; the lab restarted and
+both later work-save restores succeeded. Sustained stability remains open.
+Production is an authored grain conversion with observed attendance; oven
+animation, a daily labour market, fatigue, separate firm accounts and a complete
+player shortage scenario remain unfinished.

@@ -1,0 +1,2130 @@
+{
+  "event_id": "work-20261024-001",
+  "started_at": 1792820820.4416182,
+  "model_calls": 2,
+  "before": {
+    "bridge": {
+      "last_seen": 1792820819.1438353,
+      "observation": {
+        "session": "1792820786522-0.005229449470263381",
+        "checkpoint": 58,
+        "movement": null,
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225358,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.36328125,
+            "y": -7258.04443359375,
+            "z": -3642.281494140625
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20250.26171875,
+            "y": -6814.45654296875,
+            "z": -3232.000244140625
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20660.212890625,
+            "y": -7605.78173828125,
+            "z": -3637.9150390625
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 16,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20664.65625,
+            "y": -7733.1923828125,
+            "z": -3627.063232421875
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22673.1640625,
+            "y": -7646.07861328125,
+            "z": -3512.649658203125
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 19,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23483.390625,
+            "y": -8305.2314453125,
+            "z": -3381.413818359375
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24200.68359375,
+            "y": -7523.96044921875,
+            "z": -3409.114990234375
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 6,
+              "bread": 3,
+              "grain": 2
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24573.353515625,
+            "y": -7197.50927734375,
+            "z": -3399.386474609375
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24144.86328125,
+            "y": -5239.8740234375,
+            "z": -2995.48486328125
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 40,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24737.857421875,
+            "y": -7442.70361328125,
+            "z": -3386.030029296875
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.421875,
+            "y": -4266.38623046875,
+            "z": -3002.819580078125
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 15,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.5078125,
+            "y": -4136.791015625,
+            "z": -3007.64111328125
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 28,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25078.025390625,
+            "y": -7167.81884765625,
+            "z": -3394.878173828125
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23967.6328125,
+            "y": -3979.304443359375,
+            "z": -3001.789306640625
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25310.564453125,
+            "y": -3844.822998046875,
+            "z": -3000.551025390625
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 22,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25640.333984375,
+            "y": -3071.500244140625,
+            "z": -3005.998779296875
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24940.2265625,
+            "y": -975.4114379882812,
+            "z": -2406.184326171875
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28370.130859375,
+            "y": -3891.767333984375,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225355,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 26359.912109375,
+            "y": -8.035954475402832,
+            "z": -1753.502197265625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25694.99609375,
+            "y": 1294.979248046875,
+            "z": -1747.85009765625
+          }
+        ],
+        "perception": {
+          "108149": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 151.18994140625,
+              "nearby": 10,
+              "inCone": 8,
+              "nativeVisible": 5
+            }
+          },
+          "108156": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 348.5415954589844,
+              "nearby": 3,
+              "inCone": 3,
+              "nativeVisible": 3
+            }
+          },
+          "108186": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 328.447509765625,
+              "nearby": 9,
+              "inCone": 2,
+              "nativeVisible": 1
+            }
+          }
+        },
+        "productionWork": {
+          "id": "demo-grain-import-v1",
+          "phase": "importing",
+          "workedMinutes": 0,
+          "requiredMinutes": 30
+        },
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.07080078125,
+          "z": -3641.9921875
+        },
+        "selected": {
+          "id": 225358,
+          "name": "Whiterun Guard"
+        },
+        "ack": {
+          "id": "a91a2822cc052997",
+          "status": "applied",
+          "actor": 225358
+        }
+      },
+      "session": "1792820786522-0.005229449470263381",
+      "command": null,
+      "last_ack": {
+        "id": "a91a2822cc052997",
+        "status": "applied",
+        "actor": 225358
+      }
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 58,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": null,
+      "consumptions": [],
+      "production": [],
+      "imports": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 0
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "id": "demo-grain-import-v1",
+            "kind": "inventory_supply",
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "demo-grain-import-v1",
+              "inventory": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 6,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 5,
+                  "grain": 0
+                }
+              },
+              "mechanism": "explicit_demo_import",
+              "status": "applied",
+              "work": {
+                "id": "demo-grain-import-v1",
+                "phase": "importing",
+                "requiredMinutes": 30,
+                "workedMinutes": 0
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "session": "1792820786522-0.005229449470263381"
+          },
+          "id": "demo-grain-import-v1",
+          "source": "Explicit demo import: two grain, no gold; not resident production",
+          "status": "committed"
+        }
+      ]
+    }
+  },
+  "stages": [
+    {
+      "at": 1792820823.675746,
+      "phase": "job_offer",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "kind": "work_shift",
+        "phase": "job_offer",
+        "refusals_recorded": 0,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": null,
+        "unit_price": 3
+      }
+    },
+    {
+      "at": 1792820831.4295528,
+      "phase": "job_accept",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "665304bc23eec4d11f136f36",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "options": [
+                {
+                  "effect": "Do not offer this job; keep your resources.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.",
+                  "id": "offer_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 3
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "offer_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production."
+            },
+            "elapsed_seconds": 0.766,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.4,
+              "offer_shift": 0.6
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.0866e-05,
+              "input_tokens": 973,
+              "output_tokens": 34
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "kind": "work_shift",
+        "phase": "job_accept",
+        "refusals_recorded": 0,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": null,
+        "unit_price": 3
+      }
+    },
+    {
+      "at": 1792820839.795595,
+      "phase": "travelling",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "665304bc23eec4d11f136f36",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "options": [
+                {
+                  "effect": "Do not offer this job; keep your resources.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.",
+                  "id": "offer_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 3
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "offer_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production."
+            },
+            "elapsed_seconds": 0.766,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.4,
+              "offer_shift": 0.6
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.0866e-05,
+              "input_tokens": 973,
+              "output_tokens": 34
+            }
+          },
+          {
+            "actor_id": 108186,
+            "claim_id": "b80615d70716af94be6ca331",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the job. No goods or wages change hands.",
+                  "id": "decline_work"
+                },
+                {
+                  "effect": "Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.",
+                  "id": "take_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 0
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "take_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money."
+            },
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline_work": 0.13,
+              "take_shift": 0.87
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.1328e-05,
+              "input_tokens": 984,
+              "output_tokens": 35
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "intent": "take_shift",
+        "kind": "work_shift",
+        "phase": "travelling",
+        "refusals_recorded": 0,
+        "release_required": true,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": null,
+        "travel_id": "travel-work-20261024-001",
+        "unit_price": 3
+      }
+    },
+    {
+      "at": 1792820845.8469393,
+      "phase": "working",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "665304bc23eec4d11f136f36",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "options": [
+                {
+                  "effect": "Do not offer this job; keep your resources.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.",
+                  "id": "offer_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 3
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "offer_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production."
+            },
+            "elapsed_seconds": 0.766,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.4,
+              "offer_shift": 0.6
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.0866e-05,
+              "input_tokens": 973,
+              "output_tokens": 34
+            }
+          },
+          {
+            "actor_id": 108186,
+            "claim_id": "b80615d70716af94be6ca331",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the job. No goods or wages change hands.",
+                  "id": "decline_work"
+                },
+                {
+                  "effect": "Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.",
+                  "id": "take_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 0
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "take_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money."
+            },
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline_work": 0.13,
+              "take_shift": 0.87
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.1328e-05,
+              "input_tokens": 984,
+              "output_tokens": 35
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "intent": "take_shift",
+        "kind": "work_shift",
+        "phase": "working",
+        "refusals_recorded": 0,
+        "release_required": true,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": {
+          "id": "travel-work-20261024-001",
+          "movement": {
+            "actor": 108186,
+            "at": 1792820839451,
+            "distance": 217.7490852355356,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "travel-work-20261024-001",
+            "method": "package",
+            "origin": "resident_decision",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 217.7490870083535,
+            "startRequestedAt": 1792820839468,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "travel_id": "travel-work-20261024-001",
+        "unit_price": 3
+      }
+    },
+    {
+      "at": 1792820938.980931,
+      "phase": "complete",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "665304bc23eec4d11f136f36",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "options": [
+                {
+                  "effect": "Do not offer this job; keep your resources.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.",
+                  "id": "offer_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 3
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "offer_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production."
+            },
+            "elapsed_seconds": 0.766,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.4,
+              "offer_shift": 0.6
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.0866e-05,
+              "input_tokens": 973,
+              "output_tokens": 34
+            }
+          },
+          {
+            "actor_id": 108186,
+            "claim_id": "b80615d70716af94be6ca331",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the job. No goods or wages change hands.",
+                  "id": "decline_work"
+                },
+                {
+                  "effect": "Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.",
+                  "id": "take_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 0
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "take_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money."
+            },
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline_work": 0.13,
+              "take_shift": 0.87
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.1328e-05,
+              "input_tokens": 984,
+              "output_tokens": 35
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "intent": "take_shift",
+        "kind": "work_shift",
+        "outcome": "paid_work_completed",
+        "phase": "complete",
+        "refusals_recorded": 0,
+        "release_required": true,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": {
+          "id": "travel-work-20261024-001",
+          "movement": {
+            "actor": 108186,
+            "at": 1792820839451,
+            "distance": 217.7490852355356,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "travel-work-20261024-001",
+            "method": "package",
+            "origin": "resident_decision",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 217.7490870083535,
+            "startRequestedAt": 1792820839468,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "travel_id": "travel-work-20261024-001",
+        "unit_price": 3
+      }
+    }
+  ],
+  "after": {
+    "bridge": {
+      "last_seen": 1792820944.9799073,
+      "observation": {
+        "session": "1792820786522-0.005229449470263381",
+        "checkpoint": 68,
+        "movement": {
+          "id": "travel-work-20261024-001",
+          "actor": 108186,
+          "target": 108149,
+          "origin": "resident_decision",
+          "method": "package",
+          "phase": "released",
+          "at": 1792820839451,
+          "startDistance": 217.7490870083535,
+          "distance": 217.7490852355356,
+          "expectedPackage": 100665345,
+          "ownedPackage": false,
+          "hasOwnedPackage": true,
+          "enginePackage": 100665345,
+          "startRequestedAt": 1792820839468,
+          "startResult": true,
+          "startComplete": true
+        },
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225358,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.453125,
+            "y": -7258.0556640625,
+            "z": -3642.26513671875
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20671.072265625,
+            "y": -7598.0185546875,
+            "z": -3636.946533203125
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 16,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20671.59765625,
+            "y": -7728.1865234375,
+            "z": -3627.07568359375
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20510.146484375,
+            "y": -6683.0654296875,
+            "z": -3232.00048828125
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21458.87109375,
+            "y": -7632.9375,
+            "z": -3581.37353515625
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 19,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23483.390625,
+            "y": -8305.2314453125,
+            "z": -3381.413818359375
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21604.9375,
+            "y": -3746.178955078125,
+            "z": -2909.533447265625
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 40,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24333.52734375,
+            "y": -7351.26708984375,
+            "z": -3381.708984375
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 4,
+              "bread": 5,
+              "grain": 1
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24144.23046875,
+            "y": -5140.15185546875,
+            "z": -3000.244140625
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24733.142578125,
+            "y": -6738.75439453125,
+            "z": -3409.604736328125
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 28,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24893.38671875,
+            "y": -7367.95556640625,
+            "z": -3391.896484375
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.421875,
+            "y": -4266.38623046875,
+            "z": -3002.819580078125
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24909.296875,
+            "y": -7118.5029296875,
+            "z": -3396.90869140625
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 15,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.4921875,
+            "y": -4136.791015625,
+            "z": -3007.64013671875
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24947.869140625,
+            "y": -4372.14697265625,
+            "z": -2997.685302734375
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25349.703125,
+            "y": -4359.67529296875,
+            "z": -3003.4541015625
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 22,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25642.84765625,
+            "y": -3068.4375,
+            "z": -3005.99609375
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28626.81640625,
+            "y": -4337.12158203125,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 1,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 26196.58984375,
+            "y": -138.36343383789062,
+            "z": -1754.71826171875
+          },
+          {
+            "id": 225355,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 26359.912109375,
+            "y": -8.035954475402832,
+            "z": -1753.502197265625
+          }
+        ],
+        "perception": {
+          "108149": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 151.18994140625,
+              "nearby": 8,
+              "inCone": 7,
+              "nativeVisible": 0
+            }
+          },
+          "108156": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 348.5415954589844,
+              "nearby": 4,
+              "inCone": 3,
+              "nativeVisible": 0
+            }
+          },
+          "108186": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 107.90985107421875,
+              "nearby": 8,
+              "inCone": 3,
+              "nativeVisible": 0
+            }
+          }
+        },
+        "productionWork": {
+          "id": "produce-work-20261024-001",
+          "phase": "paying_wage",
+          "workedMinutes": 30,
+          "requiredMinutes": 30
+        },
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.07080078125,
+          "z": -3641.9921875
+        },
+        "selected": {
+          "id": 225358,
+          "name": "Whiterun Guard"
+        },
+        "ack": {
+          "id": "checkpoint-68",
+          "status": "applied",
+          "actor": 225358
+        }
+      },
+      "session": "1792820786522-0.005229449470263381",
+      "command": null,
+      "last_ack": {
+        "id": "checkpoint-68",
+        "status": "applied",
+        "actor": 225358
+      }
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 68,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-work-20261024-001",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108186,
+              "role": "employer",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-work-20261024-001",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108149,
+              "role": "worker",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "665304bc23eec4d11f136f36",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "options": [
+                {
+                  "effect": "Do not offer this job; keep your resources.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.",
+                  "id": "offer_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 3
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "offer_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production."
+            },
+            "elapsed_seconds": 0.766,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.4,
+              "offer_shift": 0.6
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.0866e-05,
+              "input_tokens": 973,
+              "output_tokens": 34
+            }
+          },
+          {
+            "actor_id": 108186,
+            "claim_id": "b80615d70716af94be6ca331",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "work-20261024-001",
+                "information": "Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.",
+                "kind": "work_shift"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the job. No goods or wages change hands.",
+                  "id": "decline_work"
+                },
+                {
+                  "effect": "Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.",
+                  "id": "take_shift"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": false,
+                "unallocated": 0
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792820786522-0.005229449470263381",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "take_shift",
+              "emotion": "unspecified",
+              "reason": "Selected action: Accept Carlotta's offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money."
+            },
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline_work": 0.13,
+              "take_shift": 0.87
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.1328e-05,
+              "input_tokens": 984,
+              "output_tokens": 35
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "work-20261024-001",
+        "intent": "take_shift",
+        "kind": "work_shift",
+        "outcome": "paid_work_completed",
+        "phase": "complete",
+        "refusals_recorded": 0,
+        "release_required": false,
+        "remembered": true,
+        "target": 108149,
+        "trade_id": "meal-work-20261024-001",
+        "travel": {
+          "id": "travel-work-20261024-001",
+          "movement": {
+            "actor": 108186,
+            "at": 1792820839451,
+            "distance": 217.7490852355356,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "travel-work-20261024-001",
+            "method": "package",
+            "origin": "resident_decision",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 217.7490870083535,
+            "startRequestedAt": 1792820839468,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "travel_id": "travel-work-20261024-001",
+        "unit_price": 3
+      },
+      "consumptions": [],
+      "production": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 5,
+                "gold": 4,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 7,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "expected_package": 100665345,
+            "id": "produce-work-20261024-001",
+            "kind": "inventory_produce",
+            "work_minutes": 30,
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "produce-work-20261024-001",
+              "inventory": {
+                "employer": {
+                  "bread": 5,
+                  "gold": 4,
+                  "grain": 1
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 7,
+                  "grain": 0
+                }
+              },
+              "mechanism": "native_recipe_and_wage",
+              "status": "applied",
+              "work": {
+                "id": "produce-work-20261024-001",
+                "phase": "paying_wage",
+                "requiredMinutes": 30,
+                "workedMinutes": 30
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 5,
+                "gold": 4,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 7,
+                "grain": 0
+              }
+            },
+            "session": "1792820786522-0.005229449470263381"
+          },
+          "id": "produce-work-20261024-001",
+          "status": "committed"
+        }
+      ],
+      "imports": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 0
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "id": "demo-grain-import-v1",
+            "kind": "inventory_supply",
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "demo-grain-import-v1",
+              "inventory": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 6,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 5,
+                  "grain": 0
+                }
+              },
+              "mechanism": "explicit_demo_import",
+              "status": "applied",
+              "work": {
+                "id": "demo-grain-import-v1",
+                "phase": "importing",
+                "requiredMinutes": 30,
+                "workedMinutes": 0
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "session": "1792820786522-0.005229449470263381"
+          },
+          "id": "demo-grain-import-v1",
+          "source": "Explicit demo import: two grain, no gold; not resident production",
+          "status": "committed"
+        }
+      ]
+    }
+  },
+  "status": "complete",
+  "outcome": "paid_work_completed"
+}

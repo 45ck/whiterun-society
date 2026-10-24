@@ -1,0 +1,376 @@
+{
+  "at": 1792820941.9886043,
+  "observation": {
+    "session": "1792820786522-0.005229449470263381",
+    "checkpoint": 66,
+    "movement": {
+      "id": "travel-work-20261024-001",
+      "actor": 108186,
+      "target": 108149,
+      "origin": "resident_decision",
+      "method": "package",
+      "phase": "released",
+      "at": 1792820839451,
+      "startDistance": 217.7490870083535,
+      "distance": 217.7490852355356,
+      "expectedPackage": 100665345,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665345,
+      "startRequestedAt": 1792820839468,
+      "startResult": true,
+      "startComplete": true
+    },
+    "platform": "2.9.0",
+    "ready": true,
+    "mode": "observer",
+    "residents": [
+      {
+        "id": 225358,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 1,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 19686.453125,
+        "y": -7258.0556640625,
+        "z": -3642.26513671875
+      },
+      {
+        "id": 108169,
+        "name": "Idolaf Battle-Born",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20671.02734375,
+        "y": -7598.00439453125,
+        "z": -3639.152099609375
+      },
+      {
+        "id": 108156,
+        "name": "Adrianne Avenicci",
+        "inventory": {
+          "gold": 16,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20671.603515625,
+        "y": -7728.18701171875,
+        "z": -3627.075439453125
+      },
+      {
+        "id": 229976,
+        "name": "Commander Caius",
+        "inventory": {
+          "gold": 11,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20510.146484375,
+        "y": -6683.0654296875,
+        "z": -3232.00048828125
+      },
+      {
+        "id": 225368,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 4,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 21054.46484375,
+        "y": -7534.04541015625,
+        "z": -3609.232421875
+      },
+      {
+        "id": 843123,
+        "name": "Sigurd",
+        "inventory": {
+          "gold": 19,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23483.390625,
+        "y": -8305.2314453125,
+        "z": -3381.413818359375
+      },
+      {
+        "id": 182543,
+        "name": "Brenuin",
+        "inventory": {
+          "gold": 4,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 21464.037109375,
+        "y": -3930.76123046875,
+        "z": -2947.656494140625
+      },
+      {
+        "id": 1106614,
+        "name": "Lillith Maiden-Loom",
+        "inventory": {
+          "gold": 40,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24333.52734375,
+        "y": -7351.26708984375,
+        "z": -3380.631591796875
+      },
+      {
+        "id": 108149,
+        "name": "Carlotta Valentia",
+        "inventory": {
+          "gold": 4,
+          "bread": 5,
+          "grain": 1
+        },
+        "x": 24384.748046875,
+        "y": -7088.40625,
+        "z": -3401.2216796875
+      },
+      {
+        "id": 108186,
+        "name": "Ysolda",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24594.33984375,
+        "y": -7012.6767578125,
+        "z": -3404.85400390625
+      },
+      {
+        "id": 1048823,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24572.416015625,
+        "y": -8284.4619140625,
+        "z": -3394.285400390625
+      },
+      {
+        "id": 1108911,
+        "name": "Cow",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24144.15625,
+        "y": -5140.24365234375,
+        "z": -2998.185546875
+      },
+      {
+        "id": 225409,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24771.84765625,
+        "y": -6321.84765625,
+        "z": -3241.455810546875
+      },
+      {
+        "id": 108138,
+        "name": "Amren",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23823.421875,
+        "y": -4266.38623046875,
+        "z": -3002.819580078125
+      },
+      {
+        "id": 108140,
+        "name": "Saffir",
+        "inventory": {
+          "gold": 15,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23781.5078125,
+        "y": -4136.791015625,
+        "z": -3007.64111328125
+      },
+      {
+        "id": 108196,
+        "name": "Nazeem",
+        "inventory": {
+          "gold": 28,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25093.138671875,
+        "y": -7461.4345703125,
+        "z": -3393.51806640625
+      },
+      {
+        "id": 108160,
+        "name": "Anoriath",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25167.064453125,
+        "y": -6982.748046875,
+        "z": -3401.7666015625
+      },
+      {
+        "id": 108164,
+        "name": "Fralia Gray-Mane",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25326.833984375,
+        "y": -7390.15478515625,
+        "z": -3395.417724609375
+      },
+      {
+        "id": 108191,
+        "name": "Danica Pure-Spring",
+        "inventory": {
+          "gold": 1,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24947.86328125,
+        "y": -4372.14697265625,
+        "z": -2997.685791015625
+      },
+      {
+        "id": 225408,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25366.74609375,
+        "y": -3950.24609375,
+        "z": -3006.543701171875
+      },
+      {
+        "id": 108162,
+        "name": "Heimskr",
+        "inventory": {
+          "gold": 22,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25642.84765625,
+        "y": -3068.4375,
+        "z": -3005.99609375
+      },
+      {
+        "id": 108179,
+        "name": "Farkas",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 28626.81640625,
+        "y": -4337.12158203125,
+        "z": -2617.70166015625
+      },
+      {
+        "id": 225392,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 1,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26348.3671875,
+        "y": -275.33013916015625,
+        "z": -1751.45849609375
+      },
+      {
+        "id": 225355,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 4,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26359.912109375,
+        "y": -8.035954475402832,
+        "z": -1753.502197265625
+      }
+    ],
+    "perception": {
+      "108149": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception",
+        "diagnostics": {
+          "headingDegrees": 151.18994140625,
+          "nearby": 8,
+          "inCone": 6,
+          "nativeVisible": 0
+        }
+      },
+      "108156": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception",
+        "diagnostics": {
+          "headingDegrees": 348.5415954589844,
+          "nearby": 4,
+          "inCone": 4,
+          "nativeVisible": 1
+        }
+      },
+      "108186": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception",
+        "diagnostics": {
+          "headingDegrees": 107.90985107421875,
+          "nearby": 9,
+          "inCone": 4,
+          "nativeVisible": 0
+        }
+      }
+    },
+    "productionWork": {
+      "id": "produce-work-20261024-001",
+      "phase": "paying_wage",
+      "workedMinutes": 30,
+      "requiredMinutes": 30
+    },
+    "player": {
+      "id": 20,
+      "cell": "",
+      "cellId": 107135,
+      "x": 19486.9609375,
+      "y": -7458.07080078125,
+      "z": -3641.9921875
+    },
+    "selected": {
+      "id": 225358,
+      "name": "Whiterun Guard"
+    },
+    "ack": {
+      "id": "release-work-20261024-001",
+      "status": "applied",
+      "released": true
+    }
+  }
+}

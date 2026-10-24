@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--event-id', required=True)
     parser.add_argument('--model-config', type=Path)
     parser.add_argument('--actor', type=int, default=108186)
-    parser.add_argument('--kind', choices=('meal_time','stock_review'), default='meal_time')
+    parser.add_argument('--kind', choices=('meal_time','stock_review','work_shift'), default='meal_time')
     args = parser.parse_args()
     config = json.loads((args.runtime/'bridge-config.json').read_text())
     model = json.loads((args.model_config or args.runtime/'model-config.json').read_text())
@@ -78,7 +78,7 @@ def main():
                 path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
                 print(json.dumps({'status': phase, 'outcome': plan.get('outcome'), 'evidence': str(path)}), flush=True)
                 return
-            if phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase'):
+            if phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
                 if evidence['model_calls'] >= 5:
                     raise ValueError('Resident event exhausted its five-call decision budget')
                 claim = request('/agency/claim', {'id': args.event_id})['claim']

@@ -8,6 +8,7 @@ import math
 import secrets
 from decisions import validate_decision
 from food import allocation
+from production import work_inventory
 
 TERMINAL = ('complete', 'held')
 
@@ -43,8 +44,10 @@ class Agency:
         self._agency_guard(observation)
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
             raise ValueError('A bounded event ID is required')
-        if kind not in ('meal_time','stock_review') or type(actor) is not int or str(actor) not in self.active['people']:
+        if kind not in ('meal_time','stock_review','work_shift') or type(actor) is not int or str(actor) not in self.active['people']:
             raise ValueError('Unsupported resident or event kind')
+        if kind == 'work_shift' and actor != 108186:
+            raise ValueError('This prototype contract is for Ysolda and Carlotta')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
                 if plan['actor'] != actor or plan['kind'] != kind:
@@ -61,13 +64,15 @@ class Agency:
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
                 'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
         state.setdefault('plans', []).append(plan)
+        if kind == 'work_shift':
+            plan.update(phase='job_offer', target=108149)
         return {'checkpoint': self._write(state, kind+' triggered resident planning'), 'plan': plan}
 
     def _plan_context(self, observation, plan):
         seller_turn = plan['phase'] == 'consent'
         reconsidering = plan['phase'] == 'reconsider'
         price = plan.get('unit_price', 3)
-        actor = plan['target'] if seller_turn else plan['actor']
+        actor = plan['target'] if seller_turn or plan['phase']=='job_offer' else plan['actor']
         actors = {a['id']: a for a in observation.get('residents', [])}
         if actor not in actors or plan['actor'] not in actors:
             raise ValueError('Decision participants are not observed')
@@ -76,7 +81,17 @@ class Agency:
         if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ('gold', 'bread')):
             raise ValueError('Invalid observed inventory')
         stock = allocation(person, inventory)
-        if plan['phase']=='allocate':
+        if plan['phase']=='job_offer':
+            options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
+            resources = work_inventory(observation, plan['actor'], plan['target'])
+            if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= 2:
+                options.append({'id':'offer_shift','effect':'Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.'})
+            information = 'Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.'
+        elif plan['phase']=='job_accept':
+            options = [{'id':'decline_work','effect':'Decline the job. No goods or wages change hands.'},
+                       {'id':'take_shift','effect':'Accept Carlotta\'s offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.'}]
+            information = 'Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.'
+        elif plan['phase']=='allocate':
             options = [{'id':'reserve_all','effect':'Keep all carried bread for your household. None is offered for sale until you review this policy again.'},
                        {'id':'reserve_one','effect':'Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.'},
                        {'id':'reserve_two','effect':'Keep up to two carried loaves for your household; earmark any surplus for sale. You may still refuse individual offers.'}]
@@ -129,7 +144,7 @@ class Agency:
     def claim_plan_decision(self, event_id, observation):
         self._agency_guard(observation)
         plan = self.agency_plan()
-        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase'):
+        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
             raise ValueError('No unclaimed decision is ready')
         context = self._plan_context(observation, plan)
         state = copy.deepcopy(self.active)
@@ -160,13 +175,17 @@ class Agency:
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action in ('seek_bread', 'visit_adrianne'):
+        if action == 'offer_shift':
+            updated['phase'] = 'job_accept'
+        elif action == 'decline_work':
+            updated.update(phase='complete', outcome='work_declined')
+        elif action in ('seek_bread', 'visit_adrianne', 'take_shift'):
             travel_id = 'travel-' + event_id
             if updated.get('travel'):
                 updated.setdefault('travel_history', []).append(updated['travel'])
                 updated['travel'] = None
                 travel_id += '-replan-' + str(len(updated['decisions']))
-            updated.update(phase='travelling', target=108149 if action == 'seek_bread' else 108156,
+            updated.update(phase='travelling', target=108149 if action in ('seek_bread','take_shift') else 108156,
                            intent=action, travel_id=travel_id, release_required=True)
         elif action == 'raise_offer':
             updated.update(phase='consent', unit_price=5)
@@ -228,7 +247,7 @@ class Agency:
             updated=state['plans'][-1]
             if plan.get('outcome')=='seller_declined' and not plan.get('refusals_recorded'):
                 self._remember_refusal(state, updated)
-            elif plan.get('outcome') in ('deferred','visited_only','left_without_food'):
+            elif plan.get('outcome') in ('deferred','visited_only','left_without_food','work_declined'):
                 person=state['people'][str(plan['actor'])]
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
                     'other':plan.get('target'),'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
@@ -258,7 +277,7 @@ class Agency:
             updated = state['plans'][-1]
             updated['travel'] = copy.deepcopy(ack)
             if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived:
-                updated['phase'] = 'consent' if plan['intent'] == 'seek_bread' else 'complete'
+                updated['phase'] = {'seek_bread':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')
                 if updated['phase'] == 'complete':
                     updated['outcome'] = 'visited_only'
             else:
@@ -275,6 +294,13 @@ class Agency:
         elif plan['phase'] == 'ready_to_eat':
             try:
                 self.plan_consumption('consume-'+plan['id'], observation, plan['actor'], plan['id'])
+            except ValueError as error:
+                self.hold_plan(plan['id'], str(error), observation)
+        elif plan['phase'] == 'ready_to_work':
+            try:
+                if distance(observation, plan['actor'], plan['target']) > 300:
+                    raise ValueError('Participants separated before work')
+                self.plan_production(observation, plan)
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
 

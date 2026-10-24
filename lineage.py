@@ -12,11 +12,12 @@ from decisions import PROFILES
 from world_economy import snapshot
 from agency import Agency
 from food import FoodEconomy, allocation
+from production import Production
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy):
+class TimelineEconomy(Agency, FoodEconomy, Production):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -97,6 +98,9 @@ class TimelineEconomy(Agency, FoodEconomy):
             return
         if pending['command']['kind'] == 'inventory_consume':
             self.observe_consumption(observation)
+            return
+        if pending['command']['kind'] in ('inventory_produce', 'inventory_supply'):
+            self.observe_production(observation)
             return
         ack = observation.get('ack') or {}
         if ack.get('id') != pending['id']:
@@ -194,4 +198,6 @@ class TimelineEconomy(Agency, FoodEconomy):
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
-                'consumptions': self.active.get('consumptions', []) if self.active else []}
+                'consumptions': self.active.get('consumptions', []) if self.active else [],
+                'production': self.active.get('production', []) if self.active else [],
+                'imports': self.active.get('imports', []) if self.active else []}

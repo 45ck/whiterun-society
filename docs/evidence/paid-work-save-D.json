@@ -1,0 +1,373 @@
+{
+  "name": "WS-Work-20261024-D",
+  "scope": "Settled plan, people, inventory and journal; not long-term stability",
+  "expected": {
+    "checkpoint": 58,
+    "plan": null,
+    "people": {
+      "108149": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {}
+      },
+      "108156": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "sticks to an established routine even when news changes",
+          "big_five": {
+            "agreeableness": 0.5,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "neuroticism": 0.25,
+            "openness": 0.4
+          },
+          "name": "Adrianne Avenicci",
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "role": "blacksmith"
+        },
+        "trust": {}
+      },
+      "108186": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {}
+      }
+    },
+    "world": [],
+    "consumptions": [],
+    "production": [],
+    "imports": [
+      {
+        "command": {
+          "after": {
+            "employer": {
+              "bread": 3,
+              "gold": 6,
+              "grain": 2
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 5,
+              "grain": 0
+            }
+          },
+          "before": {
+            "employer": {
+              "bread": 3,
+              "gold": 6,
+              "grain": 0
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 5,
+              "grain": 0
+            }
+          },
+          "employer": 108149,
+          "id": "demo-grain-import-v1",
+          "kind": "inventory_supply",
+          "worker": 108186
+        },
+        "evidence": {
+          "ack": {
+            "animation_verified": false,
+            "id": "demo-grain-import-v1",
+            "inventory": {
+              "employer": {
+                "bread": 3,
+                "gold": 6,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 5,
+                "grain": 0
+              }
+            },
+            "mechanism": "explicit_demo_import",
+            "status": "applied",
+            "work": {
+              "id": "demo-grain-import-v1",
+              "phase": "importing",
+              "requiredMinutes": 30,
+              "workedMinutes": 0
+            }
+          },
+          "actual": {
+            "employer": {
+              "bread": 3,
+              "gold": 6,
+              "grain": 2
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 5,
+              "grain": 0
+            }
+          },
+          "session": "1792820786522-0.005229449470263381"
+        },
+        "id": "demo-grain-import-v1",
+        "source": "Explicit demo import: two grain, no gold; not resident production",
+        "status": "committed"
+      }
+    ],
+    "inventory": {
+      "108156": {
+        "gold": 16,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 6,
+        "bread": 3,
+        "grain": 2
+      },
+      "108186": {
+        "gold": 5,
+        "bread": 0,
+        "grain": 0
+      }
+    }
+  },
+  "recorded_at": 1792820820.2175791,
+  "files": {
+    "WS-Work-20261024-D.ess": {
+      "bytes": 2502974,
+      "sha256": "af8ed35069443ace196c222bf99dd5c2bc4423b03f84b186ffbc725863e55834"
+    },
+    "WS-Work-20261024-D.skse": {
+      "bytes": 418,
+      "sha256": "fd35644dcd40bcd5d0206783a2dbe459ac7ba0a0073c71d3ae4f01e893102c9b"
+    }
+  },
+  "restores": [
+    {
+      "at": 1792820957.6134055,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "inventory": true
+      },
+      "actual": {
+        "checkpoint": 58,
+        "plan": null,
+        "people": {
+          "108149": {
+            "memories": [],
+            "needs": {
+              "hunger": 0.4
+            },
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "trust": {}
+          },
+          "108156": {
+            "memories": [],
+            "needs": {
+              "hunger": 0.4
+            },
+            "profile": {
+              "bias": "sticks to an established routine even when news changes",
+              "big_five": {
+                "agreeableness": 0.5,
+                "conscientiousness": 0.9,
+                "extraversion": 0.45,
+                "neuroticism": 0.25,
+                "openness": 0.4
+              },
+              "name": "Adrianne Avenicci",
+              "priorities": [
+                "finish promised work",
+                "maintain a reliable household"
+              ],
+              "role": "blacksmith"
+            },
+            "trust": {}
+          },
+          "108186": {
+            "memories": [],
+            "needs": {
+              "hunger": 0.4
+            },
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "trust": {}
+          }
+        },
+        "world": [],
+        "consumptions": [],
+        "production": [],
+        "imports": [
+          {
+            "command": {
+              "after": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 6,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 5,
+                  "grain": 0
+                }
+              },
+              "before": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 6,
+                  "grain": 0
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 5,
+                  "grain": 0
+                }
+              },
+              "employer": 108149,
+              "id": "demo-grain-import-v1",
+              "kind": "inventory_supply",
+              "worker": 108186
+            },
+            "evidence": {
+              "ack": {
+                "animation_verified": false,
+                "id": "demo-grain-import-v1",
+                "inventory": {
+                  "employer": {
+                    "bread": 3,
+                    "gold": 6,
+                    "grain": 2
+                  },
+                  "worker": {
+                    "bread": 0,
+                    "gold": 5,
+                    "grain": 0
+                  }
+                },
+                "mechanism": "explicit_demo_import",
+                "status": "applied",
+                "work": {
+                  "id": "demo-grain-import-v1",
+                  "phase": "importing",
+                  "requiredMinutes": 30,
+                  "workedMinutes": 0
+                }
+              },
+              "actual": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 6,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 5,
+                  "grain": 0
+                }
+              },
+              "session": "1792820786522-0.005229449470263381"
+            },
+            "id": "demo-grain-import-v1",
+            "source": "Explicit demo import: two grain, no gold; not resident production",
+            "status": "committed"
+          }
+        ],
+        "inventory": {
+          "108156": {
+            "gold": 16,
+            "bread": 0,
+            "grain": 0
+          },
+          "108149": {
+            "gold": 6,
+            "bread": 3,
+            "grain": 2
+          },
+          "108186": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    }
+  ]
+}

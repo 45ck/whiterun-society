@@ -5,6 +5,8 @@
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
 __TRANSFER_FACTORY__
 const transfers=createInventoryTransfers(()=>sp);
+__PRODUCTION_FACTORY__
+const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __ROUTINE_FACTORY__
@@ -48,6 +50,7 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
+  production.reset();
   movement.reset();
   routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
@@ -147,6 +150,12 @@ on('update', () => {
           if (!result.done) pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
+        else if (command.kind === 'inventory_produce' || command.kind === 'inventory_supply') {
+          if(checkpointValue()!==command.checkpoint)throw new Error('Production checkpoint mismatch');
+          const result=production.step(command);
+          if(!result.done)pending=command;
+          else {ack=result.ack;completed.add(command.id);}
+        }
         else if (command.kind === 'walk_to') {
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
           cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
@@ -188,7 +197,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['inventory_trade','inventory_consume','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['inventory_trade','inventory_consume','inventory_produce','inventory_supply','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
@@ -266,7 +275,7 @@ on('update', () => {
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,perception,
+    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

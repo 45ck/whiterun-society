@@ -6,9 +6,9 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers and save-linked trade memories have been demonstrated. The autonomous farm–bakery–household model still runs separately; full daily routines, generated dialogue, lip sync and stable save/load remain under development.
 
-**Latest experiment:** Carlotta chose to reserve her bread for her household, then chose to eat one loaf. Skyrim's inventory changed from 3 to 2 bread with gold unchanged; verified consumption reduced simulated hunger and created a memory. Actual earlier/later saves restored the corresponding food policies, plans, inventories and consumption history. Repeating the event made zero model calls. [Food economy and live evidence](docs/food-economy.md) · [Earlier negotiation](docs/agent-control.md#revised-offer-and-actual-plan-restoration) · [Human behaviour design and research](docs/human-behaviour.md).
+**Latest experiment:** Carlotta offered Ysolda a paid job; Ysolda accepted. Thirty game minutes of qualified attendance consumed one actual grain, produced two loaves and transferred two gold from employer to worker. Before/after Skyrim saves restored the corresponding goods, wages and memories. Repeating the completed event made zero model calls and no extra payment. Work animation is not implemented. [Paid work and live evidence](docs/paid-work.md) · [Food reserves and consumption](docs/food-economy.md) · [Human behaviour design and research](docs/human-behaviour.md).
 
-![Restored food decision in the actual Skyrim observer overlay](docs/images/food-consumption-restored.jpg)
+![Paid production and wages in the actual Skyrim observer overlay](docs/images/paid-work-complete.jpg)
 
 Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
@@ -19,7 +19,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/production.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.

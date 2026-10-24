@@ -99,6 +99,11 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     self.reply(202,world.bootstrap(bridge['observation']))
+                elif self.path=='/world/setup-production':
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']: raise ValueError('another command is pending')
+                    self.reply(202,world.setup_production(bridge['observation']))
                 elif self.path=='/world/trade':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
