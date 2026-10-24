@@ -1,5 +1,7 @@
 """Resident-owned reserves and save-bound, inventory-verified food use."""
 import copy
+import math
+from daily_life import HUNGER_PER_GAME_HOUR
 
 
 def allocation(person, inventory):
@@ -65,7 +67,14 @@ class FoodEconomy:
             state['pending'] = None
             person = state['people'][str(command['actor'])]
             # Authored nutrition parameter, not vanilla Skyrim hunger physiology.
+            day=observation.get('gameDays')
             before_hunger = person['needs']['hunger']
+            if type(day) in (int,float) and math.isfinite(day) and day>=0:
+                resident=state.get('town',{}).get('residents',{}).get(str(command['actor']))
+                if resident:
+                    baseline=max(person.get('needs_clock',resident['observed_game_day']),person.get('hunger_clock',0))
+                    before_hunger=min(1,before_hunger+max(0,day-baseline)*24*HUNGER_PER_GAME_HOUR)
+                person['hunger_clock']=day
             person['needs']['hunger'] = round(max(0, before_hunger-.6), 6)
             person['memories'].append({'event_id': pending['id'], 'kind': 'consumed_bread',
                 'bread': 1, 'hunger_before': before_hunger, 'hunger_after': person['needs']['hunger'],

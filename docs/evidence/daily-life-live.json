@@ -1,0 +1,3376 @@
+{
+  "scope": "Real game-clock reviews; no model event was eligible in these runs",
+  "runs": [
+    {
+      "status": "complete",
+      "error": null,
+      "reviews": [
+        {
+          "checkpoint": 176,
+          "new_events": [],
+          "next_review_day": 0.823417047659556
+        }
+      ],
+      "events": [],
+      "maximum_model_calls": 15,
+      "before": {
+        "checkpoint": 175,
+        "clock": 0.8130003809928894,
+        "needs": {
+          "1048823": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.303,
+              "hunger": 0.336,
+              "safety": 0.512,
+              "social_contact": 0.603
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108138": {
+            "name": "Amren",
+            "needs": {
+              "comfort": 0.317,
+              "fatigue": 0.416,
+              "hunger": 0.461,
+              "safety": 0.468,
+              "social_contact": 0.592
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108140": {
+            "name": "Saffir",
+            "needs": {
+              "comfort": 0.19,
+              "fatigue": 0.468,
+              "hunger": 0.377,
+              "safety": 0.541,
+              "social_contact": 0.616
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108149": {
+            "name": "Carlotta Valentia",
+            "needs": {
+              "comfort": 0.443,
+              "fatigue": 0.276,
+              "hunger": 0.15,
+              "safety": 0.533,
+              "social_contact": 0.645
+            },
+            "agency": {
+              "native_route_supported": true,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108156": {
+            "name": "Adrianne Avenicci",
+            "needs": {
+              "comfort": 0.278,
+              "fatigue": 0.458,
+              "hunger": 0.4,
+              "safety": 0.614,
+              "social_contact": 0.375
+            },
+            "agency": {
+              "native_route_supported": true,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108160": {
+            "name": "Anoriath",
+            "needs": {
+              "comfort": 0.499,
+              "fatigue": 0.286,
+              "hunger": 0.182,
+              "safety": 0.415,
+              "social_contact": 0.494
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108162": {
+            "name": "Heimskr",
+            "needs": {
+              "comfort": 0.474,
+              "fatigue": 0.238,
+              "hunger": 0.261,
+              "safety": 0.323,
+              "social_contact": 0.357
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108164": {
+            "name": "Fralia Gray-Mane",
+            "needs": {
+              "comfort": 0.311,
+              "fatigue": 0.571,
+              "hunger": 0.476,
+              "safety": 0.508,
+              "social_contact": 0.443
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108165": {
+            "name": "Olfina Gray-Mane",
+            "needs": {
+              "comfort": 0.517,
+              "fatigue": 0.223,
+              "hunger": 0.351,
+              "safety": 0.416,
+              "social_contact": 0.559
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108167": {
+            "name": "Olfrid Battle-Born",
+            "needs": {
+              "comfort": 0.573,
+              "fatigue": 0.163,
+              "hunger": 0.252,
+              "safety": 0.603,
+              "social_contact": 0.387
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108168": {
+            "name": "Bergritte Battle-Born",
+            "needs": {
+              "comfort": 0.564,
+              "fatigue": 0.292,
+              "hunger": 0.466,
+              "safety": 0.554,
+              "social_contact": 0.169
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108169": {
+            "name": "Idolaf Battle-Born",
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.346,
+              "hunger": 0.518,
+              "safety": 0.568,
+              "social_contact": 0.584
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108170": {
+            "name": "Jon Battle-Born",
+            "needs": {
+              "comfort": 0.51,
+              "fatigue": 0.519,
+              "hunger": 0.159,
+              "safety": 0.582,
+              "social_contact": 0.341
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108183": {
+            "name": "Aela the Huntress",
+            "needs": {
+              "comfort": 0.486,
+              "fatigue": 0.317,
+              "hunger": 0.473,
+              "safety": 0.479,
+              "social_contact": 0.484
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108185": {
+            "name": "Olava the Feeble",
+            "needs": {
+              "comfort": 0.246,
+              "fatigue": 0.23,
+              "hunger": 0.173,
+              "safety": 0.618,
+              "social_contact": 0.604
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108186": {
+            "name": "Ysolda",
+            "needs": {
+              "comfort": 0.522,
+              "fatigue": 0.434,
+              "hunger": 0.75,
+              "safety": 0.627,
+              "social_contact": 0.248
+            },
+            "agency": {
+              "native_route_supported": true,
+              "next_review_day": 0.8083221912384033,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108196": {
+            "name": "Nazeem",
+            "needs": {
+              "comfort": 0.629,
+              "fatigue": 0.221,
+              "hunger": 0.436,
+              "safety": 0.415,
+              "social_contact": 0.63
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108197": {
+            "name": "Ahlam",
+            "needs": {
+              "comfort": 0.529,
+              "fatigue": 0.578,
+              "hunger": 0.549,
+              "safety": 0.175,
+              "social_contact": 0.215
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "108248": {
+            "name": "Ria",
+            "needs": {
+              "comfort": 0.304,
+              "fatigue": 0.501,
+              "hunger": 0.153,
+              "safety": 0.571,
+              "social_contact": 0.529
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "1106614": {
+            "name": "Lillith Maiden-Loom",
+            "needs": {
+              "comfort": 0.515,
+              "fatigue": 0.428,
+              "hunger": 0.478,
+              "safety": 0.403,
+              "social_contact": 0.454
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "182543": {
+            "name": "Brenuin",
+            "needs": {
+              "comfort": 0.591,
+              "fatigue": 0.274,
+              "hunger": 0.366,
+              "safety": 0.337,
+              "social_contact": 0.185
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225366": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.27,
+              "fatigue": 0.475,
+              "hunger": 0.23,
+              "safety": 0.372,
+              "social_contact": 0.331
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.8083221912384033,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225368": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.218,
+              "fatigue": 0.428,
+              "hunger": 0.256,
+              "safety": 0.444,
+              "social_contact": 0.545
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225386": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.637,
+              "fatigue": 0.589,
+              "hunger": 0.161,
+              "safety": 0.585,
+              "social_contact": 0.371
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225390": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.357,
+              "fatigue": 0.393,
+              "hunger": 0.161,
+              "safety": 0.587,
+              "social_contact": 0.327
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.8083221912384033,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225392": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.25,
+              "fatigue": 0.305,
+              "hunger": 0.202,
+              "safety": 0.295,
+              "social_contact": 0.575
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225408": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.532,
+              "fatigue": 0.574,
+              "hunger": 0.229,
+              "safety": 0.561,
+              "social_contact": 0.643
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "225409": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.243,
+              "fatigue": 0.301,
+              "hunger": 0.502,
+              "safety": 0.385,
+              "social_contact": 0.303
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          },
+          "843123": {
+            "name": "Sigurd",
+            "needs": {
+              "comfort": 0.319,
+              "fatigue": 0.568,
+              "hunger": 0.569,
+              "safety": 0.228,
+              "social_contact": 0.227
+            },
+            "agency": {
+              "native_route_supported": false,
+              "next_review_day": 0.6651715040206909,
+              "state": "awaiting_first_daily_plan"
+            }
+          }
+        },
+        "daily": null,
+        "counts": {
+          "residents": 29,
+          "households": 29,
+          "businesses": 2,
+          "native_route_supported": 3
+        },
+        "native_inventory": {
+          "225386": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "108169": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "225409": {
+            "gold": 4,
+            "bread": 0,
+            "grain": 0
+          },
+          "843123": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "1048823": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "1108911": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108138": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "108140": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "108164": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "225408": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "225390": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225366": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "225392": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "225368": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "108162": {
+            "gold": 36,
+            "bread": 0,
+            "grain": 0
+          },
+          "108183": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      },
+      "after": {
+        "checkpoint": 176,
+        "clock": 0.8139331340789795,
+        "needs": {
+          "1048823": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.391697,
+              "hunger": 0.531134,
+              "safety": 0.512,
+              "social_contact": 0.715646
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108138": {
+            "name": "Amren",
+            "needs": {
+              "comfort": 0.317,
+              "fatigue": 0.504697,
+              "hunger": 0.656134,
+              "safety": 0.468,
+              "social_contact": 0.704912
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108140": {
+            "name": "Saffir",
+            "needs": {
+              "comfort": 0.19,
+              "fatigue": 0.556697,
+              "hunger": 0.572134,
+              "safety": 0.541,
+              "social_contact": 0.698489
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108149": {
+            "name": "Carlotta Valentia",
+            "needs": {
+              "comfort": 0.443,
+              "fatigue": 0.364697,
+              "hunger": 0.345134,
+              "safety": 0.533,
+              "social_contact": 0.757646
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108156": {
+            "name": "Adrianne Avenicci",
+            "needs": {
+              "comfort": 0.278,
+              "fatigue": 0.546697,
+              "hunger": 0.595134,
+              "safety": 0.614,
+              "social_contact": 0.478776
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108160": {
+            "name": "Anoriath",
+            "needs": {
+              "comfort": 0.499,
+              "fatigue": 0.374697,
+              "hunger": 0.377134,
+              "safety": 0.415,
+              "social_contact": 0.601235
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108162": {
+            "name": "Heimskr",
+            "needs": {
+              "comfort": 0.474,
+              "fatigue": 0.326697,
+              "hunger": 0.456134,
+              "safety": 0.323,
+              "social_contact": 0.481975
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108164": {
+            "name": "Fralia Gray-Mane",
+            "needs": {
+              "comfort": 0.311,
+              "fatigue": 0.659697,
+              "hunger": 0.671134,
+              "safety": 0.508,
+              "social_contact": 0.563362
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108165": {
+            "name": "Olfina Gray-Mane",
+            "needs": {
+              "comfort": 0.517,
+              "fatigue": 0.311697,
+              "hunger": 0.546134,
+              "safety": 0.416,
+              "social_contact": 0.655325
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108167": {
+            "name": "Olfrid Battle-Born",
+            "needs": {
+              "comfort": 0.573,
+              "fatigue": 0.251697,
+              "hunger": 0.447134,
+              "safety": 0.603,
+              "social_contact": 0.506475
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108168": {
+            "name": "Bergritte Battle-Born",
+            "needs": {
+              "comfort": 0.564,
+              "fatigue": 0.380697,
+              "hunger": 0.661134,
+              "safety": 0.554,
+              "social_contact": 0.275348
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108169": {
+            "name": "Idolaf Battle-Born",
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.434697,
+              "hunger": 0.713134,
+              "safety": 0.568,
+              "social_contact": 0.704806
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108170": {
+            "name": "Jon Battle-Born",
+            "needs": {
+              "comfort": 0.51,
+              "fatigue": 0.607697,
+              "hunger": 0.354134,
+              "safety": 0.582,
+              "social_contact": 0.473957
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108183": {
+            "name": "Aela the Huntress",
+            "needs": {
+              "comfort": 0.486,
+              "fatigue": 0.405697,
+              "hunger": 0.668134,
+              "safety": 0.479,
+              "social_contact": 0.602056
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108185": {
+            "name": "Olava the Feeble",
+            "needs": {
+              "comfort": 0.246,
+              "fatigue": 0.318697,
+              "hunger": 0.368134,
+              "safety": 0.618,
+              "social_contact": 0.729862
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108186": {
+            "name": "Ysolda",
+            "needs": {
+              "comfort": 0.522,
+              "fatigue": 0.436807,
+              "hunger": 0.756175,
+              "safety": 0.627,
+              "social_contact": 0.252267
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108196": {
+            "name": "Nazeem",
+            "needs": {
+              "comfort": 0.629,
+              "fatigue": 0.309697,
+              "hunger": 0.631134,
+              "safety": 0.415,
+              "social_contact": 0.729164
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108197": {
+            "name": "Ahlam",
+            "needs": {
+              "comfort": 0.529,
+              "fatigue": 0.666697,
+              "hunger": 0.744134,
+              "safety": 0.175,
+              "social_contact": 0.325517
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108248": {
+            "name": "Ria",
+            "needs": {
+              "comfort": 0.304,
+              "fatigue": 0.589697,
+              "hunger": 0.348134,
+              "safety": 0.571,
+              "social_contact": 0.626833
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "1106614": {
+            "name": "Lillith Maiden-Loom",
+            "needs": {
+              "comfort": 0.515,
+              "fatigue": 0.516697,
+              "hunger": 0.673134,
+              "safety": 0.403,
+              "social_contact": 0.585449
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "182543": {
+            "name": "Brenuin",
+            "needs": {
+              "comfort": 0.591,
+              "fatigue": 0.362697,
+              "hunger": 0.561134,
+              "safety": 0.337,
+              "social_contact": 0.304653
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "225366": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.27,
+              "fatigue": 0.477807,
+              "hunger": 0.236175,
+              "safety": 0.372,
+              "social_contact": 0.335157
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225368": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.218,
+              "fatigue": 0.516697,
+              "hunger": 0.451134,
+              "safety": 0.444,
+              "social_contact": 0.663234
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225386": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.637,
+              "fatigue": 0.677697,
+              "hunger": 0.356134,
+              "safety": 0.585,
+              "social_contact": 0.463157
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225390": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.357,
+              "fatigue": 0.395807,
+              "hunger": 0.167175,
+              "safety": 0.587,
+              "social_contact": 0.330618
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225392": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.25,
+              "fatigue": 0.393697,
+              "hunger": 0.397134,
+              "safety": 0.295,
+              "social_contact": 0.698555
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225408": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.532,
+              "fatigue": 0.662697,
+              "hunger": 0.424134,
+              "safety": 0.561,
+              "social_contact": 0.772853
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225409": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.243,
+              "fatigue": 0.389697,
+              "hunger": 0.697134,
+              "safety": 0.385,
+              "social_contact": 0.398438
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "843123": {
+            "name": "Sigurd",
+            "needs": {
+              "comfort": 0.319,
+              "fatigue": 0.656697,
+              "hunger": 0.764134,
+              "safety": 0.228,
+              "social_contact": 0.318536
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          }
+        },
+        "daily": {
+          "last_day": 0.8130003809928894,
+          "queue": [],
+          "reviews": [
+            {
+              "day": 0.8130003809928894,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 1
+            }
+          ],
+          "sequence": 1
+        },
+        "counts": {
+          "residents": 29,
+          "households": 29,
+          "businesses": 2,
+          "native_route_supported": 3
+        },
+        "native_inventory": {
+          "225386": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "108169": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "225409": {
+            "gold": 4,
+            "bread": 0,
+            "grain": 0
+          },
+          "843123": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "1048823": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "1108911": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108138": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "108140": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "108164": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "225408": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "225390": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225366": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "225392": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "225368": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "108162": {
+            "gold": 36,
+            "bread": 0,
+            "grain": 0
+          },
+          "108183": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    },
+    {
+      "status": "held",
+      "error": "Save/session changed; director stopped",
+      "reviews": [
+        {
+          "checkpoint": 177,
+          "new_events": [],
+          "next_review_day": 0.8419299523035685
+        }
+      ],
+      "events": [],
+      "maximum_model_calls": 0,
+      "before": {
+        "checkpoint": 176,
+        "clock": 0.8315132856369019,
+        "needs": {
+          "1048823": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.391697,
+              "hunger": 0.531134,
+              "safety": 0.512,
+              "social_contact": 0.715646
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108138": {
+            "name": "Amren",
+            "needs": {
+              "comfort": 0.317,
+              "fatigue": 0.504697,
+              "hunger": 0.656134,
+              "safety": 0.468,
+              "social_contact": 0.704912
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108140": {
+            "name": "Saffir",
+            "needs": {
+              "comfort": 0.19,
+              "fatigue": 0.556697,
+              "hunger": 0.572134,
+              "safety": 0.541,
+              "social_contact": 0.698489
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108149": {
+            "name": "Carlotta Valentia",
+            "needs": {
+              "comfort": 0.443,
+              "fatigue": 0.364697,
+              "hunger": 0.345134,
+              "safety": 0.533,
+              "social_contact": 0.757646
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108156": {
+            "name": "Adrianne Avenicci",
+            "needs": {
+              "comfort": 0.278,
+              "fatigue": 0.546697,
+              "hunger": 0.595134,
+              "safety": 0.614,
+              "social_contact": 0.478776
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108160": {
+            "name": "Anoriath",
+            "needs": {
+              "comfort": 0.499,
+              "fatigue": 0.374697,
+              "hunger": 0.377134,
+              "safety": 0.415,
+              "social_contact": 0.601235
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108162": {
+            "name": "Heimskr",
+            "needs": {
+              "comfort": 0.474,
+              "fatigue": 0.326697,
+              "hunger": 0.456134,
+              "safety": 0.323,
+              "social_contact": 0.481975
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108164": {
+            "name": "Fralia Gray-Mane",
+            "needs": {
+              "comfort": 0.311,
+              "fatigue": 0.659697,
+              "hunger": 0.671134,
+              "safety": 0.508,
+              "social_contact": 0.563362
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108165": {
+            "name": "Olfina Gray-Mane",
+            "needs": {
+              "comfort": 0.517,
+              "fatigue": 0.311697,
+              "hunger": 0.546134,
+              "safety": 0.416,
+              "social_contact": 0.655325
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108167": {
+            "name": "Olfrid Battle-Born",
+            "needs": {
+              "comfort": 0.573,
+              "fatigue": 0.251697,
+              "hunger": 0.447134,
+              "safety": 0.603,
+              "social_contact": 0.506475
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108168": {
+            "name": "Bergritte Battle-Born",
+            "needs": {
+              "comfort": 0.564,
+              "fatigue": 0.380697,
+              "hunger": 0.661134,
+              "safety": 0.554,
+              "social_contact": 0.275348
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108169": {
+            "name": "Idolaf Battle-Born",
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.434697,
+              "hunger": 0.713134,
+              "safety": 0.568,
+              "social_contact": 0.704806
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108170": {
+            "name": "Jon Battle-Born",
+            "needs": {
+              "comfort": 0.51,
+              "fatigue": 0.607697,
+              "hunger": 0.354134,
+              "safety": 0.582,
+              "social_contact": 0.473957
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108183": {
+            "name": "Aela the Huntress",
+            "needs": {
+              "comfort": 0.486,
+              "fatigue": 0.405697,
+              "hunger": 0.668134,
+              "safety": 0.479,
+              "social_contact": 0.602056
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108185": {
+            "name": "Olava the Feeble",
+            "needs": {
+              "comfort": 0.246,
+              "fatigue": 0.318697,
+              "hunger": 0.368134,
+              "safety": 0.618,
+              "social_contact": 0.729862
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108186": {
+            "name": "Ysolda",
+            "needs": {
+              "comfort": 0.522,
+              "fatigue": 0.436807,
+              "hunger": 0.756175,
+              "safety": 0.627,
+              "social_contact": 0.252267
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108196": {
+            "name": "Nazeem",
+            "needs": {
+              "comfort": 0.629,
+              "fatigue": 0.309697,
+              "hunger": 0.631134,
+              "safety": 0.415,
+              "social_contact": 0.729164
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108197": {
+            "name": "Ahlam",
+            "needs": {
+              "comfort": 0.529,
+              "fatigue": 0.666697,
+              "hunger": 0.744134,
+              "safety": 0.175,
+              "social_contact": 0.325517
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108248": {
+            "name": "Ria",
+            "needs": {
+              "comfort": 0.304,
+              "fatigue": 0.589697,
+              "hunger": 0.348134,
+              "safety": 0.571,
+              "social_contact": 0.626833
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "1106614": {
+            "name": "Lillith Maiden-Loom",
+            "needs": {
+              "comfort": 0.515,
+              "fatigue": 0.516697,
+              "hunger": 0.673134,
+              "safety": 0.403,
+              "social_contact": 0.585449
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "182543": {
+            "name": "Brenuin",
+            "needs": {
+              "comfort": 0.591,
+              "fatigue": 0.362697,
+              "hunger": 0.561134,
+              "safety": 0.337,
+              "social_contact": 0.304653
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "225366": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.27,
+              "fatigue": 0.477807,
+              "hunger": 0.236175,
+              "safety": 0.372,
+              "social_contact": 0.335157
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225368": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.218,
+              "fatigue": 0.516697,
+              "hunger": 0.451134,
+              "safety": 0.444,
+              "social_contact": 0.663234
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225386": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.637,
+              "fatigue": 0.677697,
+              "hunger": 0.356134,
+              "safety": 0.585,
+              "social_contact": 0.463157
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225390": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.357,
+              "fatigue": 0.395807,
+              "hunger": 0.167175,
+              "safety": 0.587,
+              "social_contact": 0.330618
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225392": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.25,
+              "fatigue": 0.393697,
+              "hunger": 0.397134,
+              "safety": 0.295,
+              "social_contact": 0.698555
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225408": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.532,
+              "fatigue": 0.662697,
+              "hunger": 0.424134,
+              "safety": 0.561,
+              "social_contact": 0.772853
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225409": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.243,
+              "fatigue": 0.389697,
+              "hunger": 0.697134,
+              "safety": 0.385,
+              "social_contact": 0.398438
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "843123": {
+            "name": "Sigurd",
+            "needs": {
+              "comfort": 0.319,
+              "fatigue": 0.656697,
+              "hunger": 0.764134,
+              "safety": 0.228,
+              "social_contact": 0.318536
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          }
+        },
+        "daily": {
+          "last_day": 0.8130003809928894,
+          "queue": [],
+          "reviews": [
+            {
+              "day": 0.8130003809928894,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 1
+            }
+          ],
+          "sequence": 1
+        },
+        "counts": {
+          "residents": 29,
+          "households": 29,
+          "businesses": 2,
+          "native_route_supported": 3
+        },
+        "native_inventory": {
+          "225386": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "108169": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "843123": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "1048823": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "1108911": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108138": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "225409": {
+            "gold": 4,
+            "bread": 0,
+            "grain": 0
+          },
+          "108140": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "225408": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "225392": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108162": {
+            "gold": 36,
+            "bread": 0,
+            "grain": 0
+          },
+          "108183": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225390": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225366": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    },
+    {
+      "status": "complete",
+      "error": null,
+      "reviews": [
+        {
+          "checkpoint": 178,
+          "new_events": [],
+          "next_review_day": 0.8541480104128519
+        },
+        {
+          "checkpoint": 179,
+          "new_events": [],
+          "next_review_day": 0.8649067083994547
+        }
+      ],
+      "events": [],
+      "maximum_model_calls": 0,
+      "before": {
+        "checkpoint": 177,
+        "clock": 0.8437313437461853,
+        "needs": {
+          "1048823": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.402805,
+              "hunger": 0.555571,
+              "safety": 0.512,
+              "social_contact": 0.729753
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108138": {
+            "name": "Amren",
+            "needs": {
+              "comfort": 0.317,
+              "fatigue": 0.515805,
+              "hunger": 0.680571,
+              "safety": 0.468,
+              "social_contact": 0.719052
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108140": {
+            "name": "Saffir",
+            "needs": {
+              "comfort": 0.19,
+              "fatigue": 0.567805,
+              "hunger": 0.596571,
+              "safety": 0.541,
+              "social_contact": 0.708819
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108149": {
+            "name": "Carlotta Valentia",
+            "needs": {
+              "comfort": 0.443,
+              "fatigue": 0.375805,
+              "hunger": 0.369571,
+              "safety": 0.533,
+              "social_contact": 0.771753
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108156": {
+            "name": "Adrianne Avenicci",
+            "needs": {
+              "comfort": 0.278,
+              "fatigue": 0.557805,
+              "hunger": 0.619571,
+              "safety": 0.614,
+              "social_contact": 0.491772
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108160": {
+            "name": "Anoriath",
+            "needs": {
+              "comfort": 0.499,
+              "fatigue": 0.385805,
+              "hunger": 0.401571,
+              "safety": 0.415,
+              "social_contact": 0.614664
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108162": {
+            "name": "Heimskr",
+            "needs": {
+              "comfort": 0.474,
+              "fatigue": 0.337805,
+              "hunger": 0.480571,
+              "safety": 0.323,
+              "social_contact": 0.497626
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108164": {
+            "name": "Fralia Gray-Mane",
+            "needs": {
+              "comfort": 0.311,
+              "fatigue": 0.670805,
+              "hunger": 0.695571,
+              "safety": 0.508,
+              "social_contact": 0.578435
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108165": {
+            "name": "Olfina Gray-Mane",
+            "needs": {
+              "comfort": 0.517,
+              "fatigue": 0.322805,
+              "hunger": 0.570571,
+              "safety": 0.416,
+              "social_contact": 0.667388
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108167": {
+            "name": "Olfrid Battle-Born",
+            "needs": {
+              "comfort": 0.573,
+              "fatigue": 0.262805,
+              "hunger": 0.471571,
+              "safety": 0.603,
+              "social_contact": 0.521437
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108168": {
+            "name": "Bergritte Battle-Born",
+            "needs": {
+              "comfort": 0.564,
+              "fatigue": 0.391805,
+              "hunger": 0.685571,
+              "safety": 0.554,
+              "social_contact": 0.288666
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108169": {
+            "name": "Idolaf Battle-Born",
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.445805,
+              "hunger": 0.737571,
+              "safety": 0.568,
+              "social_contact": 0.719935
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108170": {
+            "name": "Jon Battle-Born",
+            "needs": {
+              "comfort": 0.51,
+              "fatigue": 0.618805,
+              "hunger": 0.378571,
+              "safety": 0.582,
+              "social_contact": 0.490608
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108183": {
+            "name": "Aela the Huntress",
+            "needs": {
+              "comfort": 0.486,
+              "fatigue": 0.416805,
+              "hunger": 0.692571,
+              "safety": 0.479,
+              "social_contact": 0.61684
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108185": {
+            "name": "Olava the Feeble",
+            "needs": {
+              "comfort": 0.246,
+              "fatigue": 0.329805,
+              "hunger": 0.392571,
+              "safety": 0.618,
+              "social_contact": 0.745624
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108186": {
+            "name": "Ysolda",
+            "needs": {
+              "comfort": 0.522,
+              "fatigue": 0.447915,
+              "hunger": 0.780612,
+              "safety": 0.627,
+              "social_contact": 0.269151
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108196": {
+            "name": "Nazeem",
+            "needs": {
+              "comfort": 0.629,
+              "fatigue": 0.320805,
+              "hunger": 0.655571,
+              "safety": 0.415,
+              "social_contact": 0.741582
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108197": {
+            "name": "Ahlam",
+            "needs": {
+              "comfort": 0.529,
+              "fatigue": 0.677805,
+              "hunger": 0.768571,
+              "safety": 0.175,
+              "social_contact": 0.339357
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108248": {
+            "name": "Ria",
+            "needs": {
+              "comfort": 0.304,
+              "fatigue": 0.600805,
+              "hunger": 0.372571,
+              "safety": 0.571,
+              "social_contact": 0.639085
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "1106614": {
+            "name": "Lillith Maiden-Loom",
+            "needs": {
+              "comfort": 0.515,
+              "fatigue": 0.527805,
+              "hunger": 0.697571,
+              "safety": 0.403,
+              "social_contact": 0.601911
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "182543": {
+            "name": "Brenuin",
+            "needs": {
+              "comfort": 0.591,
+              "fatigue": 0.373805,
+              "hunger": 0.585571,
+              "safety": 0.337,
+              "social_contact": 0.319637
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "225366": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.27,
+              "fatigue": 0.488915,
+              "hunger": 0.260612,
+              "safety": 0.372,
+              "social_contact": 0.351608
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225368": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.218,
+              "fatigue": 0.527805,
+              "hunger": 0.475571,
+              "safety": 0.444,
+              "social_contact": 0.678041
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225386": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.637,
+              "fatigue": 0.688805,
+              "hunger": 0.380571,
+              "safety": 0.585,
+              "social_contact": 0.474698
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225390": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.357,
+              "fatigue": 0.406915,
+              "hunger": 0.191612,
+              "safety": 0.587,
+              "social_contact": 0.344936
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225392": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.25,
+              "fatigue": 0.404805,
+              "hunger": 0.421571,
+              "safety": 0.295,
+              "social_contact": 0.714028
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225408": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.532,
+              "fatigue": 0.673805,
+              "hunger": 0.448571,
+              "safety": 0.561,
+              "social_contact": 0.789115
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225409": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.243,
+              "fatigue": 0.400805,
+              "hunger": 0.721571,
+              "safety": 0.385,
+              "social_contact": 0.41039
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "843123": {
+            "name": "Sigurd",
+            "needs": {
+              "comfort": 0.319,
+              "fatigue": 0.667805,
+              "hunger": 0.788571,
+              "safety": 0.228,
+              "social_contact": 0.329999
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          }
+        },
+        "daily": {
+          "last_day": 0.8315132856369019,
+          "queue": [],
+          "reviews": [
+            {
+              "day": 0.8130003809928894,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 1
+            },
+            {
+              "day": 0.8315132856369019,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 2
+            }
+          ],
+          "sequence": 2
+        },
+        "counts": {
+          "residents": 29,
+          "households": 29,
+          "businesses": 2,
+          "native_route_supported": 3
+        },
+        "native_inventory": {
+          "225386": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "108169": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "857520": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "843123": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "108140": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "108138": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "1048823": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "1108911": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225408": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "108146": {
+            "gold": 15,
+            "bread": 0,
+            "grain": 0
+          },
+          "225404": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108162": {
+            "gold": 36,
+            "bread": 0,
+            "grain": 0
+          },
+          "225403": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225366": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "225409": {
+            "gold": 4,
+            "bread": 0,
+            "grain": 0
+          },
+          "225392": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "225390": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      },
+      "after": {
+        "checkpoint": 179,
+        "clock": 0.8554262518882751,
+        "needs": {
+          "1048823": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.416591,
+              "hunger": 0.5859,
+              "safety": 0.512,
+              "social_contact": 0.747261
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108138": {
+            "name": "Amren",
+            "needs": {
+              "comfort": 0.317,
+              "fatigue": 0.529591,
+              "hunger": 0.7109,
+              "safety": 0.468,
+              "social_contact": 0.736601
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108140": {
+            "name": "Saffir",
+            "needs": {
+              "comfort": 0.19,
+              "fatigue": 0.581591,
+              "hunger": 0.6269,
+              "safety": 0.541,
+              "social_contact": 0.72164
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108149": {
+            "name": "Carlotta Valentia",
+            "needs": {
+              "comfort": 0.443,
+              "fatigue": 0.389591,
+              "hunger": 0.3999,
+              "safety": 0.533,
+              "social_contact": 0.789261
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108156": {
+            "name": "Adrianne Avenicci",
+            "needs": {
+              "comfort": 0.278,
+              "fatigue": 0.571591,
+              "hunger": 0.6499,
+              "safety": 0.614,
+              "social_contact": 0.507902
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108160": {
+            "name": "Anoriath",
+            "needs": {
+              "comfort": 0.499,
+              "fatigue": 0.399591,
+              "hunger": 0.4319,
+              "safety": 0.415,
+              "social_contact": 0.631331
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108162": {
+            "name": "Heimskr",
+            "needs": {
+              "comfort": 0.474,
+              "fatigue": 0.351591,
+              "hunger": 0.5109,
+              "safety": 0.323,
+              "social_contact": 0.51705
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108164": {
+            "name": "Fralia Gray-Mane",
+            "needs": {
+              "comfort": 0.311,
+              "fatigue": 0.684591,
+              "hunger": 0.7259,
+              "safety": 0.508,
+              "social_contact": 0.597143
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108165": {
+            "name": "Olfina Gray-Mane",
+            "needs": {
+              "comfort": 0.517,
+              "fatigue": 0.336591,
+              "hunger": 0.6009,
+              "safety": 0.416,
+              "social_contact": 0.682359
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108167": {
+            "name": "Olfrid Battle-Born",
+            "needs": {
+              "comfort": 0.573,
+              "fatigue": 0.276591,
+              "hunger": 0.5019,
+              "safety": 0.603,
+              "social_contact": 0.540007
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108168": {
+            "name": "Bergritte Battle-Born",
+            "needs": {
+              "comfort": 0.564,
+              "fatigue": 0.405591,
+              "hunger": 0.7159,
+              "safety": 0.554,
+              "social_contact": 0.305196
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108169": {
+            "name": "Idolaf Battle-Born",
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.459591,
+              "hunger": 0.7679,
+              "safety": 0.568,
+              "social_contact": 0.738712
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108170": {
+            "name": "Jon Battle-Born",
+            "needs": {
+              "comfort": 0.51,
+              "fatigue": 0.632591,
+              "hunger": 0.4089,
+              "safety": 0.582,
+              "social_contact": 0.511273
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108183": {
+            "name": "Aela the Huntress",
+            "needs": {
+              "comfort": 0.486,
+              "fatigue": 0.430591,
+              "hunger": 0.7229,
+              "safety": 0.479,
+              "social_contact": 0.635189
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108185": {
+            "name": "Olava the Feeble",
+            "needs": {
+              "comfort": 0.246,
+              "fatigue": 0.343591,
+              "hunger": 0.4229,
+              "safety": 0.618,
+              "social_contact": 0.765186
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108186": {
+            "name": "Ysolda",
+            "needs": {
+              "comfort": 0.522,
+              "fatigue": 0.461701,
+              "hunger": 0.810941,
+              "safety": 0.627,
+              "social_contact": 0.290106
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": true,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "108196": {
+            "name": "Nazeem",
+            "needs": {
+              "comfort": 0.629,
+              "fatigue": 0.334591,
+              "hunger": 0.6859,
+              "safety": 0.415,
+              "social_contact": 0.756995
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108197": {
+            "name": "Ahlam",
+            "needs": {
+              "comfort": 0.529,
+              "fatigue": 0.691591,
+              "hunger": 0.7989,
+              "safety": 0.175,
+              "social_contact": 0.356534
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "108248": {
+            "name": "Ria",
+            "needs": {
+              "comfort": 0.304,
+              "fatigue": 0.614591,
+              "hunger": 0.4029,
+              "safety": 0.571,
+              "social_contact": 0.654291
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "1106614": {
+            "name": "Lillith Maiden-Loom",
+            "needs": {
+              "comfort": 0.515,
+              "fatigue": 0.541591,
+              "hunger": 0.7279,
+              "safety": 0.403,
+              "social_contact": 0.622342
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "182543": {
+            "name": "Brenuin",
+            "needs": {
+              "comfort": 0.591,
+              "fatigue": 0.387591,
+              "hunger": 0.6159,
+              "safety": 0.337,
+              "social_contact": 0.338234
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "Needs progressed abstractly; no native action inferred",
+              "state": "unloaded"
+            }
+          },
+          "225366": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.27,
+              "fatigue": 0.502701,
+              "hunger": 0.290941,
+              "safety": 0.372,
+              "social_contact": 0.372025
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225368": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.218,
+              "fatigue": 0.541591,
+              "hunger": 0.5059,
+              "safety": 0.444,
+              "social_contact": 0.696418
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225386": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.637,
+              "fatigue": 0.702591,
+              "hunger": 0.4109,
+              "safety": 0.585,
+              "social_contact": 0.489022
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225390": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.357,
+              "fatigue": 0.420701,
+              "hunger": 0.221941,
+              "safety": 0.587,
+              "social_contact": 0.362706
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225392": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.25,
+              "fatigue": 0.418591,
+              "hunger": 0.4519,
+              "safety": 0.295,
+              "social_contact": 0.733232
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No executable urgent opportunity; no inference requested",
+              "state": "quiet_interval",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225408": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.532,
+              "fatigue": 0.687591,
+              "hunger": 0.4789,
+              "safety": 0.561,
+              "social_contact": 0.809297
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "An autonomous social encounter selector is not implemented",
+              "state": "unmet_social_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "225409": {
+            "name": "Whiterun Guard",
+            "needs": {
+              "comfort": 0.243,
+              "fatigue": 0.414591,
+              "hunger": 0.7519,
+              "safety": 0.385,
+              "social_contact": 0.425224
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          },
+          "843123": {
+            "name": "Sigurd",
+            "needs": {
+              "comfort": 0.319,
+              "fatigue": 0.681591,
+              "hunger": 0.8189,
+              "safety": 0.228,
+              "social_contact": 0.344226
+            },
+            "agency": {
+              "last_review_day": 0.8130003809928894,
+              "native_route_supported": false,
+              "next_review_day": 0.854667047659556,
+              "reason": "No carried bread or qualified affordable seller route",
+              "state": "unmet_food_need",
+              "weather_observation": {
+                "classification": 0,
+                "day": 0.8130003809928894,
+                "outdoors": true
+              }
+            }
+          }
+        },
+        "daily": {
+          "last_day": 0.8544900417327881,
+          "queue": [],
+          "reviews": [
+            {
+              "day": 0.8130003809928894,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 1
+            },
+            {
+              "day": 0.8315132856369019,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 2
+            },
+            {
+              "day": 0.8437313437461853,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 3
+            },
+            {
+              "day": 0.8544900417327881,
+              "model_calls": 0,
+              "new_events": [],
+              "residents": 29,
+              "sequence": 4
+            }
+          ],
+          "sequence": 4
+        },
+        "counts": {
+          "residents": 29,
+          "households": 29,
+          "businesses": 2,
+          "native_route_supported": 3
+        },
+        "native_inventory": {
+          "225386": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "108169": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "225366": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "843123": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "108146": {
+            "gold": 15,
+            "bread": 0,
+            "grain": 0
+          },
+          "1048823": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "1108911": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "225403": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "857520": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "225404": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "225408": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "225409": {
+            "gold": 4,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    }
+  ]
+}

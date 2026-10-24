@@ -14,6 +14,8 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Population milestone:** 26 loaded adult NPCs now have persistent starting needs, traits and household records, with two business charters referencing real inventories. Actual before/after Skyrim saves restored the population correctly. This does not yet extend native routine ownership to all of them. [Population state, visual overview and evidence](docs/population.md).
 
+**Daily-life milestone:** the roster has expanded to 29 residents. Game-clock reviews advance needs, preserve quiet periods and queue feasible decisions without constant model calls. Live reviews and the later save restored correctly; an earlier restore exposed differing guard purses, so whole-town inventory persistence remains unresolved. An arbitrary-resident Papyrus router compiles but is not deployed. [Daily life, limitations and evidence](docs/daily-life.md).
+
 ## Run the tests
 
 Python 3.12+, no third-party Python dependencies:

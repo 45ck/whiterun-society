@@ -23,3 +23,12 @@ jobs:
           dotnet-version: '10.0.x'
       - run: dotnet restore tools/AgentPluginBuilder/AgentPluginBuilder.csproj --locked-mode
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunAgents.esp
+      - name: Compile original Papyrus router on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path work/caprica -Force | Out-Null
+          Invoke-WebRequest 'https://github.com/Orvid/Caprica/releases/download/v0.3.0/Caprica.v0.3.0.7z' -OutFile work/caprica/compiler.7z
+          if ((Get-FileHash work/caprica/compiler.7z -Algorithm SHA256).Hash -ne '0037E54CF3A1021E976278D9A637E8AE541AAF9EBEB8D274B6C2CFE32F4EE559') { throw 'Compiler archive hash mismatch' }
+          tar -xf work/caprica/compiler.7z -C work/caprica
+          python tools/build_router_script.py --compiler work/caprica/Caprica.exe --output work/papyrus-stage

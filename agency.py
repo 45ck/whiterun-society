@@ -47,7 +47,7 @@ class Agency:
             raise ValueError('A conversation owns the participants')
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
             raise ValueError('A bounded event ID is required')
-        if kind not in ('meal_time','stock_review','work_shift') or type(actor) is not int or str(actor) not in self.active['people']:
+        if kind not in ('meal_time','stock_review','work_shift','need_review') or type(actor) is not int or str(actor) not in self.active['people']:
             raise ValueError('Unsupported resident or event kind')
         if kind == 'work_shift' and actor != 108186:
             raise ValueError('This prototype contract is for Ysolda and Carlotta')
@@ -65,6 +65,14 @@ class Agency:
             raise ValueError('Another resident plan is active')
         state = copy.deepcopy(self.active)
         person = state['people'][str(actor)]
+        if kind=='need_review':
+            event=next((e for e in state.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
+            if not event or event['actor']!=actor or event['status']!='pending':
+                raise ValueError('A matching pending daily opportunity is required')
+            if not any(a.get('id')==actor and a.get('isPerson') is True for a in observation.get('residents',[])):
+                raise ValueError('Scheduled resident is no longer observed')
+            event['status']='started'
+            person['agency']['state']='deciding'
         # Authored meal-time simulation event, explicitly not a Skyrim hunger reading.
         if kind=='meal_time':
             person['needs']['hunger'] = min(1, person['needs']['hunger'] + .35)
@@ -119,7 +127,7 @@ class Agency:
             information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
         elif reconsidering:
             options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
-            if actor!=108156:
+            if actor in (108149,108186):
                 options.append({'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'})
             if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
                 options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
@@ -128,9 +136,9 @@ class Agency:
             options = [{'id': 'defer', 'effect': 'Postpone this errand; no travel or purchase.'}]
             if inventory['bread'] > 0:
                 options.append({'id':'eat_bread','effect':'Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.'})
-            if actor!=108156:
+            if actor in (108149,108186):
                 options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
-            if actor!=108149 and inventory['gold'] >= 3 and inventory['bread'] == 0:
+            if actor in (108186,108156) and 108149 in actors and inventory['gold'] >= 3 and inventory['bread'] == 0:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
             information = 'Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
@@ -267,6 +275,14 @@ class Agency:
                     'policy':copy.deepcopy(person['food_policy']),'source':'own allocation decision; no inventory change'})
                 person['memories']=person['memories'][-32:]
             updated['remembered']=True
+            if plan['kind']=='need_review':
+                event=next(e for e in state['town']['daily']['queue'] if e['id']==plan['id'])
+                event.update(status=plan['phase'],outcome=plan.get('outcome'),settled_day=observation.get('gameDays'))
+                person=state['people'][str(plan['actor'])]
+                person['agency'].update(state='quiet_interval' if plan['phase']=='complete' else 'held',
+                    reason='Last scheduled outcome: '+str(plan.get('outcome') or plan.get('error','held')))
+                day=observation.get('gameDays')
+                if type(day) in (int,float) and math.isfinite(day):person['agency']['next_review_day']=day+1/24
             self._write(state,'resident remembers the observed plan outcome')
             return
         if not plan or plan['phase'] in TERMINAL:

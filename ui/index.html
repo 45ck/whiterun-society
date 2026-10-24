@@ -8,6 +8,12 @@
 <div id="resident-markers" aria-hidden="true"></div>
 <header class="brand"><div class="eyebrow">Calvin Kennedy · Living worlds</div><h1>WHITERUN SOCIETY</h1><div class="live"><span class="dot"></span><span id="connection">Connecting to the town…</span></div></header>
 <div id="notice">Observer mode · the town keeps moving</div>
+<section id="town-card" class="panel" hidden style="position:absolute;top:163px;left:28px;width:292px;padding:16px 19px">
+ <div class="eyebrow">The town's needs</div><div class="section-title" id="town-population"></div>
+ <div id="town-needs" class="small" style="margin-top:12px;line-height:1.8"></div>
+ <div id="town-next" style="margin-top:12px;color:var(--gold);line-height:1.5"></div>
+ <div class="small" style="margin-top:10px">Needs progress with game time. Activity requires an available, verified action.</div>
+</section>
 <section id="work-card" class="panel" hidden style="position:absolute;top:163px;left:28px;width:292px;padding:16px 19px">
  <div class="eyebrow">A job in the town</div><div class="section-title">Bread &amp; wages</div>
  <div class="small" style="margin-top:8px">Carlotta commissions · Ysolda works</div>
@@ -105,6 +111,19 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  if(day){document.getElementById('work-card').hidden=true;const steps=document.getElementById('day-steps');steps.replaceChildren();['Paid work','Household stock review',"Ysolda’s meal","Carlotta’s meal"].forEach((label,i)=>{const line=document.createElement('div');line.textContent=(i<day.cursor?'✓ ':i===day.cursor&&day.status==='running'?'› ':'○ ')+label+(day.results[i]?' · '+(day.results[i].outcome||day.results[i].status).replaceAll('_',' '):'');line.style.color=i===day.cursor?'var(--gold)':'var(--muted)';steps.append(line);});text('day-detail',day.status==='complete'?`${day.metrics.production} batch · ${day.metrics.trades} purchase · ${day.metrics.consumptions} meal\nParticipant gold: ${day.metrics.gold_before} → ${day.metrics.gold_after}`:day.status==='held'?'Paused for review · no automatic retry':society.plan?.phase==='working'?`Work attendance: ${state.productionWork?.workedMinutes??0} / 30 game minutes`:'Following the residents’ next decision');}
  const svg=document.getElementById('map');svg.replaceChildren();const local=actors.filter(a=>a.x>17000&&a.x<30000&&a.y>-15000&&a.y<1000);for(const a of local){const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',12+(a.x-17000)/13000*234);dot.setAttribute('cy',83-(a.y+15000)/16000*71);dot.setAttribute('r',names[a.id]?3.5:2);dot.setAttribute('class',names[a.id]?'map-special':'map-dot');svg.append(dot);}
 }
-window.whiterunRender=data=>{state=data;lastUpdate=Date.now();document.body.classList.remove('stale');draw();window.drawConversation?.();window.drawEncounter?.();};
+window.drawTown=()=>{
+ const town=state?.society?.town,daily=town?.daily,c=state?.society?.conversation,plan=state?.society?.plan;
+ const active=c&&!['complete','held'].includes(c.phase)||plan&&!['complete','held'].includes(plan.phase);
+ const card=document.getElementById('town-card');card.hidden=!daily||active||!document.getElementById('resident-inspector').hidden;
+ if(card.hidden)return;
+ for(const id of ['conversation-card','day-card','work-card'])document.getElementById(id).hidden=true;
+ const people=Object.keys(town.residents).map(id=>state.society.people[id]),pending=daily.queue.filter(e=>e.status==='pending');
+ text('town-population',town.counts.residents+' lives in the ledger');
+ const rows=document.getElementById('town-needs');rows.replaceChildren();
+ for(const [label,count] of [['Hungry',people.filter(p=>p.needs.hunger>=.6).length],['Quiet interval',people.filter(p=>p.agency.state==='quiet_interval').length],['Currently unloaded',people.filter(p=>p.agency.state==='unloaded').length],['Executable decisions queued',pending.length]]){const row=document.createElement('div');row.textContent=label+' · '+count;rows.append(row);}
+ text('town-next',pending.length?'Next: '+state.society.people[String(pending[0].actor)].profile.name+' considers food':'No feasible decision queued. No model is running.');
+ text('notice','Town review '+daily.sequence+' · '+(state.weather?.label||'Weather unknown'));
+};
+window.whiterunRender=data=>{state=data;lastUpdate=Date.now();document.body.classList.remove('stale');draw();window.drawConversation?.();window.drawEncounter?.();window.drawTown?.();};
 setInterval(()=>{if(lastUpdate&&Date.now()-lastUpdate>7000){document.body.classList.add('stale');text('connection','Connection paused · showing last observation');}},1000);
 </script><script src="speech.js"></script><script src="encounter.js"></script></body></html>

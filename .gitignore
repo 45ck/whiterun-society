@@ -6,3 +6,4 @@ bridge-config.json
 **/bin/
 **/obj/
 *.esp
+*.pex

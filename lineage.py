@@ -16,11 +16,12 @@ from production import Production
 from market_day import MarketDay
 from conversation import Conversation
 from population import Population
+from daily_life import DailyLife
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row

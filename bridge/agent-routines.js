@@ -32,7 +32,7 @@ function createAgentRoutineController(platform,now=Date.now){
   status(){return active?{...active}:null;},
   step(command){
    const sp=platform();
-   const index=routes.findIndex(r=>r.actor===command.actor&&r.target===command.target);
+   const index=command.dynamic===true?0:routes.findIndex(r=>r.actor===command.actor&&r.target===command.target);
    if(index<0)return {done:true,ack:{id:command.id,status:'held',error:'Unsupported resident route'}};
    const quests=routes.map((_,i)=>sp.Quest.from(sp.Game.getFormFromFile(0x800+i*2,'WhiterunAgents.esp')));
    const quest=quests[index];
@@ -44,8 +44,15 @@ function createAgentRoutineController(platform,now=Date.now){
     return {done:true,ack:{id:command.id,status:'held',error:message,movement:this.status()}};
    };
    if(!quest||!pkg||!actor||!target||!actor.is3DLoaded()||!target.is3DLoaded())return fail('Routine plugin, resident or destination unavailable');
+   if(command.actor===command.target)return fail('Resident cannot travel to itself');
+   let actorAlias=null,targetAlias=null;
+   if(command.dynamic===true){
+    if(!sp.ReferenceAlias||typeof quest.getAlias!=='function')return fail('Dynamic alias API unavailable');
+    actorAlias=sp.ReferenceAlias.from(quest.getAlias(0));targetAlias=sp.ReferenceAlias.from(quest.getAlias(1));
+    // A stopped quest may not yet have instantiated its alias objects.
+   }
    if(!active||active.id!==command.id){
-    active={id:command.id,actor:command.actor,target:command.target,origin:command.origin||'test',method:'package',phase:'resetting',at:now(),startDistance:gap(actor,target),distance:gap(actor,target),expectedPackage:pkg.getFormID(),ownedPackage:false,hasOwnedPackage:false};
+    active={id:command.id,actor:command.actor,target:command.target,origin:command.origin||'test',method:'package',dynamic:command.dynamic===true,phase:'resetting',at:now(),startDistance:gap(actor,target),distance:gap(actor,target),expectedPackage:pkg.getFormID(),ownedPackage:false,hasOwnedPackage:false};
     for(const candidate of quests)if(candidate&&candidate.isRunning())candidate.stop();
     return {done:false};
    }
@@ -55,7 +62,7 @@ function createAgentRoutineController(platform,now=Date.now){
    active.ownedPackage=active.enginePackage===active.expectedPackage;
    active.hasOwnedPackage=active.hasOwnedPackage||active.ownedPackage;
    if(active.phase==='releasing'){
-    if(quest.isRunning()){
+    if(quest.isRunning()||active.ownedPackage){
      if(now()-active.releaseAt>10000)return fail('Routine release was not observed');
      return {done:false};
     }
@@ -80,8 +87,34 @@ function createAgentRoutineController(platform,now=Date.now){
     return {done:false};
    }
    if(active.phase==='starting'){
+    if(active.startComplete&&active.startResult===false)return fail('Routine quest refused to start');
     if(!quest.isRunning()||!active.startComplete)return {done:false};
+    if(command.dynamic===true){
+     if(!actorAlias||!targetAlias||typeof actorAlias.forceRefTo!=='function'||typeof targetAlias.forceRefTo!=='function'||typeof actorAlias.getReference!=='function'||typeof targetAlias.getReference!=='function'){
+      if(now()-active.startRequestedAt>10000)return fail('Running quest reference aliases unavailable');
+      return {done:false};
+     }
+     // Force each alias once, then observe the assignment on later updates.
+     // Native handles are never retained across frames or asynchronous work.
+     targetAlias.forceRefTo(target);actorAlias.forceRefTo(actor);
+     active.phase='binding';active.bindingAt=now();return {done:false};
+    }
     actor.evaluatePackage();active.phase='travelling';return {done:false};
+   }
+   if(active.phase==='binding'){
+    if(!actorAlias||!targetAlias)return fail('Reference aliases disappeared during assignment');
+    const boundActor=actorAlias.getReference(),boundTarget=targetAlias.getReference();
+    active.boundActor=boundActor?boundActor.getFormID():0;active.boundTarget=boundTarget?boundTarget.getFormID():0;
+    if(active.boundActor!==command.actor||active.boundTarget!==command.target){
+     if(now()-active.bindingAt>10000)return fail('Dynamic alias assignment was not observed');
+     return {done:false};
+    }
+    active.aliasesConfirmed=true;actor.evaluatePackage();active.phase='travelling';return {done:false};
+   }
+   if(command.dynamic===true&&active.phase==='travelling'){
+    if(!actorAlias||!targetAlias)return fail('Reference aliases disappeared during travel');
+    const boundActor=actorAlias.getReference(),boundTarget=targetAlias.getReference();
+    if(!boundActor||!boundTarget||boundActor.getFormID()!==command.actor||boundTarget.getFormID()!==command.target)return fail('Dynamic alias ownership changed during travel');
    }
    if(active.phase==='travelling'&&active.hasOwnedPackage&&active.distance<=250){
     if(command.retain){active.phase='arrived';return {done:true,ack:{id:command.id,status:'applied',movement:this.status()}};}

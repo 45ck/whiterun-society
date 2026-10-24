@@ -113,11 +113,13 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
-                elif self.path=='/town/initialize':
+                elif self.path in ('/town/initialize','/town/review'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
-                    self.reply(202,world.initialize_population(data['id'],data['seed'],bridge['observation']))
+                    result=(world.initialize_population(data['id'],data['seed'],bridge['observation'])
+                            if self.path=='/town/initialize' else world.review_population(bridge['observation']))
+                    self.reply(202,result)
                 elif self.path.startswith('/conversation/'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
@@ -165,7 +167,12 @@ def main():
                         raise ValueError('A resident currently owns the task')
                     if data['kind']=='walk_to':
                         if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')
-                        if data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:
+                        if data.get('dynamic') is True:
+                            observed={a['id'] for a in bridge['observation']['residents'] if a.get('isPerson') is True}
+                            managed=set((world.status().get('town') or {}).get('residents',{}))
+                            if data.get('method')!='package' or any(type(data.get(k)) is not int or data[k] not in observed or str(data[k]) not in managed for k in ('actor','target')) or data['actor']==data['target']:
+                                raise ValueError('Dynamic travel requires two observed, initialized adult residents')
+                        elif data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:
                             raise ValueError('Choose two different demo residents')
                     if data['kind']=='prepare_market' and bridge['observation'].get('checkpoint')!=0:
                         raise ValueError('Demo stock is only added before a new-world bootstrap')
@@ -179,7 +186,7 @@ def main():
                         if data['kind']=='load_game' and not path.is_file(): raise ValueError('Isolated save not found')
                     command={'id':secrets.token_hex(8),'kind':data['kind'],'session':bridge['session']}
                     if data['kind'] in ('save_game','load_game'): command['name']=data['name']
-                    if data['kind']=='walk_to': command.update(actor=data['actor'],target=data['target'],method=data.get('method','path'))
+                    if data['kind']=='walk_to': command.update(actor=data['actor'],target=data['target'],method=data.get('method','path'),dynamic=data.get('dynamic') is True)
                     bridge['command']=command
                     self.reply(202,command)
                 elif self.path=='/scenario/shortage':
