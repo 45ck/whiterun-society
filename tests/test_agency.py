@@ -84,14 +84,69 @@ class AgencyTests(unittest.TestCase):
         self.start(); self.decide('seek_bread'); self.arrive()
         before = copy.deepcopy(self.obs['residents'])
         self.decide('decline')
-        self.assertEqual(self.world.agency_plan()['outcome'], 'seller_declined')
+        self.assertEqual(self.world.agency_plan()['phase'], 'reconsider')
+        self.assertEqual(self.world.status()['people']['108186']['memories'][-1]['kind'], 'trade_offer_declined')
+        self.decide('leave_without_food')
+        self.assertEqual(self.world.agency_plan()['outcome'], 'left_without_food')
         self.assertEqual(self.obs['residents'], before)
         self.assertEqual(self.world.state(), [])
         self.obs['ack']={'id':'release-meal-1','status':'applied'}
         self.world.observe(self.obs);self.sync()
-        memory=self.world.status()['people']['108186']['memories'][-1]
+        memory=self.world.status()['people']['108186']['memories'][0]
         self.assertEqual(memory['kind'],'trade_offer_declined')
         self.assertEqual(self.world.status()['people']['108186']['trust'],{})
+
+    def test_reconsideration_receives_refusal_and_cannot_repeat_unchanged_offer(self):
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
+        context=self.world._plan_context(self.obs,self.world.agency_plan())
+        self.assertEqual(context['memories'][-1]['gold'],3)
+        self.assertEqual({o['id'] for o in context['options']},
+                         {'leave_without_food','visit_adrianne','raise_offer'})
+        self.obs['residents'][0]['inventory']['gold']=4
+        context=self.world._plan_context(self.obs,self.world.agency_plan())
+        self.assertNotIn('raise_offer',[o['id'] for o in context['options']])
+
+    def test_higher_offer_requires_new_seller_consent_and_moves_exact_agreed_price(self):
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
+        self.decide('raise_offer')
+        self.assertEqual(self.world.agency_plan()['phase'],'consent')
+        self.assertEqual(self.world.state(),[])
+        context=self.world._plan_context(self.obs,self.world.agency_plan())
+        self.assertIn('5 gold',context['event']['information'])
+        self.assertEqual(context['memories'][-1]['role'],'seller')
+        self.decide('sell_bread')
+        command=self.world.pending('a')
+        self.assertEqual(command['cost'],5)
+        self.assertEqual(command['after']['buyer'],{'gold':4,'bread':1})
+        self.assertEqual(command['after']['seller'],{'gold':15,'bread':2})
+
+    def test_second_refusal_ends_negotiation_without_duplicate_memories(self):
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
+        self.decide('raise_offer'); self.decide('decline')
+        self.assertEqual(self.world.agency_plan()['outcome'],'seller_declined')
+        self.obs['ack']={'id':'release-meal-1','status':'applied'}
+        self.world.observe(self.obs);self.sync();self.world.observe(self.obs)
+        for person in ('108186','108149'):
+            self.assertEqual([m['gold'] for m in self.world.status()['people'][person]['memories']],[3,5])
+        self.assertFalse(self.world.agency_busy())
+
+    def test_changed_destination_has_a_new_native_command_and_keeps_old_trip_evidence(self):
+        self.start();self.decide('seek_bread');self.arrive();self.decide('decline')
+        old=self.world.agency_plan()['travel_id']
+        self.decide('visit_adrianne')
+        new=self.world.pending('a')
+        self.assertNotEqual(new['id'],old)
+        self.assertEqual(new['target'],108156)
+        self.assertEqual(self.world.agency_plan()['travel_history'][0]['id'],old)
+
+    def test_loading_before_reconsideration_removes_later_refusal_and_offer(self):
+        self.start();self.decide('seek_bread');self.arrive()
+        before=copy.deepcopy(self.obs)
+        self.decide('decline');self.decide('raise_offer')
+        self.world.observe({**before,'session':'restored-before-refusal'})
+        self.assertEqual(self.world.agency_plan()['phase'],'consent')
+        self.assertEqual(self.world.agency_plan()['unit_price'],3)
+        self.assertEqual(self.world.status()['people']['108186']['memories'],[])
 
     def test_private_seller_stock_is_not_revealed_by_buyers_options(self):
         self.obs['residents'][1]['inventory']['bread']=0

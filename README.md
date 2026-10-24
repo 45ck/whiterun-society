@@ -6,11 +6,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers and save-linked trade memories have been demonstrated. The autonomous farm–bakery–household model still runs separately; full daily routines, generated dialogue, lip sync and stable save/load remain under development.
 
-**Latest experiment:** event-triggered Jev decisions now select an actual destination and seller response. Ysolda chose to seek bread, our travel package took her to Carlotta, and Carlotta declined. No goods or money moved. Both remembered the refusal; the next event received those memories but repeated the same choices. This is real, bounded agency, not accepted human believability. [Live evidence](docs/agent-control.md#resident-selected-errand-and-consent) · [Human behaviour design and research](docs/human-behaviour.md).
+**Latest experiment:** Ysolda chose to seek bread, travelled to Carlotta, received a refusal and chose to raise her offer from 3 to 5 gold. Carlotta refused again; the negotiation ended with no inventory changes. Both remembered each refusal. Actual Skyrim saves restored the earlier and later plans, memories and inventories exactly. This is bounded negotiation, not accepted human believability. [Live evidence](docs/agent-control.md#revised-offer-and-actual-plan-restoration) · [Human behaviour design and research](docs/human-behaviour.md).
 
-![Jev choices and refusal memories in the actual Skyrim observer overlay](docs/images/jev-resident-decisions.jpg)
+![Restored negotiation choices and memories in the actual Skyrim observer overlay](docs/images/negotiation-restored.jpg)
 
-Save-linked trade history, factual memories and trust restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. Saved decision-plan restoration has unit coverage but still needs a real save/load experiment. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
+Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
 ## Run the tests
 

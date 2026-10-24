@@ -129,3 +129,23 @@ experimental and excluded from resident knowledge pending controlled validation.
 Full economy, adaptive daily routines, speech and player experience remain open.
 
 ![Actual resident choices and refusal memories](images/jev-resident-decisions.jpg)
+
+## Reconsideration and settled-plan save/load
+
+The subsequent negotiation run selected a higher five-gold offer after an initial
+three-gold refusal. The seller independently refused again. Both offer outcomes
+were remembered and the task released without moving inventory. A bounded choice
+changed the plan; the two-offer limit is authored, not learned. Physical acceptance
+of a revised offer is tested but has not occurred in-game.
+
+Actual save A/B restores now match complete settled plans, people, memories,
+inventories and trade journals at checkpoints 23 and 45. The new verifier checks
+save/cosave hashes and a fresh game session. This closes the settled-plan restore
+gap; in-flight planning/trade recovery and sustained audio stability remain open.
+[Detailed evidence and limitations](agent-control.md#revised-offer-and-actual-plan-restoration).
+
+Validation for this slice: 46 Python and 31 JavaScript tests passed locally,
+UI script syntax checked, actual observer rendering inspected, and fresh bridge
+reattachment observed in 1.2 seconds. Human believability, continuous daily life,
+consumption, production integration, voice/lips and player participation remain
+requirements, not implied by these checks.

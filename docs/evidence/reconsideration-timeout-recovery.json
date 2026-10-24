@@ -1,0 +1,902 @@
+{
+  "bridge": {
+    "last_seen": 1792819650.6997018,
+    "observation": {
+      "session": "1792819557694-0.2750043501695403",
+      "checkpoint": 33,
+      "movement": {
+        "id": "travel-meal-20261024-004",
+        "actor": 108186,
+        "target": 108149,
+        "origin": "resident_decision",
+        "method": "package",
+        "phase": "arrived",
+        "at": 1792819574043,
+        "startDistance": 1944.4220486081852,
+        "distance": 249.4903536258381,
+        "expectedPackage": 100665345,
+        "ownedPackage": true,
+        "hasOwnedPackage": true,
+        "enginePackage": 100665345,
+        "startRequestedAt": 1792819574060,
+        "startResult": true,
+        "startComplete": true
+      },
+      "platform": "2.9.0",
+      "ready": true,
+      "mode": "observer",
+      "residents": [
+        {
+          "id": 225386,
+          "name": "Whiterun Guard",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 19688.23046875,
+          "y": -7258.22216796875,
+          "z": -3641.9482421875
+        },
+        {
+          "id": 108156,
+          "name": "Adrianne Avenicci",
+          "inventory": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 20636.83984375,
+          "y": -7716.97216796875,
+          "z": -3628.1298828125
+        },
+        {
+          "id": 108169,
+          "name": "Idolaf Battle-Born",
+          "inventory": {
+            "gold": 12,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 20665.072265625,
+          "y": -7612.705078125,
+          "z": -3636.145751953125
+        },
+        {
+          "id": 225368,
+          "name": "Whiterun Guard",
+          "inventory": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 22284.986328125,
+          "y": -7699.318359375,
+          "z": -3536.7041015625
+        },
+        {
+          "id": 108196,
+          "name": "Nazeem",
+          "inventory": {
+            "gold": 52,
+            "bread": 1,
+            "grain": 0
+          },
+          "x": 21111.37109375,
+          "y": -4725.01220703125,
+          "z": -3052.707275390625
+        },
+        {
+          "id": 108185,
+          "name": "Olava the Feeble",
+          "inventory": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 22365.021484375,
+          "y": -9283.458984375,
+          "z": -3606.456787109375
+        },
+        {
+          "id": 108167,
+          "name": "Olfrid Battle-Born",
+          "inventory": {
+            "gold": 8,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 21308.900390625,
+          "y": -4258.7880859375,
+          "z": -3001.5927734375
+        },
+        {
+          "id": 843123,
+          "name": "Sigurd",
+          "inventory": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 23483.412109375,
+          "y": -8305.25390625,
+          "z": -3381.4052734375
+        },
+        {
+          "id": 108170,
+          "name": "Jon Battle-Born",
+          "inventory": {
+            "gold": 11,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24262.673828125,
+          "y": -7823.4296875,
+          "z": -3398.064453125
+        },
+        {
+          "id": 108149,
+          "name": "Carlotta Valentia",
+          "inventory": {
+            "gold": 5,
+            "bread": 3,
+            "grain": 0
+          },
+          "x": 24610.09375,
+          "y": -7002.91015625,
+          "z": -3405.0380859375
+        },
+        {
+          "id": 1048823,
+          "name": "Whiterun Guard",
+          "inventory": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24572.416015625,
+          "y": -8284.4619140625,
+          "z": -3394.285400390625
+        },
+        {
+          "id": 1108911,
+          "name": "Cow",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24029.6953125,
+          "y": -5065.35791015625,
+          "z": -2998.50146484375
+        },
+        {
+          "id": 108138,
+          "name": "Amren",
+          "inventory": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 23823.4296875,
+          "y": -4266.060546875,
+          "z": -3002.825439453125
+        },
+        {
+          "id": 108140,
+          "name": "Saffir",
+          "inventory": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 23781.48828125,
+          "y": -4136.79052734375,
+          "z": -3007.639892578125
+        },
+        {
+          "id": 108165,
+          "name": "Olfina Gray-Mane",
+          "inventory": {
+            "gold": 11,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24983.1484375,
+          "y": -7064.8095703125,
+          "z": -3397.7158203125
+        },
+        {
+          "id": 108186,
+          "name": "Ysolda",
+          "inventory": {
+            "gold": 12,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25001.134765625,
+          "y": -7395.154296875,
+          "z": -3391.909912109375
+        },
+        {
+          "id": 182543,
+          "name": "Brenuin",
+          "inventory": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25078.96875,
+          "y": -7166.8720703125,
+          "z": -3393.7919921875
+        },
+        {
+          "id": 108168,
+          "name": "Bergritte Battle-Born",
+          "inventory": {
+            "gold": 5,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25095.591796875,
+          "y": -7466.81884765625,
+          "z": -3392.1728515625
+        },
+        {
+          "id": 108160,
+          "name": "Anoriath",
+          "inventory": {
+            "gold": 10,
+            "bread": 1,
+            "grain": 0
+          },
+          "x": 25167.064453125,
+          "y": -6982.748046875,
+          "z": -3401.7666015625
+        },
+        {
+          "id": 225409,
+          "name": "Whiterun Guard",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24218.21875,
+          "y": -4169.44580078125,
+          "z": -3002.711669921875
+        },
+        {
+          "id": 108164,
+          "name": "Fralia Gray-Mane",
+          "inventory": {
+            "gold": 11,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25326.833984375,
+          "y": -7390.15478515625,
+          "z": -3395.417724609375
+        },
+        {
+          "id": 1106614,
+          "name": "Lillith Maiden-Loom",
+          "inventory": {
+            "gold": 38,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24719.0234375,
+          "y": -4653.89306640625,
+          "z": -3003.396240234375
+        },
+        {
+          "id": 108197,
+          "name": "Ahlam",
+          "inventory": {
+            "gold": 14,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 24509.44140625,
+          "y": -3964.131103515625,
+          "z": -2995.845703125
+        },
+        {
+          "id": 225408,
+          "name": "Whiterun Guard",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25263.912109375,
+          "y": -3772.44189453125,
+          "z": -2998.560791015625
+        },
+        {
+          "id": 108162,
+          "name": "Heimskr",
+          "inventory": {
+            "gold": 20,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 25680.572265625,
+          "y": -3046.4423828125,
+          "z": -3006.52978515625
+        },
+        {
+          "id": 108248,
+          "name": "Ria",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 28313.2421875,
+          "y": -4383.1279296875,
+          "z": -2617.70166015625
+        },
+        {
+          "id": 108183,
+          "name": "Aela the Huntress",
+          "inventory": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          },
+          "x": 28611.978515625,
+          "y": -4375.50830078125,
+          "z": -2617.70166015625
+        }
+      ],
+      "perception": {
+        "108149": {
+          "available": false,
+          "visible": [],
+          "source": "experimental engine line of sight; not yet qualified as resident perception",
+          "diagnostics": {
+            "headingDegrees": 137.01712036132812,
+            "nearby": 9,
+            "inCone": 8,
+            "nativeVisible": 0
+          }
+        },
+        "108156": {
+          "available": false,
+          "visible": [],
+          "source": "experimental engine line of sight; not yet qualified as resident perception",
+          "diagnostics": {
+            "headingDegrees": 348.5415954589844,
+            "nearby": 3,
+            "inCone": 2,
+            "nativeVisible": 1
+          }
+        },
+        "108186": {
+          "available": false,
+          "visible": [],
+          "source": "experimental engine line of sight; not yet qualified as resident perception",
+          "diagnostics": {
+            "headingDegrees": 163.0125274658203,
+            "nearby": 9,
+            "inCone": 5,
+            "nativeVisible": 0
+          }
+        }
+      },
+      "player": {
+        "id": 20,
+        "cell": "",
+        "cellId": 107135,
+        "x": 19486.9609375,
+        "y": -7458.07080078125,
+        "z": -3641.9921875
+      },
+      "selected": {
+        "id": 225386,
+        "name": "Whiterun Guard"
+      },
+      "ack": {
+        "id": "checkpoint-33",
+        "status": "applied",
+        "actor": 225386
+      }
+    },
+    "session": "1792819557694-0.2750043501695403",
+    "command": null,
+    "last_ack": {
+      "id": "checkpoint-33",
+      "status": "applied",
+      "actor": 225386
+    }
+  },
+  "simulation": {
+    "people": [
+      {
+        "id": "player",
+        "gold": 100
+      },
+      {
+        "id": "baker",
+        "gold": 60
+      },
+      {
+        "id": "farmer",
+        "gold": 40
+      }
+    ],
+    "inventory": [
+      {
+        "owner": "player",
+        "item": "bread",
+        "quantity": 0
+      },
+      {
+        "owner": "baker",
+        "item": "bread",
+        "quantity": 12
+      },
+      {
+        "owner": "farmer",
+        "item": "grain",
+        "quantity": 30
+      }
+    ],
+    "events": [],
+    "beliefs": []
+  },
+  "world": [],
+  "society": {
+    "checkpoint": 33,
+    "transition": null,
+    "error": null,
+    "people": {
+      "108149": {
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          }
+        ],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {}
+      },
+      "108156": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "sticks to an established routine even when news changes",
+          "big_five": {
+            "agreeableness": 0.5,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "neuroticism": 0.25,
+            "openness": 0.4
+          },
+          "name": "Adrianne Avenicci",
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "role": "blacksmith"
+        },
+        "trust": {}
+      },
+      "108186": {
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          }
+        ],
+        "needs": {
+          "hunger": 1
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {}
+      }
+    },
+    "plan": {
+      "actor": 108186,
+      "claim": {
+        "context": {
+          "actor_id": 108186,
+          "event": {
+            "id": "meal-20261024-004",
+            "information": "Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.",
+            "kind": "meal_time"
+          },
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-002",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-003",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-004",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            }
+          ],
+          "observed_inventory": {
+            "bread": 0,
+            "gold": 12,
+            "grain": 0
+          },
+          "options": [
+            {
+              "effect": "End this negotiation without buying food; preserve your money and leave the seller alone.",
+              "id": "leave_without_food"
+            },
+            {
+              "effect": "End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.",
+              "id": "visit_adrianne"
+            },
+            {
+              "effect": "Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.",
+              "id": "raise_offer"
+            }
+          ],
+          "perception": {
+            "available": false,
+            "information": "Vision is unavailable; this does not mean nobody is nearby."
+          },
+          "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "scenario_state": {
+            "needs": {
+              "hunger": 1
+            },
+            "source": "authored society simulation, not Skyrim hunger"
+          },
+          "session": "1792819557694-0.2750043501695403",
+          "trust": {}
+        },
+        "id": "84f409875e19879e4db43cbd",
+        "stage": "reconsider"
+      },
+      "decisions": [
+        {
+          "actor_id": 108186,
+          "claim_id": "2db728dbed24deb9ae5c19bd",
+          "context": {
+            "actor_id": 108186,
+            "event": {
+              "id": "meal-20261024-004",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 0,
+              "gold": 12,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              },
+              {
+                "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+                "id": "seek_bread"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 1
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "seek_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse."
+          },
+          "elapsed_seconds": 0.781,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.24,
+            "seek_bread": 0.67,
+            "visit_adrianne": 0.09
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.704e-05,
+            "input_tokens": 1120,
+            "output_tokens": 46
+          }
+        },
+        {
+          "actor_id": 108149,
+          "claim_id": "045022b829b5419c41a40cba",
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "meal-20261024-004",
+              "information": "Ysolda is nearby and offers 3 gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 3,
+              "gold": 5,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Decline the request; keep your goods.",
+                "id": "decline"
+              },
+              {
+                "effect": "Agree to sell one carried loaf for 3 gold to the nearby buyer.",
+                "id": "sell_bread"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 0.4
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "decline",
+            "emotion": "unspecified",
+            "reason": "Selected action: Decline the request; keep your goods."
+          },
+          "elapsed_seconds": 0.484,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "decline": 0.81,
+            "sell_bread": 0.19
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.4184e-05,
+            "input_tokens": 1052,
+            "output_tokens": 35
+          }
+        }
+      ],
+      "error": "Worker ended on claim-response timeout before reconsideration inference; retain failure evidence, no automatic replay.",
+      "id": "meal-20261024-004",
+      "intent": "seek_bread",
+      "kind": "meal_time",
+      "phase": "held",
+      "refusals_recorded": 1,
+      "release_required": false,
+      "remembered": true,
+      "target": 108149,
+      "trade_id": "meal-meal-20261024-004",
+      "travel": {
+        "id": "travel-meal-20261024-004",
+        "movement": {
+          "actor": 108186,
+          "at": 1792819574043,
+          "distance": 249.4903536258381,
+          "enginePackage": 100665345,
+          "expectedPackage": 100665345,
+          "hasOwnedPackage": true,
+          "id": "travel-meal-20261024-004",
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "startComplete": true,
+          "startDistance": 1944.4220486081852,
+          "startRequestedAt": 1792819574060,
+          "startResult": true,
+          "target": 108149
+        },
+        "status": "applied"
+      },
+      "travel_id": "travel-meal-20261024-004",
+      "unit_price": 3
+    }
+  }
+}

@@ -52,12 +52,15 @@ class Agency:
         # Authored meal-time simulation event, explicitly not a Skyrim hunger reading.
         person['needs']['hunger'] = min(1, person['needs']['hunger'] + .35)
         plan = {'id': event_id, 'kind': 'meal_time', 'actor': actor, 'phase': 'choose',
-                'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id}
+                'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
+                'unit_price': 3, 'refusals_recorded': 0}
         state.setdefault('plans', []).append(plan)
         return {'checkpoint': self._write(state, 'meal time triggered resident planning'), 'plan': plan}
 
     def _plan_context(self, observation, plan):
         seller_turn = plan['phase'] == 'consent'
+        reconsidering = plan['phase'] == 'reconsider'
+        price = plan.get('unit_price', 3)
         actor = plan['target'] if seller_turn else plan['actor']
         actors = {a['id']: a for a in observation.get('residents', [])}
         if actor not in actors or plan['actor'] not in actors:
@@ -71,8 +74,14 @@ class Agency:
                 raise ValueError('Buyer is no longer within interaction range')
             options = [{'id': 'decline', 'effect': 'Decline the request; keep your goods.'}]
             if inventory['bread'] > 0:
-                options.append({'id': 'sell_bread', 'effect': 'Agree to sell one carried loaf for 3 gold to the nearby buyer.'})
-            information = 'Ysolda is nearby and asks to buy one loaf for 3 gold. Choose freely whether to sell.'
+                options.append({'id': 'sell_bread', 'effect': f'Agree to sell one carried loaf for {price} gold to the nearby buyer.'})
+            information = f'Ysolda is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
+        elif reconsidering:
+            options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'},
+                       {'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'}]
+            if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
+                options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
+            information = 'Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.'
         else:
             options = [{'id': 'defer', 'effect': 'Postpone this errand; no travel or purchase.'}]
             options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
@@ -84,7 +93,7 @@ class Agency:
                 'observed_inventory': copy.deepcopy(inventory),
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
-                'prior_knowledge': 'Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. A 3-gold bread quote is a demo assumption. Other residents\' private inventories are not known.',
+                'prior_knowledge': 'Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents\' private inventories are not known.',
                 'memories': person['memories'][-8:], 'trust': person['trust'], 'options': options}
 
     @staticmethod
@@ -97,7 +106,7 @@ class Agency:
     def claim_plan_decision(self, event_id, observation):
         self._agency_guard(observation)
         plan = self.agency_plan()
-        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent'):
+        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent', 'reconsider'):
             raise ValueError('No unclaimed decision is ready')
         context = self._plan_context(observation, plan)
         state = copy.deepcopy(self.active)
@@ -129,13 +138,39 @@ class Agency:
         updated['claim'] = None
         action = decision['action_id']
         if action in ('seek_bread', 'visit_adrianne'):
+            travel_id = 'travel-' + event_id
+            if updated.get('travel'):
+                updated.setdefault('travel_history', []).append(updated['travel'])
+                updated['travel'] = None
+                travel_id += '-replan-' + str(len(updated['decisions']))
             updated.update(phase='travelling', target=108149 if action == 'seek_bread' else 108156,
-                           intent=action, travel_id='travel-' + event_id, release_required=True)
+                           intent=action, travel_id=travel_id, release_required=True)
+        elif action == 'raise_offer':
+            updated.update(phase='consent', unit_price=5)
         elif action == 'sell_bread':
             updated['phase'] = 'ready_to_trade'
+        elif action == 'decline':
+            self._remember_refusal(state, updated)
+            if updated.get('unit_price', 3) == 3:
+                updated['phase'] = 'reconsider'
+            else:
+                updated.update(phase='complete', outcome='seller_declined')
+        elif action == 'leave_without_food':
+            updated.update(phase='complete', outcome='left_without_food')
         else:
-            updated.update(phase='complete', outcome='seller_declined' if action == 'decline' else 'deferred')
+            updated.update(phase='complete', outcome='deferred')
         return {'checkpoint': self._write(state, 'resident decision accepted'), 'plan': updated}
+
+    @staticmethod
+    def _remember_refusal(state, plan):
+        for actor, other, role in [(plan['actor'], plan['target'], 'buyer'),
+                                   (plan['target'], plan['actor'], 'seller')]:
+            person = state['people'][str(actor)]
+            person['memories'].append({'event_id': plan['id'], 'kind': 'trade_offer_declined',
+                'other': other, 'role': role, 'bread': 1, 'gold': plan.get('unit_price', 3),
+                'source': 'agent consent decision, not spoken dialogue'})
+            person['memories'] = person['memories'][-32:]
+        plan['refusals_recorded'] = plan.get('refusals_recorded', 0) + 1
 
     def hold_plan(self, event_id, reason, observation):
         self._agency_guard(observation)
@@ -158,16 +193,12 @@ class Agency:
         if plan and plan['phase'] in TERMINAL and not plan.get('remembered'):
             state=copy.deepcopy(self.active)
             updated=state['plans'][-1]
-            if plan.get('outcome')=='seller_declined':
-                for actor,other,role in [(plan['actor'],plan['target'],'buyer'),(plan['target'],plan['actor'],'seller')]:
-                    person=state['people'][str(actor)]
-                    person['memories'].append({'event_id':plan['id'],'kind':'trade_offer_declined',
-                        'other':other,'role':role,'bread':1,'gold':3,'source':'agent consent decision, not spoken dialogue'})
-                    person['memories']=person['memories'][-32:]
-            elif plan.get('outcome') in ('deferred','visited_only'):
+            if plan.get('outcome')=='seller_declined' and not plan.get('refusals_recorded'):
+                self._remember_refusal(state, updated)
+            elif plan.get('outcome') in ('deferred','visited_only','left_without_food'):
                 person=state['people'][str(plan['actor'])]
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
-                    'other':plan.get('target'),'source':'own decision' if plan['outcome']=='deferred' else 'observed arrival, not conversation'})
+                    'other':plan.get('target'),'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
                 person['memories']=person['memories'][-32:]
             updated['remembered']=True
             self._write(state,'resident remembers the observed plan outcome')
@@ -199,7 +230,8 @@ class Agency:
             try:
                 if distance(observation, plan['actor'], plan['target']) > 300:
                     raise ValueError('Participants separated before exchange')
-                self.plan_trade(plan['trade_id'], observation, plan['actor'], plan['target'], agency_plan=plan['id'])
+                self.plan_trade(plan['trade_id'], observation, plan['actor'], plan['target'],
+                                unit_price=plan.get('unit_price', 3), agency_plan=plan['id'])
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
 

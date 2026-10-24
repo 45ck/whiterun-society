@@ -140,12 +140,69 @@ python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id m
 
 For Jev, config fields are `provider: openrouter_decisions`,
 `url: https://openrouter.ai/api/alpha/decisions`, `model: typesafe/jev-1.14`,
-and `key_env` naming an existing environment variable. There are at most two
-inference calls per successful errand and no automatic retries. Replaying the
+and `key_env` naming an existing environment variable. The revised negotiation
+protocol permits at most four inference calls per errand and no automatic retries. Replaying the
 same event does not increase hunger or repeat decisions. A crashed inference
 claim is held for review instead of silently charging another request.
 
-This does not yet prove adaptive replanning after refusal, negotiated prices,
-alternative suppliers, consumption, continuous schedules or humanlike judgement.
+The initial experiments above do not prove adaptive replanning after refusal,
+negotiated prices, alternative suppliers, consumption, continuous schedules or humanlike judgement.
 The local prompt was generalized after the recorded run; its quality improvement
 has not been measured. [Broader design and evaluation](human-behaviour.md).
+
+## Revised offer and actual plan restoration
+
+Experiment `meal-20261024-005` exercised the revised protocol in the actual game:
+
+1. Jev selected seeking bread. Ysolda travelled from 1,697.96 to 249.79 game units
+   under custom package `0x06000801`.
+2. Carlotta declined the initial three-gold offer. Both received a factual memory
+   before the next model request; the buyer did not learn a fabricated motive.
+3. Given leaving, visiting Adrianne or raising the offer, Jev selected five gold.
+4. Carlotta independently refused again. The protocol ended, released the task
+   and left actual gold/bread unchanged. No third unchanged request was allowed.
+
+The four inference calls took 0.484, 0.469, 0.531 and 0.531 seconds and reported
+US$0.000204792 total. The plan reached completion at about 57.8 seconds, including
+walking and checkpoint synchronization. [Full live evidence](evidence/negotiation-live.json).
+This demonstrates a choice among revised options. The maximum of two offers is
+an authored execution constraint, not spontaneous model learning or unrestricted
+bargaining. A model-approved purchase remains unproved in the live game.
+
+The preceding `meal-004` run reached reconsideration but its claim response timed
+out before the third inference. The claim had persisted. The worker stopped;
+an explicit hold then released the task. No claim or paid call was replayed.
+The local HTTP timeout is now 30 seconds. [Failure](evidence/reconsideration-timeout.json)
+and [observed recovery](evidence/reconsideration-timeout-recovery.json) are retained.
+That run's two decisions cost US$0.000091224. Across all fourteen Jev calls so far,
+the provider reported US$0.000596358.
+
+### Real game-save comparison
+
+| Saved state | Checkpoint | Plan | Ysolda / Carlotta memories |
+| --- | --- | --- | --- |
+| WS-Agency-20261024-A | 23 | meal-003, refused at 3 gold | 2 / 2 |
+| WS-Agency-20261024-B | 45 | meal-005, refused at 3 then 5 gold | 5 / 5 |
+| Load A | 23 | Exact earlier plan | Exact earlier memories |
+| Load B | 45 | Exact later plan | Exact later memories |
+
+Both actual loads started fresh bridge sessions and matched complete plan, people,
+inventory and trade-journal snapshots. Each ESS and SKSE cosave hash was checked.
+The fifth memories include the intermediate failed run's real seller refusal;
+they are not all from the successful negotiation run. [Save A proof](evidence/agency-save-A.json),
+[save B proof](evidence/agency-save-B.json). No new audio crash occurred during
+these two restores; earlier crashes remain unresolved and this is not a soak test.
+Restoring a settled plan does not qualify a model call or trade interrupted by a load.
+
+```powershell
+python tools/verify_plan_save.py --root D:\WhiterunLab --name WS-unique-name
+python tools/verify_plan_save.py --root D:\WhiterunLab --name WS-unique-name --restore
+```
+
+The launcher now reads the current port from the runtime configuration. After
+switching development to port 17843, attaching to the running game and observing a
+fresh bridge session took 1.2 seconds. The earlier service on 17841 remains idle
+with no connected bridge; no worker or model loop is running there.
+
+![Revised offer in the actual game](images/negotiation-reconsideration.jpg)
+![Later plan restored from an actual save](images/negotiation-restored.jpg)

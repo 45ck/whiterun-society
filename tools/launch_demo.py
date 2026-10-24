@@ -49,7 +49,10 @@ def main():
         raise RuntimeError('Another Skyrim installation is running; it has been left untouched')
     runtime=root/'runtime'
     runtime.mkdir(exist_ok=True)
-    port=17841
+    config_path=runtime/'bridge-config.json'
+    port=json.loads(config_path.read_text())['port'] if config_path.exists() else 17841
+    if type(port) is not int or not 1024 <= port <= 65535:
+        raise RuntimeError('Invalid local service port in runtime configuration')
     started=time.monotonic()
     def progress(message): print(f'[{time.monotonic()-started:5.1f}s] {message}',flush=True)
     try:
@@ -68,7 +71,7 @@ def main():
                 if time.monotonic()>deadline: raise RuntimeError('Local service startup timed out')
                 time.sleep(0.25)
     if health.get('service')!='whiterun-society' or health.get('protocol')!=1:
-        raise RuntimeError('Port 17841 is occupied by another or older service')
+        raise RuntimeError(f'Port {port} is occupied by another or older service')
     config=json.loads((runtime/'bridge-config.json').read_text())
     initial_session=request(port,'/state',config['token'])['bridge']['session']
     if not existing:

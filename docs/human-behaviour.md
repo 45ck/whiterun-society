@@ -123,6 +123,24 @@ with four cases, not a statistical validation or evidence of consciousness.
   consequences? Frame time, decision latency and cost are measured alongside it.
 
 The current loop is intentionally limited: one event and one traveller at a time,
-bounded action choices, fixed demo price, no negotiated counteroffer, no real
+bounded action choices, authored 3/5-gold offers, no unrestricted bargaining, no real
 speech, no consumption and no full work/sleep schedule. Those remain requirements;
 they are not replaced by a passing shopping or refusal demonstration.
+
+## Reconsidering a failed plan
+
+An initial refusal now records a source-tagged memory before asking the buyer
+what to do next. The buyer can leave, switch to visiting Adrianne, or make one
+final five-gold offer if affordable and still nearby. The seller independently
+accepts or refuses the revised terms. A second refusal ends this bounded
+negotiation. Changing destination creates a new native task ID so the bridge's
+duplicate protection cannot mistake the changed plan for an already completed
+trip. Accepted prices pass into the same conserved inventory-transfer protocol.
+
+This is deliberately an authored negotiation protocol: limiting repetition is
+an execution rule, not evidence that the model spontaneously learned social
+etiquette. Choosing between revised terms and a different activity is the model's
+part. Neither a refusal nor a higher price reveals the seller's hidden motive.
+No refusal automatically damages trust. The longer-term requirement remains
+learning which alternatives to try across days, with outside options, personal
+commitments and household versus business stock represented explicitly.

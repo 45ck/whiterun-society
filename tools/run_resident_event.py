@@ -31,7 +31,7 @@ def main():
             data=None if data is None else json.dumps(data).encode(),
             headers={'Authorization': 'Bearer '+config['token'], 'Content-Type': 'application/json'})
         try:
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urllib.request.urlopen(req, timeout=30) as response:
                 result = json.load(response)
         except urllib.error.HTTPError as error:
             raise ValueError(json.load(error).get('error', 'Request rejected')) from None
@@ -76,7 +76,9 @@ def main():
                 path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
                 print(json.dumps({'status': phase, 'outcome': plan.get('outcome'), 'evidence': str(path)}), flush=True)
                 return
-            if phase in ('choose', 'consent'):
+            if phase in ('choose', 'consent', 'reconsider'):
+                if evidence['model_calls'] >= 4:
+                    raise ValueError('Resident event exhausted its four-call decision budget')
                 claim = request('/agency/claim', {'id': args.event_id})['claim']
                 # Wait for the persisted claim's game marker before making the call.
                 while request('/state')['society']['transition']:
