@@ -1,0 +1,2752 @@
+{
+  "id": "voices-20261024-003",
+  "calls": {
+    "propose": 2,
+    "select": 2
+  },
+  "started_at": 1792822247.3686492,
+  "before": {
+    "bridge": {
+      "last_seen": 1792822246.1666734,
+      "observation": {
+        "session": "1792822246118-0.4230368635799282",
+        "checkpoint": 124,
+        "movement": null,
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225386,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 9,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.63671875,
+            "y": -7258.244140625,
+            "z": -3642.23291015625
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20662.119140625,
+            "y": -7604.65625,
+            "z": -3637.760009765625
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20660.439453125,
+            "y": -7734.60888671875,
+            "z": -3627.10595703125
+          },
+          {
+            "id": 108171,
+            "name": "Alfhild Battle-Born",
+            "inventory": {
+              "gold": 11,
+              "bread": 1,
+              "grain": 0
+            },
+            "x": 20750.466796875,
+            "y": -7049.90625,
+            "z": -3632.72216796875
+          },
+          {
+            "id": 108167,
+            "name": "Olfrid Battle-Born",
+            "inventory": {
+              "gold": 19,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20921.017578125,
+            "y": -6885.00390625,
+            "z": -3601.02392578125
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21286.90625,
+            "y": -7609.3134765625,
+            "z": -3590.38916015625
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22000.30859375,
+            "y": -7656.75390625,
+            "z": -3557.4775390625
+          },
+          {
+            "id": 108185,
+            "name": "Olava the Feeble",
+            "inventory": {
+              "gold": 2,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22364.9296875,
+            "y": -9283.484375,
+            "z": -3606.46240234375
+          },
+          {
+            "id": 108165,
+            "name": "Olfina Gray-Mane",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20084.044921875,
+            "y": -3838.033203125,
+            "z": -2927.615966796875
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 13,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23401.23828125,
+            "y": -7770.7099609375,
+            "z": -3472.689208984375
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24339.9453125,
+            "y": -7359.20703125,
+            "z": -3395.6630859375
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 6,
+              "bread": 4,
+              "grain": 1
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 18,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24169.67578125,
+            "y": -5253.98779296875,
+            "z": -3005.098876953125
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 14,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.427734375,
+            "y": -4266.33349609375,
+            "z": -3002.820556640625
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.48828125,
+            "y": -4136.79052734375,
+            "z": -3007.639892578125
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 34,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25074.53125,
+            "y": -7317.4716796875,
+            "z": -3391.8896484375
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 44,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25079.091796875,
+            "y": -7167.8564453125,
+            "z": -3393.538330078125
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24209.900390625,
+            "y": -4151.66455078125,
+            "z": -3002.235107421875
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 14,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24232.751953125,
+            "y": -4093.45166015625,
+            "z": -2996.755126953125
+          },
+          {
+            "id": 108170,
+            "name": "Jon Battle-Born",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24530.181640625,
+            "y": -4546.8818359375,
+            "z": -3005.1328125
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24785.431640625,
+            "y": -5014.02978515625,
+            "z": -3005.759033203125
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24948.455078125,
+            "y": -4373.53857421875,
+            "z": -2997.690185546875
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 36,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25640.314453125,
+            "y": -3071.471923828125,
+            "z": -3005.999267578125
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28311.783203125,
+            "y": -4383.19140625,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 27052.267578125,
+            "y": -867.4785766601562,
+            "z": -1752.7711181640625
+          }
+        ],
+        "perception": {
+          "108149": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 151.18994140625,
+              "nearby": 8,
+              "inCone": 6,
+              "nativeVisible": 4
+            }
+          },
+          "108156": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 348.5415954589844,
+              "nearby": 6,
+              "inCone": 4,
+              "nativeVisible": 4
+            }
+          },
+          "108186": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 329.69183349609375,
+              "nearby": 7,
+              "inCone": 1,
+              "nativeVisible": 0
+            }
+          }
+        },
+        "productionWork": null,
+        "speech": null,
+        "audioDiagnostic": true,
+        "audioEnabled": false,
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.0703125,
+          "z": -3642.47705078125
+        },
+        "selected": {
+          "id": 225386,
+          "name": "Whiterun Guard"
+        },
+        "ack": null
+      },
+      "session": "1792822246118-0.4230368635799282",
+      "command": null,
+      "last_ack": null
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 124,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "food_policy": {
+            "mode": "household_all",
+            "reserve_target": 0,
+            "source": "resident selected among authored allocation policies",
+            "source_event": "market-20261024-001-stock"
+          },
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-market-20261024-001-work",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108186,
+              "role": "employer",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            },
+            {
+              "event_id": "market-20261024-001-stock",
+              "kind": "allocated_food",
+              "policy": {
+                "mode": "household_all",
+                "reserve_target": 0,
+                "source": "resident selected among authored allocation policies",
+                "source_event": "market-20261024-001-stock"
+              },
+              "source": "own allocation decision; no inventory change"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "consume-market-20261024-001-seller_meal",
+              "hunger_after": 0.15,
+              "hunger_before": 0.75,
+              "kind": "consumed_bread",
+              "source": "native food-use command and observed inventory; animation not verified"
+            }
+          ],
+          "needs": {
+            "hunger": 0.15
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-market-20261024-001-work",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108149,
+              "role": "worker",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            }
+          ],
+          "needs": {
+            "hunger": 0.75
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": {
+        "actor": 108149,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "440f15598d2085d7673feffe",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "market-20261024-001-seller_meal",
+                "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread_made": 2,
+                  "event_id": "produce-market-20261024-001-work",
+                  "gold": 2,
+                  "grain_used": 1,
+                  "kind": "paid_work",
+                  "other": 108186,
+                  "role": "employer",
+                  "source": "observed native inventory conversion and wage; work animation unverified"
+                },
+                {
+                  "event_id": "market-20261024-001-stock",
+                  "kind": "allocated_food",
+                  "policy": {
+                    "mode": "household_all",
+                    "reserve_target": 0,
+                    "source": "resident selected among authored allocation policies",
+                    "source_event": "market-20261024-001-stock"
+                  },
+                  "source": "own allocation decision; no inventory change"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 5,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "options": [
+                {
+                  "effect": "Postpone this errand; no travel or purchase.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                  "id": "eat_bread"
+                },
+                {
+                  "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": true,
+                "for_sale": 0,
+                "household": 5,
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "market-20261024-001-stock"
+                },
+                "source": "allocation of observed carried bread; not additional stock"
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.75
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792821356738-0.010349186152633694",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "eat_bread",
+              "emotion": "unspecified",
+              "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+            },
+            "elapsed_seconds": 0.547,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.07,
+              "eat_bread": 0.87,
+              "visit_adrianne": 0.06
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 6.0732e-05,
+              "input_tokens": 1446,
+              "output_tokens": 46
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "market-20261024-001-seller_meal",
+        "kind": "meal_time",
+        "outcome": "ate_bread",
+        "phase": "complete",
+        "refusals_recorded": 0,
+        "remembered": true,
+        "trade_id": "meal-market-20261024-001-seller_meal",
+        "travel": null,
+        "unit_price": 3
+      },
+      "consumptions": [
+        {
+          "command": {
+            "actor": 108149,
+            "after": {
+              "bread": 4,
+              "gold": 6
+            },
+            "before": {
+              "bread": 5,
+              "gold": 6
+            },
+            "id": "consume-market-20261024-001-seller_meal",
+            "kind": "inventory_consume"
+          },
+          "evidence": {
+            "ack": {
+              "id": "consume-market-20261024-001-seller_meal",
+              "inventory": {
+                "bread": 4,
+                "gold": 6
+              },
+              "mechanism": "native_equip_food",
+              "status": "applied"
+            },
+            "actual": {
+              "bread": 4,
+              "gold": 6
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "consume-market-20261024-001-seller_meal",
+          "status": "committed"
+        }
+      ],
+      "production": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "expected_package": 100665345,
+            "id": "produce-market-20261024-001-work",
+            "kind": "inventory_produce",
+            "work_minutes": 30,
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "produce-market-20261024-001-work",
+              "inventory": {
+                "employer": {
+                  "bread": 5,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 8,
+                  "grain": 0
+                }
+              },
+              "mechanism": "native_recipe_and_wage",
+              "status": "applied",
+              "work": {
+                "id": "produce-market-20261024-001-work",
+                "phase": "paying_wage",
+                "requiredMinutes": 30,
+                "workedMinutes": 30
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              }
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "produce-market-20261024-001-work",
+          "status": "committed"
+        }
+      ],
+      "imports": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 0
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "id": "demo-grain-import-v1",
+            "kind": "inventory_supply",
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "demo-grain-import-v1",
+              "inventory": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "mechanism": "explicit_demo_import",
+              "status": "applied",
+              "work": {
+                "id": "demo-grain-import-v1",
+                "phase": "importing",
+                "requiredMinutes": 30,
+                "workedMinutes": 0
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "demo-grain-import-v1",
+          "source": "Explicit demo import: two grain, no gold; not resident production",
+          "status": "committed"
+        }
+      ],
+      "market_day": {
+        "baseline": {
+          "108149": {
+            "bread": 3,
+            "gold": 8,
+            "grain": 2
+          },
+          "108186": {
+            "bread": 0,
+            "gold": 6,
+            "grain": 0
+          }
+        },
+        "calls_observed": 8,
+        "cursor": 4,
+        "final_inventory": {
+          "108149": {
+            "bread": 4,
+            "gold": 6,
+            "grain": 1
+          },
+          "108186": {
+            "bread": 0,
+            "gold": 8,
+            "grain": 0
+          }
+        },
+        "id": "market-20261024-001",
+        "initial_counts": {
+          "consumptions": 0,
+          "production": 0,
+          "trades": 0
+        },
+        "max_calls": 9,
+        "metrics": {
+          "consumptions": 1,
+          "gold_after": 14,
+          "gold_before": 14,
+          "hunger": {
+            "108149": 0.15,
+            "108186": 0.75
+          },
+          "production": 1,
+          "trades": 0
+        },
+        "results": [
+          {
+            "actor": 108186,
+            "checkpoint": 82,
+            "id": "market-20261024-001-work",
+            "kind": "work_shift",
+            "model_calls_observed": 2,
+            "outcome": "paid_work_completed",
+            "status": "complete"
+          },
+          {
+            "actor": 108149,
+            "checkpoint": 87,
+            "id": "market-20261024-001-stock",
+            "kind": "stock_review",
+            "model_calls_observed": 1,
+            "outcome": "allocated_stock",
+            "status": "complete"
+          },
+          {
+            "actor": 108186,
+            "checkpoint": 100,
+            "id": "market-20261024-001-buyer_meal",
+            "kind": "meal_time",
+            "model_calls_observed": 4,
+            "outcome": "seller_declined",
+            "status": "complete"
+          },
+          {
+            "actor": 108149,
+            "checkpoint": 107,
+            "id": "market-20261024-001-seller_meal",
+            "kind": "meal_time",
+            "model_calls_observed": 1,
+            "outcome": "ate_bread",
+            "status": "complete"
+          }
+        ],
+        "source": "Authored finite sequence of opportunities; residents choose outcomes",
+        "status": "complete",
+        "next_event": null
+      },
+      "conversation": {
+        "claim": null,
+        "current": {
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "f1593dce363736497558ccb44815dc16f3a2e835a9228f50717d107bc8152b90.wav",
+            "seconds": 7.7433,
+            "sha256": "f1593dce363736497558ccb44815dc16f3a2e835a9228f50717d107bc8152b90",
+            "voice": "bf_emma"
+          },
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "rebuild rapport and encourage future trade",
+              "line": "Carlotta, I noticed you passed on the bread earlier. I hope next time you'll find something that suits your needs better\u2014my offers can improve!",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "express mild frustration about declined offers",
+              "line": "It's a bit disheartening that you declined the bread again, Carlotta. I put effort into making it, after all. Maybe next time you'll reconsider.",
+              "tone": "frustrated"
+            }
+          ],
+          "context": {
+            "actor_id": 108186,
+            "event": {
+              "id": "voices-20261024-002",
+              "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+              "kind": "nearby_conversation"
+            },
+            "heard_in_this_conversation": [],
+            "listener": {
+              "id": 108149,
+              "name": "Carlotta Valentia"
+            },
+            "memories": [
+              {
+                "bread_made": 2,
+                "event_id": "produce-market-20261024-001-work",
+                "gold": 2,
+                "grain_used": 1,
+                "kind": "paid_work",
+                "other": 108149,
+                "role": "worker",
+                "source": "observed native inventory conversion and wage; work animation unverified"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "needs": {
+              "hunger": 0.75
+            },
+            "own_food_policy": null,
+            "own_inventory": {
+              "bread": 0,
+              "gold": 8,
+              "grain": 0
+            },
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "trust": {}
+          },
+          "decision": {
+            "decision": {
+              "action_id": "option_1",
+              "emotion": "unspecified",
+              "reason": "Selected action: rebuild rapport and encourage future trade Say: Carlotta, I noticed you passed on the bread earlier. I hope next time you'll find something that suits your needs better\u2014my offers can improve! Tone: hopeful"
+            },
+            "elapsed_seconds": 0.515,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "option_1": 0.96,
+              "option_2": 0.04
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "status": "proposal_only",
+            "usage": {
+              "cost": 4.9728e-05,
+              "input_tokens": 1184,
+              "output_tokens": 37
+            }
+          },
+          "delivery_id": "speech-bdfb6d1324c4b20b4f401723",
+          "delivery_session": "1792822183432-0.33292360218778305",
+          "language": {
+            "elapsed_seconds": 2.329,
+            "model": "openai/gpt-4.1-mini",
+            "proposal": {
+              "candidates": [
+                {
+                  "id": "option_1",
+                  "intention": "rebuild rapport and encourage future trade",
+                  "line": "Carlotta, I noticed you passed on the bread earlier. I hope next time you'll find something that suits your needs better\u2014my offers can improve!",
+                  "tone": "hopeful"
+                },
+                {
+                  "id": "option_2",
+                  "intention": "express mild frustration about declined offers",
+                  "line": "It's a bit disheartening that you declined the bread again, Carlotta. I put effort into making it, after all. Maybe next time you'll reconsider.",
+                  "tone": "frustrated"
+                }
+              ]
+            },
+            "usage": {
+              "completion_tokens": 119,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "cost": 0.0004916,
+              "cost_details": {
+                "upstream_inference_completions_cost": 0.0001904,
+                "upstream_inference_cost": 0.0004916,
+                "upstream_inference_prompt_cost": 0.0003012
+              },
+              "is_byok": false,
+              "prompt_tokens": 753,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 872
+            }
+          },
+          "listener": 108149,
+          "selected": {
+            "id": "option_1",
+            "intention": "rebuild rapport and encourage future trade",
+            "line": "Carlotta, I noticed you passed on the bread earlier. I hope next time you'll find something that suits your needs better\u2014my offers can improve!",
+            "tone": "hopeful"
+          },
+          "speaker": 108186
+        },
+        "error": "Grounding review: generated line reversed buyer and seller roles",
+        "id": "voices-20261024-002",
+        "max_jev_calls": 2,
+        "max_llm_calls": 2,
+        "meeting_evidence": {
+          "id": "meet-voices-20261024-002",
+          "movement": {
+            "actor": 108186,
+            "at": 1792822191616,
+            "distance": 249.40574125958096,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "meet-voices-20261024-002",
+            "method": "package",
+            "origin": "authored_encounter",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 600.0038165515473,
+            "startRequestedAt": 1792822191632,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "phase": "held",
+        "release_evidence": {
+          "id": "release-chat-voices-20261024-002",
+          "released": true,
+          "status": "applied"
+        },
+        "source": "Authored two-person encounter; generated intentions and speech",
+        "speakers": [
+          108186,
+          108149
+        ],
+        "turn": 0,
+        "turns": []
+      }
+    }
+  },
+  "status": "complete",
+  "after": {
+    "bridge": {
+      "last_seen": 1792822341.7664797,
+      "observation": {
+        "session": "1792822246118-0.4230368635799282",
+        "checkpoint": 139,
+        "movement": {
+          "id": "meet-voices-20261024-003",
+          "actor": 108186,
+          "target": 108149,
+          "origin": "authored_encounter",
+          "method": "package",
+          "phase": "released",
+          "at": 1792822250241,
+          "startDistance": 275.47580958877154,
+          "distance": 249.56000006102124,
+          "expectedPackage": 100665345,
+          "ownedPackage": false,
+          "hasOwnedPackage": true,
+          "enginePackage": 100665345,
+          "startRequestedAt": 1792822250256,
+          "startResult": true,
+          "startComplete": true
+        },
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225386,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 9,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.705078125,
+            "y": -7258.2548828125,
+            "z": -3642.22021484375
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20661.83203125,
+            "y": -7605.42822265625,
+            "z": -3637.821533203125
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20660.53125,
+            "y": -7734.728515625,
+            "z": -3627.100341796875
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21491.50390625,
+            "y": -7620.876953125,
+            "z": -3580.462890625
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21594.619140625,
+            "y": -7655.1083984375,
+            "z": -3578.061279296875
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 4,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21080.056640625,
+            "y": -4859.61962890625,
+            "z": -3055.2470703125
+          },
+          {
+            "id": 108185,
+            "name": "Olava the Feeble",
+            "inventory": {
+              "gold": 2,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22364.9296875,
+            "y": -9283.484375,
+            "z": -3606.46240234375
+          },
+          {
+            "id": 108170,
+            "name": "Jon Battle-Born",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24262.630859375,
+            "y": -7823.42431640625,
+            "z": -3398.0615234375
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 34,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24338.0625,
+            "y": -7360.35546875,
+            "z": -3395.60986328125
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 6,
+              "bread": 4,
+              "grain": 1
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 18,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24655.38671875,
+            "y": -7110.7333984375,
+            "z": -3404.100341796875
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24142.70703125,
+            "y": -5239.73828125,
+            "z": -3006.128173828125
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 14,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.427734375,
+            "y": -4266.33349609375,
+            "z": -3002.820556640625
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 8,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.48828125,
+            "y": -4136.79052734375,
+            "z": -3007.639892578125
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 44,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24984.212890625,
+            "y": -7071.4521484375,
+            "z": -3397.4580078125
+          },
+          {
+            "id": 108165,
+            "name": "Olfina Gray-Mane",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22753.177734375,
+            "y": -3064.108154296875,
+            "z": -2864.661865234375
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 14,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25067.794921875,
+            "y": -3966.980224609375,
+            "z": -2994.656494140625
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25371.916015625,
+            "y": -3960.64599609375,
+            "z": -3002.295166015625
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 13,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24908.390625,
+            "y": -2883.94970703125,
+            "z": -3006.333984375
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 36,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25640.314453125,
+            "y": -3071.471923828125,
+            "z": -3005.999267578125
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24835.302734375,
+            "y": -1540.905517578125,
+            "z": -2600.38916015625
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28335.6953125,
+            "y": -3871.326416015625,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 7,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 27052.267578125,
+            "y": -867.4785766601562,
+            "z": -1752.7711181640625
+          }
+        ],
+        "perception": {
+          "108149": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 151.18994140625,
+              "nearby": 8,
+              "inCone": 7,
+              "nativeVisible": 0
+            }
+          },
+          "108156": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 348.5415954589844,
+              "nearby": 4,
+              "inCone": 2,
+              "nativeVisible": 0
+            }
+          },
+          "108186": {
+            "available": false,
+            "visible": [],
+            "source": "experimental engine line of sight; not yet qualified as resident perception",
+            "diagnostics": {
+              "headingDegrees": 193.15545654296875,
+              "nearby": 8,
+              "inCone": 4,
+              "nativeVisible": 0
+            }
+          }
+        },
+        "productionWork": null,
+        "speech": {
+          "id": "speech-5b5c2ef0e255816887fc6277",
+          "status": "ended",
+          "nearbyThroughout": true,
+          "playedSeconds": 7.064,
+          "elapsedSeconds": 7.176,
+          "channel": "CEF overlay audio",
+          "muted": false,
+          "volume": 1
+        },
+        "audioDiagnostic": true,
+        "audioEnabled": false,
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.0703125,
+          "z": -3642.47412109375
+        },
+        "selected": {
+          "id": 225386,
+          "name": "Whiterun Guard"
+        },
+        "ack": {
+          "id": "checkpoint-139",
+          "status": "applied",
+          "actor": 225386
+        }
+      },
+      "session": "1792822246118-0.4230368635799282",
+      "command": null,
+      "last_ack": {
+        "id": "checkpoint-139",
+        "status": "applied",
+        "actor": 225386
+      }
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 139,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "food_policy": {
+            "mode": "household_all",
+            "reserve_target": 0,
+            "source": "resident selected among authored allocation policies",
+            "source_event": "market-20261024-001-stock"
+          },
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-market-20261024-001-work",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108186,
+              "role": "employer",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            },
+            {
+              "event_id": "market-20261024-001-stock",
+              "kind": "allocated_food",
+              "policy": {
+                "mode": "household_all",
+                "reserve_target": 0,
+                "source": "resident selected among authored allocation policies",
+                "source_event": "market-20261024-001-stock"
+              },
+              "source": "own allocation decision; no inventory change"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "consume-market-20261024-001-seller_meal",
+              "hunger_after": 0.15,
+              "hunger_before": 0.75,
+              "kind": "consumed_bread",
+              "source": "native food-use command and observed inventory; animation not verified"
+            },
+            {
+              "epistemic_status": "claim, not verified fact",
+              "event_id": "speech-1673cd53662d9160c432f60e",
+              "kind": "heard_speech",
+              "listener": 108149,
+              "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+              "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+              "speaker": 108186
+            },
+            {
+              "epistemic_status": "claim, not verified fact",
+              "event_id": "speech-5b5c2ef0e255816887fc6277",
+              "kind": "said",
+              "listener": 108186,
+              "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+              "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+              "speaker": 108149
+            }
+          ],
+          "needs": {
+            "hunger": 0.15
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread_made": 2,
+              "event_id": "produce-market-20261024-001-work",
+              "gold": 2,
+              "grain_used": 1,
+              "kind": "paid_work",
+              "other": 108149,
+              "role": "worker",
+              "source": "observed native inventory conversion and wage; work animation unverified"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "market-20261024-001-buyer_meal",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "epistemic_status": "claim, not verified fact",
+              "event_id": "speech-1673cd53662d9160c432f60e",
+              "kind": "said",
+              "listener": 108149,
+              "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+              "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+              "speaker": 108186
+            },
+            {
+              "epistemic_status": "claim, not verified fact",
+              "event_id": "speech-5b5c2ef0e255816887fc6277",
+              "kind": "heard_speech",
+              "listener": 108186,
+              "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+              "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+              "speaker": 108149
+            }
+          ],
+          "needs": {
+            "hunger": 0.75
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": {
+        "actor": 108149,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108149,
+            "claim_id": "440f15598d2085d7673feffe",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "market-20261024-001-seller_meal",
+                "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread_made": 2,
+                  "event_id": "produce-market-20261024-001-work",
+                  "gold": 2,
+                  "grain_used": 1,
+                  "kind": "paid_work",
+                  "other": 108186,
+                  "role": "employer",
+                  "source": "observed native inventory conversion and wage; work animation unverified"
+                },
+                {
+                  "event_id": "market-20261024-001-stock",
+                  "kind": "allocated_food",
+                  "policy": {
+                    "mode": "household_all",
+                    "reserve_target": 0,
+                    "source": "resident selected among authored allocation policies",
+                    "source_event": "market-20261024-001-stock"
+                  },
+                  "source": "own allocation decision; no inventory change"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 5,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "options": [
+                {
+                  "effect": "Postpone this errand; no travel or purchase.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                  "id": "eat_bread"
+                },
+                {
+                  "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                }
+              ],
+              "own_food_allocation": {
+                "allocated": true,
+                "for_sale": 0,
+                "household": 5,
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "market-20261024-001-stock"
+                },
+                "source": "allocation of observed carried bread; not additional stock"
+              },
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.75
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792821356738-0.010349186152633694",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "eat_bread",
+              "emotion": "unspecified",
+              "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+            },
+            "elapsed_seconds": 0.547,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.07,
+              "eat_bread": 0.87,
+              "visit_adrianne": 0.06
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 6.0732e-05,
+              "input_tokens": 1446,
+              "output_tokens": 46
+            }
+          }
+        ],
+        "food_actions": true,
+        "id": "market-20261024-001-seller_meal",
+        "kind": "meal_time",
+        "outcome": "ate_bread",
+        "phase": "complete",
+        "refusals_recorded": 0,
+        "remembered": true,
+        "trade_id": "meal-market-20261024-001-seller_meal",
+        "travel": null,
+        "unit_price": 3
+      },
+      "consumptions": [
+        {
+          "command": {
+            "actor": 108149,
+            "after": {
+              "bread": 4,
+              "gold": 6
+            },
+            "before": {
+              "bread": 5,
+              "gold": 6
+            },
+            "id": "consume-market-20261024-001-seller_meal",
+            "kind": "inventory_consume"
+          },
+          "evidence": {
+            "ack": {
+              "id": "consume-market-20261024-001-seller_meal",
+              "inventory": {
+                "bread": 4,
+                "gold": 6
+              },
+              "mechanism": "native_equip_food",
+              "status": "applied"
+            },
+            "actual": {
+              "bread": 4,
+              "gold": 6
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "consume-market-20261024-001-seller_meal",
+          "status": "committed"
+        }
+      ],
+      "production": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "expected_package": 100665345,
+            "id": "produce-market-20261024-001-work",
+            "kind": "inventory_produce",
+            "work_minutes": 30,
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "produce-market-20261024-001-work",
+              "inventory": {
+                "employer": {
+                  "bread": 5,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 8,
+                  "grain": 0
+                }
+              },
+              "mechanism": "native_recipe_and_wage",
+              "status": "applied",
+              "work": {
+                "id": "produce-market-20261024-001-work",
+                "phase": "paying_wage",
+                "requiredMinutes": 30,
+                "workedMinutes": 30
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              }
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "produce-market-20261024-001-work",
+          "status": "committed"
+        }
+      ],
+      "imports": [
+        {
+          "command": {
+            "after": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "before": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 0
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "employer": 108149,
+            "id": "demo-grain-import-v1",
+            "kind": "inventory_supply",
+            "worker": 108186
+          },
+          "evidence": {
+            "ack": {
+              "animation_verified": false,
+              "id": "demo-grain-import-v1",
+              "inventory": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "mechanism": "explicit_demo_import",
+              "status": "applied",
+              "work": {
+                "id": "demo-grain-import-v1",
+                "phase": "importing",
+                "requiredMinutes": 30,
+                "workedMinutes": 0
+              }
+            },
+            "actual": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "session": "1792821356738-0.010349186152633694"
+          },
+          "id": "demo-grain-import-v1",
+          "source": "Explicit demo import: two grain, no gold; not resident production",
+          "status": "committed"
+        }
+      ],
+      "market_day": {
+        "baseline": {
+          "108149": {
+            "bread": 3,
+            "gold": 8,
+            "grain": 2
+          },
+          "108186": {
+            "bread": 0,
+            "gold": 6,
+            "grain": 0
+          }
+        },
+        "calls_observed": 8,
+        "cursor": 4,
+        "final_inventory": {
+          "108149": {
+            "bread": 4,
+            "gold": 6,
+            "grain": 1
+          },
+          "108186": {
+            "bread": 0,
+            "gold": 8,
+            "grain": 0
+          }
+        },
+        "id": "market-20261024-001",
+        "initial_counts": {
+          "consumptions": 0,
+          "production": 0,
+          "trades": 0
+        },
+        "max_calls": 9,
+        "metrics": {
+          "consumptions": 1,
+          "gold_after": 14,
+          "gold_before": 14,
+          "hunger": {
+            "108149": 0.15,
+            "108186": 0.75
+          },
+          "production": 1,
+          "trades": 0
+        },
+        "results": [
+          {
+            "actor": 108186,
+            "checkpoint": 82,
+            "id": "market-20261024-001-work",
+            "kind": "work_shift",
+            "model_calls_observed": 2,
+            "outcome": "paid_work_completed",
+            "status": "complete"
+          },
+          {
+            "actor": 108149,
+            "checkpoint": 87,
+            "id": "market-20261024-001-stock",
+            "kind": "stock_review",
+            "model_calls_observed": 1,
+            "outcome": "allocated_stock",
+            "status": "complete"
+          },
+          {
+            "actor": 108186,
+            "checkpoint": 100,
+            "id": "market-20261024-001-buyer_meal",
+            "kind": "meal_time",
+            "model_calls_observed": 4,
+            "outcome": "seller_declined",
+            "status": "complete"
+          },
+          {
+            "actor": 108149,
+            "checkpoint": 107,
+            "id": "market-20261024-001-seller_meal",
+            "kind": "meal_time",
+            "model_calls_observed": 1,
+            "outcome": "ate_bread",
+            "status": "complete"
+          }
+        ],
+        "source": "Authored finite sequence of opportunities; residents choose outcomes",
+        "status": "complete",
+        "next_event": null
+      },
+      "conversation": {
+        "claim": null,
+        "id": "voices-20261024-003",
+        "max_jev_calls": 2,
+        "max_llm_calls": 2,
+        "meeting_evidence": {
+          "id": "meet-voices-20261024-003",
+          "movement": {
+            "actor": 108186,
+            "at": 1792822250241,
+            "distance": 249.56000006102124,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "meet-voices-20261024-003",
+            "method": "package",
+            "origin": "authored_encounter",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 275.47580958877154,
+            "startRequestedAt": 1792822250256,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "phase": "complete",
+        "release_evidence": {
+          "id": "release-chat-voices-20261024-003",
+          "released": true,
+          "status": "applied"
+        },
+        "source": "Authored two-person encounter; generated intentions and speech",
+        "speakers": [
+          108186,
+          108149
+        ],
+        "turn": 2,
+        "turns": [
+          {
+            "audio": {
+              "engine": "kokoro-onnx-0.6.1",
+              "file": "4a81f9096409330d384f08216c14572c75488835397392fffdaefb8cfd8e32cf.wav",
+              "seconds": 7.1547,
+              "sha256": "4a81f9096409330d384f08216c14572c75488835397392fffdaefb8cfd8e32cf",
+              "voice": "bf_emma"
+            },
+            "candidates": [
+              {
+                "id": "option_1",
+                "intention": "maintain good trade relations despite recent refusal",
+                "line": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "tone": "hopeful"
+              },
+              {
+                "id": "option_2",
+                "intention": "express frustration about refused purchase",
+                "line": "It's frustrating that you won't sell me even a single loaf of bread, Carlotta, especially after I offered more gold than you paid me.",
+                "tone": "frustrated"
+              }
+            ],
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "voices-20261024-003",
+                "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+                "kind": "nearby_conversation"
+              },
+              "heard_in_this_conversation": [],
+              "known_facts_in_first_person": [
+                "I worked for Carlotta Valentia, making their bread using their grain. They paid me 2 gold. The bread belonged to them, not me.",
+                "I offered Carlotta Valentia 3 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller.",
+                "I offered Carlotta Valentia 5 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller."
+              ],
+              "listener": {
+                "id": 108149,
+                "name": "Carlotta Valentia"
+              },
+              "memories": [
+                {
+                  "bread_made": 2,
+                  "event_id": "produce-market-20261024-001-work",
+                  "gold": 2,
+                  "grain_used": 1,
+                  "kind": "paid_work",
+                  "other": 108149,
+                  "role": "worker",
+                  "source": "observed native inventory conversion and wage; work animation unverified"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 5,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "needs": {
+                "hunger": 0.75
+              },
+              "own_food_policy": null,
+              "own_inventory": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              },
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "trust": {}
+            },
+            "decision": {
+              "decision": {
+                "action_id": "option_1",
+                "emotion": "unspecified",
+                "reason": "Selected action: maintain good trade relations despite recent refusal Say: Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit. Tone: hopeful"
+              },
+              "elapsed_seconds": 0.485,
+              "model": "typesafe/jev-1.14-20261014",
+              "probabilities": {
+                "option_1": 0.95,
+                "option_2": 0.05
+              },
+              "rationale_kind": "authored_action_label_not_dialogue",
+              "status": "proposal_only",
+              "usage": {
+                "cost": 5.4978e-05,
+                "input_tokens": 1309,
+                "output_tokens": 37
+              }
+            },
+            "delivered": true,
+            "delivery_id": "speech-1673cd53662d9160c432f60e",
+            "delivery_session": "1792822246118-0.4230368635799282",
+            "language": {
+              "elapsed_seconds": 1.766,
+              "model": "openai/gpt-4.1-mini",
+              "proposal": {
+                "candidates": [
+                  {
+                    "id": "option_1",
+                    "intention": "maintain good trade relations despite recent refusal",
+                    "line": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                    "tone": "hopeful"
+                  },
+                  {
+                    "id": "option_2",
+                    "intention": "express frustration about refused purchase",
+                    "line": "It's frustrating that you won't sell me even a single loaf of bread, Carlotta, especially after I offered more gold than you paid me.",
+                    "tone": "frustrated"
+                  }
+                ]
+              },
+              "usage": {
+                "completion_tokens": 113,
+                "completion_tokens_details": {
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "reasoning_tokens": 0
+                },
+                "cost": 0.0005368,
+                "cost_details": {
+                  "upstream_inference_completions_cost": 0.0001808,
+                  "upstream_inference_cost": 0.0005368,
+                  "upstream_inference_prompt_cost": 0.000356
+                },
+                "is_byok": false,
+                "prompt_tokens": 890,
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0,
+                  "video_tokens": 0
+                },
+                "total_tokens": 1003
+              }
+            },
+            "listener": 108149,
+            "playback": {
+              "channel": "CEF overlay audio",
+              "elapsedSeconds": 7.265,
+              "id": "speech-1673cd53662d9160c432f60e",
+              "muted": false,
+              "nearbyThroughout": true,
+              "playedSeconds": 7.154667,
+              "status": "ended",
+              "volume": 1
+            },
+            "selected": {
+              "id": "option_1",
+              "intention": "maintain good trade relations despite recent refusal",
+              "line": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+              "tone": "hopeful"
+            },
+            "speaker": 108186
+          },
+          {
+            "audio": {
+              "engine": "kokoro-onnx-0.6.1",
+              "file": "dcee9d2adfd307105a770340d5c589fb38b2af0dac229311b699536230e406e6.wav",
+              "seconds": 7.064,
+              "sha256": "dcee9d2adfd307105a770340d5c589fb38b2af0dac229311b699536230e406e6",
+              "voice": "bf_alice"
+            },
+            "candidates": [
+              {
+                "id": "option_1",
+                "intention": "express cautious openness to future collaboration",
+                "line": "I appreciate your offer, Ysolda. For now, I must keep my bread for my family, but maybe we can talk about working together soon.",
+                "tone": "hopeful"
+              },
+              {
+                "id": "option_2",
+                "intention": "firmly protect own resources and express frustration",
+                "line": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "tone": "frustrated"
+              }
+            ],
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "voices-20261024-003",
+                "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+                "kind": "nearby_conversation"
+              },
+              "heard_in_this_conversation": [
+                {
+                  "epistemic_status": "heard claim, not verified fact",
+                  "line": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                  "speaker": 108186
+                }
+              ],
+              "known_facts_in_first_person": [
+                "I hired Ysolda to make bread with my grain. I paid them 2 gold. The produced bread belongs to me.",
+                "Ysolda offered ME 3 gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.",
+                "Ysolda offered ME 5 gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.",
+                "I ate one of my carried loaves."
+              ],
+              "listener": {
+                "id": 108186,
+                "name": "Ysolda"
+              },
+              "memories": [
+                {
+                  "bread_made": 2,
+                  "event_id": "produce-market-20261024-001-work",
+                  "gold": 2,
+                  "grain_used": 1,
+                  "kind": "paid_work",
+                  "other": 108186,
+                  "role": "employer",
+                  "source": "observed native inventory conversion and wage; work animation unverified"
+                },
+                {
+                  "event_id": "market-20261024-001-stock",
+                  "kind": "allocated_food",
+                  "policy": {
+                    "mode": "household_all",
+                    "reserve_target": 0,
+                    "source": "resident selected among authored allocation policies",
+                    "source_event": "market-20261024-001-stock"
+                  },
+                  "source": "own allocation decision; no inventory change"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "market-20261024-001-buyer_meal",
+                  "gold": 5,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "consume-market-20261024-001-seller_meal",
+                  "hunger_after": 0.15,
+                  "hunger_before": 0.75,
+                  "kind": "consumed_bread",
+                  "source": "native food-use command and observed inventory; animation not verified"
+                },
+                {
+                  "epistemic_status": "claim, not verified fact",
+                  "event_id": "speech-1673cd53662d9160c432f60e",
+                  "kind": "heard_speech",
+                  "listener": 108149,
+                  "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                  "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                  "speaker": 108186
+                }
+              ],
+              "needs": {
+                "hunger": 0.15
+              },
+              "own_food_policy": {
+                "mode": "household_all",
+                "reserve_target": 0,
+                "source": "resident selected among authored allocation policies",
+                "source_event": "market-20261024-001-stock"
+              },
+              "own_inventory": {
+                "bread": 4,
+                "gold": 6,
+                "grain": 1
+              },
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "trust": {}
+            },
+            "decision": {
+              "decision": {
+                "action_id": "option_2",
+                "emotion": "unspecified",
+                "reason": "Selected action: firmly protect own resources and express frustration Say: I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival. Tone: frustrated"
+              },
+              "elapsed_seconds": 0.547,
+              "model": "typesafe/jev-1.14-20261014",
+              "probabilities": {
+                "option_1": 0.25,
+                "option_2": 0.75
+              },
+              "rationale_kind": "authored_action_label_not_dialogue",
+              "status": "proposal_only",
+              "usage": {
+                "cost": 7.3458e-05,
+                "input_tokens": 1749,
+                "output_tokens": 37
+              }
+            },
+            "delivered": true,
+            "delivery_id": "speech-5b5c2ef0e255816887fc6277",
+            "delivery_session": "1792822246118-0.4230368635799282",
+            "language": {
+              "elapsed_seconds": 1.516,
+              "model": "openai/gpt-4.1-mini",
+              "proposal": {
+                "candidates": [
+                  {
+                    "id": "option_1",
+                    "intention": "express cautious openness to future collaboration",
+                    "line": "I appreciate your offer, Ysolda. For now, I must keep my bread for my family, but maybe we can talk about working together soon.",
+                    "tone": "hopeful"
+                  },
+                  {
+                    "id": "option_2",
+                    "intention": "firmly protect own resources and express frustration",
+                    "line": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                    "tone": "frustrated"
+                  }
+                ]
+              },
+              "usage": {
+                "completion_tokens": 115,
+                "completion_tokens_details": {
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "reasoning_tokens": 0
+                },
+                "cost": 0.0006716,
+                "cost_details": {
+                  "upstream_inference_completions_cost": 0.000184,
+                  "upstream_inference_cost": 0.0006716,
+                  "upstream_inference_prompt_cost": 0.0004876
+                },
+                "is_byok": false,
+                "prompt_tokens": 1219,
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0,
+                  "video_tokens": 0
+                },
+                "total_tokens": 1334
+              }
+            },
+            "listener": 108186,
+            "playback": {
+              "channel": "CEF overlay audio",
+              "elapsedSeconds": 7.176,
+              "id": "speech-5b5c2ef0e255816887fc6277",
+              "muted": false,
+              "nearbyThroughout": true,
+              "playedSeconds": 7.064,
+              "status": "ended",
+              "volume": 1
+            },
+            "selected": {
+              "id": "option_2",
+              "intention": "firmly protect own resources and express frustration",
+              "line": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+              "tone": "frustrated"
+            },
+            "speaker": 108149
+          }
+        ]
+      }
+    }
+  }
+}

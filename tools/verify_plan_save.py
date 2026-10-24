@@ -21,6 +21,7 @@ def snapshot(state):
             'production': state['society'].get('production', []),
             'imports': state['society'].get('imports', []),
             'market_day': state['society'].get('market_day'),
+            'conversation': state['society'].get('conversation'),
             'inventory': {str(a['id']): a['inventory']
                 for a in state['bridge']['observation']['residents']
                 if str(a['id']) in state['society']['people']}}

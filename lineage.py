@@ -14,11 +14,12 @@ from agency import Agency
 from food import FoodEconomy, allocation
 from production import Production
 from market_day import MarketDay
+from conversation import Conversation
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -90,6 +91,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
             return
         if self.error or not self.active:
             return
+        if self.conversation_busy():
+            self.observe_conversation(observation)
+            return
         if not self.active['pending']:
             self._agency_observe(observation)
             return
@@ -140,6 +144,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
             self._write(state, 'trade requires reconciliation')
 
     def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None):
+        if self.conversation_busy():
+            raise ValueError('A conversation owns the participants')
         if self.error or not self.active or self.transition:
             raise ValueError('Society checkpoint is not synchronized')
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
@@ -187,7 +193,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
-        return self.agency_command(session)
+        return self.speech_command(session) or self.agency_command(session)
 
     def state(self):
         if not self.active:
@@ -202,4 +208,4 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
                 'imports': self.active.get('imports', []) if self.active else [],
-                'market_day': self.scenario_status()}
+                'market_day': self.scenario_status(), 'conversation': self.conversation_status()}

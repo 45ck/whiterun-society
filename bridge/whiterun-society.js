@@ -11,6 +11,8 @@ __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
+__SPEECH_FACTORY__
+const speech=createSpeechController(()=>sp);
 let movementSource=null;
 let routineRecoveryNeeded=true;
 const config = __BRIDGE_CONFIG__;
@@ -33,6 +35,9 @@ let residents = [];
 let hud = null;
 let cameraMode='market',cameraActor=0,cameraDirty=true,cursor=true;
 let presentation={trades:[],committedCount:0};
+let lastProjection=0,projectionSample=[];
+let observerKey=null;
+const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
 const completed = new Set();
@@ -45,6 +50,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  speech.reset();
   session = Date.now() + '-' + Math.random();
   selected = 0; pending = null; ack = null; completed.clear(); announced = false;
   observerReady = false; residents = [];
@@ -69,12 +75,14 @@ function checkpointValue() {
 }
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
+  if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
   if (!['market','trade','street','focus'].includes(message.mode)) return;
   if (message.mode==='focus' && ![108149,108186,108156].includes(message.id)) return;
   cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;
 });
 on('buttonEvent',event=>{
+  if(event.isDown&&[2,3,4,64].includes(event.code))observerKey=event.code;
   if (event.code===66 && event.isDown && sp.browser) {cursor=!cursor;sp.browser.setFocused(cursor);}
 });
 function updateCamera(player) {
@@ -107,7 +115,7 @@ function updateCamera(player) {
 on('activate', event => {
   if (event.caster && event.caster.getFormID() === 0x14 && event.target) {
     const actor = sp.Actor.from(event.target);
-    if (actor) selected = actor.getFormID();
+    if (actor){selected = actor.getFormID();observerKey=({108149:2,108186:3,108156:4})[selected]||null;}
   }
 });
 registrations.push(sp.once('tick', () => sp.printConsole('[Whiterun Society] custom bridge loaded')));
@@ -140,6 +148,23 @@ on('update', () => {
     announced = true;
   }
   if(observerReady) updateCamera(player);
+  if(observerReady&&sp.Input&&typeof sp.Input.isKeyPressed==='function'){
+    for(const code of [2,3,4,64]){const down=sp.Input.isKeyPressed(code);if(down&&!observerPressed[code])observerKey=code;observerPressed[code]=down;}
+  }
+  if(observerKey&&sp.browser){const key=observerKey;observerKey=null;
+    sp.browser.executeJavaScript('window.whiterunInspectKey && window.whiterunInspectKey('+key+');');}
+  if(observerReady&&sp.browser&&typeof sp.worldPointToScreenPoint==='function'&&Date.now()-lastProjection>100){
+    lastProjection=Date.now();projectionSample=[];
+    for(const id of [108149,108186,108156]){
+      const resident=sp.Actor.from(sp.Game.getFormEx(id));if(!resident||!resident.is3DLoaded())continue;
+      try{const x=resident.getPositionX(),y=resident.getPositionY(),z=resident.getPositionZ();
+        const points=sp.worldPointToScreenPoint([x,y,z+125],[x,y,z+5]);
+        if(Array.isArray(points)&&points.length===2)projectionSample.push({id,head:points[0],foot:points[1]});
+      }catch(_){}
+    }
+    sp.browser.executeJavaScript('window.whiterunProject && window.whiterunProject('+JSON.stringify(projectionSample)+');');
+  }
+  speech.tick();
   if (pending) {
     const command = pending; pending = null;
     if (command.session === session && !completed.has(command.id)) {
@@ -155,6 +180,11 @@ on('update', () => {
           const result=production.step(command);
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
+        }
+        else if(command.kind==='speak'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Speech checkpoint mismatch');
+          speech.start(command);cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
+          completed.add(command.id);
         }
         else if (command.kind === 'walk_to') {
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
@@ -197,11 +227,13 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['inventory_trade','inventory_consume','inventory_produce','inventory_supply','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
-  if (busy || Date.now()-lastSent<2000) return;
+  const activeConversation=presentation.society?.conversation;
+  const cadence=activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000;
+  if (busy || Date.now()-lastSent<cadence) return;
   const currentSession = session;
   residents = [];
   const seen=new Set();
@@ -277,7 +309,7 @@ on('update', () => {
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

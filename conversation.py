@@ -1,0 +1,208 @@
+"""Finite, save-bound conversations: language proposes, Jev selects, code delivers.
+
+Heard speech is remembered as a claim, never as proof of its contents. No model
+can transfer inventory through this interface. Interrupted playback is held.
+"""
+import copy
+import math
+import re
+import secrets
+from agency import distance
+from decisions import validate_decision
+
+
+def validate_candidates(value):
+    if not isinstance(value, dict) or set(value) != {'candidates'}:
+        raise ValueError('Expected candidate object')
+    candidates = value['candidates']
+    if not isinstance(candidates, list) or len(candidates) != 2:
+        raise ValueError('Exactly two bounded intentions required')
+    for i, c in enumerate(candidates):
+        if not isinstance(c, dict) or set(c) != {'id', 'intention', 'line', 'tone'}:
+            raise ValueError('Invalid candidate fields')
+        if c['id'] != f'option_{i+1}':
+            raise ValueError('Invalid candidate ID')
+        for field, limit in [('intention', 100), ('line', 240)]:
+            if not isinstance(c[field], str) or not 1 <= len(c[field]) <= limit or any(ord(x)<32 for x in c[field]):
+                raise ValueError('Invalid candidate text')
+        if not 3 <= len(c['line'].split()) <= 40 or c['tone'] not in ('calm','worried','hopeful','frustrated'):
+            raise ValueError('Invalid spoken length or tone')
+    if candidates[0]['line'] == candidates[1]['line']:
+        raise ValueError('Two distinct alternatives required')
+    return candidates
+
+
+class Conversation:
+    def conversation_status(self):
+        return copy.deepcopy(self.active.get('conversation')) if self.active else None
+
+    def conversation_busy(self):
+        c = self.conversation_status()
+        return bool(c and c['phase'] not in ('complete', 'held'))
+
+    def start_conversation(self, event_id, observation):
+        self._agency_guard(observation)
+        if not isinstance(event_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', event_id):
+            raise ValueError('Invalid conversation ID')
+        old = self.conversation_status()
+        history = self.active.get('conversation_history', []) + ([old] if old else [])
+        for item in history:
+            if item['id'] == event_id:
+                return {'duplicate': True, 'conversation': item}
+        day = self.active.get('market_day')
+        if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
+            raise ValueError('Another resident event is active')
+        distance(observation, 108186, 108149) # Both must be loaded; own the meeting route next.
+        state = copy.deepcopy(self.active)
+        if old: state.setdefault('conversation_history', []).append(old)
+        state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0,
+            'speakers': [108186,108149], 'turns': [], 'claim': None,
+            'source': 'Authored two-person encounter; generated intentions and speech',
+            'max_llm_calls': 2, 'max_jev_calls': 2}
+        return {'checkpoint': self._write(state, 'conversation encounter started')}
+
+    def _conversation_guard(self, event_id, observation):
+        self._agency_guard(observation)
+        c = self.conversation_status()
+        if not c or c['id'] != event_id: raise ValueError('Conversation changed')
+        return c
+
+    def _speech_context(self, c, observation):
+        actor = c['speakers'][c['turn']]
+        listener = c['speakers'][1-c['turn']]
+        person = self.active['people'][str(actor)]
+        own = next((a for a in observation['residents'] if a['id']==actor), None)
+        if not own or distance(observation, actor, listener)>500:
+            raise ValueError('Conversation participants are not nearby')
+        facts=[]
+        for memory in person['memories'][-8:]:
+            other=self.active['people'].get(str(memory.get('other')),{}).get('profile',{}).get('name','another resident')
+            if memory['kind']=='trade_offer_declined':
+                facts.append(f"I offered {other} {memory['gold']} gold to BUY one loaf FROM them. {other} REFUSED TO SELL me bread. I was the BUYER, not the seller." if memory['role']=='buyer' else
+                    f"{other} offered ME {memory['gold']} gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.")
+            elif memory['kind']=='paid_work':
+                facts.append(f"I worked for {other}, making their bread using their grain. They paid me {memory['gold']} gold. The bread belonged to them, not me." if memory['role']=='worker' else
+                    f"I hired {other} to make bread with my grain. I paid them {memory['gold']} gold. The produced bread belongs to me.")
+            elif memory['kind']=='consumed_bread':facts.append('I ate one of my carried loaves.')
+        return {'actor_id': actor, 'profile': person['profile'], 'needs': person['needs'],
+            'known_facts_in_first_person':facts,
+            'own_inventory': own['inventory'], 'own_food_policy': person.get('food_policy'),
+            'memories': person['memories'][-8:], 'trust': person['trust'],
+            'listener': {'id':listener,'name':self.active['people'][str(listener)]['profile']['name']},
+            'heard_in_this_conversation': [{'speaker':t['speaker'], 'line':t['selected']['line'],
+                'epistemic_status':'heard claim, not verified fact'} for t in c['turns'] if t.get('delivered')],
+            'event': {'id':c['id'], 'kind':'nearby_conversation',
+                'information':'You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person\'s private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.'}}
+
+    def claim_conversation(self, event_id, observation):
+        c = self._conversation_guard(event_id, observation)
+        phase = c['phase']
+        if phase not in ('propose','select'): raise ValueError('A claim already exists or no inference is due')
+        context = self._speech_context(c, observation)
+        if phase == 'select':
+            context['options'] = [{'id':v['id'], 'effect':v['intention']+' Say: '+v['line']+' Tone: '+v['tone']}
+                                  for v in c['current']['candidates']]
+        claim = {'id':secrets.token_hex(12), 'stage':phase, 'context':context, 'session':self.session}
+        c.update(phase='thinking_'+phase, claim=claim)
+        state = copy.deepcopy(self.active); state['conversation'] = c
+        return {'checkpoint':self._write(state,'conversation inference claimed before call'), 'claim':claim}
+
+    def finish_conversation_inference(self, event_id, claim_id, result, observation):
+        c = self._conversation_guard(event_id, observation)
+        claim = c.get('claim')
+        if not claim or claim['id']!=claim_id or claim.get('session')!=self.session or c['phase']!='thinking_'+claim['stage']:
+            raise ValueError('Stale conversation inference')
+        if not isinstance(result, dict) or not isinstance(result.get('model'), str):
+            raise ValueError('Missing model provenance')
+        if claim['stage']=='propose':
+            candidates = validate_candidates(result['proposal'])
+            c['current'] = {'speaker':claim['context']['actor_id'], 'listener':claim['context']['listener']['id'],
+                'candidates':candidates, 'language':result, 'context':claim['context']}
+            c['phase']='select'
+        else:
+            choice = validate_decision(result['decision'], claim['context'])['action_id']
+            c['current'].update(selected=next(v for v in c['current']['candidates'] if v['id']==choice), decision=result)
+            c['phase']='synthesize'
+        c['claim']=None
+        state=copy.deepcopy(self.active);state['conversation']=c
+        return {'checkpoint':self._write(state,'conversation '+claim['stage']+' result accepted')}
+
+    def prepare_speech(self, event_id, audio, observation):
+        c = self._conversation_guard(event_id, observation)
+        if c['phase']!='synthesize': raise ValueError('Speech is not awaiting synthesis')
+        if not isinstance(audio,dict) or set(audio)!={'file','sha256','seconds','voice','engine'}:
+            raise ValueError('Invalid audio metadata')
+        if not re.fullmatch(r'[a-f0-9]{64}\.wav',audio['file']) or audio['file']!=audio['sha256']+'.wav':
+            raise ValueError('Audio must use a content hash filename')
+        if type(audio['seconds']) not in (float,int) or not math.isfinite(audio['seconds']) or not .2<audio['seconds']<=30:
+            raise ValueError('Speech duration out of bounds')
+        if audio['voice'] not in ('bf_emma','bf_alice') or audio['engine']!='kokoro-onnx-0.6.1':
+            raise ValueError('Unknown stock voice')
+        if distance(observation,c['current']['speaker'],c['current']['listener'])>500:
+            raise ValueError('Listener left before delivery')
+        c['current'].update(audio=audio,delivery_id='speech-'+secrets.token_hex(12),delivery_session=self.session)
+        c['phase']='speaking'
+        state=copy.deepcopy(self.active);state['conversation']=c
+        return {'checkpoint':self._write(state,'speech delivery persisted before playback')}
+
+    def speech_command(self, session):
+        c=self.conversation_status()
+        if c and c['phase']=='meeting':
+            return {'id':'meet-'+c['id'],'kind':'walk_to','actor':108186,'target':108149,
+                'method':'package','retain':True,'origin':'authored_encounter','session':session,'checkpoint':self.marker}
+        if c and c['phase']=='releasing':
+            return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':108186,
+                'session':session,'checkpoint':self.marker}
+        if not c or c['phase']!='speaking' or c['current']['delivery_session']!=session: return None
+        t=c['current']
+        return {'id':t['delivery_id'],'kind':'speak','session':session,'checkpoint':self.marker,
+            'actor':t['speaker'],'target':t['listener'],'line':t['selected']['line'],
+            'tone':t['selected']['tone'],'audio':t['audio']}
+
+    def observe_conversation(self, observation):
+        c=self.conversation_status()
+        if not c:return
+        ack=observation.get('ack') or {}
+        if c['phase']=='meeting' and ack.get('id')=='meet-'+c['id']:
+            if ack.get('status')!='applied':return self.hold_conversation(c['id'],'Meeting route failed',observation)
+            c['phase']='propose';c['meeting_evidence']=ack
+            state=copy.deepcopy(self.active);state['conversation']=c
+            self._write(state,'conversation participants met under owned route');return
+        if c['phase']=='releasing' and ack.get('id')=='release-chat-'+c['id']:
+            c['release_evidence']=ack
+            c['phase']=c.pop('final_phase') if ack.get('released') is True else 'held'
+            if ack.get('released') is not True:c['error']='Conversation route release was not verified'
+            state=copy.deepcopy(self.active);state['conversation']=c
+            self._write(state,'conversation travel task release observed');return
+        if c['phase']!='speaking': return
+        t=c['current'];report=observation.get('speech') or {}
+        if t['delivery_session']!=self.session:
+            return self.hold_conversation(c['id'],'Save/load interrupted speech; no automatic replay',observation)
+        if report.get('id')!=t['delivery_id']: return
+        if report.get('status')=='failed':
+            return self.hold_conversation(c['id'],'Speech playback failed: '+str(report.get('error','unknown'))[:120],observation)
+        if report.get('status')!='ended': return
+        elapsed=report.get('playedSeconds')
+        if type(elapsed) not in (int,float) or not math.isfinite(elapsed) or elapsed<t['audio']['seconds']-.3 or report.get('nearbyThroughout') is not True:
+            return self.hold_conversation(c['id'],'Incomplete playback or listener left hearing range',observation)
+        state=copy.deepcopy(self.active)
+        t.update(delivered=True,playback=report)
+        for actor,kind in [(t['speaker'],'said'),(t['listener'],'heard_speech')]:
+            p=state['people'][str(actor)]
+            p['memories'].append({'event_id':t['delivery_id'],'kind':kind,'speaker':t['speaker'],
+                'listener':t['listener'],'quote':t['selected']['line'],
+                'epistemic_status':'claim, not verified fact',
+                'source':'completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof'})
+            p['memories']=p['memories'][-32:]
+        c['turns'].append(t);c.pop('current');c['turn']+=1
+        c['phase']='releasing' if c['turn']==len(c['speakers']) else 'propose'
+        if c['phase']=='releasing':c['final_phase']='complete'
+        state['conversation']=c
+        self._write(state,'completed speech recorded as witnessed claims')
+
+    def hold_conversation(self,event_id,reason,observation):
+        c=self._conversation_guard(event_id,observation)
+        if c['phase'] in ('complete','held'): return {'duplicate':True}
+        c.update(phase='releasing',final_phase='held',error=str(reason)[:200])
+        state=copy.deepcopy(self.active);state['conversation']=c
+        return {'checkpoint':self._write(state,'conversation held without retry')}

@@ -6,6 +6,8 @@ import re
 import time
 import os
 import socket
+import hashlib
+import wave
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from society import Society
@@ -111,6 +113,27 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
+                elif self.path.startswith('/conversation/'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']: raise ValueError('another command is pending')
+                    observation=bridge['observation']
+                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation)
+                    elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
+                    elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
+                    elif self.path=='/conversation/audio':
+                        audio=data['audio'];name=audio.get('file','')
+                        if not re.fullmatch(r'[a-f0-9]{64}\.wav',name):raise ValueError('Invalid speech asset')
+                        asset=args.runtime.parent/'game/Data/Platform/UI/audio'/name
+                        if not asset.is_file() or asset.stat().st_size>2000000:raise ValueError('Missing or oversized speech asset')
+                        if hashlib.sha256(asset.read_bytes()).hexdigest()!=audio['sha256']:raise ValueError('Speech hash mismatch')
+                        with wave.open(str(asset),'rb') as wav:
+                            seconds=wav.getnframes()/wav.getframerate()
+                            if wav.getnchannels()!=1 or wav.getsampwidth()!=2 or abs(seconds-audio['seconds'])>.01:raise ValueError('Speech format mismatch')
+                        result=world.prepare_speech(data['id'],audio,observation)
+                    elif self.path=='/conversation/hold':result=world.hold_conversation(data['id'],data['reason'],observation)
+                    else:raise ValueError('Unknown conversation operation')
+                    self.reply(202,result)
                 elif self.path in ('/market-day/start','/market-day/advance'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
@@ -133,7 +156,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
                     if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
-                    if world.agency_busy() and data['kind'] in ('prepare_market','walk_to'):
+                    if (world.agency_busy() or world.conversation_busy()) and data['kind'] in ('prepare_market','walk_to'):
                         raise ValueError('A resident currently owns the task')
                     if data['kind']=='walk_to':
                         if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')

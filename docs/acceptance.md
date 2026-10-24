@@ -15,8 +15,8 @@ Initial demonstration: a farm, a bakery, three households, finite gold and food,
 | Unattended launch | Start directly in Whiterun without playing the opening | Clean launch reached observer readiness in 27.56 seconds; 26 actors detected |
 | World consistency | Inventory and ledger agree after trades and reloads | Trade, food and paid-work before/after saves match; recurring audio crashes prevent stability acceptance |
 | Save lineage | Loading an older save restores its matching society state | Actual save markers select matching inventories, plans, people and journals |
-| Conversation | NPC answers reflect witnessed events and personal interests | Rule-based opinion example only |
-| Voice | Spoken response and matching lip movement in-game | Not implemented |
+| Conversation | NPC answers reflect witnessed events and personal interests | Three-layer two-turn encounters and heard memories verified; full social exchanges remain incomplete |
+| Voice | Spoken response and matching lip movement in-game | Overlay audio playback verified; lips and native spatial audio unfinished |
 | Enjoyment | Player can explain a consequence and chooses to continue | Requires actual playtesting |
 
 Targets are acceptance criteria, not claimed results. Track p50/p95 response latency, FPS impact, failed navigation, duplicate actions, contradictions and player ratings once the relevant path actually runs. Do not use language-model self-ratings as evidence of player enjoyment.
@@ -184,3 +184,27 @@ both later work-save restores succeeded. Sustained stability remains open.
 Production is an authored grain conversion with observed attendance; oven
 animation, a daily labour market, fatigue, separate firm accounts and a complete
 player shortage scenario remain unfinished.
+
+## Voiced encounters and a finite market day
+
+The four-stage market day produced one paid batch and one meal, with no purchase:
+Carlotta reserved her stock and declined Ysolda. Participant gold remained 14.
+Eight Jev calls cost US$0.00038787. Its completed save restored the same sequence,
+inventory and memories. The authored sequence does not constitute a daily calendar.
+
+Three subsequent two-turn voiced encounters completed in Skyrim. Playback,
+nearby-listener checks, source-tagged memories and route release are recorded.
+The latest run took 47.098 seconds and cost US$0.001638432. A later stock review
+received the dialogue memories and still selected reserve-all. The completed
+voice save restored after loading the earlier market-day save, without replay.
+[Full evidence and audio limitations](voiced-encounters.md).
+
+Local checks now cover 78 Python tests and 50 JavaScript tests (the latest
+same-claim/save-session regression passed in the focused conversation suite).
+Hosted CI for the previous paid-work commit ef63d1f succeeded on Windows/Linux;
+that is not evidence for newer revisions until their own checks pass.
+Direct keyboard selection did not pass its live check. Guided profile inspection
+is implemented but its final render still needs visual verification after the
+user stopped Computer Use. Participant markers and speaker close-ups were seen
+in-game. Full population control, natural conversation openings/closings, weather,
+sales, business accounts and meaningful player intervention remain required work.

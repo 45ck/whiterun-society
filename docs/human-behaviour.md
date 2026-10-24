@@ -123,8 +123,10 @@ with four cases, not a statistical validation or evidence of consciousness.
   consequences? Frame time, decision latency and cost are measured alongside it.
 
 The current loop is intentionally limited: one event and one traveller at a time,
-bounded action choices, authored 3/5-gold offers, no unrestricted bargaining, no real
-speech and no full work/sleep schedule. Native bread consumption and resident-owned
+bounded action choices, authored 3/5-gold offers, no unrestricted bargaining and no
+full work/sleep schedule. Generated voiced encounters now create heard memories
+([evidence](voiced-encounters.md)); natural conversation structure remains unfinished.
+Native bread consumption and resident-owned
 reserves are now demonstrated in a bounded event ([evidence](food-economy.md)).
 Continuous metabolism and a full productive economy remain requirements;
 they are not replaced by a passing shopping or refusal demonstration.

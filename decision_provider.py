@@ -30,7 +30,7 @@ def infer_jev(context, config, api_key):
         raise ValueError('Invalid decision probabilities')
     if abs(sum(probabilities.values())-1) > .02:
         raise ValueError('Decision probabilities do not sum to one')
-    return {'decision': {'action_id': choice, 'reason': 'Selected action: '+options[choice], 'emotion': 'unspecified'},
+    return {'decision': {'action_id': choice, 'reason': ('Selected action: '+options[choice])[:240], 'emotion': 'unspecified'},
             'rationale_kind': 'authored_action_label_not_dialogue', 'probabilities': probabilities,
             'elapsed_seconds': round(time.monotonic()-started,3), 'model': result.get('model',config['model']),
             'usage': result.get('usage',{}), 'status': 'proposal_only'}

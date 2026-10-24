@@ -1,0 +1,249 @@
+[
+  {
+    "id": "voices-20261024-001",
+    "status": "held",
+    "calls": {
+      "propose": 1,
+      "select": 1
+    },
+    "checkpoint": 115,
+    "elapsed_seconds": null,
+    "reported_cost_usd": 0.000172144,
+    "transcript": [
+      {
+        "speaker": 108186,
+        "line": "I could give you some bread later if you could spare a few coins now for my business.",
+        "delivered": false,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "a40f0457875c72706643a0fd080ce409631dc85811ab5308dfe4078b1b78a433.wav",
+          "seconds": 4.3726,
+          "sha256": "a40f0457875c72706643a0fd080ce409631dc85811ab5308dfe4078b1b78a433",
+          "voice": "bf_emma"
+        },
+        "playback": null
+      }
+    ]
+  },
+  {
+    "id": "voices-20261024-002",
+    "status": "held",
+    "calls": {
+      "propose": 1,
+      "select": 1
+    },
+    "checkpoint": 124,
+    "elapsed_seconds": null,
+    "reported_cost_usd": 0.000541328,
+    "transcript": [
+      {
+        "speaker": 108186,
+        "line": "Carlotta, I noticed you passed on the bread earlier. I hope next time you'll find something that suits your needs better\u2014my offers can improve!",
+        "delivered": false,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "f1593dce363736497558ccb44815dc16f3a2e835a9228f50717d107bc8152b90.wav",
+          "seconds": 7.7433,
+          "sha256": "f1593dce363736497558ccb44815dc16f3a2e835a9228f50717d107bc8152b90",
+          "voice": "bf_emma"
+        },
+        "playback": null
+      }
+    ]
+  },
+  {
+    "id": "voices-20261024-003",
+    "status": "complete",
+    "calls": {
+      "propose": 2,
+      "select": 2
+    },
+    "checkpoint": 139,
+    "elapsed_seconds": null,
+    "reported_cost_usd": 0.001336836,
+    "transcript": [
+      {
+        "speaker": 108186,
+        "line": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "4a81f9096409330d384f08216c14572c75488835397392fffdaefb8cfd8e32cf.wav",
+          "seconds": 7.1547,
+          "sha256": "4a81f9096409330d384f08216c14572c75488835397392fffdaefb8cfd8e32cf",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.265,
+          "id": "speech-1673cd53662d9160c432f60e",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 7.154667,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "speaker": 108149,
+        "line": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "dcee9d2adfd307105a770340d5c589fb38b2af0dac229311b699536230e406e6.wav",
+          "seconds": 7.064,
+          "sha256": "dcee9d2adfd307105a770340d5c589fb38b2af0dac229311b699536230e406e6",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.176,
+          "id": "speech-5b5c2ef0e255816887fc6277",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 7.064,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "voices-20261024-004",
+    "status": "complete",
+    "calls": {
+      "propose": 2,
+      "select": 2
+    },
+    "checkpoint": 154,
+    "elapsed_seconds": null,
+    "reported_cost_usd": 0.001532526,
+    "transcript": [
+      {
+        "speaker": 108186,
+        "line": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "2c465a3c0e8668a6ceb1acd6db83ee5a8cbd04e0893eefb93eafbb59dbf76a22.wav",
+          "seconds": 7.7933,
+          "sha256": "2c465a3c0e8668a6ceb1acd6db83ee5a8cbd04e0893eefb93eafbb59dbf76a22",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.896,
+          "id": "speech-1ff3fbddd98203b01a0235f7",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 7.793333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "speaker": 108149,
+        "line": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "d71985b8b39d9b9e01b6fe8c86ad627ab03153c7f2ce65641d591a3731cba4cf.wav",
+          "seconds": 7.4027,
+          "sha256": "d71985b8b39d9b9e01b6fe8c86ad627ab03153c7f2ce65641d591a3731cba4cf",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.529,
+          "id": "speech-0c9c5320883f943196c2306c",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 7.402667,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "voices-20261024-005",
+    "status": "complete",
+    "calls": {
+      "propose": 2,
+      "select": 2
+    },
+    "checkpoint": 173,
+    "elapsed_seconds": 47.098,
+    "reported_cost_usd": 0.001638432,
+    "transcript": [
+      {
+        "speaker": 108186,
+        "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b.wav",
+          "seconds": 7.57,
+          "sha256": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.691,
+          "facing": [
+            {
+              "actor": 108186,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": false,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-a45d1fac167195a81cd38429",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 7.57,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "speaker": 108149,
+        "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+        "delivered": true,
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df.wav",
+          "seconds": 8.2153,
+          "sha256": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 8.326,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108186,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-27613d476a676275bb9151ea",
+          "muted": false,
+          "nearbyThroughout": true,
+          "playedSeconds": 8.215333,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ]
+  }
+]

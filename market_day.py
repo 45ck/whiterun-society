@@ -30,6 +30,8 @@ class MarketDay:
 
     def start_market_day(self, scenario_id, observation):
         self._agency_guard(observation)
+        if self.conversation_busy():
+            raise ValueError('A conversation owns the participants')
         if not isinstance(scenario_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}',scenario_id):
             raise ValueError('Use a short market-day ID')
         prior=self.active.get('market_day')

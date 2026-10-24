@@ -4,11 +4,11 @@ An experimental, open-source society simulation for Skyrim Special Edition: a ci
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The player can participate as a resident or influence policy. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
-**Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers and save-linked trade memories have been demonstrated. The autonomous farm–bakery–household model still runs separately; full daily routines, generated dialogue, lip sync and stable save/load remain under development.
+**Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
-**Latest experiment:** Carlotta offered Ysolda a paid job; Ysolda accepted. Thirty game minutes of qualified attendance consumed one actual grain, produced two loaves and transferred two gold from employer to worker. Before/after Skyrim saves restored the corresponding goods, wages and memories. Repeating the completed event made zero model calls and no extra payment. Work animation is not implemented. [Paid work and live evidence](docs/paid-work.md) · [Food reserves and consumption](docs/food-economy.md) · [Human behaviour design and research](docs/human-behaviour.md).
+**Latest experiment:** Ysolda and Carlotta discussed their bread disagreement using generated voices. A language model proposed intentions, Jev chose, and deterministic code delivered speech and recorded heard claims only after playback. Those memories reached Carlotta's next stock decision. The latest two-turn encounter took 47.098 seconds, including local synthesis and playback, with US$0.001638432 in reported model cost. Voices currently use the overlay audio channel; native audio is disabled for crash diagnosis. [Voiced encounters and evidence](docs/voiced-encounters.md) · [Finite market day](docs/market-day.md) · [Paid work](docs/paid-work.md) · [Human behaviour design](docs/human-behaviour.md).
 
-![Paid production and wages in the actual Skyrim observer overlay](docs/images/paid-work-complete.jpg)
+![Generated speech and speaker close-up in the actual Skyrim observer overlay](docs/images/conversation-closeup.jpg)
 
 Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
@@ -19,7 +19,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/production.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/production.test.cjs tests/speech.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.
@@ -29,7 +29,7 @@ The tests exercise conservation of currency and stock, insufficient resources, d
 1. A local simulation service holds balances, inventory, events and beliefs in SQLite.
 2. A Skyrim Platform plugin reports observed game state and performs bounded commands on the game thread.
 3. Event-triggered planners propose decisions. Validated economic rules decide whether they can happen.
-4. Speech and language providers will be replaceable, so local and hosted models can be compared on the same scenarios.
+4. Separate language and decision adapters propose and select intentions; local Kokoro generates speech. A completed utterance becomes a source-tagged memory, not proof that its words are true.
 
 An unloaded citizen can participate in abstract simulation, but we must not claim they physically walked or spoke unless the game reports it. Pausing or closing the game should pause progression by default.
 

@@ -43,6 +43,8 @@ class Agency:
 
     def begin_plan(self, event_id, observation, actor=108186, kind='meal_time'):
         self._agency_guard(observation)
+        if self.conversation_busy():
+            raise ValueError('A conversation owns the participants')
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
             raise ValueError('A bounded event ID is required')
         if kind not in ('meal_time','stock_review','work_shift') or type(actor) is not int or str(actor) not in self.active['people']:
