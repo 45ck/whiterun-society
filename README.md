@@ -20,7 +20,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Our code maintains state and valid options → Jev chooses → Skyrim performs the physical task → our code verifies the result and remembers it.** When conversation is appropriate, a language model proposes lines, Jev selects, and local Kokoro voices the chosen words. Walking, work attendance and quiet periods need no continuous model calls. Skyrim handles navigation and movement; choosing a destination does not mean asking a model to calculate every footstep.
 
-[Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
+[Living development plan: dynamic residents, personal knowledge and RTS mode](docs/development-plan.md) · [Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
 
 The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. An initial nine-call comparison found cheaper small-model output but grounding and length failures, so the current default remains unchanged. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
