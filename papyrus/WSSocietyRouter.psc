@@ -41,8 +41,9 @@ Event OnUpdate()
                 AcknowledgedSerial.SetValue(serial as Float)
                 Stop()
             EndIf
-        ElseIf routeBegan > 0.0 && (Utility.GetCurrentRealTime() < routeBegan || Utility.GetCurrentRealTime() - routeBegan > 120.0)
+        ElseIf routeBegan > 0.0 && (Utility.GetCurrentRealTime() < routeBegan || Utility.GetCurrentRealTime() - routeBegan > 300.0)
             ; A disconnected controller cannot retain this package indefinitely.
+            ; Allow bounded travel plus the 30-game-minute paid shift at timescale 20.
             RouteStatus.SetValue(-2.0)
             Stop()
             routeBegan = 0.0

@@ -19,8 +19,8 @@ def main():
     parser.add_argument('--watch-seconds',type=int,default=0)
     parser.add_argument('--model-config',type=Path)
     args=parser.parse_args()
-    if not 0<=args.max_events<=3 or not 0<=args.watch_seconds<=600:
-        raise ValueError('Use 0–3 resident events and 0–600 seconds of observation')
+    if not 0<=args.max_events<=24 or not 0<=args.watch_seconds<=600:
+        raise ValueError('Use 0–24 resident events and 0–600 seconds of observation')
     if args.max_events and not args.model_config:raise ValueError('An explicit decision model configuration is required')
     runtime=args.root/'runtime'
     config=json.loads((runtime/'bridge-config.json').read_text())
@@ -65,7 +65,7 @@ def main():
                 evidence['events'].append({'id':event['id'],'actor':event['actor'],'status':'started'});record()
                 result=subprocess.run([sys.executable,str(Path(__file__).with_name('run_resident_event.py')),
                     '--runtime',str(runtime),'--event-id',event['id'],'--actor',str(event['actor']),
-                    '--kind','need_review','--model-config',str(args.model_config)],check=False)
+                    '--kind',event['kind'],'--model-config',str(args.model_config)],check=False)
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')
                 plan=current['society']['plan']

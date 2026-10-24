@@ -1,5 +1,6 @@
 """A finite, explicitly authored paid bread-making contract in the physical world."""
 import copy
+from labour import settle_contract
 
 ITEMS = ('gold', 'bread', 'grain')
 
@@ -75,6 +76,7 @@ class Production:
                 self._write(state, 'explicit imported grain observed; no wage or production claimed')
                 return
             state['plans'][-1].update(phase='complete', outcome='paid_work_completed')
+            settle_contract(state, state['plans'][-1], 'paid_work_completed')
             for role, other in [('worker', 'employer'), ('employer', 'worker')]:
                 person = state['people'][str(command[role])]
                 person['memories'].append({'event_id': pending['id'], 'kind': 'paid_work',
@@ -86,4 +88,5 @@ class Production:
             state['pending']['status'] = 'held'
             if command['kind']=='inventory_produce':
                 state['plans'][-1].update(phase='held', error='Work requires reconciliation; do not retry blindly')
+                settle_contract(state, state['plans'][-1], 'reconciliation_required')
             self._write(state, 'unexpected production effect held for reconciliation')

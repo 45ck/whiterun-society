@@ -14,6 +14,8 @@ class DailyLifeTests(unittest.TestCase):
         self.world.initialize_population('census','daily-seed',self.obs);self.sync()
         for p in self.world.active['people'].values():
             if 'agency' in p:p['needs']['hunger']=.4
+        self.world.active['people']['108149']['food_policy']={'mode':'fixed_reserve','reserve_target':1,
+            'reviewed_day':self.obs['gameDays'],'observed_bread':self.obs['residents'][1]['inventory']['bread']}
 
     def review(self,hours=0):
         self.obs['gameDays']+=hours/24

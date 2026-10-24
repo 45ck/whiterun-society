@@ -1,0 +1,327 @@
+{
+  "name": "WS-Labour-20261024-X",
+  "checkpoint": 432,
+  "files": {
+    "WS-Labour-20261024-X.ess": {
+      "bytes": 2604435,
+      "sha256": "998292d0394973362e46ed12e9957ca91b4fafb60d8eb28f0f328b8698a0fc15"
+    },
+    "WS-Labour-20261024-X.skse": {
+      "bytes": 439,
+      "sha256": "21c81d13e7c623a5d8789e6ae95375a48c9f595f3221dbf48a4af27212e0cf96"
+    }
+  },
+  "expected_assets": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 5,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 2,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 2,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "restores": [
+    {
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "actual_assets": {
+        "108138": {
+          "gold": 34,
+          "bread": 0,
+          "grain": 0
+        },
+        "108140": {
+          "gold": 28,
+          "bread": 1,
+          "grain": 0
+        },
+        "108149": {
+          "gold": 106,
+          "bread": 5,
+          "grain": 21
+        },
+        "108156": {
+          "gold": 27,
+          "bread": 0,
+          "grain": 0
+        },
+        "108160": {
+          "gold": 27,
+          "bread": 0,
+          "grain": 0
+        },
+        "108162": {
+          "gold": 56,
+          "bread": 1,
+          "grain": 0
+        },
+        "108164": {
+          "gold": 34,
+          "bread": 1,
+          "grain": 0
+        },
+        "108165": {
+          "gold": 33,
+          "bread": 1,
+          "grain": 0
+        },
+        "108167": {
+          "gold": 26,
+          "bread": 1,
+          "grain": 0
+        },
+        "108168": {
+          "gold": 35,
+          "bread": 2,
+          "grain": 0
+        },
+        "108169": {
+          "gold": 29,
+          "bread": 1,
+          "grain": 0
+        },
+        "108170": {
+          "gold": 34,
+          "bread": 1,
+          "grain": 0
+        },
+        "108183": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "108185": {
+          "gold": 29,
+          "bread": 1,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 28,
+          "bread": 1,
+          "grain": 0
+        },
+        "108196": {
+          "gold": 54,
+          "bread": 1,
+          "grain": 0
+        },
+        "108197": {
+          "gold": 38,
+          "bread": 2,
+          "grain": 0
+        },
+        "108248": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "182543": {
+          "gold": 24,
+          "bread": 0,
+          "grain": 0
+        },
+        "225366": {
+          "gold": 28,
+          "bread": 2,
+          "grain": 0
+        },
+        "225368": {
+          "gold": 24,
+          "bread": 1,
+          "grain": 0
+        },
+        "225386": {
+          "gold": 20,
+          "bread": 1,
+          "grain": 0
+        },
+        "225390": {
+          "gold": 20,
+          "bread": 2,
+          "grain": 0
+        },
+        "225392": {
+          "gold": 27,
+          "bread": 1,
+          "grain": 0
+        },
+        "225408": {
+          "gold": 25,
+          "bread": 1,
+          "grain": 0
+        },
+        "225409": {
+          "gold": 20,
+          "bread": 1,
+          "grain": 0
+        },
+        "843123": {
+          "gold": 30,
+          "bread": 1,
+          "grain": 0
+        },
+        "1048823": {
+          "gold": 28,
+          "bread": 0,
+          "grain": 0
+        },
+        "1106614": {
+          "gold": 60,
+          "bread": 1,
+          "grain": 0
+        }
+      }
+    }
+  ]
+}

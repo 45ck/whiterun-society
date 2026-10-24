@@ -18,7 +18,9 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Routing experiment:** Idolaf took an owned task outside the original three-resident system, travelled from 3,840 to 247 units and returned to a vanilla package. Separate Jev trials selected a nearby visit and a deferral. The daily planner can now offer supported food errands to other loaded adults. Save P restored all compared fields; save N exposed gold differences in named residents as well as guards. [Routing, decisions and retained failures](docs/papyrus-routing.md).
 
-**Latest resource milestone:** all 29 initialized residents received finite, once-per-lineage native grants: 660 gold, 58 bread and 20 grain in total, with 340 gold, 42 bread and 80 grain left in the explicit external pool. A cold restart restored all 29 funded inventories exactly. A subsequent game-clock review led a guard, Amren and Adrianne to choose and consume one loaf each; the post-meal save also restored correctly. Earlier unfunded guard-purse failures remain documented. [Resources, scheduled meals and evidence](docs/founding-resources.md).
+**Resource milestone:** all 29 initialized residents received finite, once-per-lineage native grants: 660 gold, 58 bread and 20 grain in total, with 340 gold, 42 bread and 80 grain left in the explicit external pool. A cold restart restored all 29 funded inventories exactly. A subsequent game-clock review led a guard, Amren and Adrianne to choose and consume one loaf each; the post-meal save also restored correctly. Earlier unfunded guard-purse failures remain documented. [Resources, scheduled meals and evidence](docs/founding-resources.md).
+
+**Latest employment experiment:** the planner now supports eligible workers beyond Ysolda, business stock reviews, bilateral job consent and save-bound contracts. Live trials completed 25 further meals, a stock review and two employer refusals across 28 decisions. Carlotta retained her reserve policy and did not hire; no new worker's completed shift is claimed. The final state restored correctly. [Employment, economic bottlenecks and evidence](docs/resident-employment.md).
 
 ## Run the tests
 

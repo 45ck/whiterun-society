@@ -11,6 +11,7 @@ from food import allocation
 from production import work_inventory
 from market_day import event_for
 from routing import route_available, dynamic_route
+from labour import work_opportunities, settle_contract
 
 TERMINAL = ('complete', 'held')
 
@@ -50,8 +51,6 @@ class Agency:
             raise ValueError('A bounded event ID is required')
         if kind not in ('meal_time','stock_review','work_shift','need_review') or type(actor) is not int or str(actor) not in self.active['people']:
             raise ValueError('Unsupported resident or event kind')
-        if kind == 'work_shift' and actor != 108186:
-            raise ValueError('This prototype contract is for Ysolda and Carlotta')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
                 if plan['actor'] != actor or plan['kind'] != kind:
@@ -66,9 +65,10 @@ class Agency:
             raise ValueError('Another resident plan is active')
         state = copy.deepcopy(self.active)
         person = state['people'][str(actor)]
-        if kind=='need_review':
-            event=next((e for e in state.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
-            if not event or event['actor']!=actor or event['status']!='pending':
+        event=next((e for e in state.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
+        scheduled = kind=='need_review' or event is not None
+        if scheduled:
+            if not event or event['actor']!=actor or event['kind']!=kind or event['status']!='pending':
                 raise ValueError('A matching pending daily opportunity is required')
             if not any(a.get('id')==actor and a.get('isPerson') is True for a in observation.get('residents',[])):
                 raise ValueError('Scheduled resident is no longer observed')
@@ -80,9 +80,16 @@ class Agency:
         plan = {'id': event_id, 'kind': kind, 'actor': actor, 'phase': 'allocate' if kind=='stock_review' else 'choose',
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
                 'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
+        if scheduled:plan['scheduled']=True
         state.setdefault('plans', []).append(plan)
         if kind == 'work_shift':
-            plan.update(phase='job_offer', target=108149)
+            jobs = work_opportunities(state, observation, actor)
+            if jobs:
+                plan.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
+            elif actor == 108186 and not state.get('town'):
+                plan.update(phase='job_offer', target=108149)  # Original standalone demo.
+            else:
+                raise ValueError('No feasible paid-work opportunity for this resident')
         return {'checkpoint': self._write(state, kind+' triggered resident planning'), 'plan': plan}
 
     def _plan_context(self, observation, plan):
@@ -102,12 +109,14 @@ class Agency:
             options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
             resources = work_inventory(observation, plan['actor'], plan['target'])
             if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= 2:
-                options.append({'id':'offer_shift','effect':'Offer Ysolda 2 gold from your purse to convert one of your grain into two loaves. She may refuse. Pay only after 30 game minutes of qualified work and observed production.'})
-            information = 'Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output.'
+                worker_name = self.active['people'][str(plan['actor'])]['profile']['name']
+                options.append({'id':'offer_shift','effect':f'Offer {worker_name} 2 gold from your purse to convert one of your grain into two loaves. They may refuse. Pay only after 30 game minutes of qualified work and observed production.'})
+            information = 'Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output. The scenario stock target is eight loaves. Two loaves might bring six gold at the initial asking price, but sales are not guaranteed and grain has an opportunity cost. Keep your money if replenishing is not worthwhile.'
         elif plan['phase']=='job_accept':
+            employer_name = self.active['people'][str(plan['target'])]['profile']['name']
             options = [{'id':'decline_work','effect':'Decline the job. No goods or wages change hands.'},
-                       {'id':'take_shift','effect':'Accept Carlotta\'s offer: walk to her, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.'}]
-            information = 'Carlotta offers you a paid job: 2 gold for 30 game minutes of bread-making work at her location. Consider your needs, priorities, and prior experience. Her private inventory is not known.'
+                       {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: walk to the employer, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.'}]
+            information = f'{employer_name} offers you a paid job: 2 gold for 30 game minutes of bread-making work at their location. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
         elif plan['phase']=='allocate':
             options = [{'id':'reserve_all','effect':'Keep all carried bread for your household. None is offered for sale until you review this policy again.'},
                        {'id':'reserve_one','effect':'Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.'},
@@ -141,7 +150,9 @@ class Agency:
                 options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
             if route_available(observation,actor,108149) and inventory['gold'] >= 3 and inventory['bread'] == 0:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
-            information = 'Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.'
+            if plan['kind']=='need_review' and work_opportunities(self.active, observation, actor):
+                options.append({'id':'seek_work','effect':'Ask the food enterprise about a 30-game-minute bread-making shift paying 2 gold. The employer must offer and you must accept before travel or work. No wage is guaranteed.'})
+            information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
                 'observed_inventory': copy.deepcopy(inventory),
@@ -192,7 +203,11 @@ class Agency:
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action == 'offer_shift':
+        if action == 'seek_work':
+            jobs = work_opportunities(self.active, observation, updated['actor'])
+            if not jobs:raise ValueError('Work opportunity is no longer available')
+            updated.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
+        elif action == 'offer_shift':
             updated['phase'] = 'job_accept'
         elif action == 'decline_work':
             updated.update(phase='complete', outcome='work_declined')
@@ -202,7 +217,13 @@ class Agency:
                 updated.setdefault('travel_history', []).append(updated['travel'])
                 updated['travel'] = None
                 travel_id += '-replan-' + str(len(updated['decisions']))
-            updated.update(phase='travelling', target=108149 if action in ('seek_bread','take_shift') else 108156,
+            target = updated['target'] if action == 'take_shift' else (108149 if action == 'seek_bread' else 108156)
+            if action == 'take_shift' and updated.get('work_terms'):
+                terms = updated['work_terms']
+                state['town']['businesses'][terms['business_id']]['contracts'].append({
+                    'id':event_id,'worker':updated['actor'],'employer':target,'status':'accepted',
+                    'terms':copy.deepcopy(terms['policy']), 'source':'Employer offer and worker consent; no completed work yet'})
+            updated.update(phase='travelling', target=target,
                            intent=action, travel_id=travel_id, release_required=True)
             updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
         elif action == 'raise_offer':
@@ -221,6 +242,7 @@ class Agency:
             state['people'][str(plan['actor'])]['food_policy'] = {
                 'mode':'household_all' if action=='reserve_all' else 'fixed_reserve',
                 'reserve_target':{'reserve_all':0,'reserve_one':1,'reserve_two':2}[action],
+                'reviewed_day':observation.get('gameDays'), 'observed_bread':current['observed_inventory']['bread'],
                 'source_event':event_id, 'source':'resident selected among authored allocation policies'}
             updated.update(phase='complete',outcome='allocated_stock')
         elif action == 'eat_bread':
@@ -268,8 +290,9 @@ class Agency:
             elif plan.get('outcome') in ('deferred','visited_only','left_without_food','work_declined'):
                 decision_actor=plan['decisions'][-1]['actor_id'] if plan.get('decisions') else plan['actor']
                 person=state['people'][str(decision_actor)]
+                other=plan['actor'] if decision_actor==plan.get('target') else plan.get('target')
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
-                    'other':plan.get('target'),'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
+                    'other':other,'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
                 person['memories']=person['memories'][-32:]
             elif plan.get('outcome')=='allocated_stock':
                 person=state['people'][str(plan['actor'])]
@@ -277,7 +300,8 @@ class Agency:
                     'policy':copy.deepcopy(person['food_policy']),'source':'own allocation decision; no inventory change'})
                 person['memories']=person['memories'][-32:]
             updated['remembered']=True
-            if plan['kind']=='need_review':
+            settle_contract(state, updated, plan.get('outcome') or 'held')
+            if plan['kind']=='need_review' or plan.get('scheduled'):
                 event=next(e for e in state['town']['daily']['queue'] if e['id']==plan['id'])
                 event.update(status=plan['phase'],outcome=plan.get('outcome'),settled_day=observation.get('gameDays'))
                 person=state['people'][str(plan['actor'])]

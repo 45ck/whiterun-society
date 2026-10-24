@@ -6,6 +6,7 @@ activity. Unsupported rest, social and travel actions remain explicitly unmet.
 import copy
 import math
 from routing import route_available
+from labour import work_opportunities
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -94,6 +95,23 @@ class DailyLife:
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
             elif person['needs']['fatigue'] >= .8:
                 agency.update(state='unmet_rest_need', reason='A verified sleep/rest executor is not implemented')
+            elif (any(b['custodian']==int(key) and 'retail_food' in b['capabilities'] for b in town['businesses'].values())
+                  and (person.get('food_policy',{}).get('reviewed_day') is None
+                       or day-person['food_policy']['reviewed_day'] >= 4/24-1e-7
+                       or abs(inventory['bread']-person['food_policy'].get('observed_bread',inventory['bread'])) >= 2)):
+                event = {'id': f"daily-{daily['sequence']}-{key}", 'actor':int(key),
+                    'kind':'stock_review', 'status':'pending', 'created_day':day, 'priority':.55,
+                    'reason':'Business reserve policy is due for review after time or stock changes',
+                    'observed_inventory':copy.deepcopy(inventory)}
+                daily['queue'].append(event);added.append(event['id'])
+                agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
+            elif work_opportunities(state, observation, int(key)):
+                event = {'id': f"daily-{daily['sequence']}-{key}", 'actor': int(key),
+                    'kind':'need_review', 'status':'pending', 'created_day':day,
+                    'priority':.5, 'reason':'A funded local enterprise can replenish stock with paid labour',
+                    'observed_inventory':copy.deepcopy(inventory)}
+                daily['queue'].append(event);added.append(event['id'])
+                agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
             elif person['needs']['social_contact'] >= .7:
                 agency.update(state='unmet_social_need', reason='An autonomous social encounter selector is not implemented')
         # Keep current work; retain a bounded terminal audit tail in each snapshot.
