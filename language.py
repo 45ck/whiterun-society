@@ -1,11 +1,45 @@
 """Local language layer: generate alternatives, never choose or execute effects."""
 import json
+import math
+import re
 import time
 import urllib.request
 from conversation import validate_candidates
 
 
+class LanguageOutputError(ValueError):
+    """A billed response was rejected; retain finite telemetry, never raw output."""
+    def __init__(self, reason, receipt):
+        super().__init__(reason)
+        self.receipt = receipt
+
+
+def _usage(raw):
+    result = {}
+    if not isinstance(raw, dict):
+        return result
+    for field in ('prompt_tokens', 'completion_tokens', 'total_tokens', 'cost'):
+        value = raw.get(field)
+        if type(value) in (int, float) and math.isfinite(value) and value >= 0:
+            result[field] = value
+    details = raw.get('completion_tokens_details')
+    if isinstance(details, dict):
+        value = details.get('reasoning_tokens')
+        if type(value) is int and value >= 0:
+            result['completion_tokens_details'] = {'reasoning_tokens': value}
+    return result
+
+
 def propose(context, config, key):
+    effort = config.get('reasoning_effort')
+    provider = config.get('openrouter_provider')
+    if effort is not None and effort not in ('none', 'minimal', 'low', 'medium', 'high'):
+        raise ValueError('Unsupported dialogue reasoning effort')
+    if provider is not None and (not isinstance(provider, str) or
+            not re.fullmatch(r'[A-Za-z0-9_/-]{1,80}', provider)):
+        raise ValueError('Invalid OpenRouter provider')
+    if (effort is not None or provider is not None) and config.get('provider') != 'openrouter_chat':
+        raise ValueError('OpenRouter controls require the OpenRouter adapter')
     schema={'type':'object','additionalProperties':False,'required':['candidates'], 'properties':{
         'candidates':{'type':'array','minItems':2,'maxItems':2,'items':{'type':'object','additionalProperties':False,
             'required':['id','intention','line','tone'],'properties':{
@@ -33,6 +67,10 @@ def propose(context, config, key):
     if config.get('provider')=='openrouter_chat':
         payload.pop('chat_template_kwargs')
         if config['model'].startswith('google/'):payload['reasoning']={'enabled':False}
+        if effort is not None:
+            payload['reasoning']={'effort':effort}
+        if provider is not None:
+            payload['provider']={'only':[provider], 'allow_fallbacks':False, 'require_parameters':True}
         endpoint='https://openrouter.ai/api/v1/chat/completions'
     else:
         endpoint=config['url']+'/v1/chat/completions'
@@ -40,8 +78,20 @@ def propose(context, config, key):
         headers={'Content-Type':'application/json','Authorization':'Bearer '+key})
     start=time.monotonic()
     with urllib.request.urlopen(req,timeout=180) as response:raw=json.load(response)
-    choice=raw['choices'][0]
-    if choice.get('finish_reason')!='stop':raise ValueError('Incomplete language output')
-    proposal=json.loads(choice['message']['content']);validate_candidates(proposal)
+    receipt={'model':config['model'], 'elapsed_seconds':round(time.monotonic()-start,3),
+             'usage':_usage(raw.get('usage')) if isinstance(raw,dict) else {}}
+    try:
+        choice=raw['choices'][0]
+        finish=choice.get('finish_reason')
+        receipt['finish_reason']=finish if finish in ('stop','length','content_filter','tool_calls','error') else 'unknown'
+        if finish!='stop':raise LanguageOutputError('Incomplete language output',receipt)
+        proposal=json.loads(choice['message']['content'])
+        validate_candidates(proposal)
+    except LanguageOutputError:
+        raise
+    except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+        raise LanguageOutputError('Invalid language candidates',receipt) from None
     return {'proposal':proposal,'model':raw.get('model',config['model']),
-        'elapsed_seconds':round(time.monotonic()-start,3),'usage':raw.get('usage',{})}
+        'elapsed_seconds':receipt['elapsed_seconds'],'usage':raw.get('usage',{}),
+        'provider':raw.get('provider'),
+        'requested_reasoning_effort':effort, 'requested_provider':provider}

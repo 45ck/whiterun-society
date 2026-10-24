@@ -2,13 +2,30 @@
 
 Ordinary dialogue should use the least expensive model that meets the scene's quality and latency requirements. The current language role proposes wording and conversational intentions; Jev makes constrained selections, code enforces consequences, and Skyrim executes movement. A larger reasoning model is not required on every utterance. Small models can also reason; model size is not an authority boundary.
 
-The current runtime configuration remains GPT-4.1 mini. Smaller candidates were tested without changing the game or its model configuration. A future escalation policy for difficult planning or social negotiation is a design target, not an implemented automatic router.
+Calvin has selected cloud inference through OpenRouter as the implementation direction; local inference is optional. Mercury 2.5 is the leading candidate. The current runtime configuration remains GPT-4.1 mini until qualification is complete. Smaller candidates were tested without changing the game or its model configuration. A future escalation policy for difficult planning or social negotiation is a design target, not an implemented automatic router.
+
+## Latest twelve-call cloud probe
+
+Six identical scenes were sent once each to Granite 4.2 8B through CoreWeave and Mercury 2.5 through Inception. Providers were fixed, fallback disabled, and `reasoning.effort: none` requested after checking catalog support. Two scenes came from saved encounters; four were synthetic: polite refusal, worker/employer roles, unknown weather/private wealth, and an instruction embedded in heard speech. No Jev, voice synthesis or game action ran. [Full plan, outputs, review and receipts](evidence/dialogue-latest-probe.json)
+
+| Route | Valid responses | Mean wall time of valid responses | Reported cost |
+| --- | ---: | ---: | ---: |
+| Mercury 2.5 / Inception | 5/6 | 1.294 seconds | $0.00037856, incomplete |
+| Granite 4.2 8B / CoreWeave | 3/6 | 2.573 seconds | $0.00024105, incomplete |
+
+All accepted replies met the requested 8–30 words per alternative. Granite returned three HTTP 429 responses; Mercury returned one rejected response without retained usage or finish reason. The latter does not establish prompt-injection susceptibility: the available receipt cannot distinguish an invalid provider envelope from invalid content. Missing usage is unknown cost, not zero. This is one sample per case/route, not a reliable percentile benchmark.
+
+Mercury correctly preserved worker/employer roles and payment in the paid-work case. Both models invented weather when none was supplied. Mercury's other alternative in that case correctly admitted uncertainty. Granite also invented a current rest activity. These results support improving fact grounding before promotion rather than selecting solely on speed.
+
+Mercury reported 67–143 reasoning tokens in accepted responses despite requesting `none`; the flag is not proof of zero reasoning or its cost. Granite reported zero reasoning tokens. The adapter now supports explicit `reasoning_effort` and `openrouter_provider`, records provider provenance, and preserves finite cost/token telemetry when parsed output is rejected. The conversation worker saves that rejection receipt before holding the encounter.
+
+`tools/probe_dialogue.py` accepts a JSON plan containing `cases` and `configs`, limits a run to twelve calls and 6,000 characters per context, records each claim before sending it, and refuses to overwrite any prior receipt. Use a fresh output only for a deliberately new experiment. Set `WHITERUN_OPENROUTER_KEY` in the process environment; never store it in a plan. Ordinary dialogue configuration remains unchanged unless explicitly qualified and promoted.
 
 ## Latest shortlist: August–October 2026 releases
 
 Researched on 25 October 2026 using [Artificial Analysis releases](https://artificialanalysis.ai/models/releases) and the live OpenRouter catalog. GPT-4.1 mini is the existing baseline, not the recommended destination. The earlier Ministral probe below is a narrow historical experiment, not a comparison of the latest models.
 
-Prices are USD per million input/output tokens from this [public catalog snapshot](evidence/model-catalog-20261025.json). They exclude caching and extra reasoning tokens; catalog listing timestamps are not release dates. All six cloud candidates advertise structured outputs, but none has yet passed our dialogue adapter and scene-grounding tests.
+Prices are USD per million input/output tokens from this [public catalog snapshot](evidence/model-catalog-20261025.json). They exclude caching and extra reasoning tokens; catalog listing timestamps are not release dates. All six cloud candidates advertise structured outputs, but none has yet passed complete scene-grounding qualification.
 
 | Candidate | OpenRouter input / output | Evidence and intended experiment |
 | --- | ---: | --- |
@@ -21,7 +38,7 @@ Prices are USD per million input/output tokens from this [public catalog snapsho
 
 The genuine tiny local shortlist is [K2 Horizon 3.7B](https://artificialanalysis.ai/models/k2-horizon-3-7b) and [MiniCPM5-2B](https://artificialanalysis.ai/models/minicpm5-2b), both September releases. AA lists 3.7B and 2.6B parameters respectively, with open weights. No OpenRouter route was found for either in this catalog snapshot, and no speed under this PC's Skyrim workload has been measured. K2's benchmarked variant reasons, so small size alone does not guarantee quick replies. Quantization, runtime support and GPU contention need qualification before installation becomes a default.
 
-Recommended next experiment: Granite 4.2 8B and Mercury 2.5 for cloud dialogue, then K2 Horizon 3.7B versus MiniCPM5-2B locally. Use matched short scenes, an explicit reasoning budget or supported thinking-off mode, and measure p50/p95 time to **validated usable line** and **audible speech**, grounding failures, repetition, JSON validity and actual billed cost. Check provider support before sending reasoning controls. Keep deterministic fallbacks when inference is late; never block the economy waiting for a sentence.
+Next: improve personal-knowledge context and qualify Mercury on grounded scenes and in-game voice. Local K2 Horizon versus MiniCPM5 comparison is optional. Use matched short scenes, an explicit reasoning budget or supported thinking-off mode, and enough samples to measure p50/p95 time to **validated usable line** and **audible speech**, grounding failures, repetition, JSON validity and actual billed cost. Check provider support before sending reasoning controls. Keep deterministic fallbacks when inference is late; never block the economy waiting for a sentence.
 
 For scale, an illustrative 1,000-input + 100-output-token utterance costs $0.000055 on Mercury 2.5, $0.000085 on Granite, or $0.00056 on the existing GPT-4.1 mini baseline. At 10,000 such utterances that is $0.55, $0.85 or $5.60 respectively, excluding reasoning, retries and TTS. These are arithmetic estimates, not measured production bills. Shortening and grounding context can matter as much as the model choice.
 

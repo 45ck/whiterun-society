@@ -22,7 +22,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 [Living development plan: dynamic residents, personal knowledge and RTS mode](docs/development-plan.md) · [Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
 
-The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. An initial nine-call comparison found cheaper small-model output but grounding and length failures, so the current default remains unchanged. [Model pricing, measured timings and routing direction](docs/model-routing.md)
+The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. A twelve-call follow-up produced five valid Mercury 2.5 replies averaging 1.294 seconds, but exposed unsupported weather claims and one rejected response. Mercury is the leading candidate; the runtime default remains unchanged pending grounding and voice qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
 ## Examples from the running prototype
 

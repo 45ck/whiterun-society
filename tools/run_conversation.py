@@ -10,7 +10,7 @@ import time
 import urllib.request
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from language import propose
+from language import LanguageOutputError, propose
 from decisions import infer
 from social import SOCIAL_STAGES
 
@@ -91,6 +91,7 @@ def main():
         raise TimeoutError('Conversation execution cap reached')
     except Exception as e:
         evidence.update(status='held',error=type(e).__name__+': '+str(e)[:200])
+        if isinstance(e, LanguageOutputError):evidence['rejected_language']=e.receipt
         try:req('/conversation/hold',{'id':args.id,'reason':evidence['error']})
         except (OSError,ValueError):evidence['hold_not_confirmed']=True
         record();raise
