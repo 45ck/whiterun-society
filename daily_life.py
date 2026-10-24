@@ -132,7 +132,7 @@ class DailyLife:
                     daily['queue'].append(event);added.append(event['id'])
                     agency.update(state='decision_pending',reason=event['reason'],event_id=event['id'])
                 else:agency.update(state='unmet_rest_need',reason='No qualified available bench or an existing commitment prevents a break')
-            elif (any(b['custodian']==int(key) and 'retail_food' in b['capabilities'] for b in town['businesses'].values())
+            elif (any(b.get('active',True) is True and b['custodian']==int(key) and 'retail_food' in b['capabilities'] for b in town['businesses'].values())
                   and (person.get('food_policy',{}).get('reviewed_day') is None
                        or day-person['food_policy']['reviewed_day'] >= 4/24-1e-7
                        or abs(inventory['bread']-person['food_policy'].get('observed_bread',inventory['bread'])) >= 2)):

@@ -12,6 +12,9 @@ class DailyLifeTests(unittest.TestCase):
         test_population.PopulationTests.setUp(self)
         self.census()
         self.world.initialize_population('census','daily-seed',self.obs);self.sync()
+        self.world.configure_enterprise('fixture-bakery', {'id':'business-108149','expected_revision':0,
+            'name':'Fixture food enterprise','custodian':108149,'capabilities':['bread_recipe','retail_food'],
+            'active':True}, self.obs);self.sync()
         for p in self.world.active['people'].values():
             if 'agency' in p:p['needs']['hunger']=.4
         self.world.active['people']['108149']['food_policy']={'mode':'fixed_reserve','reserve_target':1,

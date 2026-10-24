@@ -11,7 +11,7 @@ def food_sellers(state, observation, buyer):
         ids = [108149]
     else:
         ids = sorted({b['custodian'] for b in town.get('businesses', {}).values()
-                      if 'retail_food' in b.get('capabilities', [])})
+                      if b.get('active', True) is True and 'retail_food' in b.get('capabilities', [])})
     actors = {r['id']: r for r in observation.get('residents', [])}
     own = actors.get(buyer, {})
     result = []

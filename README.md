@@ -26,6 +26,10 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 ## Examples from the running prototype
 
+### Change the town's businesses
+
+The visual observer now creates and edits enterprises for current residents: custodian, wage, shift duration, stock target, and open or closed status. A census no longer creates businesses for a fixed named cast. Residents compare current jobs and independently accept or refuse the offered terms; native inventory backs wages and production. The live four-gold employment trial produced an employer refusal, which is preserved as a real model outcome. [Enterprise controls, execution loop and test evidence](docs/enterprises.md)
+
 ### Personal knowledge and the RTS overview
 
 ![Generated infographic of personal knowledge, Jev choices, Mercury speech and verified memory](docs/images/personal-knowledge-loop.png)

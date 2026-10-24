@@ -17,6 +17,7 @@ from places import MARKET, market_opportunity, at_market
 from opportunities import food_sellers
 from knowledge import person_view
 from social import social_candidates
+from enterprises import plan_work_policy, current_work_terms
 
 TERMINAL = ('complete', 'held')
 
@@ -113,6 +114,11 @@ class Agency:
             raise ValueError('Invalid observed inventory')
         stock = allocation(person, inventory)
         targets = {}
+        work_options = {}
+        if plan['phase'] in ('job_offer', 'job_accept'):
+            current_work_terms(self.active, plan)
+        policy = plan_work_policy(plan)
+        wage, minutes = policy['wage_gold'], policy['work_minutes']
         def visits():
             if self.active.get('town') is None:
                 rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156) else []
@@ -124,15 +130,15 @@ class Agency:
         if plan['phase']=='job_offer':
             options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
             resources = work_inventory(observation, plan['actor'], plan['target'])
-            if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= 2:
+            if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= wage:
                 worker_name = person_view(self.active,actor,plan['actor'])['name']
-                options.append({'id':'offer_shift','effect':f'Offer {worker_name} 2 gold from your purse to convert one of your grain into two loaves. They may refuse. Pay only after 30 game minutes of qualified work and observed production.'})
-            information = 'Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output. The scenario stock target is eight loaves. Two loaves might bring six gold at the initial asking price, but sales are not guaranteed and grain has an opportunity cost. Keep your money if replenishing is not worthwhile.'
+                options.append({'id':'offer_shift','effect':f'Offer {worker_name} {wage} gold from your purse to convert one of your grain into two loaves. They may refuse. Pay only after {minutes} game minutes of qualified work and observed production.'})
+            information = f'Consider paid bread-making to replenish your stock toward your enterprise target of {policy["target_bread"]} loaves. The recipe is authored; no oven animation is implemented. Your household reserve applies to output. Two loaves might bring six gold at the initial asking price, but sales are not guaranteed, wages cost {wage} gold and grain has an opportunity cost. Keep your money if replenishing is not worthwhile.'
         elif plan['phase']=='job_accept':
             employer_name = person_view(self.active,actor,plan['target'])['name']
             options = [{'id':'decline_work','effect':'Decline the job. No goods or wages change hands.'},
-                       {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: walk to the employer, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.'}]
-            information = f'{employer_name} offers you a paid job: 2 gold for 30 game minutes of bread-making work at their location. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
+                       {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: walk to the employer, spend {minutes} game minutes on simulated bread-making work and receive {wage} gold after the output is verified. You supply labour, not grain or money.'}]
+            information = f'{employer_name} offers you a paid job: {wage} gold for {minutes} game minutes of bread-making work at their location. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
         elif plan['phase']=='allocate':
             options = [{'id':'reserve_all','effect':'Keep all carried bread for your household. None is offered for sale until you review this policy again.'},
                        {'id':'reserve_one','effect':'Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.'},
@@ -170,8 +176,13 @@ class Agency:
                     options.append({'id':action,'effect':'Walk to '+seller['name']+', a publicly registered food seller, and offer 3 gold for one loaf. Stock is unknown and they may refuse.'})
             elif inventory['gold'] >= 3 and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
                 options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
-            if plan['kind']=='need_review' and work_opportunities(self.active, observation, actor):
-                options.append({'id':'seek_work','effect':'Ask the food enterprise about a 30-game-minute bread-making shift paying 2 gold. The employer must offer and you must accept before travel or work. No wage is guaranteed.'})
+            if plan['kind']=='need_review':
+                for i, job in enumerate(work_opportunities(self.active, observation, actor)[:6]):
+                    action = 'seek_work' if i == 0 else 'seek_work_' + job['business_id']
+                    work_options[action] = job
+                    targets[action] = job['employer']
+                    terms = job['policy']
+                    options.append({'id': action, 'effect': f'Ask {job["employer_name"]} about an advertised {terms["work_minutes"]}-game-minute bread-making shift paying {terms["wage_gold"]} gold. The employer must offer and you must accept. No wage is guaranteed.'})
             if plan['kind']=='need_review' and person['needs'].get('fatigue',0)>=.6 and rest_opportunities(self.active,observation,actor):
                 options.append({'id':'rest_at_bench','effect':'Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.'})
             information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
@@ -183,7 +194,8 @@ class Agency:
                 'perception': self._resident_perception(observation, actor),
                 'prior_knowledge': 'Public enterprise charters identify advertised services, not personal names, private stock or willingness. Names require personal knowledge. The 3-gold initial offer and 5-gold final offer are authored starting assumptions, not discovered market prices.',
                 'memories': person['memories'][-8:], 'trust': person['trust'],
-                'my_relationships':person.get('relationships',{}), 'option_targets':targets, 'options': options}
+                'my_relationships':person.get('relationships',{}), 'option_targets':targets,
+                'work_options':work_options, 'options': options}
 
     def _resident_perception(self, observation, actor):
         sensor = observation.get('perception', {}).get(str(actor), {})
@@ -219,6 +231,8 @@ class Agency:
         chosen=decision['action_id']
         if current.get('option_targets',{}).get(chosen)!=claim['context'].get('option_targets',{}).get(chosen):
             raise ValueError('The chosen destination changed while deciding')
+        if current.get('work_options',{}).get(chosen)!=claim['context'].get('work_options',{}).get(chosen):
+            raise ValueError('The chosen employment terms changed while deciding')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
         state = copy.deepcopy(self.active)
@@ -239,10 +253,9 @@ class Agency:
             sites=rest_opportunities(self.active,observation,updated['actor'])
             if not sites:raise ValueError('No available rest site remains')
             updated.update(phase='ready_to_rest',rest_target=sites[0]['id'])
-        elif action == 'seek_work':
-            jobs = work_opportunities(self.active, observation, updated['actor'])
-            if not jobs:raise ValueError('Work opportunity is no longer available')
-            updated.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
+        elif action == 'seek_work' or action.startswith('seek_work_'):
+            job = current['work_options'][action]
+            updated.update(phase='job_offer', target=job['employer'], work_terms=job)
         elif action == 'offer_shift':
             updated['phase'] = 'job_accept'
         elif action == 'decline_work':

@@ -11,11 +11,26 @@
 <div class="controls"><button id="follow">Follow selected</button><button data-mode="market">Market</button><button data-mode="street">Street</button><button data-mode="free">Free overlook</button></div>
 <div class="sliders"><label>Zoom distance <input id="distance" type="range" min="100" max="4000" value="650"></label><label>Orbit <input id="yaw" type="range" min="-360" max="360" value="225"></label><label>Camera height <input id="elevation" type="range" min="40" max="2500" value="300"></label><label>Map east / west <input id="panX" type="range" min="17000" max="30000" value="24500"></label><label>Map north / south <input id="panY" type="range" min="-15000" max="1000" value="-7100"></label></div><div id="camera-status" class="muted" role="status">Camera changes do not change NPC goals or inventories.</div></div>
 <div class="panel section"><div class="eyebrow">Intent → execution → consequence</div><h2>What is happening</h2><div id="activity"></div><div id="timeline"></div></div>
-<div class="panel section"><div class="eyebrow">Supply, labour & exchange</div><h2>Town enterprises</h2><div id="consequences"></div><div id="businesses"></div></div></section>
+<div class="panel section"><div class="eyebrow">Supply, labour & exchange</div><h2>Town enterprises</h2>
+<p class="muted">Set the opportunities. Residents still choose whether to work, buy or sell. Charters use existing inventory; they create no money or supplies.</p>
+<button id="new-enterprise">Create enterprise</button><div id="enterprise-status" role="status" class="muted"></div>
+<form id="enterprise-form" hidden class="section" aria-label="Enterprise editor">
+<h2 id="enterprise-title">Create enterprise</h2><div class="sliders">
+<label>Public business name <input id="enterprise-name" required maxlength="80"></label>
+<label>Physical custodian <select id="enterprise-custodian" required></select></label>
+<label>Activity <select id="enterprise-kind"><option value="bakery">Bread production and sales</option><option value="shop">Food sales only</option></select></label>
+<label>Wage per shift (gold) <input id="enterprise-wage" type="number" min="1" max="20" step="1" required value="2"></label>
+<label>Shift length (game minutes) <input id="enterprise-minutes" type="number" min="5" max="120" step="1" required value="30"></label>
+<label>Replenishment target (loaves) <input id="enterprise-target" type="number" min="2" max="40" step="1" required value="8"></label>
+<label>Trading status <select id="enterprise-active"><option value="true">Open</option><option value="false">Closed</option></select></label></div>
+<p class="muted">One grain + an accepted shift produces two loaves. Changing custodian changes which inventory backs the business; existing goods stay with their current holder. Several charters can share one inventory.</p>
+<div class="controls"><button id="save-enterprise" type="submit">Save enterprise</button><button id="cancel-enterprise" type="button">Cancel</button></div></form>
+<div id="consequences"></div><div id="businesses"></div></div></section>
 <aside class="panel inspector"><div class="eyebrow">Resident inspector</div><h2 id="name">Select a resident</h2><div class="tab" role="group" aria-label="Inspector section"><button data-tab="needs" class="active">Needs</button><button data-tab="mind">Character</button><button data-tab="relationships">Relationships</button><button data-tab="knowledge">Knowledge</button><button data-tab="memory">Memory</button></div><div id="details"></div></aside>
 </main><footer id="limits"></footer>
 <script>
 const token='__OBSERVER_TOKEN__',el=id=>document.getElementById(id);let state=null,selected=null,tab='needs',mode='market',pendingRequest=null,lastSuccess=0,busy=false;
+let enterpriseEdit=null,enterprisePending=null;
 function add(parent,tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;parent.append(e);return e;}
 const pretty=s=>String(s??'unknown').replaceAll('_',' '),personName=id=>state?.residents.find(r=>r.id===Number(id))?.name||state?.places?.find(p=>p.id===Number(id))?.name||String(id);
 function select(id){selected=id;render();}
@@ -45,14 +60,36 @@ function render(){if(!state)return;const rows=state.residents,chosen=rows.find(r
  if(c){for(const d of c.social_decisions||[])add(activity,'p',`${personName(d.actor)}: ${d.decision.action_id.startsWith('approach_')?'approach '+personName(d.decision.action_id.slice(9)):pretty(d.decision.action_id)} · ${d.stage.startsWith('reflect_')?'private appraisal':pretty(d.stage)}`,'event');add(activity,'p',`Encounter: ${pretty(c.phase)} · ${c.turns?.length||0} recorded turns`);for(const turn of (c.turns||[]).slice(-2))if(turn.selected)add(activity,'p',`${personName(turn.speaker)}: ${turn.selected.line||turn.selected.text||turn.selected.intention||'Spoken turn recorded'}`,'event');}
  const timeline=el('timeline');timeline.replaceChildren();for(const event of [...(state.daily?.queue||[])].reverse().slice(0,16))add(timeline,'div',`${personName(event.actor)} · ${pretty(event.outcome||event.kind)} · ${event.status}`,'event');
  const consequences=el('consequences');consequences.replaceChildren();add(consequences,'h2','Verified recent consequences');
+ if(state.unsettled_effect?.status==='held')add(consequences,'p','Economy paused for reconciliation: '+(state.unsettled_effect.evidence?.ack?.error||'Unverified physical effect')+'. No automatic retry.','warning');
+ for(const record of [...(state.cancelled_production||[])].reverse().slice(0,3))add(consequences,'p',`${personName(record.command.worker)} · work interrupted before inventory effects · no wage paid or bread made`,'event');
  for(const record of [...(state.consumptions||[])].reverse().slice(0,5)){if(record.status!=='committed')continue;const c=record.command;add(consequences,'p',`${personName(c.actor)} ate a loaf · bread ${c.before.bread} → ${c.after.bread} · gold ${c.before.gold} → ${c.after.gold}`,'event');}
  for(const record of [...(state.production||[])].reverse().slice(0,3)){if(record.status!=='committed')continue;const c=record.command;add(consequences,'p',`${personName(c.worker)} completed paid work for ${personName(c.employer)} · grain ${c.before.employer.grain} → ${c.after.employer.grain} · bread ${c.before.employer.bread} → ${c.after.employer.bread} · worker gold ${c.before.worker.gold} → ${c.after.worker.gold}`,'event');}
  add(consequences,'p','Observed inventory effects in this save. Plans, visits and interrupted decisions are not counted as production or meals.','muted');
- const businesses=el('businesses');businesses.replaceChildren();for(const b of state.businesses){const box=add(businesses,'div',undefined,'event');add(box,'strong',b.name);add(box,'p',`Custodian: ${personName(b.custodian)} · ${b.contracts?.filter(c=>c.status==='completed').length||0} completed contracts`,'muted');for(const c of (b.contracts||[]).slice(-3))add(box,'p',`${personName(c.worker)} · ${c.status} · ${c.terms?.wage_gold??'—'} gold`);}
+ const businesses=el('businesses');businesses.replaceChildren();for(const b of state.businesses){const box=add(businesses,'div',undefined,'event');add(box,'strong',b.name);add(box,'p',`${b.active?'Open':'Closed'} · revision ${b.revision} · custodian: ${personName(b.custodian)}`,'muted');const p=b.production_policy;if(b.capabilities.includes('bread_recipe'))add(box,'p',`${p.wage_gold} gold / ${p.work_minutes} game minutes · stock target ${p.target_bread} loaves`);const stock=b.observed_inventory;add(box,'p',stock?`${stock.gold} gold · ${stock.grain} grain · ${stock.bread} bread in custodian inventory`:'Current inventory unavailable');add(box,'p',b.account_scope,'muted');add(box,'p',`${b.contracts?.filter(c=>c.status==='completed').length||0} completed contracts`,'muted');for(const c of (b.contracts||[]).slice(-3))add(box,'p',`${personName(c.worker)} · ${c.status} · ${c.terms?.wage_gold??'—'} gold`);if(b.capabilities.every(c=>['retail_food','bread_recipe'].includes(c))){const edit=add(box,'button','Edit '+b.name);edit.disabled=!state.connected||!!state.transition||!!enterprisePending;edit.onclick=()=>editEnterprise(b);}}
+ el('new-enterprise').disabled=!state.connected||!!state.transition||!!enterprisePending;
+ if(enterprisePending&&state.checkpoint>=enterprisePending.checkpoint&&!state.transition){const observed=state.businesses.find(b=>b.id===enterprisePending.id);if(observed?.revision===enterprisePending.revision){el('enterprise-status').textContent=`Enterprise revision ${observed.revision} observed in Skyrim checkpoint ${state.checkpoint}. No resources created or transferred.`;enterprisePending=null;}}
  el('limits').textContent=state.limits.join(' ');
  if(pendingRequest&&state.camera?.request_id===pendingRequest){el('camera-status').textContent='Camera request applied by the game bridge · '+pretty(state.camera.mode);pendingRequest=null;}
 }
 async function camera(nextMode=mode){if(!state?.connected)return;mode=nextMode;const request={mode,id:selected};for(const key of ['distance','yaw','elevation','panX','panY'])request[key]=Number(el(key).value);try{const response=await fetch('/observer/camera',{method:'POST',headers:{'Content-Type':'application/json','X-Observer-Token':token},body:JSON.stringify(request)});const result=await response.json();if(!response.ok)throw Error(result.error);pendingRequest=result.request_id;el('camera-status').textContent='Camera requested · waiting for game acknowledgement';}catch(error){el('camera-status').textContent=error.message;}}
+function editEnterprise(b=null){
+ enterpriseEdit={id:b?.id||'enterprise-'+crypto.randomUUID(),revision:b?.revision||0};
+ el('enterprise-form').hidden=false;el('enterprise-title').textContent=b?'Edit '+b.name:'Create enterprise';
+ el('enterprise-name').value=b?.name||'';el('enterprise-kind').value=b?.capabilities.includes('bread_recipe')?'bakery':b?'shop':'bakery';
+ const owners=el('enterprise-custodian');owners.replaceChildren();for(const r of state.residents.filter(r=>r.loaded&&!r.is_guard)){const o=add(owners,'option',r.name);o.value=r.id;}
+ if(b)owners.value=b.custodian;else if(selected&&Array.from(owners.options).some(o=>Number(o.value)===selected))owners.value=selected;
+ const p=b?.production_policy;el('enterprise-wage').value=p?.wage_gold??2;el('enterprise-minutes').value=p?.work_minutes??30;el('enterprise-target').value=p?.target_bread??8;el('enterprise-active').value=String(b?.active??true);
+ el('enterprise-status').textContent='Editing an authored opportunity. Residents keep the right to refuse.';el('enterprise-name').focus();
+}
+el('new-enterprise').onclick=()=>editEnterprise();el('cancel-enterprise').onclick=()=>{el('enterprise-form').hidden=true;enterpriseEdit=null;};
+el('enterprise-form').onsubmit=async event=>{
+ event.preventDefault();if(!enterpriseEdit||!state?.connected)return;
+ const enterprise={id:enterpriseEdit.id,expected_revision:enterpriseEdit.revision,name:el('enterprise-name').value,custodian:Number(el('enterprise-custodian').value),capabilities:el('enterprise-kind').value==='bakery'?['bread_recipe','retail_food']:['retail_food'],active:el('enterprise-active').value==='true',production_policy:{wage_gold:Number(el('enterprise-wage').value),work_minutes:Number(el('enterprise-minutes').value),target_bread:Number(el('enterprise-target').value)}};
+ el('save-enterprise').disabled=true;el('enterprise-status').textContent='Submitting charter…';
+ try{const response=await fetch('/observer/enterprise',{method:'POST',headers:{'Content-Type':'application/json','X-Observer-Token':token},body:JSON.stringify({id:'charter-'+crypto.randomUUID(),enterprise})});const result=await response.json();if(!response.ok)throw Error(result.error);enterprisePending={id:enterprise.id,revision:result.business.revision,checkpoint:result.checkpoint};el('enterprise-form').hidden=true;enterpriseEdit=null;el('enterprise-status').textContent='Charter recorded · waiting for the Skyrim checkpoint.';}
+ catch(error){el('enterprise-status').textContent=error.message+' Check the current enterprise before retrying; requests are not automatically repeated.';}
+ finally{el('save-enterprise').disabled=false;}
+};
 el('follow').onclick=()=>camera('focus');for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>camera(b.dataset.mode);
 for(const key of ['distance','yaw','elevation','panX','panY'])el(key).onchange=()=>camera(key.startsWith('pan')?'free':mode);
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));render();};

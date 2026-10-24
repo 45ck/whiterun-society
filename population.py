@@ -97,15 +97,8 @@ class Population:
                 'observed_game_day':day,'is_guard':actor.get('isGuard') is True,
                 'native_route_supported':actor['id'] in CONTROLLED_ROUTES}
             added.append(actor['id'])
-        # Business assets reference their physical custodian, not a duplicate wallet.
-        for owner,name,capabilities in [(108149,'Carlotta\'s food enterprise',['bread_recipe','retail_food']),
-                                         (108156,'Adrianne\'s workshop',['metalwork_planned'])]:
-            if str(owner) in town['residents']:
-                town['businesses'].setdefault('business-'+str(owner),{'name':name,'owner':owner,'custodian':owner,
-                    'capabilities':capabilities,'workers':[],'contracts':[],
-                    'resource_account':'native-inventory:'+str(owner),'separate_legal_cash_account':False,
-                    'costs':{'bread_recipe':{'grain':1,'labour_game_minutes':30,'wage_gold':2}} if owner==108149 else {},
-                    'provenance':'Authored business charter; capabilities may be planned, not executed'})
+        # Census is observation, not business formation. Existing save-bound
+        # charters survive; new enterprises require an explicit specification.
         town['census_events'].append({'id':event_id,'added':added,'observed_day':day,'session':self.session})
         return {'checkpoint':self._write(state,'classified town population initialized without minting resources'),
             'added':added,'population':len(town['residents'])}

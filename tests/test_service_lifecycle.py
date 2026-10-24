@@ -50,11 +50,33 @@ class ServiceLifecycleTests(unittest.TestCase):
                 observer_token=re.search("const token='([^']+)'",page).group(1)
                 with urllib.request.urlopen(origin+'/observer/state') as response:
                     self.assertFalse(json.load(response)['connected'])
-                for headers in ({},{'Origin':'https://unrelated.example','X-Observer-Token':observer_token},
-                                {'Origin':origin,'X-Observer-Token':'wrong'}):
-                    req=urllib.request.Request(origin+'/observer/camera',data=b'{"mode":"market"}',headers=headers)
-                    with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(req)
-                    self.assertEqual(error.exception.code,403)
+                for route in ('/observer/camera','/observer/enterprise'):
+                    for headers in ({},{'Origin':'https://unrelated.example','X-Observer-Token':observer_token},
+                                    {'Origin':origin,'X-Observer-Token':'wrong'}):
+                        req=urllib.request.Request(origin+route,data=b'{"mode":"market"}',headers=headers)
+                        with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(req)
+                        self.assertEqual(error.exception.code,403)
+                auth={'Authorization':'Bearer '+json.loads(config.read_text())['token'],'Content-Type':'application/json'}
+                def post(route,data,headers=auth):
+                    with urllib.request.urlopen(urllib.request.Request(origin+route,data=json.dumps(data).encode(),headers=headers)) as response:
+                        return json.load(response)
+                observation={'session':'test-session','ready':True,'checkpoint':0,'gameDays':1,
+                    'residents':[{'id':7,'name':'New founder','isPerson':True,'isGuard':False,'inventory':{'gold':12,'bread':0,'grain':2}}]}
+                post('/heartbeat',observation)
+                observation['checkpoint']=post('/world/bootstrap',{})['checkpoint'];post('/heartbeat',observation)
+                observation['checkpoint']=post('/town/initialize',{'id':'census','seed':'test'})['checkpoint'];post('/heartbeat',observation)
+                specification={'id':'new-bakery','expected_revision':0,'name':'New bakery','custodian':7,
+                    'active':True,'capabilities':['bread_recipe','retail_food'],'production_policy':{'wage_gold':4}}
+                observer_headers={'Origin':origin,'X-Observer-Token':observer_token,'Content-Type':'application/json'}
+                result=post('/observer/enterprise',{'id':'charter','enterprise':specification},observer_headers)
+                observation['checkpoint']=result['checkpoint'];post('/heartbeat',observation)
+                with urllib.request.urlopen(origin+'/observer/state') as response:projection=json.load(response)
+                self.assertEqual(projection['businesses'][0]['production_policy']['wage_gold'],4)
+                self.assertEqual(projection['businesses'][0]['observed_inventory'],{'gold':12,'bread':0,'grain':2})
+                self.assertTrue(post('/observer/enterprise',{'id':'charter','enterprise':specification},observer_headers)['duplicate'])
+                with self.assertRaises(urllib.error.HTTPError) as error:
+                    post('/observer/enterprise',{'id':'stale-edit','enterprise':specification},observer_headers)
+                self.assertEqual(error.exception.code,400)
                 authority=config.read_text()
                 collision=start(first_port)
                 self.assertNotEqual(collision.wait(timeout=20),0)

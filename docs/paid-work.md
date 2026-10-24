@@ -1,5 +1,7 @@
 # Paid production in Whiterun
 
+This page records the original fixed-term experiment. [Dynamic enterprises](enterprises.md) now support changing custodians, wages, shift durations, stock targets and business closure; existing saves retain their original terms until edited.
+
 **Verified in the live game:** Carlotta offered the contract and Ysolda accepted.
 Thirty game minutes of qualified attendance produced two loaves and paid two gold.
 Both before/after Skyrim saves restored the corresponding economic state.

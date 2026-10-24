@@ -43,6 +43,8 @@ def snapshot(state, inventory_ids=None):
             'world': state['world'],
             'consumptions': state['society'].get('consumptions', []),
             'production': state['society'].get('production', []),
+            'cancelled_production': state['society'].get('cancelled_production', []),
+            'unsettled_effect': state['society'].get('unsettled_effect'),
             'rests': state['society'].get('rests', []),
             'imports': state['society'].get('imports', []),
             'market_day': state['society'].get('market_day'),

@@ -1,6 +1,7 @@
 """A finite, explicitly authored paid bread-making contract in the physical world."""
 import copy
 from labour import settle_contract
+from enterprises import plan_work_policy, current_work_terms
 
 ITEMS = ('gold', 'bread', 'grain')
 
@@ -37,18 +38,21 @@ class Production:
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase'] != 'ready_to_work':
             raise ValueError('Work requires a current agreed plan and arrival')
+        current_work_terms(self.active, plan)
+        terms = plan_work_policy(plan)
+        wage = terms['wage_gold']
         before = work_inventory(observation, plan['actor'], plan['target'])
-        if before['employer']['grain'] < 1 or before['employer']['gold'] < 2:
+        if before['employer']['grain'] < 1 or before['employer']['gold'] < wage:
             raise ValueError('Employer no longer has the agreed input or wage')
         after = copy.deepcopy(before)
         after['employer']['grain'] -= 1
         after['employer']['bread'] += 2
-        after['employer']['gold'] -= 2
-        after['worker']['gold'] += 2
+        after['employer']['gold'] -= wage
+        after['worker']['gold'] += wage
         command = {'id': 'produce-'+plan['id'], 'kind': 'inventory_produce',
                    'worker': plan['actor'], 'employer': plan['target'],
                    'expected_package': plan['travel']['movement']['expectedPackage'],
-                   'work_minutes': 30, 'before': before, 'after': after}
+                   'work_minutes': terms['work_minutes'], 'wage_gold': wage, 'before': before, 'after': after}
         state = copy.deepcopy(self.active)
         state['pending'] = {'id': command['id'], 'command': command, 'status': 'pending', 'evidence': None}
         state['plans'][-1]['phase'] = 'working'
@@ -80,10 +84,27 @@ class Production:
             for role, other in [('worker', 'employer'), ('employer', 'worker')]:
                 person = state['people'][str(command[role])]
                 person['memories'].append({'event_id': pending['id'], 'kind': 'paid_work',
-                    'role': role, 'other': command[other], 'gold': 2, 'grain_used': 1, 'bread_made': 2,
+                    'role': role, 'other': command[other], 'gold': command.get('wage_gold', 2),
+                    'work_minutes': command['work_minutes'], 'grain_used': 1, 'bread_made': 2,
                     'source': 'observed native inventory conversion and wage; work animation unverified'})
                 person['memories'] = person['memories'][-32:]
             self._write(state, 'production and conserved wage observed; both residents remember')
+        elif (command['kind']=='inventory_produce' and ack.get('status')=='held'
+              and ack.get('no_effects_issued') is True and actual==command['before']):
+            record=state['pending']
+            record.update(status='cancelled',outcome='interrupted_before_effects')
+            state.setdefault('cancelled_production',[]).append(record)
+            state['pending']=None
+            state['plans'][-1].update(phase='complete',outcome='work_interrupted',
+                interruption=ack.get('error','Work stopped before inventory effects'))
+            settle_contract(state,state['plans'][-1],'work_interrupted')
+            for role, other in [('worker','employer'),('employer','worker')]:
+                person=state['people'][str(command[role])]
+                person['memories'].append({'event_id':pending['id'],'kind':'interrupted_work',
+                    'role':role,'other':command[other],'gold_paid':0,'bread_made':0,
+                    'source':'Native no-effect attestation and unchanged observed inventories'})
+                person['memories']=person['memories'][-32:]
+            self._write(state,'interrupted work recorded with no native effects; no wage or output claimed')
         else:
             state['pending']['status'] = 'held'
             if command['kind']=='inventory_produce':

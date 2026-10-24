@@ -1,0 +1,253 @@
+{
+  "scope": "Actual isolated Skyrim execution; autonomous model refusal and separate deterministic integration fixture",
+  "charter": {
+    "active": true,
+    "capabilities": [
+      "bread_recipe",
+      "retail_food"
+    ],
+    "custodian": 108149,
+    "expected_revision": 0,
+    "id": "business-108149",
+    "name": "Plains District Bakery",
+    "production_policy": {
+      "target_bread": 12,
+      "wage_gold": 4,
+      "work_minutes": 10
+    }
+  },
+  "model_trial": {
+    "id": "enterprise-work-20261025-a",
+    "outcome": "deferred",
+    "decisions": [
+      {
+        "actor_id": 108149,
+        "decision": {
+          "action_id": "defer",
+          "emotion": "unspecified",
+          "reason": "Selected action: Do not offer this job; keep your resources."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "probabilities": {
+          "defer": 0.67,
+          "offer_shift": 0.33
+        },
+        "elapsed_seconds": 0.969,
+        "usage": {
+          "cost": 9.1014e-05,
+          "input_tokens": 2167,
+          "output_tokens": 34
+        }
+      }
+    ],
+    "new_production_count": 0
+  },
+  "initial_native_failure": {
+    "command": {
+      "after": {
+        "employer": {
+          "bread": 6,
+          "gold": 102,
+          "grain": 20
+        },
+        "worker": {
+          "bread": 1,
+          "gold": 30,
+          "grain": 0
+        }
+      },
+      "before": {
+        "employer": {
+          "bread": 4,
+          "gold": 106,
+          "grain": 21
+        },
+        "worker": {
+          "bread": 1,
+          "gold": 26,
+          "grain": 0
+        }
+      },
+      "employer": 108149,
+      "expected_package": 117442561,
+      "id": "produce-enterprise-native-fixture-20261025-a",
+      "kind": "inventory_produce",
+      "wage_gold": 4,
+      "work_minutes": 10,
+      "worker": 108167
+    },
+    "evidence": {
+      "ack": {
+        "error": "Owned work attendance interrupted",
+        "id": "produce-enterprise-native-fixture-20261025-a",
+        "status": "held",
+        "work": {
+          "id": "produce-enterprise-native-fixture-20261025-a",
+          "phase": "working",
+          "requiredMinutes": 10,
+          "wageGold": 4,
+          "workedMinutes": 0.7
+        }
+      },
+      "actual": {
+        "employer": {
+          "bread": 4,
+          "gold": 106,
+          "grain": 21
+        },
+        "worker": {
+          "bread": 1,
+          "gold": 26,
+          "grain": 0
+        }
+      },
+      "session": "1792880343864-0.11810876870491849"
+    },
+    "id": "produce-enterprise-native-fixture-20261025-a",
+    "status": "held"
+  },
+  "corrected_native_fixture": {
+    "id": "enterprise-native-fixture-20261025-b",
+    "outcome": "paid_work_completed",
+    "decisions": [
+      {
+        "actor_id": 108149,
+        "decision": {
+          "action_id": "offer_shift",
+          "emotion": "unspecified",
+          "reason": "Explicit integration fixture: qualify custom native wage and attendance, not a model choice."
+        },
+        "model": "deterministic-integration-fixture",
+        "rationale_kind": "test_fixture",
+        "probabilities": {},
+        "elapsed_seconds": 0,
+        "usage": {}
+      },
+      {
+        "actor_id": 108186,
+        "decision": {
+          "action_id": "take_shift",
+          "emotion": "unspecified",
+          "reason": "Explicit integration fixture: qualify custom native wage and attendance, not a model choice."
+        },
+        "model": "deterministic-integration-fixture",
+        "rationale_kind": "test_fixture",
+        "probabilities": {},
+        "elapsed_seconds": 0,
+        "usage": {}
+      }
+    ],
+    "production": {
+      "command": {
+        "after": {
+          "employer": {
+            "bread": 6,
+            "gold": 102,
+            "grain": 20
+          },
+          "worker": {
+            "bread": 1,
+            "gold": 32,
+            "grain": 0
+          }
+        },
+        "before": {
+          "employer": {
+            "bread": 4,
+            "gold": 106,
+            "grain": 21
+          },
+          "worker": {
+            "bread": 1,
+            "gold": 28,
+            "grain": 0
+          }
+        },
+        "employer": 108149,
+        "expected_package": 100665345,
+        "id": "produce-enterprise-native-fixture-20261025-b",
+        "kind": "inventory_produce",
+        "wage_gold": 4,
+        "work_minutes": 10,
+        "worker": 108186
+      },
+      "evidence": {
+        "ack": {
+          "animation_verified": false,
+          "id": "produce-enterprise-native-fixture-20261025-b",
+          "inventory": {
+            "employer": {
+              "bread": 6,
+              "gold": 102,
+              "grain": 20
+            },
+            "worker": {
+              "bread": 1,
+              "gold": 32,
+              "grain": 0
+            }
+          },
+          "mechanism": "native_recipe_and_wage",
+          "status": "applied",
+          "work": {
+            "attendance": {
+              "distance": 103.17797577594123,
+              "package_owned": true
+            },
+            "id": "produce-enterprise-native-fixture-20261025-b",
+            "phase": "paying_wage",
+            "requiredMinutes": 10,
+            "wageGold": 4,
+            "workedMinutes": 10
+          }
+        },
+        "actual": {
+          "employer": {
+            "bread": 6,
+            "gold": 102,
+            "grain": 20
+          },
+          "worker": {
+            "bread": 1,
+            "gold": 32,
+            "grain": 0
+          }
+        },
+        "session": "1792880535917-0.2235142631582705"
+      },
+      "id": "produce-enterprise-native-fixture-20261025-b",
+      "status": "committed"
+    },
+    "elapsed_seconds": 72.578
+  },
+  "saved_state": {
+    "save": "WS-Enterprise-20261025-AO",
+    "checkpoint": 674,
+    "restored_matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    },
+    "fresh_session": true
+  },
+  "limits": [
+    "Successful custom-wage native execution used explicit test choices, not Jev acceptance.",
+    "The corrected success used the existing Ysolda-Carlotta route; dynamic-owner native shifts need broader trials.",
+    "No oven animation, upstream farming, autonomous business formation or separate company wallet.",
+    "No new screenshot was captured after Computer Use was stopped."
+  ]
+}

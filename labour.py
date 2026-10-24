@@ -5,11 +5,7 @@ wages and working hours are authored scenario policy, not discovered economics.
 """
 from routing import route_available
 from knowledge import person_view
-
-POLICY = {'target_bread': 8, 'wage_gold': 2, 'grain_per_shift': 1,
-          'bread_per_shift': 2, 'work_minutes': 30,
-          'source': 'Authored replenishment policy for the verified bread recipe'}
-
+from enterprises import production_policy
 
 def work_opportunities(state, observation, worker):
     town = state.get('town') or {}
@@ -23,16 +19,17 @@ def work_opportunities(state, observation, worker):
     opportunities = []
     for business_id, business in sorted(town.get('businesses', {}).items()):
         employer = business['custodian']
-        if 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer):
+        if business.get('active', True) is not True or 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer):
             continue
         stock = actors.get(employer, {}).get('inventory', {})
         if any(type(stock.get(k)) is not int or stock[k] < 0 for k in ('gold', 'bread', 'grain')):
             continue
-        if stock['gold'] < POLICY['wage_gold'] or stock['grain'] < 1 or stock['bread'] >= POLICY['target_bread']:
+        policy = production_policy(business)
+        if stock['gold'] < policy['wage_gold'] or stock['grain'] < 1 or stock['bread'] >= policy['target_bread']:
             continue
         opportunities.append({'business_id': business_id, 'employer': employer,
             'employer_name': person_view(state,worker,employer)['name'],
-            'policy': POLICY.copy()})
+            'revision': business.get('revision', 0), 'policy': policy})
     return opportunities
 
 

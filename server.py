@@ -71,7 +71,7 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
-            if self.path=='/observer/camera':
+            if self.path in ('/observer/camera', '/observer/enterprise'):
                 origin=f'http://127.0.0.1:{args.port}'
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
                     return self.reply(403,{'error':'Same-origin observer control required'})
@@ -80,7 +80,10 @@ def main():
                     if not 0<length<=2048:raise ValueError('Invalid observer request size')
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     data=json.loads(self.rfile.read(length))
-                    if not isinstance(data,dict):raise ValueError('Expected camera object')
+                    if not isinstance(data,dict):raise ValueError('Expected control object')
+                    if self.path=='/observer/enterprise':
+                        if bridge['command']:raise ValueError('Another command is pending')
+                        return self.reply(202,world.configure_enterprise(data['id'],data['enterprise'],bridge['observation']))
                     request=camera_request(data,bridge['observation'],world.status())
                     request['request_id']=secrets.token_hex(8);bridge['observer_camera']=request
                     return self.reply(202,request)
@@ -142,11 +145,12 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
-                elif self.path in ('/town/initialize','/town/review','/town/endow'):
+                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
                     if self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
+                    elif self.path=='/town/enterprise':result=world.configure_enterprise(data['id'],data['enterprise'],bridge['observation'])
                     elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
                     else:result=world.review_population(bridge['observation'])
                     self.reply(202,result)

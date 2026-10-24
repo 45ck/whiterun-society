@@ -1,6 +1,7 @@
 """Read-only society projection and a narrowly scoped local camera control."""
 import math
 import time
+from enterprises import production_policy
 
 
 def camera_request(data, observation, society):
@@ -34,19 +35,28 @@ def observer_state(bridge,society):
     for key,resident in town.get('residents',{}).items():
         person=society.get('people',{}).get(key,{})
         actor=loaded.get(key)
-        residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),
+        residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),'is_guard':resident.get('is_guard',False),
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
             'inventory':stock.get(key),'person':person,'household':resident.get('household')})
+    businesses = []
+    for key, business in town.get('businesses', {}).items():
+        # Operator-wide accounts are intentionally separate from resident prompts.
+        businesses.append({**business, 'id':key, 'revision':business.get('revision',0),
+            'active':business.get('active',True), 'production_policy':production_policy(business),
+            'observed_inventory':stock.get(str(business['custodian'])),
+            'account_scope':'Custodian inventory shared with household and any other charters; not a separate company wallet'})
     return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'residents':residents,'places':obs.get('places',[]),'businesses':list(town.get('businesses',{}).values()),
+        'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),
         'movement':obs.get('movement'),'work':obs.get('productionWork'),'rest':(obs.get('rest') or {}).get('activity'),
         'rests':society.get('rests',[])[-10:],'consumptions':society.get('consumptions',[])[-10:],
         'production':society.get('production',[])[-10:],
-        'limits':['29 is the initialized census, not a claim of every Whiterun NPC.',
+        'cancelled_production':society.get('cancelled_production',[])[-10:],
+        'unsettled_effect':society.get('unsettled_effect'),
+        'limits':[str(len(residents))+' initialized residents, not a claim of every Whiterun NPC.',
             'Up to eight independent journeys per bounded cohort. Trades and conversations still execute serially.',
             'Traits, needs and relationship scores are gameplay models, not measured psychology.',
             'Family households, continuous town scheduling and broad production chains remain incomplete.']}

@@ -1,4 +1,5 @@
-// Explicit recipe: 1 observed grain + qualified labour -> 2 bread, wage 2 gold.
+// Explicit recipe: 1 observed grain + qualified labour -> 2 bread.
+// Agreed wages and attendance are bounded enterprise policy, never model code.
 // Native handles are acquired on each frame. No automatic resource replenishment.
 function createProductionController(platform,now=Date.now){
  let active=null;
@@ -7,15 +8,15 @@ function createProductionController(platform,now=Date.now){
  const clone=x=>JSON.parse(JSON.stringify(x));
  return {
   reset(){active=null;},
-  status(){return active?{id:active.id,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:30}:null;},
+  status(){return active?{id:active.id,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:active.minutes,wageGold:active.wage,attendance:active.attendance||null}:null;},
   step(c){
-   const sp=platform(),fail=error=>({done:true,ack:{id:c.id,status:'held',error,work:this.status()}});
+   const sp=platform(),fail=error=>({done:true,ack:{id:c.id,status:'held',error,work:this.status(),no_effects_issued:!!active&&active.id===c.id&&!active.sent}});
    if(!c.before||!c.after||!['worker','employer'].every(r=>c.before[r]&&c.after[r]&&Object.keys(items).every(k=>Number.isInteger(c.before[r][k])&&c.before[r][k]>=0&&Number.isInteger(c.after[r][k])&&c.after[r][k]>=0)))return fail('Invalid production inventory contract');
-   const supply=c.kind==='inventory_supply',expected=clone(c.before);
+   const supply=c.kind==='inventory_supply',expected=clone(c.before),wage=c.wage_gold===undefined?2:c.wage_gold;
    if(supply){expected.employer.grain+=2;}
    else{
-    if(c.kind!=='inventory_produce'||c.work_minutes!==30||!Number.isInteger(c.expected_package)||c.before.employer.grain<1||c.before.employer.gold<2)return fail('Invalid work terms');
-    expected.employer.grain--;expected.employer.bread+=2;expected.employer.gold-=2;expected.worker.gold+=2;
+    if(c.kind!=='inventory_produce'||!Number.isInteger(c.work_minutes)||c.work_minutes<5||c.work_minutes>120||!Number.isInteger(wage)||wage<1||wage>20||!Number.isInteger(c.expected_package)||c.before.employer.grain<1||c.before.employer.gold<wage)return fail('Invalid work terms');
+    expected.employer.grain--;expected.employer.bread+=2;expected.employer.gold-=wage;expected.worker.gold+=wage;
    }
    if(c.worker===c.employer||!equal(expected,c.after))return fail('Invalid recipe or wage effect');
    const worker=sp.Actor.from(sp.Game.getFormEx(c.worker)),employer=sp.Actor.from(sp.Game.getFormEx(c.employer));
@@ -25,7 +26,7 @@ function createProductionController(platform,now=Date.now){
    const read=a=>Object.fromEntries(Object.entries(forms).map(([k,f])=>[k,a.getItemCount(f)]));
    const actual={worker:read(worker),employer:read(employer)};
    if(equal(actual,c.after))return {done:true,ack:{id:c.id,status:'applied',inventory:actual,work:this.status(),mechanism:supply?'explicit_demo_import':'native_recipe_and_wage',animation_verified:false}};
-   if(!active||active.id!==c.id)active={id:c.id,phase:supply?'importing':'working',days:0,lastGame:null,sent:null,at:now()};
+   if(!active||active.id!==c.id)active={id:c.id,phase:supply?'importing':'working',days:0,lastGame:null,sent:null,at:now(),minutes:c.work_minutes,wage};
    const inputUsed=clone(c.before);inputUsed.employer.grain--;
    const outputMade=clone(inputUsed);outputMade.employer.bread+=2;
    const stage=equal(actual,c.before)?'before':!supply&&equal(actual,inputUsed)?'input':!supply&&equal(actual,outputMade)?'output':'unexpected';
@@ -34,12 +35,23 @@ function createProductionController(platform,now=Date.now){
    const issue=(leg,fn)=>{if(!active.sent||active.sent.leg!==leg){active.sent={leg,at:now()};fn();}};
    if(supply){issue('import',()=>employer.addItem(forms.grain,2,true));return {done:false};}
    if(stage==='input'){active.phase='making_output';issue('output',()=>employer.addItem(forms.bread,2,true));return {done:false};}
-   if(stage==='output'){active.phase='paying_wage';issue('wage',()=>employer.removeItem(forms.gold,2,true,worker));return {done:false};}
+   if(stage==='output'){active.phase='paying_wage';issue('wage',()=>employer.removeItem(forms.gold,wage,true,worker));return {done:false};}
    // Once input use is issued, don't reinterpret an asynchronous wait as new labour.
    if(active.sent)return {done:false};
    const pkg=worker.getCurrentPackage();
    const gap=Math.hypot(worker.getPositionX()-employer.getPositionX(),worker.getPositionY()-employer.getPositionY(),worker.getPositionZ()-employer.getPositionZ());
-   if(!pkg||pkg.getFormID()!==c.expected_package||gap>300)return fail('Owned work attendance interrupted');
+   active.attendance={distance:gap,package_owned:!!pkg&&pkg.getFormID()===c.expected_package};
+   if(!active.attendance.package_owned)return fail('Owned work attendance interrupted');
+   if(!Number.isFinite(gap))return fail('Invalid work attendance distance');
+   // A moving employer may briefly pull ahead. Only nearby attendance earns
+   // work credit; travel time is discarded and the catch-up window is bounded.
+   if(gap>300){
+    active.phase='approaching_work';active.lastGame=null;
+    if(active.absentSince===undefined)active.absentSince=now();
+    if(now()-active.absentSince>30000)return fail('Work attendance did not resume within 30 seconds');
+    return {done:false};
+   }
+   delete active.absentSince;active.phase='working';
    if(!sp.Utility||typeof sp.Utility.getCurrentGameTime!=='function')return fail('Game clock unavailable');
    const game=sp.Utility.getCurrentGameTime();
    if(!Number.isFinite(game))return fail('Invalid game clock');
@@ -50,7 +62,7 @@ function createProductionController(platform,now=Date.now){
     active.days+=delta;
    }
    active.lastGame=game;
-   if(active.days>=30/1440){active.phase='using_input';issue('input',()=>employer.removeItem(forms.grain,1,true,null));}
+   if(active.days>=c.work_minutes/1440){active.phase='using_input';issue('input',()=>employer.removeItem(forms.grain,1,true,null));}
    return {done:false};
   }
  };

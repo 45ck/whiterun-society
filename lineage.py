@@ -20,11 +20,12 @@ from daily_life import DailyLife
 from endowments import Endowments
 from rest import Rest
 from parallel_routines import ParallelRoutines
+from enterprises import Enterprises
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -222,6 +223,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 'routine_batch': self.routine_batch(),
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
+                'cancelled_production': self.active.get('cancelled_production', []) if self.active else [],
+                'unsettled_effect': self.active.get('pending') if self.active else None,
                 'rests': self.active.get('rests', []) if self.active else [],
                 'imports': self.active.get('imports', []) if self.active else [],
                 'resource_delivery': self.active['pending'] if self.active and self.active['pending'] and self.active['pending']['command']['kind']=='inventory_endowment' else None,
