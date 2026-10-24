@@ -1,7 +1,8 @@
 let inspectedResident=null,lastEncounterPhase=null,phaseBegan=Date.now();
 const markerNodes=new Map();
 window.whiterunInspectKey=code=>{
- const id={2:108149,3:108186,4:108156}[code];
+ if(code===65){window.whiterunEnterRts?.();return;}
+ const id=[2,3,4].includes(code)?(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)])[code-2]?.id:null;
  if(id){inspectedResident=id;choose('focus',id);window.drawEncounter();}
  if(code===64){inspectedResident=null;tour=true;window.drawEncounter();}
 };
@@ -9,7 +10,8 @@ document.addEventListener('keydown',event=>{const code={'1':2,'2':3,'3':4,'F6':6
 window.whiterunProject=points=>{
  const c=state?.society?.conversation,active=c&&!['complete','held'].includes(c.phase);
  const cohort=state?.society?.routine_batch,cohortIds=cohort?.phase==='travelling'?cohort.members.filter(m=>m.phase==='travelling').map(m=>m.actor):[];
- const ids=cohortIds.length?cohortIds:inspectedResident?[inspectedResident]:active?c.speakers:focusId?[focusId]:[];
+ const rts=window.whiterunRtsActive?.()===true;
+ const ids=rts?(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)]).map(r=>r.id):cohortIds.length?cohortIds:inspectedResident?[inspectedResident]:active?c.speakers:focusId?[focusId]:[];
  for(const node of markerNodes.values())node.hidden=true;
  for(const point of points){if(!ids.includes(point.id))continue;
   const [x,y,z]=point.head,[fx,fy]=point.foot;
@@ -18,10 +20,10 @@ window.whiterunProject=points=>{
   if(!node){node=document.createElement('div');node.className='resident-marker';const label=document.createElement('span');node.append(label);document.getElementById('resident-markers').append(node);markerNodes.set(point.id,node);}
   const height=Math.max(45,Math.min(innerHeight*.85,Math.abs(fy-y)*innerHeight)),width=Math.max(45,height*.4);
   const talking=state?.speech?.status==='playing'&&c?.current?.speaker===point.id;
-  node.classList.toggle('talking',talking);node.hidden=false;
+  node.classList.toggle('talking',talking);node.classList.toggle('rts-pick',rts);node.classList.toggle('selected',point.id===inspectedResident);node.onclick=rts?()=>{inspectedResident=point.id;window.drawEncounter();}:null;node.hidden=false;
   node.style.left=(x*innerWidth-width/2)+'px';node.style.top=((1-y)*innerHeight)+'px';
   node.style.width=width+'px';node.style.height=height+'px';
-  node.firstChild.textContent=names[point.id]+(talking?' · speaking':active?' · encounter':' · selected');
+  node.firstChild.textContent=(names[point.id]||'Resident')+(talking?' · speaking':point.id===inspectedResident?' · selected':rts?' · inspect':active?' · encounter':'');
  }
 };
 function inspectorText(parent,value,cls='small'){const el=document.createElement('div');el.className=cls;el.textContent=value;parent.append(el);return el;}
@@ -68,6 +70,9 @@ window.drawEncounter=()=>{
  for(const [need,value] of Object.entries(person.needs)){if(need==='hunger')continue;inspectorText(panel,need.replaceAll('_',' ')+' · '+Math.round(value*100)+'%');const bar=document.createElement('progress');bar.max=1;bar.value=value;bar.style.width='100%';panel.append(bar);}
  inspectorText(panel,'Resident state · '+(person.agency?.state||'unknown').replaceAll('_',' '));
  inspectorText(panel,person.agency?.reason||'No current reason recorded');
+ inspectorText(panel,'Personal knowledge','label');
+ const known=Object.values(person.known_people||{});if(!known.length)inspectorText(panel,'No names learned through introductions yet.');
+ for(const k of known.slice(-6))inspectorText(panel,(k.name||'Familiar unnamed resident')+' · '+(k.name_source?'self-reported name':'name unknown'));
  inspectorText(panel,'Relationships','label');
  const relations=Object.entries(person.relationships||{});if(!relations.length)inspectorText(panel,'No relationship history recorded yet.');
  for(const [id,value] of relations)inspectorText(panel,(names[id]||id)+' · familiarity '+Math.round((value.familiarity||0)*100)+'% · affinity '+Number(value.affinity||0).toFixed(2)+' · '+(value.heard_turns||0)+' heard turns');

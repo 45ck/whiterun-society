@@ -4,6 +4,7 @@ The first executable enterprise uses the verified bread recipe. Stock targets,
 wages and working hours are authored scenario policy, not discovered economics.
 """
 from routing import route_available
+from knowledge import person_view
 
 POLICY = {'target_bread': 8, 'wage_gold': 2, 'grain_per_shift': 1,
           'bread_per_shift': 2, 'work_minutes': 30,
@@ -30,7 +31,7 @@ def work_opportunities(state, observation, worker):
         if stock['gold'] < POLICY['wage_gold'] or stock['grain'] < 1 or stock['bread'] >= POLICY['target_bread']:
             continue
         opportunities.append({'business_id': business_id, 'employer': employer,
-            'employer_name': state['people'][str(employer)]['profile']['name'],
+            'employer_name': person_view(state,worker,employer)['name'],
             'policy': POLICY.copy()})
     return opportunities
 

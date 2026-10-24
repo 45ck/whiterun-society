@@ -27,7 +27,7 @@ def person_seed(actor,seed,day):
         'bias':'uses familiar options first when tired or uncertain',
         'provenance':'Seeded scenario interpretation, not a measurement or canonical biography'},
         'needs':{name:seeded_value(seed,actor_id,name,.15,.65) for name in NEEDS},
-        'memories':[],'trust':{},'relationships':{},
+        'memories':[],'trust':{},'relationships':{},'known_people':{},
         'affect':{'valence':0.,'arousal':.25,'source':'authored initial neutral state'},
         'social_style':{'warmth':traits['agreeableness'],'directness':seeded_value(seed,actor_id,'directness'),
             'verbosity':traits['extraversion'],'familiarity_preference':1-traits['openness'],

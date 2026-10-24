@@ -1,0 +1,683 @@
+{
+  "date": "2026-10-25",
+  "status": "complete",
+  "source": "Operator offered opportunity; current residents choose partner, consent, speech and appraisal",
+  "elapsed_seconds": 58.811,
+  "calls": {
+    "propose": 2,
+    "select": 2,
+    "social": 4
+  },
+  "reported_model_cost_usd": 0.000718912,
+  "language_cost_usd": 0.00022348000000000002,
+  "speakers": [
+    108149,
+    108186
+  ],
+  "social_decisions": [
+    {
+      "actor": 108149,
+      "decision": {
+        "action_id": "approach_108186",
+        "emotion": "unspecified",
+        "reason": "Selected action: Approach an unfamiliar resident and let them choose whether to chat."
+      },
+      "elapsed_seconds": 0.797,
+      "model": "typesafe/jev-1.14-20261014",
+      "probabilities": {
+        "approach_108160": 0,
+        "approach_108164": 0,
+        "approach_108170": 0.02,
+        "approach_108186": 0.75,
+        "approach_1106614": 0,
+        "approach_843123": 0,
+        "defer": 0.23
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "stage": "choose_partner",
+      "status": "proposal_only",
+      "usage": {
+        "cost": 9.8028e-05,
+        "input_tokens": 2334,
+        "output_tokens": 131
+      }
+    },
+    {
+      "actor": 108186,
+      "decision": {
+        "action_id": "chat",
+        "emotion": "unspecified",
+        "reason": "Selected action: Accept a brief two-turn exchange; each resident chooses what to say."
+      },
+      "elapsed_seconds": 0.562,
+      "model": "typesafe/jev-1.14-20261014",
+      "probabilities": {
+        "chat": 0.91,
+        "decline": 0.09
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "stage": "respond",
+      "status": "proposal_only",
+      "usage": {
+        "cost": 7.4928e-05,
+        "input_tokens": 1784,
+        "output_tokens": 32
+      }
+    },
+    {
+      "actor": 108149,
+      "decision": {
+        "action_id": "neutral",
+        "emotion": "unspecified",
+        "reason": "Selected action: No change in affinity; hearing someone does not automatically make a friend."
+      },
+      "elapsed_seconds": 0.515,
+      "model": "typesafe/jev-1.14-20261014",
+      "probabilities": {
+        "felt_annoyed": 0.15,
+        "felt_supported": 0.35,
+        "neutral": 0.5
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "stage": "reflect_first",
+      "status": "proposal_only",
+      "usage": {
+        "cost": 7.5978e-05,
+        "input_tokens": 1809,
+        "output_tokens": 42
+      }
+    },
+    {
+      "actor": 108186,
+      "decision": {
+        "action_id": "felt_supported",
+        "emotion": "unspecified",
+        "reason": "Selected action: Record a small positive subjective affinity change of 0.05."
+      },
+      "elapsed_seconds": 0.625,
+      "model": "typesafe/jev-1.14-20261014",
+      "probabilities": {
+        "felt_annoyed": 0.12,
+        "felt_supported": 0.46,
+        "neutral": 0.42
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "stage": "reflect_second",
+      "status": "proposal_only",
+      "usage": {
+        "cost": 7.8414e-05,
+        "input_tokens": 1867,
+        "output_tokens": 43
+      }
+    }
+  ],
+  "turns": [
+    {
+      "speaker": 108149,
+      "listener": 108186,
+      "selected": {
+        "id": "option_1",
+        "intention": "Acknowledge past shared sentiment about waiting for safer times to share supplies.",
+        "line": "I'm glad we agree that waiting for steadier supplies is the safest path forward.",
+        "tone": "calm"
+      },
+      "language": {
+        "elapsed_seconds": 1.75,
+        "model": "inception/mercury-2.5",
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Acknowledge past shared sentiment about waiting for safer times to share supplies.",
+              "line": "I'm glad we agree that waiting for steadier supplies is the safest path forward.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Offer a simple greeting and comment on the pleasant weather.",
+              "line": "It is truly pleasant outside; I hope you are having a good day.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "provider": "Inception",
+        "requested_max_output_tokens": 1000,
+        "requested_provider": "Inception",
+        "requested_reasoning_effort": "none",
+        "usage": {
+          "completion_tokens": 307,
+          "completion_tokens_details": {
+            "audio_tokens": 0,
+            "image_tokens": 0,
+            "reasoning_tokens": 158
+          },
+          "cost": 0.00010853,
+          "cost_details": {
+            "upstream_inference_completions_cost": 4.605e-05,
+            "upstream_inference_cost": 0.00010853,
+            "upstream_inference_prompt_cost": 6.248e-05
+          },
+          "is_byok": false,
+          "prompt_tokens": 1562,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "video_tokens": 0
+          },
+          "total_tokens": 1869
+        }
+      },
+      "decision": {
+        "decision": {
+          "action_id": "option_1",
+          "emotion": "unspecified",
+          "reason": "Selected action: Acknowledge past shared sentiment about waiting for safer times to share supplies. Say: I'm glad we agree that waiting for steadier supplies is the safest path forward. Tone: calm"
+        },
+        "elapsed_seconds": 0.969,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "option_1": 0.67,
+          "option_2": 0.33
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "status": "proposal_only",
+        "usage": {
+          "cost": 8.0934e-05,
+          "input_tokens": 1927,
+          "output_tokens": 37
+        }
+      },
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "2fb7c7a519d901864cf0b2cfcfdd3c64a6a302c5c9c73678ab3bae13847d8022.wav",
+        "seconds": 4.8387,
+        "sha256": "2fb7c7a519d901864cf0b2cfcfdd3c64a6a302c5c9c73678ab3bae13847d8022",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.968,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108186,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-a4ae3fe2de34411e05b70ec9",
+        "muted": false,
+        "nearbyThroughout": true,
+        "playedSeconds": 4.838667,
+        "status": "ended",
+        "volume": 1
+      },
+      "context": {
+        "actor_id": 108149,
+        "event": {
+          "id": "dynamic-social-20261025-a",
+          "information": "You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history. The other person's private motives, needs and inventory are unknown. An unfamiliar person's name is unknown. You may introduce yourself or ask their name, but do not invent an acquaintance. Speech cannot itself complete a trade or change a policy.",
+          "kind": "nearby_conversation"
+        },
+        "heard_in_this_conversation": [],
+        "known_facts_in_first_person": [
+          "I ate one of my carried loaves.",
+          "I ate one of my carried loaves."
+        ],
+        "listener": {
+          "id": 108186,
+          "identity_source": null,
+          "name": "an unfamiliar resident",
+          "name_known": false
+        },
+        "memories": [
+          {
+            "event_id": "founding-resources-v1-108149",
+            "kind": "starting_resources_received",
+            "resources": {
+              "bread": 2,
+              "gold": 100,
+              "grain": 20
+            },
+            "source": "Observed finite external founding grant; not trade or wages"
+          },
+          {
+            "event_id": "labour-amren-20261024-01",
+            "kind": "deferred",
+            "other": 108149,
+            "source": "own decision"
+          },
+          {
+            "bread": 1,
+            "event_id": "consume-daily-7-108149",
+            "hunger_after": 0.4,
+            "hunger_before": 1,
+            "kind": "consumed_bread",
+            "source": "native food-use command and observed inventory; animation not verified"
+          },
+          {
+            "event_id": "daily-9-108149",
+            "kind": "allocated_food",
+            "policy": {
+              "mode": "household_all",
+              "observed_bread": 5,
+              "reserve_target": 0,
+              "reviewed_day": 1.5014872550964355,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "daily-9-108149"
+            },
+            "source": "own allocation decision; no inventory change"
+          },
+          {
+            "event_id": "labour-brenuin-20261024-01",
+            "kind": "deferred",
+            "other": 182543,
+            "source": "own decision"
+          },
+          {
+            "bread": 1,
+            "event_id": "consume-daily-10-108149",
+            "hunger_after": 0.051317,
+            "hunger_before": 0.6513172845230102,
+            "kind": "consumed_bread",
+            "source": "native food-use command and observed inventory; animation not verified"
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-59a21a818f6a81da8185102f",
+            "kind": "heard_speech",
+            "listener": 108149,
+            "quote": "Carlotta, I truly understand your need to keep your bread safe. Let's watch for a better time to support each other soon.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-96914daf3df09fccfd6e58b7",
+            "kind": "said",
+            "listener": 108186,
+            "quote": "Thank you, Ysolda. I hope soon we'll find a moment when sharing feels safer and our supplies are steadier.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          }
+        ],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.443,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.533,
+          "social_contact": 1
+        },
+        "own_food_policy": {
+          "mode": "household_all",
+          "observed_bread": 5,
+          "reserve_target": 0,
+          "reviewed_day": 1.5014872550964355,
+          "source": "resident selected among authored allocation policies",
+          "source_event": "daily-9-108149"
+        },
+        "own_inventory": {
+          "bread": 4,
+          "gold": 106,
+          "grain": 21
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {},
+        "weather": {
+          "classification": 0,
+          "id": 1090112,
+          "label": "pleasant",
+          "source": "native current-weather classification; not a forecast"
+        }
+      }
+    },
+    {
+      "speaker": 108186,
+      "listener": 108149,
+      "selected": {
+        "id": "option_1",
+        "intention": "Express agreement about waiting for steadier times",
+        "line": "I'm glad we see it the same way. When the market calms, I'll be happy to help you out.",
+        "tone": "hopeful"
+      },
+      "language": {
+        "elapsed_seconds": 1.61,
+        "model": "inception/mercury-2.5",
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Express agreement about waiting for steadier times",
+              "line": "I'm glad we see it the same way. When the market calms, I'll be happy to help you out.",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "Friendly weather observation and small talk",
+              "line": "It's such a pleasant day for walking around. Maybe we'll spot better supplies soon.",
+              "tone": "calm"
+            }
+          ]
+        },
+        "provider": "Inception",
+        "requested_max_output_tokens": 1000,
+        "requested_provider": "Inception",
+        "requested_reasoning_effort": "none",
+        "usage": {
+          "completion_tokens": 309,
+          "completion_tokens_details": {
+            "audio_tokens": 0,
+            "image_tokens": 0,
+            "reasoning_tokens": 159
+          },
+          "cost": 0.00011495,
+          "cost_details": {
+            "upstream_inference_completions_cost": 4.635e-05,
+            "upstream_inference_cost": 0.00011495,
+            "upstream_inference_prompt_cost": 6.86e-05
+          },
+          "is_byok": false,
+          "prompt_tokens": 1715,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "video_tokens": 0
+          },
+          "total_tokens": 2024
+        }
+      },
+      "decision": {
+        "decision": {
+          "action_id": "option_1",
+          "emotion": "unspecified",
+          "reason": "Selected action: Express agreement about waiting for steadier times Say: I'm glad we see it the same way. When the market calms, I'll be happy to help you out. Tone: hopeful"
+        },
+        "elapsed_seconds": 0.547,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "option_1": 0.9,
+          "option_2": 0.1
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "status": "proposal_only",
+        "usage": {
+          "cost": 8.715e-05,
+          "input_tokens": 2075,
+          "output_tokens": 37
+        }
+      },
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "ab11b29cbb7ea3a184e94defdb95dd1f197157c941b921dc9db56817df94e452.wav",
+        "seconds": 4.66,
+        "sha256": "ab11b29cbb7ea3a184e94defdb95dd1f197157c941b921dc9db56817df94e452",
+        "voice": "bf_emma"
+      },
+      "delivered": true,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.751,
+        "facing": [
+          {
+            "actor": 108186,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-68d7638a8c96c44dec570803",
+        "muted": false,
+        "nearbyThroughout": true,
+        "playedSeconds": 4.66,
+        "status": "ended",
+        "volume": 1
+      },
+      "context": {
+        "actor_id": 108186,
+        "event": {
+          "id": "dynamic-social-20261025-a",
+          "information": "You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history. The other person's private motives, needs and inventory are unknown. An unfamiliar person's name is unknown. You may introduce yourself or ask their name, but do not invent an acquaintance. Speech cannot itself complete a trade or change a policy.",
+          "kind": "nearby_conversation"
+        },
+        "heard_in_this_conversation": [
+          {
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "I'm glad we agree that waiting for steadier supplies is the safest path forward.",
+            "speaker": 108149
+          }
+        ],
+        "known_facts_in_first_person": [
+          "I ate one of my carried loaves."
+        ],
+        "listener": {
+          "id": 108149,
+          "identity_source": null,
+          "name": "a familiar resident",
+          "name_known": false
+        },
+        "memories": [
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-0c9c5320883f943196c2306c",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-a45d1fac167195a81cd38429",
+            "kind": "said",
+            "listener": 108149,
+            "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-27613d476a676275bb9151ea",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "event_id": "founding-resources-v1-108186",
+            "kind": "starting_resources_received",
+            "resources": {
+              "bread": 2,
+              "gold": 20,
+              "grain": 0
+            },
+            "source": "Observed finite external founding grant; not trade or wages"
+          },
+          {
+            "bread": 1,
+            "event_id": "consume-daily-7-108186",
+            "hunger_after": 0.4,
+            "hunger_before": 1,
+            "kind": "consumed_bread",
+            "source": "native food-use command and observed inventory; animation not verified"
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-59a21a818f6a81da8185102f",
+            "kind": "said",
+            "listener": 108149,
+            "quote": "Carlotta, I truly understand your need to keep your bread safe. Let's watch for a better time to support each other soon.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-96914daf3df09fccfd6e58b7",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "Thank you, Ysolda. I hope soon we'll find a moment when sharing feels safer and our supplies are steadier.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-a4ae3fe2de34411e05b70ec9",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "I'm glad we agree that waiting for steadier supplies is the safest path forward.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          }
+        ],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.522,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.627,
+          "social_contact": 1
+        },
+        "own_food_policy": null,
+        "own_inventory": {
+          "bread": 1,
+          "gold": 28,
+          "grain": 0
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {},
+        "weather": {
+          "classification": 0,
+          "id": 1090112,
+          "label": "pleasant",
+          "source": "native current-weather classification; not a forecast"
+        }
+      }
+    }
+  ],
+  "synthesis_timings": [
+    {
+      "turn": 0,
+      "seconds": 5.735
+    },
+    {
+      "turn": 1,
+      "seconds": 3.828
+    }
+  ],
+  "knowledge": {
+    "108149": {
+      "108186": {
+        "heard_events": [
+          "speech-68d7638a8c96c44dec570803"
+        ]
+      }
+    },
+    "108186": {
+      "108149": {
+        "heard_events": [
+          "speech-a4ae3fe2de34411e05b70ec9"
+        ]
+      }
+    }
+  },
+  "relationships": {
+    "108149": {
+      "108186": {
+        "affinity": 0,
+        "appraisals": [
+          {
+            "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+            "choice": "neutral",
+            "event_id": "dynamic-social-20261025-a"
+          }
+        ],
+        "familiarity": 0.05,
+        "heard_turns": 1
+      }
+    },
+    "108186": {
+      "108149": {
+        "affinity": 0.05,
+        "appraisals": [
+          {
+            "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+            "choice": "felt_supported",
+            "event_id": "dynamic-social-20261025-a"
+          }
+        ],
+        "familiarity": 0.05,
+        "heard_turns": 1
+      }
+    }
+  },
+  "save_restore": {
+    "name": "WS-Dynamic-20261025-AN",
+    "checkpoint": 648,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    },
+    "fresh_session": true
+  },
+  "limits": [
+    "Operator offered the opportunity; agents chose partner, consent and speech.",
+    "Two turns, not an open-ended conversation. Existing remembered supply concern shaped the lines.",
+    "Neither speaker introduced herself; no personal name was learned in this encounter.",
+    "Overlay playback verified; lip sync and native audio restoration remain unqualified.",
+    "One successful Mercury encounter does not establish general grounding or reliability."
+  ]
+}

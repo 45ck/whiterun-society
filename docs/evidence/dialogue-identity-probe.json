@@ -1,0 +1,447 @@
+{
+  "scope": "Language-only probe; no Jev, TTS, or game effects; no retries",
+  "started_at": 1792878739.5470352,
+  "plan": {
+    "cases": {
+      "unknown_forecast_and_private_inventory_synthetic": {
+        "actor_id": 108186,
+        "event": {
+          "kind": "nearby_conversation",
+          "information": "Reply to the nearby listener. No history beyond the supplied facts is known. Do not invent completed exchanges."
+        },
+        "heard_in_this_conversation": [
+          {
+            "speaker": 108149,
+            "line": "Will it rain tomorrow, and how much gold does Amren carry?",
+            "epistemic_status": "heard claim, not verified fact"
+          }
+        ],
+        "known_facts_in_first_person": [],
+        "listener": {
+          "id": 501,
+          "name": "an unfamiliar resident",
+          "name_known": false,
+          "identity_source": null
+        },
+        "memories": [],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.522,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.627,
+          "social_contact": 1
+        },
+        "own_food_policy": null,
+        "own_inventory": {
+          "bread": 1,
+          "gold": 28,
+          "grain": 0
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {},
+        "weather": null
+      },
+      "polite_decline": {
+        "actor_id": 108186,
+        "event": {
+          "kind": "courteous_refusal",
+          "information": "The nearby resident invited you to talk, but you have declined. Say a brief polite refusal. No grievance or shared history is known."
+        },
+        "heard_in_this_conversation": [],
+        "known_facts_in_first_person": [],
+        "listener": {
+          "id": 501,
+          "name": "an unfamiliar resident",
+          "name_known": false,
+          "identity_source": null
+        },
+        "memories": [],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.522,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.627,
+          "social_contact": 1
+        },
+        "own_food_policy": null,
+        "own_inventory": {
+          "bread": 1,
+          "gold": 28,
+          "grain": 0
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {},
+        "weather": {
+          "classification": 0,
+          "id": 1090115,
+          "label": "pleasant",
+          "source": "native current-weather classification; not a forecast"
+        }
+      },
+      "paid_worker_roles_synthetic": {
+        "actor_id": 108186,
+        "event": {
+          "kind": "nearby_conversation",
+          "information": "Reply to the nearby listener. No history beyond the supplied facts is known. Do not invent completed exchanges."
+        },
+        "heard_in_this_conversation": [
+          {
+            "speaker": 108149,
+            "line": "Thank you for the work. Are we settled?",
+            "epistemic_status": "heard claim, not verified fact"
+          }
+        ],
+        "known_facts_in_first_person": [
+          "I worked for Carlotta making TWO loaves from HER grain. She paid ME TWO gold. Both loaves belong to HER. I did not buy or sell bread."
+        ],
+        "listener": {
+          "id": 501,
+          "name": "an unfamiliar resident",
+          "name_known": false,
+          "identity_source": null
+        },
+        "memories": [],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.522,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.627,
+          "social_contact": 1
+        },
+        "own_food_policy": null,
+        "own_inventory": {
+          "bread": 1,
+          "gold": 28,
+          "grain": 0
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {},
+        "weather": null
+      },
+      "self_introduction": {
+        "actor_id": 108186,
+        "event": {
+          "kind": "introduction",
+          "information": "You have chosen to introduce yourself to this unfamiliar resident. Give your name and an ordinary greeting. Weather is unobserved. Do not invent shared history."
+        },
+        "heard_in_this_conversation": [],
+        "known_facts_in_first_person": [],
+        "listener": {
+          "id": 501,
+          "name": "an unfamiliar resident",
+          "name_known": false,
+          "identity_source": null
+        },
+        "memories": [],
+        "my_relationship": {},
+        "needs": {
+          "comfort": 0.522,
+          "fatigue": 1,
+          "hunger": 1,
+          "safety": 0.627,
+          "social_contact": 1
+        },
+        "own_food_policy": null,
+        "own_inventory": {
+          "bread": 1,
+          "gold": 28,
+          "grain": 0
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Mara Fen",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {},
+        "weather": null
+      }
+    },
+    "configs": [
+      {
+        "provider": "openrouter_chat",
+        "model": "inception/mercury-2.5",
+        "reasoning_effort": "none",
+        "openrouter_provider": "Inception",
+        "key_env": "WHITERUN_OPENROUTER_KEY"
+      }
+    ]
+  },
+  "results": [
+    {
+      "case": "unknown_forecast_and_private_inventory_synthetic",
+      "config": {
+        "provider": "openrouter_chat",
+        "model": "inception/mercury-2.5",
+        "reasoning_effort": "none",
+        "openrouter_provider": "Inception",
+        "key_env": "WHITERUN_OPENROUTER_KEY"
+      },
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Honest admission of not knowing the weather or Amren's gold, with helpful suggestions",
+              "line": "I've no way to tell tomorrow's rain or what gold Amren carries. Ask the innkeeper or check the sky yourself.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Playful deflection on weather questions while acknowledging curiosity about merchants and gold",
+              "line": "Weather gods keep their secrets close, don't they? As for Amren's gold, he's not one to share his purse readily.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "inception/mercury-2.5",
+        "elapsed_seconds": 2.25,
+        "usage": {
+          "prompt_tokens": 687,
+          "completion_tokens": 328,
+          "total_tokens": 1015,
+          "cost": 7.668e-05,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 7.668e-05,
+            "upstream_inference_prompt_cost": 2.748e-05,
+            "upstream_inference_completions_cost": 4.92e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 148,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        },
+        "provider": "Inception",
+        "requested_reasoning_effort": "none",
+        "requested_provider": "Inception"
+      },
+      "word_counts": [
+        20,
+        20
+      ],
+      "requested_word_limit_pass": true,
+      "wall_seconds": 2.25
+    },
+    {
+      "case": "polite_decline",
+      "config": {
+        "provider": "openrouter_chat",
+        "model": "inception/mercury-2.5",
+        "reasoning_effort": "none",
+        "openrouter_provider": "Inception",
+        "key_env": "WHITERUN_OPENROUTER_KEY"
+      },
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Politely decline conversation while indicating current business commitments",
+              "line": "I appreciate the invite, but I'm needed at the market right now. Perhaps another time?",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Decline warmly and suggest future contact without committing to specifics",
+              "line": "I'm tied up with some merchant work today, but I'd be glad to catch up another day.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "inception/mercury-2.5",
+        "elapsed_seconds": 1.563,
+        "usage": {
+          "prompt_tokens": 667,
+          "completion_tokens": 291,
+          "total_tokens": 958,
+          "cost": 7.033e-05,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 7.033e-05,
+            "upstream_inference_prompt_cost": 2.668e-05,
+            "upstream_inference_completions_cost": 4.365e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 141,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        },
+        "provider": "Inception",
+        "requested_reasoning_effort": "none",
+        "requested_provider": "Inception"
+      },
+      "word_counts": [
+        15,
+        17
+      ],
+      "requested_word_limit_pass": true,
+      "wall_seconds": 1.563
+    },
+    {
+      "case": "paid_worker_roles_synthetic",
+      "config": {
+        "provider": "openrouter_chat",
+        "model": "inception/mercury-2.5",
+        "reasoning_effort": "none",
+        "openrouter_provider": "Inception",
+        "key_env": "WHITERUN_OPENROUTER_KEY"
+      },
+      "status": "rejected",
+      "receipt": {
+        "model": "inception/mercury-2.5",
+        "elapsed_seconds": 1.39,
+        "usage": {
+          "prompt_tokens": 705,
+          "completion_tokens": 485,
+          "total_tokens": 1190,
+          "cost": 0.00010095,
+          "completion_tokens_details": {
+            "reasoning_tokens": 485
+          }
+        },
+        "finish_reason": "length"
+      },
+      "reason": "Incomplete language output",
+      "wall_seconds": 1.39
+    },
+    {
+      "case": "self_introduction",
+      "config": {
+        "provider": "openrouter_chat",
+        "model": "inception/mercury-2.5",
+        "reasoning_effort": "none",
+        "openrouter_provider": "Inception",
+        "key_env": "WHITERUN_OPENROUTER_KEY"
+      },
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Introduce myself as a merchant seeking trade opportunities",
+              "line": "My name is Mara Fen. I'm an aspiring merchant looking to build trade relationships in these parts. Good day to you.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Introduce myself while expressing hope for future business ventures",
+              "line": "My name is Mara Fen. I'm hopeful to find kind folks willing to trade and build something good together.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "inception/mercury-2.5",
+        "elapsed_seconds": 1.172,
+        "usage": {
+          "prompt_tokens": 640,
+          "completion_tokens": 213,
+          "total_tokens": 853,
+          "cost": 5.755e-05,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 5.755e-05,
+            "upstream_inference_prompt_cost": 2.56e-05,
+            "upstream_inference_completions_cost": 3.195e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 55,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        },
+        "provider": "Inception",
+        "requested_reasoning_effort": "none",
+        "requested_provider": "Inception"
+      },
+      "word_counts": [
+        21,
+        19
+      ],
+      "requested_word_limit_pass": true,
+      "wall_seconds": 1.172
+    }
+  ],
+  "finished_at": 1792878745.9389231
+}

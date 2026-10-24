@@ -19,10 +19,11 @@ class LanguageTests(unittest.TestCase):
             {'id': 'option_1', 'intention': 'Greet', 'line': 'Good morning to you.', 'tone': 'calm'},
             {'id': 'option_2', 'intention': 'Ask', 'line': 'How are you today?', 'tone': 'hopeful'}]}
         with patch('language.urllib.request.urlopen', return_value=self.response(json.dumps(candidates))) as http:
-            result = propose({}, self.config, 'test-placeholder')
+            result = propose({}, {**self.config,'max_output_tokens':1000}, 'test-placeholder')
         payload = json.loads(http.call_args.args[0].data)
         self.assertEqual(http.call_count, 1)
         self.assertEqual(payload['reasoning'], {'effort': 'none'})
+        self.assertEqual(payload['max_tokens'],1000)
         self.assertEqual(payload['provider'], {'only': ['coreweave'], 'allow_fallbacks': False, 'require_parameters': True})
         self.assertNotIn('chat_template_kwargs', payload)
         self.assertEqual(result['proposal'], candidates)
@@ -51,7 +52,8 @@ class LanguageTests(unittest.TestCase):
 
     def test_invalid_controls_fail_before_paid_request(self):
         for update in ({'reasoning_effort': 'infinite'}, {'openrouter_provider': ''},
-                       {'provider': 'local'}, {'openrouter_provider': ['coreweave']}):
+                       {'provider': 'local'}, {'openrouter_provider': ['coreweave']},
+                       {'max_output_tokens':True},{'max_output_tokens':2049},{'max_output_tokens':0}):
             with self.subTest(update=update), patch('language.urllib.request.urlopen') as http:
                 with self.assertRaises(ValueError):propose({}, {**self.config, **update}, 'test-placeholder')
                 http.assert_not_called()

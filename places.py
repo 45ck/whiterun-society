@@ -6,7 +6,7 @@ MARKET = 0x2BE1B  # Owned Skyrim.esm: WhiterunMarketplaceMarker.
 
 def market_opportunity(state, observation, actor):
     person = state.get('people', {}).get(str(actor), {})
-    if actor == 108149 or person.get('commitments'):
+    if person.get('commitments'):
         return None
     capability = observation.get('routing') or {}
     if capability.get('available') is not True or capability.get('places') is not True:

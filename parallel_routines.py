@@ -10,6 +10,7 @@ import secrets
 from decisions import validate_decision
 from places import MARKET, market_opportunity
 from routing import route_available
+from opportunities import food_sellers
 
 
 def select_routine_events(state, observation, events, limit=8):
@@ -23,7 +24,7 @@ def select_routine_events(state, observation, events, limit=8):
         if actor in seen or event['status']!='pending' or event['kind']!='need_review' or not native:continue
         # Keep the richer negotiation/work/rest choices when the merchant can
         # already be reached. A travel-only cohort must not erase those options.
-        if route_available(observation, actor, 108149):continue
+        if food_sellers(state, observation, actor):continue
         inventory=native.get('inventory',{})
         if (inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3
                 or person.get('needs',{}).get('hunger',0)<.6 or not market_opportunity(state,observation,actor)):continue
@@ -67,7 +68,7 @@ class ParallelRoutines:
                 'memories':copy.deepcopy(person['memories'][-8:]),'my_relationships':copy.deepcopy(person.get('relationships',{})),
                 'weather':copy.deepcopy(observation.get('weather')),
                 'prior_knowledge':'Authored public market location. Other residents private inventories and intentions are unknown.',
-                'options':[{'id':'check_market','effect':'Walk to the public market and observe whether Carlotta is nearby. No purchase or hunger relief happens automatically.'},
+                'options':[{'id':'check_market','effect':'Walk to the public market and look for a food seller. No purchase or hunger relief happens automatically.'},
                            {'id':'defer','effect':'Keep your ordinary routine; do not take this journey now. No resources or needs change.'}]}
             members.append({'event_id':event_id,'actor':actor,'slot':slot,'phase':'thinking','context':context})
             event['status']='started';person['agency'].update(state='deciding',reason='Independent food-search decision',event_id=event_id)

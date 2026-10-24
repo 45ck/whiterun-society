@@ -112,7 +112,9 @@ class SocialTests(unittest.TestCase):
     def test_private_partner_state_is_not_exposed_to_social_context(self):
         self.begin();context=self.world.claim_conversation(self.event['id'],self.obs)['claim']['context']
         for candidate in context['nearby_candidates']:
-            self.assertEqual(set(candidate),{'id','name','distance','my_relationship','source'})
+            self.assertEqual(set(candidate),{'id','name','name_known','identity_source','distance','my_relationship','source'})
+            self.assertFalse(candidate['name_known'])
+            self.assertEqual(candidate['name'],'an unfamiliar resident')
         self.sync()
         with self.assertRaisesRegex(ValueError,'conversation'):self.world.begin_plan('intruder',self.obs)
 

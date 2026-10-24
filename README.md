@@ -22,9 +22,19 @@ Residents should work, trade with one another, consume goods, remember events an
 
 [Living development plan: dynamic residents, personal knowledge and RTS mode](docs/development-plan.md) · [Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
 
-The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. A twelve-call follow-up produced five valid Mercury 2.5 replies averaging 1.294 seconds, but exposed unsupported weather claims and one rejected response. Mercury is the leading candidate; the runtime default remains unchanged pending grounding and voice qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
+The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. Mercury 2.5 is now the experimental lab default after a complete two-turn voiced encounter: 58.811 seconds including approach and playback, with US$0.000718912 reported across two language requests and six Jev decisions. Grounding failures from earlier probes remain documented; one successful scene is not broad qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
 ## Examples from the running prototype
+
+### Personal knowledge and the RTS overview
+
+![Generated infographic of personal knowledge, Jev choices, Mercury speech and verified memory](docs/images/personal-knowledge-loop.png)
+
+*Generated implementation guide. Nara's introduction is an illustrative example; the live encounter below did not include an introduction.*
+
+![Actual Skyrim RTS overview with native resident markers](docs/images/rts-live-overview.jpg)
+
+Residents now distinguish strangers from people whose names they heard in an introduction. Seller choices use current enterprise capabilities, and a normal town encounter uses the current population. The browser control room operates the native camera and inspects individual knowledge and relationships. The in-game RTS panel and markers render, but injected mouse and keyboard activation still need qualification. The latest voiced encounter restored all 14 checked state fields from its Skyrim save. [Changes, costs, evidence and remaining work](docs/dynamic-society.md)
 
 ### People talk and remember
 

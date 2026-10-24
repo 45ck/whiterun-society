@@ -10,6 +10,7 @@ import secrets
 from agency import distance
 from decisions import validate_decision
 from routing import dynamic_route
+from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal
 
 
@@ -55,7 +56,16 @@ class Conversation:
         day = self.active.get('market_day')
         if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
             raise ValueError('Another resident event is active')
-        if actor is None:distance(observation, 108186, 108149)
+        offered = actor is None and bool(self.active.get('town'))
+        if offered:
+            eligible=[int(key) for key in self.active['town']['residents']
+                      if social_candidates(self.active,observation,int(key))]
+            if not eligible:raise ValueError('No qualified nearby social participants remain')
+            # The operator offers an opportunity, never a required conversation.
+            # The resident still chooses a partner or defers, and the partner consents.
+            actor=min(eligible,key=lambda aid:(self.active['people'][str(aid)].get('social_clock',0),aid))
+            self._social_day(observation)
+        elif actor is None:distance(observation, 108186, 108149)
         else:
             event=next((e for e in self.active.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
             if type(actor) is not int or not event or event['actor']!=actor or event['kind']!='social_review' or event['status']!='pending':
@@ -63,6 +73,13 @@ class Conversation:
             if not social_candidates(self.active,observation,actor):raise ValueError('No qualified nearby social partner remains')
             self._social_day(observation)
         state = copy.deepcopy(self.active)
+        if offered:
+            daily=state['town'].setdefault('daily',{'last_day':observation['gameDays'],'sequence':0,'queue':[],'reviews':[]})
+            if any(e['id']==event_id for e in daily['queue']):raise ValueError('Opportunity ID already exists')
+            daily['queue'].append({'id':event_id,'actor':actor,'kind':'social_review','status':'pending',
+                'created_day':observation['gameDays'],'priority':.45,
+                'reason':'Operator offered a nearby social opportunity; residents may decline',
+                'source':'operator opportunity, not a claimed autonomous need'})
         if old: state.setdefault('conversation_history', []).append(old)
         state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0,
             'speakers': [108186,108149], 'turns': [], 'claim': None,
@@ -72,6 +89,7 @@ class Conversation:
             state['conversation'].update(phase='choose_partner',initiator=actor,partner=None,mode='autonomous_social',
                 speakers=[],social_decisions=[],max_jev_calls=6,source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
+            if offered:state['conversation']['source']='Operator offered opportunity; current residents choose partner, consent, speech and appraisal'
         return {'checkpoint': self._write(state, 'conversation encounter started')}
 
     def _social_day(self, observation):
@@ -94,7 +112,7 @@ class Conversation:
             raise ValueError('Conversation participants are not nearby')
         facts=[]
         for memory in person['memories'][-8:]:
-            other=self.active['people'].get(str(memory.get('other')),{}).get('profile',{}).get('name','another resident')
+            other=person_view(self.active,actor,memory.get('other'))['name']
             if memory['kind']=='trade_offer_declined':
                 facts.append(f"I offered {other} {memory['gold']} gold to BUY one loaf FROM them. {other} REFUSED TO SELL me bread. I was the BUYER, not the seller." if memory['role']=='buyer' else
                     f"{other} offered ME {memory['gold']} gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.")
@@ -108,13 +126,14 @@ class Conversation:
             'memories': person['memories'][-8:], 'trust': person['trust'],
             'my_relationship':person.get('relationships',{}).get(str(listener),{}),
             'weather':observation.get('weather'),
-            'listener': {'id':listener,'name':self.active['people'][str(listener)]['profile']['name']},
+            'listener': person_view(self.active,actor,listener),
             'heard_in_this_conversation': [{'speaker':t['speaker'], 'line':t['selected']['line'],
                 'epistemic_status':'heard claim, not verified fact'} for t in c['turns'] if t.get('delivered')],
             'event': {'id':c['id'], 'kind':'nearby_conversation',
                 'information':('This is a short polite refusal of a social approach. Say that you cannot chat now without inventing a reason or hostility.' if c.get('response')=='decline' else
                     'You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history.')+
-                    ' The other person\'s private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.'}}
+                    ' The other person\'s private motives, needs and inventory are unknown. An unfamiliar person\'s name is unknown. '
+                    'You may introduce yourself or ask their name, but do not invent an acquaintance. Speech cannot itself complete a trade or change a policy.'}}
 
     def claim_conversation(self, event_id, observation):
         c = self._conversation_guard(event_id, observation)
@@ -148,7 +167,7 @@ class Conversation:
                 if decision['action_id']=='defer':c.update(phase='complete',outcome='continued_quietly')
                 else:
                     partner=int(decision['action_id'].split('_')[-1]);c.update(partner=partner,speakers=[c['initiator'],partner],phase='meeting')
-                    state['people'][str(c['initiator'])]['agency'].update(state='approaching_resident',reason='Chose to approach '+state['people'][str(partner)]['profile']['name'])
+                    state['people'][str(c['initiator'])]['agency'].update(state='approaching_resident',reason='Chose to approach '+person_view(state,c['initiator'],partner)['name'])
             elif stage=='respond':
                 c['response']=decision['action_id'];c['phase']='propose'
                 for resident in (c['initiator'],c['partner']):state['people'][str(resident)]['agency'].update(state='social_encounter',reason='Partner chose '+c['response'])
@@ -242,6 +261,7 @@ class Conversation:
             return self.hold_conversation(c['id'],'Incomplete playback or listener left hearing range',observation)
         state=copy.deepcopy(self.active)
         t.update(delivered=True,playback=report)
+        record_heard_identity(state,t)
         for actor,kind in [(t['speaker'],'said'),(t['listener'],'heard_speech')]:
             p=state['people'][str(actor)]
             p['memories'].append({'event_id':t['delivery_id'],'kind':kind,'speaker':t['speaker'],

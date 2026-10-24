@@ -10,6 +10,7 @@ from labour import work_opportunities
 from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from social import social_candidates
 from places import market_opportunity
+from opportunities import food_sellers
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -69,7 +70,7 @@ class DailyLife:
             urgent_food = person['needs']['hunger'] >= .6 and actor and (
                 type(inventory.get('bread')) is int and inventory['bread'] > 0 or
                 type(inventory.get('gold')) is int and inventory['gold'] >= 3 and (
-                    route_available(observation, int(key), 108149) or market_opportunity(state, observation, int(key))))
+                    food_sellers(state, observation, int(key)) or market_opportunity(state, observation, int(key))))
             urgent_rest = person['needs']['fatigue'] >= .8 and actor and rest_opportunities(state, observation, int(key))
             interrupted = False
             for queued in pending:
@@ -108,7 +109,7 @@ class DailyLife:
                 continue
             if person['needs']['hunger'] >= .6:
                 can_eat = inventory['bread'] > 0
-                can_seek = (route_available(observation,int(key),108149) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 3
+                can_seek = (food_sellers(state,observation,int(key)) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 3
                 can_rest = person['needs']['fatigue']>=.8 and bool(rest_opportunities(state,observation,int(key)))
                 can_work = bool(work_opportunities(state,observation,int(key)))
                 if not any((can_eat,can_seek,can_rest,can_work)):

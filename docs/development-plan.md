@@ -14,6 +14,8 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Delivery sequence and evidence
 
+Calvin's expanded acceptance direction is to implement and test the integrated experience, not stop at this plan or a small demonstration. The full programme includes a changing population, capability-based businesses and connected production chains, work and wages, consumption and scarcity, personal beliefs and social memory, introductions and relationships, ordinary conversation and drama, cloud language and audible voices, political/policy controls, and an RTS/first-person interface. Implementations must coexist in one persistent game session. Test rules and failure paths locally, then verify real movement, exchanges, speech, camera interaction and save/resume in Skyrim. Preserve distinct claims for authored scenario assumptions, synthetic test evidence and actual game effects.
+
 | Workstream | Required implementation | Evidence needed |
 | --- | --- | --- |
 | Cloud dialogue | Explicit reasoning budget; fixed provider qualification; bounded calls; failure cost telemetry; grounded short responses; warm voice pipeline | Same-scene model receipts, failure counts, actual billed usage where available, time to usable line and audible speech; in-game playback |
@@ -26,6 +28,6 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Current boundaries
 
-The current population and social scheduler already use observed resident IDs for many interactions, but fixed legacy trading/production participants and authored demo defaults still exist. Social prompts currently expose a nearby person's global profile name; personal identity knowledge needs implementation. The existing observer has selection/follow tools; full RTS camera control is not yet qualified. These are tracked gaps, not accepted final architecture.
+Personal identity knowledge and capability-based food sellers are implemented, including changed-cast tests. Ordinary initialized-town conversation requests now offer opportunities to current eligible residents; the pre-census legacy pair remains a compatibility fixture. An actual Mercury/Jev/Kokoro encounter and all 14 save-restoration comparisons passed. RTS overview and native projections render, and browser camera controls work; injected in-game button/keyboard delivery remains unqualified. Business charters, prices and recipes still contain authored assumptions, and broader production, politics and first-person integration remain required. [Implementation and evidence](dynamic-society.md)
 
 See [system guide](system-guide.md), [model qualification](model-routing.md), [town progress](town-progress.md) and [video plan](demo-videos.md). Passing unit tests is not proof of a working in-game interaction, realistic psychology, or a complete economy.

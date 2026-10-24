@@ -14,6 +14,9 @@ from routing import route_available, dynamic_route
 from labour import work_opportunities, settle_contract
 from rest import rest_opportunities
 from places import MARKET, market_opportunity, at_market
+from opportunities import food_sellers
+from knowledge import person_view
+from social import social_candidates
 
 TERMINAL = ('complete', 'held')
 
@@ -109,15 +112,24 @@ class Agency:
         if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ('gold', 'bread')):
             raise ValueError('Invalid observed inventory')
         stock = allocation(person, inventory)
+        targets = {}
+        def visits():
+            if self.active.get('town') is None:
+                rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156) else []
+            else:
+                rows=[{**r,'action':'visit_person_'+str(r['id'])} for r in social_candidates(self.active,observation,actor)]
+            for row in rows:
+                targets[row['action']]=row['id']
+            return [{'id':r['action'],'effect':'Visit '+r['name']+'; travel only, no purchase or conversation is implied.'} for r in rows]
         if plan['phase']=='job_offer':
             options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
             resources = work_inventory(observation, plan['actor'], plan['target'])
             if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= 2:
-                worker_name = self.active['people'][str(plan['actor'])]['profile']['name']
+                worker_name = person_view(self.active,actor,plan['actor'])['name']
                 options.append({'id':'offer_shift','effect':f'Offer {worker_name} 2 gold from your purse to convert one of your grain into two loaves. They may refuse. Pay only after 30 game minutes of qualified work and observed production.'})
             information = 'Consider a small paid bread-making job to replenish your stock. This is an authored demo recipe; no oven animation is implemented. Your household reserve policy also applies to the output. The scenario stock target is eight loaves. Two loaves might bring six gold at the initial asking price, but sales are not guaranteed and grain has an opportunity cost. Keep your money if replenishing is not worthwhile.'
         elif plan['phase']=='job_accept':
-            employer_name = self.active['people'][str(plan['target'])]['profile']['name']
+            employer_name = person_view(self.active,actor,plan['target'])['name']
             options = [{'id':'decline_work','effect':'Decline the job. No goods or wages change hands.'},
                        {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: walk to the employer, spend 30 game minutes on simulated bread-making work and receive 2 gold after the output is verified. You supply labour, not grain or money.'}]
             information = f'{employer_name} offers you a paid job: 2 gold for 30 game minutes of bread-making work at their location. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
@@ -137,25 +149,27 @@ class Agency:
             options = [{'id': 'decline', 'effect': 'Decline the request; keep your goods.'}]
             if inventory['bread'] > 0 and (not stock['allocated'] or stock['for_sale']>0):
                 options.append({'id': 'sell_bread', 'effect': f'Agree to sell one carried loaf for {price} gold to the nearby buyer.'})
-            buyer_name=self.active['people'][str(plan['actor'])]['profile']['name']
+            buyer_name=person_view(self.active,actor,plan['actor'])['name']
             information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
         elif reconsidering:
             options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
-            if route_available(observation,actor,108156):
-                options.append({'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'})
+            options += visits()
             if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
                 options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
-            information = 'Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.'
+            information = 'The seller just declined your 3-gold offer. Their reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.'
         else:
             options = [{'id': 'defer', 'effect': 'Postpone this errand; no travel or purchase.'}]
             if inventory['bread'] > 0:
                 options.append({'id':'eat_bread','effect':'Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.'})
-            if route_available(observation,actor,108156):
-                options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
-            if route_available(observation,actor,108149) and inventory['gold'] >= 3 and inventory['bread'] == 0:
-                options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
+            options += visits()
+            sellers=food_sellers(self.active,observation,actor)
+            if sellers and inventory['gold'] >= 3 and inventory['bread'] == 0:
+                for i,seller in enumerate(sellers[:6]):
+                    action='seek_bread' if i==0 else 'seek_bread_'+str(seller['id'])
+                    targets[action]=seller['id']
+                    options.append({'id':action,'effect':'Walk to '+seller['name']+', a publicly registered food seller, and offer 3 gold for one loaf. Stock is unknown and they may refuse.'})
             elif inventory['gold'] >= 3 and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
-                options.append({'id':'check_market','effect':'Walk to the known public market to look for Carlotta. Her presence and stock are unknown. If she is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
+                options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review' and work_opportunities(self.active, observation, actor):
                 options.append({'id':'seek_work','effect':'Ask the food enterprise about a 30-game-minute bread-making shift paying 2 gold. The employer must offer and you must accept before travel or work. No wage is guaranteed.'})
             if plan['kind']=='need_review' and person['needs'].get('fatigue',0)>=.6 and rest_opportunities(self.active,observation,actor):
@@ -167,16 +181,17 @@ class Agency:
                 'own_food_allocation': stock,
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
-                'prior_knowledge': 'Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents\' private inventories are not known.',
+                'prior_knowledge': 'Public enterprise charters identify advertised services, not personal names, private stock or willingness. Names require personal knowledge. The 3-gold initial offer and 5-gold final offer are authored starting assumptions, not discovered market prices.',
                 'memories': person['memories'][-8:], 'trust': person['trust'],
-                'my_relationships':person.get('relationships',{}), 'options': options}
+                'my_relationships':person.get('relationships',{}), 'option_targets':targets, 'options': options}
 
-    @staticmethod
-    def _resident_perception(observation, actor):
+    def _resident_perception(self, observation, actor):
         sensor = observation.get('perception', {}).get(str(actor), {})
         if not sensor.get('available'):
             return {'available': False, 'information': 'Vision is unavailable; this does not mean nobody is nearby.'}
-        return {'available': True, 'visible': copy.deepcopy(sensor.get('visible', []))}
+        return {'available': True, 'visible': [
+            {**person_view(self.active,actor,row['id']), 'distance':row.get('distance')}
+            for row in sensor.get('visible',[]) if type(row.get('id')) is int]}
 
     def claim_plan_decision(self, event_id, observation):
         self._agency_guard(observation)
@@ -201,6 +216,9 @@ class Agency:
         context_plan = {**plan, 'phase': claim['stage']}
         current = self._plan_context(observation, context_plan)
         decision = validate_decision(result['decision'], current)
+        chosen=decision['action_id']
+        if current.get('option_targets',{}).get(chosen)!=claim['context'].get('option_targets',{}).get(chosen):
+            raise ValueError('The chosen destination changed while deciding')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
         state = copy.deepcopy(self.active)
@@ -229,20 +247,20 @@ class Agency:
             updated['phase'] = 'job_accept'
         elif action == 'decline_work':
             updated.update(phase='complete', outcome='work_declined')
-        elif action in ('seek_bread', 'visit_adrianne', 'take_shift'):
+        elif action in ('seek_bread', 'visit_adrianne', 'take_shift') or action.startswith(('seek_bread_', 'visit_person_')):
             travel_id = 'travel-' + event_id
             if updated.get('travel'):
                 updated.setdefault('travel_history', []).append(updated['travel'])
                 updated['travel'] = None
                 travel_id += '-replan-' + str(len(updated['decisions']))
-            target = updated['target'] if action == 'take_shift' else (108149 if action == 'seek_bread' else 108156)
+            target = updated['target'] if action == 'take_shift' else current['option_targets'][action]
             if action == 'take_shift' and updated.get('work_terms'):
                 terms = updated['work_terms']
                 state['town']['businesses'][terms['business_id']]['contracts'].append({
                     'id':event_id,'worker':updated['actor'],'employer':target,'status':'accepted',
                     'terms':copy.deepcopy(terms['policy']), 'source':'Employer offer and worker consent; no completed work yet'})
             updated.update(phase='travelling', target=target,
-                           intent=action, travel_id=travel_id, release_required=True)
+                           intent='seek_bread' if action.startswith('seek_bread') else action, travel_id=travel_id, release_required=True)
             updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
         elif action == 'raise_offer':
             updated.update(phase='consent', unit_price=5)
@@ -317,7 +335,7 @@ class Agency:
             elif plan.get('outcome')=='market_seller_not_observed':
                 person=state['people'][str(plan['actor'])]
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
-                    'place':MARKET,'other':108149,'day':observation.get('gameDays'),
+                    'place':MARKET,'day':observation.get('gameDays'),
                     'source':'Owned arrival; seller not observed within interaction range. This does not prove the business is closed.'})
                 person['memories']=person['memories'][-32:]
             elif plan.get('outcome')=='allocated_stock':
@@ -359,10 +377,10 @@ class Agency:
                 and (plan.get('target_kind')!='place' or movement.get('target_kind')=='place'))
             if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived and binding_ok:
                 if plan['intent']=='check_market':
-                    try:nearby=at_market(observation,108149) and distance(observation,plan['actor'],108149)<=300
-                    except ValueError:nearby=False
+                    sellers=[r for r in food_sellers(state,observation,plan['actor']) if r['distance'] is not None and r['distance']<=300 and at_market(observation,r['id'])]
+                    nearby=bool(sellers)
                     updated['market_visit']={'place':MARKET,'seller_nearby':nearby,'day':observation.get('gameDays')}
-                    if nearby:updated.update(phase='consent',target=108149,target_kind='resident')
+                    if nearby:updated.update(phase='consent',target=sellers[0]['id'],target_kind='resident')
                     else:updated.update(phase='complete',outcome='market_seller_not_observed')
                 else:
                     updated['phase'] = {'seek_bread':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')

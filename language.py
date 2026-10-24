@@ -31,6 +31,9 @@ def _usage(raw):
 
 
 def propose(context, config, key):
+    max_output=config.get('max_output_tokens',500)
+    if type(max_output) is not int or not 128<=max_output<=2048:
+        raise ValueError('Dialogue output budget must be an integer from 128 to 2048')
     effort = config.get('reasoning_effort')
     provider = config.get('openrouter_provider')
     if effort is not None and effort not in ('none', 'minimal', 'low', 'medium', 'high'):
@@ -47,15 +50,21 @@ def propose(context, config, key):
                 'intention':{'type':'string','maxLength':100},
                 'line':{'type':'string','maxLength':240},
                 'tone':{'type':'string','enum':['calm','worried','hopeful','frustrated']}}}}}}
-    payload={'model':config['model'],'temperature':.7,'max_tokens':500,
+    payload={'model':config['model'],'temperature':.7,'max_tokens':max_output,
         'chat_template_kwargs':{'enable_thinking':False},
         'messages':[{'role':'system','content':
             'You write plausible alternatives for one fictional Skyrim resident, not an omniscient narrator. '
             'Propose exactly TWO different conversational intentions, option_1 then option_2. Each has an intention, '
             'a natural spoken line of 8-30 words, and tone. Address the nearby listener directly. Use ONLY your '
-            'own memories and knowledge. Respond to the latest heard speech when present. Otherwise an ordinary greeting, '
-            'observed weather, a question, or a genuine remembered event with this listener is appropriate. '
+            'own memories and knowledge. Respond to the latest heard speech when present. '
+            'If listener.name_known is false, their name is unknown: do not address them by an invented or remembered lore name. '
+            'If you choose to introduce yourself, begin that alternative exactly with My name is YOUR FULL PROFILE NAME. '
+            'Replace YOUR FULL PROFILE NAME with your own profile.name and keep the period. Introducing yourself is optional. '
+            'A missing or null weather observation means weather is unknown: do not invent clouds, rain or a forecast. '
+            'Otherwise an ordinary greeting, observed weather, a question, or a genuine remembered event with this listener is appropriate. '
             'Follow the event purpose, including a courteous refusal if requested. Do not force business or conflict '
+            'into a refusal as an excuse: never invent a current job, appointment, obligation or deadline. '
+            'Do not turn an unknown person into a claim about their habits, generosity or secrecy. '
             'into every encounter. Read known_facts_in_first_person carefully: never swap who bought, sold, worked or paid. '
             'When a seller refuses to sell, the buyer did NOT offer them bread. Personality shapes choices '
             'without stereotyping. Do not invent completed events or another person\'s motives. A request or promise '
@@ -94,4 +103,4 @@ def propose(context, config, key):
     return {'proposal':proposal,'model':raw.get('model',config['model']),
         'elapsed_seconds':receipt['elapsed_seconds'],'usage':raw.get('usage',{}),
         'provider':raw.get('provider'),
-        'requested_reasoning_effort':effort, 'requested_provider':provider}
+        'requested_reasoning_effort':effort, 'requested_provider':provider,'requested_max_output_tokens':max_output}

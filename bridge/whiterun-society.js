@@ -47,7 +47,7 @@ let hud = null;
 let cameraMode='market',cameraActor=0,cameraDirty=true,cursor=true;
 let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[];
-let observerKey=null;
+let observerKey=null,uiHealth=null;
 const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
@@ -88,6 +88,7 @@ function checkpointValue() {
 }
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
+  if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30)};return;}
   if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='market';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
@@ -101,7 +102,7 @@ on('browserMessage',event=>{
   cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;
 });
 on('buttonEvent',event=>{
-  if(event.isDown&&[2,3,4,64].includes(event.code))observerKey=event.code;
+  if(event.isDown&&[2,3,4,64,65].includes(event.code))observerKey=event.code;
   if (event.code===66 && event.isDown && sp.browser) {cursor=!cursor;sp.browser.setFocused(cursor);}
 });
 function updateCamera(player) {
@@ -109,7 +110,8 @@ function updateCamera(player) {
   let target=[24500,-7100,-3320],offset=[-650,-850,450];
   if(cameraMode==='street'){target=[20950,-7500,-3540];offset=[-1250,-100,300];}
   if(cameraMode==='trade'){
-    const a=sp.Actor.from(sp.Game.getFormEx(108149)),b=sp.Actor.from(sp.Game.getFormEx(108186));
+    const pair=presentation.society?.conversation?.speakers||residents.filter(r=>r.isPerson===true).slice(0,2).map(r=>r.id);
+    const a=pair[0]?sp.Actor.from(sp.Game.getFormEx(pair[0])):null,b=pair[1]?sp.Actor.from(sp.Game.getFormEx(pair[1])):null;
     if(a&&b&&a.is3DLoaded()&&b.is3DLoaded()) target=[(a.getPositionX()+b.getPositionX())/2,(a.getPositionY()+b.getPositionY())/2,(a.getPositionZ()+b.getPositionZ())/2+60];
     offset=[-400,-500,280];
   }
@@ -140,7 +142,7 @@ function updateCamera(player) {
 on('activate', event => {
   if (event.caster && event.caster.getFormID() === 0x14 && event.target) {
     const actor = sp.Actor.from(event.target);
-    if (actor){selected = actor.getFormID();observerKey=({108149:2,108186:3,108156:4})[selected]||null;}
+    if (actor)selected = actor.getFormID();
   }
 });
 registrations.push(sp.once('tick', () => sp.printConsole('[Whiterun Society] custom bridge loaded')));
@@ -180,7 +182,7 @@ on('update', () => {
   if(view.manual){cameraMode=view.mode;cameraActor=view.id;}
   if(observerReady) updateCamera(player);
   if(observerReady&&sp.Input&&typeof sp.Input.isKeyPressed==='function'){
-    for(const code of [2,3,4,64]){const down=sp.Input.isKeyPressed(code);if(down&&!observerPressed[code])observerKey=code;observerPressed[code]=down;}
+    for(const code of [2,3,4,64,65]){const down=sp.Input.isKeyPressed(code);if(down&&!observerPressed[code])observerKey=code;observerPressed[code]=down;}
   }
   if(observerKey&&sp.browser){const key=observerKey;observerKey=null;
     sp.browser.executeJavaScript('window.whiterunInspectKey && window.whiterunInspectKey('+key+');');}
@@ -389,6 +391,7 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
+    ui_health:uiHealth,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,

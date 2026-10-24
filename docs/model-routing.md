@@ -2,7 +2,7 @@
 
 Ordinary dialogue should use the least expensive model that meets the scene's quality and latency requirements. The current language role proposes wording and conversational intentions; Jev makes constrained selections, code enforces consequences, and Skyrim executes movement. A larger reasoning model is not required on every utterance. Small models can also reason; model size is not an authority boundary.
 
-Calvin has selected cloud inference through OpenRouter as the implementation direction; local inference is optional. Mercury 2.5 is the leading candidate. The current runtime configuration remains GPT-4.1 mini until qualification is complete. Smaller candidates were tested without changing the game or its model configuration. A future escalation policy for difficult planning or social negotiation is a design target, not an implemented automatic router.
+Calvin has selected cloud inference through OpenRouter as the implementation direction; local inference is optional. Mercury 2.5 through Inception is now the experimental lab default after a complete voiced encounter with Jev choices, local Kokoro playback and verified save restoration. The output ceiling is 1,000 tokens, reasoning effort is requested as `none`, and provider fallback is disabled. The route still reports reasoning tokens and earlier probes exposed grounding failures. [Live scene and retained failures](dynamic-society.md). A future escalation policy for difficult planning or social negotiation is a design target, not an implemented automatic router.
 
 ## Latest twelve-call cloud probe
 
@@ -19,7 +19,7 @@ Mercury correctly preserved worker/employer roles and payment in the paid-work c
 
 Mercury reported 67–143 reasoning tokens in accepted responses despite requesting `none`; the flag is not proof of zero reasoning or its cost. Granite reported zero reasoning tokens. The adapter now supports explicit `reasoning_effort` and `openrouter_provider`, records provider provenance, and preserves finite cost/token telemetry when parsed output is rejected. The conversation worker saves that rejection receipt before holding the encounter.
 
-`tools/probe_dialogue.py` accepts a JSON plan containing `cases` and `configs`, limits a run to twelve calls and 6,000 characters per context, records each claim before sending it, and refuses to overwrite any prior receipt. Use a fresh output only for a deliberately new experiment. Set `WHITERUN_OPENROUTER_KEY` in the process environment; never store it in a plan. Ordinary dialogue configuration remains unchanged unless explicitly qualified and promoted.
+`tools/probe_dialogue.py` accepts a JSON plan containing `cases` and `configs`, limits a run to twelve calls and 6,000 characters per context, records each claim before sending it, and refuses to overwrite any prior receipt. Use a fresh output only for a deliberately new experiment. Set `WHITERUN_OPENROUTER_KEY` in the process environment; never store it in a plan. This probe did not change the default; the subsequent live trial described above promoted Mercury as the experimental lab route.
 
 ## Latest shortlist: August–October 2026 releases
 
