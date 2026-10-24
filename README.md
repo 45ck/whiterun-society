@@ -69,6 +69,10 @@ MIT for the original code in this repository. No affiliation with Bethesda or th
 
 ### In-game spectator demo
 
+![Actual in-game spectator overlay and resident camera](docs/images/spectator-ui.jpg)
+
+Captured in the running isolated Skyrim installation; this is not a mockup.
+
 The isolated game now displays a transparent society panel over Whiterun: observed resident inventories, actor positions, and a receipt for the verified physical bread trade. A guided camera tour changes every 12 seconds between the market, Carlotta, Ysolda, the trade pair, and the approach. It starts without player input.
 
 **Verified in the live game:** camera repositioning and close-ups, changing actor counts, actual gold/bread inventory, and the completed trade receipt. **Still being qualified:** native mouse delivery. Manual camera controls are deliberately disabled in this preview; the automatic tour remains usable. Camera collision avoidance is not implemented, so moving NPCs can occasionally cause occlusion. The standalone production simulation does not yet autonomously drive these NPCs.
