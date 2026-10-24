@@ -46,15 +46,17 @@ class Town(Society):
                 emit(key,kind,{'payer':buyer,'payee':seller,'gold':amount})
                 return True
             # One paid shift unlocks bounded farm output; harvest=0 is the shock.
-            if pay('farm-wage','farm','farmer',8,'wage'):
-                adjust('farm','grain',harvest)
-                emit('harvest','production',{'producer':'farm','grain':harvest,'capacity':6})
-            grain=min(6,stock('farm','grain'),gold('bakery')//2)
+            if pay('farm-wage','farm','farmer',6,'wage'):
+                produced=min(harvest,max(0,12-stock('farm','grain')))
+                adjust('farm','grain',produced)
+                emit('harvest','production',{'producer':'farm','grain':produced,'capacity':6})
+            needed=max(0,(12-stock('bakery','bread')+1)//2-stock('bakery','grain'))
+            grain=min(needed,stock('farm','grain'),gold('bakery')//2)
             if grain and pay('grain-payment','bakery','farm',grain*2,'trade'):
                 adjust('farm','grain',-grain); adjust('bakery','grain',grain)
                 emit('grain-delivery','delivery',{'seller':'farm','buyer':'bakery','grain':grain})
-            batches=min(6,stock('bakery','grain'))
-            if batches and pay('baker-wage','bakery','baker',10,'wage'):
+            batches=min(6,stock('bakery','grain'),max(0,(12-stock('bakery','bread')+1)//2))
+            if batches and pay('baker-wage','bakery','baker',6,'wage'):
                 adjust('bakery','grain',-batches); adjust('bakery','bread',2*batches)
                 emit('baking','production',{'grain_used':batches,'bread_produced':2*batches})
             if stock('bakery','bread'):

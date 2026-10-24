@@ -4,7 +4,7 @@ An experimental, open-source society simulation for Skyrim Special Edition: a ci
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The player can participate as a resident or influence policy. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
-**Development has started. This is not a playable release.** The current code implements a small standalone transaction ledger and scenario beliefs. In-game integration, autonomous production and consumption, generated dialogue, lip sync and game-save synchronization remain under development. Scenario beliefs currently use explicit rules, not a language model.
+**Development has started. This is not a playable release.** The current code implements a standalone transaction ledger, a small farm–bakery–household economy with autonomous wages, purchases, production and consumption, and scenario beliefs. In-game integration, generated dialogue, lip sync and game-save synchronization remain under development. Decisions currently use explicit rules, not a language model.
 
 ## Run the tests
 
@@ -12,6 +12,7 @@ Python 3.12+, no third-party Python dependencies:
 
 ```sh
 python -m unittest discover -s tests -v
+python town.py --days 30
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.

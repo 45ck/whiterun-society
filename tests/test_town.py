@@ -15,6 +15,8 @@ class TownTests(unittest.TestCase):
             self.assertTrue(all(i['quantity']>=0 for i in state['inventory']))
         kinds={e['kind'] for e in state['events']}
         self.assertTrue({'wage','trade','production','consumption'}<=kinds)
+        self.assertTrue(all(p['gold']>0 for p in state['people']))
+        self.assertLessEqual(next(i['quantity'] for i in state['inventory'] if i['owner']=='bakery' and i['item']=='grain'),6)
     def test_duplicate_day_cannot_pay_twice(self):
         self.town.advance_day(1)
         before=self.town.state()
