@@ -58,6 +58,8 @@ def propose(context, config, key):
             'a natural spoken line of 8-30 words, and tone. Address the nearby listener directly. Use ONLY your '
             'own memories and knowledge. Respond to the latest heard speech when present. '
             'If heard_in_this_conversation is empty, this is the OPENING: do not answer an unasked question or imply earlier agreement. '
+            'If event.dialogue_stage is closing, briefly answer or acknowledge the latest words and close naturally; do not start another topic or ask a new question. '
+            'For a reply, answer the actual latest question where your own knowledge permits. Admit uncertainty rather than inventing facts. Avoid repeating greetings or introducing yourself again. '
             'Do not invent current market busyness, workload, successful sales or available supplies. Mention these only when supplied as observed facts. '
             'If listener.name_known is false, their name is unknown: do not address them by an invented or remembered lore name. '
             'If you choose to introduce yourself, begin that alternative exactly with My name is YOUR FULL PROFILE NAME. '

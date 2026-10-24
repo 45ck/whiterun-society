@@ -32,6 +32,8 @@ The control room now has **Start society**, **Stop after encounter**, and **Foll
 
 The **Society quality lab** reports encounter failures, duration, reply gaps, body-facing error, physical economic outcomes and relationship counts. Unknown gaze/raycast accuracy, lip sync and human realism remain unscored. The initial live baseline was **4/6 accepted chats completed**, **zero sales in the current save**, **two production events** and **39 meals**; the ledger includes staged experiments. There is still only one sale good and one production recipe. These are shortcomings to fix, not a high realism score. [Metrics definitions, baseline and acceptance targets](docs/quality-metrics.md)
 
+Conversations now allow up to **six turns**, with a fresh listener decision to reply, close politely or leave quietly. A live three-turn exchange completed with a model-chosen closing and verified native release. A voice worker warmed during approach generated each line in 1.8–2.1 seconds; the full reply gaps were still 10.3–10.6 seconds. The current lineage reached **8/10 completed chats**, but retained dialogue still invents work details and does not execute suggested actions such as sitting. [Transcript, timings and grounding defects](docs/evidence/extended-dialogue-live.json)
+
 [Hear Anoriath and Brenuin's generated voices](docs/media/anoriath-brenuin.wav) · [Playback receipts and retained failure](docs/evidence/visible-conversation.json). This sample concatenates the two generated voice assets from an engine-confirmed encounter; it is **not a recording of the game or proof of physical audio output**.
 
 ### Change the town's businesses

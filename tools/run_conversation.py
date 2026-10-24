@@ -4,7 +4,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import subprocess
 import sys
 import time
 import urllib.request
@@ -13,6 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from language import LanguageOutputError, propose
 from decisions import infer
 from social import SOCIAL_STAGES
+from tools.voice_worker import VoiceWorker
 
 
 def stock_voice(actor, observation):
@@ -25,6 +25,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--id',required=True)
     p.add_argument('--language-config',type=Path,required=True);p.add_argument('--decision-config',type=Path,required=True)
     p.add_argument('--actor',type=int,help='Run an existing scheduled social opportunity for this resident')
+    p.add_argument('--max-turns',type=int,choices=range(2,7),default=6)
     args=p.parse_args();runtime=args.root/'runtime';bridge=json.loads((runtime/'bridge-config.json').read_text())
     models={stage:json.loads(path.read_text()) for stage,path in [('propose',args.language_config),('select',args.decision_config)]}
     keys={stage:os.environ[c['key_env']] if c.get('key_env') else Path(c['key_file']).read_text().strip() for stage,c in models.items()}
@@ -38,7 +39,7 @@ def main():
         except urllib.error.HTTPError as e:raise ValueError(json.load(e).get('error','Request rejected')) from None
         if route=='/state' and time.time()-(result['bridge']['last_seen'] or 0)>10:raise ValueError('Game disconnected')
         return result
-    deadline=time.monotonic()+360
+    deadline=time.monotonic()+600
     def stable():
         while time.monotonic()<deadline:
             s=req('/state')
@@ -48,11 +49,12 @@ def main():
         raise TimeoutError('Checkpoint did not settle')
     def record():path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     evidence['before']=stable()
-    started=req('/conversation/start',{'id':args.id,**({'actor':args.actor} if args.actor is not None else {})})
+    started=req('/conversation/start',{'id':args.id,'max_turns':args.max_turns,**({'actor':args.actor} if args.actor is not None else {})})
     if started.get('duplicate'):
         print(json.dumps({'duplicate':True,'phase':started['conversation']['phase'],'model_calls':0}));return
-    previous=None
+    previous=None;voice_worker=None
     try:
+        voice_worker=VoiceWorker(args.root,args.max_turns,[c.get('key_env') for c in models.values()])
         while time.monotonic()<deadline:
             s=stable();c=s['society']['conversation']
             if not c or c['id']!=args.id:raise ValueError('Conversation changed after save/load')
@@ -67,7 +69,9 @@ def main():
             if phase in ('propose','select')+SOCIAL_STAGES:
                 bucket='social' if phase in SOCIAL_STAGES else phase
                 model_stage='propose' if phase=='propose' else 'select'
-                if evidence['calls'][bucket]>=(4 if bucket=='social' else 2):raise ValueError('Inference cap exceeded')
+                limit=c.get('turn_limit',2)
+                cap=4+(limit-1 if limit>2 else 0) if bucket=='social' else limit
+                if evidence['calls'][bucket]>=cap:raise ValueError('Inference cap exceeded')
                 claim=req('/conversation/claim',{'id':args.id})['claim'];confirmed=stable()
                 confirmed_conversation=confirmed['society'].get('conversation') or {}
                 if (confirmed['bridge']['session']!=claim['session'] or confirmed_conversation.get('id')!=args.id
@@ -80,10 +84,10 @@ def main():
                 turn=c['current'];input_path=runtime/('speech-'+hashlib.sha256((args.id+str(c['turn'])).encode()).hexdigest()[:16]+'.json')
                 input_path.write_text(json.dumps({'text':turn['selected']['line'],'voice':stock_voice(turn['speaker'],s['bridge']['observation'])}),encoding='utf-8')
                 synthesis_start=time.monotonic()
-                subprocess.run([str(args.root/'voice-venv/Scripts/python.exe'),str(Path(__file__).with_name('synthesize_voice.py')),
-                    '--root',str(args.root),'--input',str(input_path)],check=True,timeout=90)
-                evidence['synthesis_timings'].append({'turn':c['turn'],'seconds':round(time.monotonic()-synthesis_start,3)});record()
-                audio=json.loads(input_path.with_suffix('.audio.json').read_text())
+                voice_result=voice_worker.synthesize(turn['selected']['line'],stock_voice(turn['speaker'],s['bridge']['observation']))
+                audio=voice_result['audio'];input_path.with_suffix('.audio.json').write_text(json.dumps(audio),encoding='utf-8')
+                evidence['voice_load_seconds']=voice_worker.ready['load_seconds']
+                evidence['synthesis_timings'].append({'turn':c['turn'],'seconds':round(time.monotonic()-synthesis_start,3),'engine_seconds':voice_result['synthesis_seconds']});record()
                 req('/conversation/audio',{'id':args.id,'audio':audio})
             elif phase.startswith('thinking_'):
                 raise ValueError('Unsettled inference claim; refusing automatic repetition')
@@ -95,6 +99,8 @@ def main():
         try:req('/conversation/hold',{'id':args.id,'reason':evidence['error']})
         except (OSError,ValueError):evidence['hold_not_confirmed']=True
         record();raise
+    finally:
+        if voice_worker:voice_worker.close()
 
 
 if __name__=='__main__':main()

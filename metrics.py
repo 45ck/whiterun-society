@@ -75,6 +75,7 @@ def simulation_metrics(state):
             'failed':sum(c['phase']=='held' for c in terminal),
             'quiet_outcomes':sum(c.get('outcome')=='continued_quietly' for c in terminal),
             'polite_refusals':sum(c.get('outcome')=='spoke_brief_refusal' for c in terminal),
+            'end_reasons':dict(Counter(c.get('end_reason','legacy_unrecorded') for c in terminal)),
             'resolution_rate':rate(sum(c['phase']=='complete' for c in terminal),len(terminal)),
             'accepted_chat_completion':rate(sum(c.get('outcome')=='social_exchange_completed' for c in chats),len(chats)),
             'failures_by_category':dict(Counter(failure_category(c.get('error')) for c in terminal if c['phase']=='held')),

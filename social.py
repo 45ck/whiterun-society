@@ -7,7 +7,7 @@ import math
 from routing import route_available
 from knowledge import person_view
 
-SOCIAL_STAGES=('choose_partner','respond','reflect_first','reflect_second')
+SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
 
 
 def social_candidates(state,observation,actor):
@@ -32,6 +32,7 @@ def social_candidates(state,observation,actor):
 
 def social_context(state,c,observation,stage):
     actor=c['initiator'] if stage in ('choose_partner','reflect_first') else c['partner']
+    if stage=='continue_dialogue':actor=c['speakers'][c['turn']%2]
     person=state['people'][str(actor)]
     context={'actor_id':actor,'profile':person['profile'],'scenario_state':{'needs':person['needs']},
              'memories':person['memories'][-8:],'trust':person.get('trust',{}),
@@ -46,8 +47,18 @@ def social_context(state,c,observation,stage):
         other=c['initiator'];context['other']=person_view(state,actor,other)
         context['my_relationship']=person.get('relationships',{}).get(str(other),{})
         context['event']['information']='This person approached you and is nearby. Choose a brief conversation or a polite spoken refusal. Your choice grants no trade, employment or political authority. They do not know your private feelings unless you speak.'
-        context['options']=[{'id':'chat','effect':'Accept a brief two-turn exchange; each resident chooses what to say.'},
+        context['options']=[{'id':'chat','effect':f"Accept a brief exchange of up to {c.get('turn_limit',2)} turns; either resident may end it early."},
             {'id':'decline','effect':'Give one short courteous refusal, then return to your routine. No hostility is implied.'}]
+    elif stage=='continue_dialogue':
+        other=c['speakers'][1-c['turn']%2]
+        context['other']=person_view(state,actor,other)
+        context['my_relationship']=person.get('relationships',{}).get(str(other),{})
+        context['heard']=[{'line':t['selected']['line'],'status':'heard claim; truth unverified'} for t in c['turns'] if t.get('delivered') and t['listener']==actor]
+        context['event'].update(turns_delivered=c['turn'],remaining_turns=c['max_turns']-c['turn'],
+            information='The other person finished speaking within hearing range. Decide whether a relevant reply is worthwhile, offer a brief spoken closing, or leave quietly. Consider unresolved questions, your own needs and your relationship. A greeting does not oblige either person to keep talking. Do not repeatedly prolong an exhausted topic.')
+        context['options']=[{'id':'reply','effect':'Choose a relevant reply or follow-up; no economic action is executed by speech.'},
+            {'id':'close_politely','effect':'Give a brief reply or acknowledgement and a natural farewell, then end the encounter.'},
+            {'id':'leave_quietly','effect':'End without another spoken line. Do not invent an unheard farewell or infer hostility.'}]
     else:
         other=c['partner'] if actor==c['initiator'] else c['initiator']
         heard=[t for t in c['turns'] if t.get('delivered') and t['listener']==actor]

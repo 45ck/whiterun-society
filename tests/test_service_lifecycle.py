@@ -63,7 +63,12 @@ class ServiceLifecycleTests(unittest.TestCase):
                 observation={'session':'test-session','ready':True,'checkpoint':0,'gameDays':1,
                     'residents':[{'id':7,'name':'New founder','isPerson':True,'isGuard':False,'inventory':{'gold':12,'bread':0,'grain':2}}]}
                 post('/heartbeat',observation)
-                observation['checkpoint']=post('/world/bootstrap',{})['checkpoint'];post('/heartbeat',observation)
+                observation['checkpoint']=post('/world/bootstrap',{})['checkpoint']
+                with self.assertRaises(urllib.error.HTTPError) as unsettled:
+                    post('/service/shutdown',{})
+                self.assertEqual(unsettled.exception.code,400)
+                self.assertIsNone(first.poll())
+                post('/heartbeat',observation)
                 observation['checkpoint']=post('/town/initialize',{'id':'census','seed':'test'})['checkpoint'];post('/heartbeat',observation)
                 specification={'id':'new-bakery','expected_revision':0,'name':'New bakery','custodian':7,
                     'active':True,'capabilities':['bread_recipe','retail_food'],'production_policy':{'wage_gold':4}}
@@ -90,6 +95,10 @@ class ServiceLifecycleTests(unittest.TestCase):
                 self.assertEqual(first.wait(timeout=10),0)
                 self.assertEqual(json.loads(config.read_text())['port'],second_port)
                 self.assertIsNone(second.poll())
+                second_auth={'Authorization':'Bearer '+json.loads(config.read_text())['token'],'Content-Type':'application/json'}
+                request=urllib.request.Request(f'http://127.0.0.1:{second_port}/service/shutdown',data=b'{}',headers=second_auth)
+                with urllib.request.urlopen(request) as response:self.assertEqual(json.load(response)['status'],'stopping')
+                self.assertEqual(second.wait(timeout=10),0)
             finally:
                 # These are this test's subprocess handles only, never live lab services.
                 config.write_text(json.dumps({'port':0,'token':'test-finished'}))

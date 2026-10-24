@@ -1,7 +1,7 @@
 """Review game-clock needs and optionally run a finite number of queued decisions.
 
 No wall-clock simulation while the game is disconnected. Inference is delegated
-to persisted-claim workers: at most five calls per economic event, eight per
+to persisted-claim workers: at most five calls per economic event, 21 per
 social encounter when an explicit language configuration is supplied.
 """
 import argparse
@@ -65,7 +65,7 @@ def main():
     parser.add_argument('--max-events',type=int,default=0)
     parser.add_argument('--watch-seconds',type=int,default=0)
     parser.add_argument('--model-config',type=Path)
-    parser.add_argument('--language-config',type=Path,help='Enables scheduled social encounters with at most eight model calls each')
+    parser.add_argument('--language-config',type=Path,help='Enables scheduled social encounters with at most 21 model calls each')
     parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
     parser.add_argument('--receipt',type=Path)
     parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
@@ -92,7 +92,7 @@ def main():
         return state
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],
-              'maximum_model_calls':(8 if args.language_config else 5)*args.max_events,'status':'running'}
+              'maximum_model_calls':(21 if args.language_config else 5)*args.max_events,'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')

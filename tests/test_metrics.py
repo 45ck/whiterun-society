@@ -21,6 +21,7 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(m['eligible'],3);self.assertEqual(m['excluded_fixtures'],1)
         self.assertEqual(m['accepted_chat_completion'],{'success':1,'n':2,'percent':50})
         self.assertEqual(m['quiet_outcomes'],1);self.assertEqual(m['failures_by_category'],{'attendance':1})
+        self.assertEqual(m['end_reasons'],{'legacy_unrecorded':3})
         self.assertEqual(state,before)
 
     def test_reply_gaps_and_body_geometry_are_separate_from_eye_accuracy(self):

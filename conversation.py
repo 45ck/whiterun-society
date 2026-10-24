@@ -44,8 +44,10 @@ class Conversation:
         c = self.conversation_status()
         return bool(c and c['phase'] not in ('complete', 'held'))
 
-    def start_conversation(self, event_id, observation, actor=None):
+    def start_conversation(self, event_id, observation, actor=None, max_turns=None):
         self._agency_guard(observation)
+        if max_turns is not None and (type(max_turns) is not int or not 2<=max_turns<=6):
+            raise ValueError('Conversation turn limit must be an integer from 2 to 6')
         if not isinstance(event_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', event_id):
             raise ValueError('Invalid conversation ID')
         old = self.conversation_status()
@@ -53,6 +55,7 @@ class Conversation:
         for item in history:
             if item['id'] == event_id:
                 if actor is not None and item.get('initiator')!=actor:raise ValueError('Conversation ID reused for another resident')
+                if max_turns is not None and item.get('turn_limit',2)!=max_turns:raise ValueError('Conversation ID reused with another turn limit')
                 return {'duplicate': True, 'conversation': item}
         day = self.active.get('market_day')
         if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
@@ -74,6 +77,7 @@ class Conversation:
             if not social_candidates(self.active,observation,actor):raise ValueError('No qualified nearby social partner remains')
             self._social_day(observation)
         state = copy.deepcopy(self.active)
+        limit=max_turns if max_turns is not None else (6 if actor is not None else 2)
         if offered:
             daily=state['town'].setdefault('daily',{'last_day':observation['gameDays'],'sequence':0,'queue':[],'reviews':[]})
             if any(e['id']==event_id for e in daily['queue']):raise ValueError('Opportunity ID already exists')
@@ -85,10 +89,10 @@ class Conversation:
         state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0, 'started_at':time.time(),
             'speakers': [108186,108149], 'turns': [], 'claim': None,
             'source': 'Authored two-person encounter; generated intentions and speech',
-            'max_llm_calls': 2, 'max_jev_calls': 2}
+            'turn_limit':limit,'max_turns':limit,'max_llm_calls':limit,'max_jev_calls':limit}
         if actor is not None:
             state['conversation'].update(phase='choose_partner',initiator=actor,partner=None,mode='autonomous_social',
-                speakers=[],social_decisions=[],max_jev_calls=6,source='Scheduled social need; residents choose partner, consent, speech and appraisal')
+                speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
             if offered:state['conversation']['source']='Operator offered opportunity; current residents choose partner, consent, speech and appraisal'
         return {'checkpoint': self._write(state, 'conversation encounter started')}
@@ -105,8 +109,8 @@ class Conversation:
         return c
 
     def _speech_context(self, c, observation):
-        actor = c['speakers'][c['turn']]
-        listener = c['speakers'][1-c['turn']]
+        actor = c['speakers'][c['turn']%2]
+        listener = c['speakers'][1-c['turn']%2]
         person = self.active['people'][str(actor)]
         own = next((a for a in observation['residents'] if a['id']==actor), None)
         if not own or distance(observation, actor, listener)>500:
@@ -131,6 +135,7 @@ class Conversation:
             'heard_in_this_conversation': [{'speaker':t['speaker'], 'line':t['selected']['line'],
                 'epistemic_status':'heard claim, not verified fact'} for t in c['turns'] if t.get('delivered')],
             'event': {'id':c['id'], 'kind':'nearby_conversation',
+                'dialogue_stage':'closing' if c.get('end_after_turn') or c['turn']>=c.get('max_turns',2)-1 else 'opening' if c['turn']==0 else 'reply',
                 'information':('This is a short polite refusal of a social approach. Say that you cannot chat now without inventing a reason or hostility.' if c.get('response')=='decline' else
                     'You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history.')+
                     ' The other person\'s private motives, needs and inventory are unknown. An unfamiliar person\'s name is unknown. '
@@ -174,6 +179,12 @@ class Conversation:
                 if c['response']=='chat':c.update(phase='attending',paired_attendance=True)
                 for resident in (c['initiator'],c['partner']):state['people'][str(resident)]['agency'].update(state='social_encounter',reason='Partner chose '+c['response'])
                 if c['response']=='decline':c['speakers']=[c['partner'],c['initiator']];c['max_turns']=1
+            elif stage=='continue_dialogue':
+                if decision['action_id']=='leave_quietly':
+                    c.update(phase='releasing',final_phase='complete',end_reason='left_quietly')
+                else:
+                    c['phase']='propose'
+                    if decision['action_id']=='close_politely':c.update(end_after_turn=True,end_reason='polite_closure')
             else:
                 record_appraisal(state,c,stage,decision)
                 c['phase']='reflect_second' if stage=='reflect_first' else 'complete'
@@ -296,8 +307,10 @@ class Conversation:
                 'source':'completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof'})
             p['memories']=p['memories'][-32:]
         c['turns'].append(t);c.pop('current');c['turn']+=1
-        c['phase']='releasing' if c['turn']==c.get('max_turns',len(c['speakers'])) else 'propose'
-        if c['phase']=='releasing':c['final_phase']='complete'
+        at_limit=c['turn']>=c.get('max_turns',len(c['speakers']))
+        c['phase']='releasing' if at_limit or c.get('end_after_turn') else 'continue_dialogue' if c.get('mode')=='autonomous_social' and c.get('turn_limit',2)>2 else 'propose'
+        if c['phase']=='releasing':
+            c['final_phase']='complete';c.setdefault('end_reason','turn_limit' if at_limit else 'polite_closure')
         state['conversation']=c
         self._write(state,'completed speech recorded as witnessed claims')
 

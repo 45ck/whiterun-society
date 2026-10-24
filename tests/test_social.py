@@ -30,7 +30,7 @@ class SocialTests(unittest.TestCase):
     def begin(self):
         self.review();self.event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
         self.assertEqual(self.event['kind'],'social_review')
-        self.world.start_conversation(self.event['id'],self.obs,99);self.sync()
+        self.world.start_conversation(self.event['id'],self.obs,99,max_turns=2);self.sync()
 
     def decide(self,action):
         claim=self.world.claim_conversation(self.event['id'],self.obs)['claim'];self.sync()

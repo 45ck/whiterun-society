@@ -22,7 +22,7 @@ class DirectorControlTests(unittest.TestCase):
     def test_single_owner_bounded_process_and_graceful_stop(self,popen):
         process=Mock();process.poll.return_value=None;popen.return_value=process
         result=self.control.start({'max_events':2},self.bridge,self.society)
-        self.assertTrue(result['running']);self.assertEqual(result['maximum_model_calls'],16)
+        self.assertTrue(result['running']);self.assertEqual(result['maximum_model_calls'],42)
         self.assertNotIn('receipt',result);self.assertNotIn('stop_file',result)
         argv=popen.call_args.args[0];self.assertNotIn('test-placeholder',' '.join(argv))
         self.assertIn('--social-opportunities',argv)

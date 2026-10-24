@@ -101,6 +101,11 @@ def main():
                 if not 0<length<=65536: raise ValueError('invalid body size')
                 data=json.loads(self.rfile.read(length))
                 if not isinstance(data,dict): raise ValueError('expected object')
+                if self.path=='/service/shutdown':
+                    if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')):
+                        raise ValueError('Settle active society work before restarting the service')
+                    bridge['shutdown_requested']=True
+                    return self.reply(202,{'status':'stopping','effects_in_flight':False})
                 if self.path=='/heartbeat':
                     session=data.get('session')
                     if not isinstance(session,str) or len(session)>128: raise ValueError('invalid session')
@@ -165,7 +170,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'))
+                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'))
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':
@@ -257,6 +262,7 @@ def main():
     try:
         while True:
             http.handle_request()
+            if bridge.get('shutdown_requested'):break
             current=json.loads(config_path.read_text())
             if current.get('port')!=args.port or current.get('token')!=token:
                 print('Development service superseded; exiting this instance',flush=True)
