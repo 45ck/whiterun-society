@@ -72,6 +72,8 @@ def main():
     config=json.loads((runtime/'bridge-config.json').read_text())
     initial_session=request(port,'/state',config['token'])['bridge']['session']
     if not existing:
+        subprocess.run([sys.executable,str(SOURCE/'tools'/'build_plugin.py'),'--output',str(game/'Data'/'WhiterunSociety.esp')],check=True)
+        subprocess.run([sys.executable,str(SOURCE/'tools'/'patch_overlay_save.py'),'--root',str(root)],check=True)
         subprocess.run([sys.executable,str(SOURCE/'tools'/'configure_profile.py'),'--root',str(root)],check=True)
     subprocess.run([sys.executable,str(SOURCE/'tools'/'deploy_bridge.py'),'--root',str(root)],check=True)
     if not existing:

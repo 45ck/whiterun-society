@@ -13,6 +13,7 @@
  <div><div class="row"><span class="label">Follow a resident</span><span class="small">Tour residents</span></div><div id="people"></div></div>
  <div class="divider"></div>
  <div><div class="label">Latest exchange</div><div id="trade" style="margin-top:10px" class="trade"><div class="empty">Waiting for the trade journal…</div></div></div>
+ <div class="divider"></div><div><div class="label">Local AI · proposed decisions</div><div id="decisions" class="small" style="margin-top:8px">Waiting for an event. No background thinking.</div></div>
  <div class="status" id="status">Inspecting the live world. The economy is an early prototype.</div>
 </aside>
 <section class="focus-card panel" id="focus-card" hidden><div class="label">Camera follows</div><div class="focus-name" id="focus-name"></div><div class="chips"><span><b id="focus-gold">0</b> gold</span><span><b id="focus-bread">0</b> bread</span></div></section>
@@ -31,6 +32,12 @@ document.getElementById('tour').onclick=()=>{tour=!tour;draw();};
 setInterval(()=>{if(tour){tourStep=(tourStep+1)%shots.length;choose(shots[tourStep][0],shots[tourStep][1],true);}},12000);
 function text(id,value){document.getElementById(id).textContent=value;}
 function draw(){if(!state)return;const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
+ const thoughts=document.getElementById('decisions');thoughts.replaceChildren();
+ const decisions=state.decisions||[];
+ if(!decisions.length)thoughts.textContent='Waiting for an event. No background thinking.';
+ const shown=decisions.find(d=>d.actor_id===focusId)||decisions[tourStep%Math.max(decisions.length,1)];
+ if(shown){const row=document.createElement('div');row.style.marginBottom='7px';const name=document.createElement('strong');name.textContent=shown.name+' · '+shown.decision.emotion;const action=document.createElement('div');action.textContent=shown.decision.action_id.replaceAll('_',' ');action.style.color='var(--gold)';const reason=document.createElement('div');reason.textContent=shown.decision.reason;row.append(name,action,reason);thoughts.append(row);}
+ if(decisions.length){const note=document.createElement('div');note.textContent='Rumour response · proposals only; actions not executed.';note.style.color='var(--gold)';thoughts.append(note);}
  text('count',actors.length);text('trade-count',state.committedCount||committed.length);text('connection','Connected to Skyrim · inventories observed live');
  text('tour',tour?'Pause tour':'Start tour');text('notice',tour?'Guided tour · camera changes every 12 seconds':'Manual camera · hover over a view or resident');
  text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='trade'?'Carlotta & Ysolda':camera==='street'?'Whiterun approach':'Market overview');

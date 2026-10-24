@@ -63,8 +63,25 @@ Experiment `live-purchase-20261024-001` transferred one loaf from Carlotta Valen
 This was an externally requested probe. It does not demonstrate autonomous shopping, physical navigation to a seller, generated speech, or save/load restoration. Trade effects are applied in two native transfer legs; partial or ambiguous effects are held for reconciliation. The system does not claim a cross-container atomic game transaction.
 
 
-## Visual spectator slice � 24 October 2026
+## Visual spectator slice — 24 October 2026
 
 Observed inside the live lab Skyrim process: transparent society overlay at 1280x720; live resident cards and inventory counts; an inventory-verified trade receipt; automatic market, resident, trade-pair and street cameras. The closer resident offset avoids the foreground stall obstruction seen in the first camera experiment. This is runtime visual evidence, not a claim of autonomous shopping or human believability.
 
 Manual mouse events did not reach the UI reliably during qualification. Manual controls are disabled while this is investigated. Automated tour messages did reach the native bridge and changed the actual game camera. Camera raycasts/occlusion handling, save-lineage restoration, autonomous commerce, conversation and speech/lip sync remain open.
+
+
+## Save marker proof — 24 October 2026
+
+The original minimal `WhiterunSociety.esp` contains a non-constant float global (local form 0x800). Skyrim loaded it, and a real save/load experiment produced 101 -> 202 -> 101. The save and SKSE cosave were written into the isolated Mod Organizer profile. This proves the engine marker round trip; it does not yet prove restoration of the external economy or NPC memories.
+
+Initial save requests produced no file. The installed NirnLab overlay's always-open MultiLayerMenu omitted `kAllowSaving`. Source inspection and disassembly located `or dword ptr [rdi+0x1c], 0x18002`; adding only flag 0x800 allowed the next save to be written. `tools/patch_overlay_save.py` refuses every binary except the exact inspected SHA-256, retains the original DLL, and distributes no third-party binary. Source: https://github.com/kkEngine/NirnLabUIPlatform/blob/main/src/UIPlatform/Menus/MultiLayerMenu.cpp ; flag definition: https://github.com/CharmedBaryon/CommonLibSSE-NG/blob/main/include/RE/I/IMenu.h . This is a narrowly scoped local compatibility patch, not a general fix for other builds.
+
+The prior unsaved trade experiment and both SQLite databases were archived before this test's fresh city start. No claim is made that the earlier unsaved trade survived a restart. Its evidence remains valid for that earlier run.
+
+The marker test was followed by an XAudio2_7.dll access violation on the audio thread after 79 seconds of process uptime. The crash log identifies the isolated game process. This does not establish a cause, but it means save/load stability is not accepted. A subsequent cold observer launch succeeded in 42.5 seconds. The save-marker result must not be promoted to a stable save/load claim.
+
+## First local AI proposals — 24 October 2026
+
+Three actual local model requests used observed Skyrim inventories and authored Big Five profiles. The resulting proposals appeared in the live observer overlay. The second run took 4.641–5.672 seconds per resident; replaying its event ID made zero additional model calls. This is a bounded event runner, not an always-running agent loop. See [decision design and measured limitations](npc-decisions.md).
+
+All three residents selected the same proposal, and one explanation contradicted its action. A third run with an explicit consistency instruction removed that particular contradiction but produced overly analytical, sometimes cut-off explanations (5.797–8.172 seconds). Neither run establishes believable personality effects. No proposal has been executed as an autonomous game action, and no memories or relationships were changed.

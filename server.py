@@ -71,6 +71,14 @@ def main():
                     journal=world.state()
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]]}
+                    try:
+                        proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
+                        if proposals.get('session')==session and proposals.get('status') in ('running','complete'):
+                            presentation['decisions']=[{'actor_id':item['actor_id'],'name':item['name'],
+                                'decision':item['decision'],'elapsed_seconds':item['elapsed_seconds']}
+                                for item in proposals.get('results',[])]
+                    except (OSError,ValueError,KeyError,TypeError):
+                        pass
                     self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation})
                 elif self.path=='/world/trade':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:

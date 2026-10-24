@@ -1,0 +1,221 @@
+{
+  "event": {
+    "id": "rumour-local-20261024-003",
+    "kind": "shortage_rumour"
+  },
+  "session": "1792816628130-0.7874936418100598",
+  "status": "complete",
+  "results": [
+    {
+      "actor_id": 108149,
+      "name": "Carlotta Valentia",
+      "context": {
+        "actor_id": 108149,
+        "profile": {
+          "name": "Carlotta Valentia",
+          "role": "produce merchant and parent",
+          "big_five": {
+            "openness": 0.35,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "agreeableness": 0.65,
+            "neuroticism": 0.55
+          },
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "bias": "a recent scare makes shortages feel more likely"
+        },
+        "session": "1792816628130-0.7874936418100598",
+        "event": {
+          "id": "rumour-local-20261024-003",
+          "kind": "shortage_rumour",
+          "information": "You heard an unconfirmed rumour that tomorrow's grain delivery may be delayed. This is not a confirmed shortage."
+        },
+        "observed_inventory": {
+          "gold": 13,
+          "bread": 0,
+          "grain": 0
+        },
+        "scenario_state": {
+          "hunger": 0.4,
+          "stress": 0.35,
+          "source": "authored starting state, not measured from Skyrim"
+        },
+        "memories": [],
+        "options": [
+          {
+            "id": "continue_routine",
+            "effect": "Continue ordinary Skyrim routine; no exchange."
+          },
+          {
+            "id": "ask_about_delivery",
+            "effect": "Propose asking a trader whether the rumour is true; spend time, no inventory transfer."
+          },
+          {
+            "id": "warn_neighbour",
+            "effect": "Propose telling a neighbour this is only an unconfirmed rumour; risk spreading needless worry."
+          }
+        ]
+      },
+      "decision": {
+        "action_id": "ask_about_delivery",
+        "reason": "Carlotta prioritizes family food security and acknowledges the bias that recent scares make shortages feel more likely. Asking a trader provides concrete information to verify the rumour without triggering unnecessary panic or spreading unv",
+        "emotion": "worried"
+      },
+      "elapsed_seconds": 8.172,
+      "usage": {
+        "completion_tokens": 91,
+        "prompt_tokens": 506,
+        "total_tokens": 597,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "model": "Qwen3.5-2B-Q4_K_M",
+      "status": "proposal_only"
+    },
+    {
+      "actor_id": 108186,
+      "name": "Ysolda",
+      "context": {
+        "actor_id": 108186,
+        "profile": {
+          "name": "Ysolda",
+          "role": "aspiring merchant",
+          "big_five": {
+            "openness": 0.8,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "agreeableness": 0.55,
+            "neuroticism": 0.3
+          },
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "bias": "optimistic about making up a small loss later"
+        },
+        "session": "1792816628130-0.7874936418100598",
+        "event": {
+          "id": "rumour-local-20261024-003",
+          "kind": "shortage_rumour",
+          "information": "You heard an unconfirmed rumour that tomorrow's grain delivery may be delayed. This is not a confirmed shortage."
+        },
+        "observed_inventory": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        },
+        "scenario_state": {
+          "hunger": 0.4,
+          "stress": 0.35,
+          "source": "authored starting state, not measured from Skyrim"
+        },
+        "memories": [],
+        "options": [
+          {
+            "id": "continue_routine",
+            "effect": "Continue ordinary Skyrim routine; no exchange."
+          },
+          {
+            "id": "ask_about_delivery",
+            "effect": "Propose asking a trader whether the rumour is true; spend time, no inventory transfer."
+          },
+          {
+            "id": "warn_neighbour",
+            "effect": "Propose telling a neighbour this is only an unconfirmed rumour; risk spreading needless worry."
+          }
+        ]
+      },
+      "decision": {
+        "action_id": "ask_about_delivery",
+        "reason": "As an aspiring merchant, I prioritize trade relationships and must verify information before taking action. Continuing the routine ignores the potential loss, while asking directly tests the rumor's validity without immediate inventory risk",
+        "emotion": "calm"
+      },
+      "elapsed_seconds": 5.797,
+      "usage": {
+        "completion_tokens": 66,
+        "prompt_tokens": 501,
+        "total_tokens": 567,
+        "prompt_tokens_details": {
+          "cached_tokens": 118
+        }
+      },
+      "model": "Qwen3.5-2B-Q4_K_M",
+      "status": "proposal_only"
+    },
+    {
+      "actor_id": 108156,
+      "name": "Adrianne Avenicci",
+      "context": {
+        "actor_id": 108156,
+        "profile": {
+          "name": "Adrianne Avenicci",
+          "role": "blacksmith",
+          "big_five": {
+            "openness": 0.4,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "agreeableness": 0.5,
+            "neuroticism": 0.25
+          },
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "bias": "sticks to an established routine even when news changes"
+        },
+        "session": "1792816628130-0.7874936418100598",
+        "event": {
+          "id": "rumour-local-20261024-003",
+          "kind": "shortage_rumour",
+          "information": "You heard an unconfirmed rumour that tomorrow's grain delivery may be delayed. This is not a confirmed shortage."
+        },
+        "observed_inventory": {
+          "gold": 14,
+          "bread": 0,
+          "grain": 0
+        },
+        "scenario_state": {
+          "hunger": 0.4,
+          "stress": 0.35,
+          "source": "authored starting state, not measured from Skyrim"
+        },
+        "memories": [],
+        "options": [
+          {
+            "id": "continue_routine",
+            "effect": "Continue ordinary Skyrim routine; no exchange."
+          },
+          {
+            "id": "ask_about_delivery",
+            "effect": "Propose asking a trader whether the rumour is true; spend time, no inventory transfer."
+          },
+          {
+            "id": "warn_neighbour",
+            "effect": "Propose telling a neighbour this is only an unconfirmed rumour; risk spreading needless worry."
+          }
+        ]
+      },
+      "decision": {
+        "action_id": "ask_about_delivery",
+        "reason": "I plan to ask a trader directly to verify the rumor before continuing my routine, since I need reliable information to avoid hunger without spreading unnecessary worry.",
+        "emotion": "calm"
+      },
+      "elapsed_seconds": 5.797,
+      "usage": {
+        "completion_tokens": 60,
+        "prompt_tokens": 505,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "cached_tokens": 118
+        }
+      },
+      "model": "Qwen3.5-2B-Q4_K_M",
+      "status": "proposal_only"
+    }
+  ],
+  "scope": "Proposals only; no trades, needs, memories or relationships changed."
+}

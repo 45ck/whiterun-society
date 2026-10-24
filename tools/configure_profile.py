@@ -31,3 +31,8 @@ for key,value in {'iSize W':'1280','iSize H':'720','bFull Screen':'0','bBorderle
     prefs['Display'][key]=value
 with (profile/'skyrimprefs.ini').open('w') as f: prefs.write(f,space_around_delimiters=False)
 print('Observer profile: automatic Whiterun start; local saves and INIs; 1280x720 window; native navigation')
+
+plugins=profile/'plugins.txt'
+lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []
+lines=[line for line in lines if line.lstrip('*').lower()!='whiterunsociety.esp']
+plugins.write_text('\n'.join(lines+['*WhiterunSociety.esp'])+'\n',encoding='utf-8')

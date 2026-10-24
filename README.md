@@ -6,6 +6,12 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Development prototype, not a complete society mod.** The isolated game can start directly in Whiterun with an observer camera, report loaded actors and accept bounded commands through a local service. A live bread purchase between Carlotta and Ysolda has been verified against actual game inventories, including a duplicate retry. The autonomous farm–bakery–household model still runs separately. Autonomous in-game decisions, generated dialogue, lip sync and game-save synchronization remain under development.
 
+**Latest experiment:** a local Qwen model now proposes event-triggered decisions for three residents using authored Big Five profiles and observed inventories. Proposals appear inside Skyrim; they do not yet execute actions. The first runs exposed inconsistent or unnatural explanations, so believable behaviour is not accepted. [Measured results and next gates](docs/npc-decisions.md).
+
+![Local AI proposals in the actual Skyrim observer overlay](docs/images/local-ai-in-game.jpg)
+
+An original save-marker plugin also passed a 101 → 202 → load → 101 round trip. External economy/memory restoration remains unimplemented, and a subsequent audio-thread crash means save/load stability remains open. [Evidence and limitations](docs/acceptance.md).
+
 ## Run the tests
 
 Python 3.12+, no third-party Python dependencies:
