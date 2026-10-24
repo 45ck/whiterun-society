@@ -1,10 +1,12 @@
 """Normalize only the isolated MO2 profile after its first-run setup."""
 import argparse
 import configparser
+import json
 from pathlib import Path
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--root',type=Path,required=True)
+parser.add_argument('--audio-diagnostic',action='store_true',help='Disable audio for an explicitly labelled diagnostic run')
 args=parser.parse_args()
 root=args.root.resolve()
 profile=root/'mod-organizer'/'profiles'/'Default'
@@ -17,6 +19,9 @@ ini.optionxform=str
 ini.read(root/'game'/'Skyrim_Default.ini')
 ini['General']['SLocalSavePath']='Saves\\'
 ini['General']['bAlwaysActive']='1'
+if args.audio_diagnostic:
+    if 'Audio' not in ini:ini['Audio']={}
+    ini['Audio']['bEnableAudio']='0'
 # The source multiplayer installation disables native navigation.
 if 'Actor' in ini: ini['Actor'].pop('bUseNavMeshForMovement',None)
 if 'Archive' in ini:
@@ -31,6 +36,8 @@ for key,value in {'iSize W':'1280','iSize H':'720','bFull Screen':'0','bBorderle
     prefs['Display'][key]=value
 with (profile/'skyrimprefs.ini').open('w') as f: prefs.write(f,space_around_delimiters=False)
 print('Observer profile: automatic Whiterun start; local saves and INIs; 1280x720 window; native navigation')
+(root/'runtime'/'audio-mode.json').write_text(json.dumps({'disabled':args.audio_diagnostic,
+    'scope':'Explicit diagnostic only; not a fix or voice-ready demonstration'}))
 
 plugins=profile/'plugins.txt'
 lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []

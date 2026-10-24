@@ -33,6 +33,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--timeout',type=int,default=180)
+    parser.add_argument('--audio-diagnostic',action='store_true')
     args=parser.parse_args()
     if os.name!='nt': raise RuntimeError('The observer launcher currently requires Windows')
     root=args.root.resolve()
@@ -77,7 +78,13 @@ def main():
     if not existing:
         subprocess.run([sys.executable,str(SOURCE/'tools'/'build_plugin.py'),'--output',str(game/'Data'/'WhiterunSociety.esp')],check=True)
         subprocess.run([sys.executable,str(SOURCE/'tools'/'patch_overlay_save.py'),'--root',str(root)],check=True)
-        subprocess.run([sys.executable,str(SOURCE/'tools'/'configure_profile.py'),'--root',str(root)],check=True)
+        subprocess.run([sys.executable,str(SOURCE/'tools'/'configure_profile.py'),'--root',str(root),*(['--audio-diagnostic'] if args.audio_diagnostic else [])],check=True)
+    elif args.audio_diagnostic and not (runtime/'audio-mode.json').exists():
+        raise RuntimeError('Audio diagnostics need a new lab process, not a hot reload')
+    mode=json.loads((runtime/'audio-mode.json').read_text()) if (runtime/'audio-mode.json').exists() else {'disabled':False}
+    if args.audio_diagnostic and not mode['disabled']:
+        raise RuntimeError('Running game has audio enabled; restart is required for this diagnostic')
+    if mode['disabled']:progress('Audio disabled for this diagnostic; audio stability is not being validated')
     subprocess.run([sys.executable,str(SOURCE/'tools'/'deploy_bridge.py'),'--root',str(root)],check=True)
     if not existing:
         progress('Launching SKSE through the isolated Mod Organizer profile')
@@ -94,7 +101,7 @@ def main():
         stage='observer ready' if ready else ('waiting for loaded residents' if fresh else 'waiting for game and bridge')
         if stage!=previous: progress(stage);previous=stage
         if ready:
-            evidence={'elapsed_seconds':round(time.monotonic()-started,2),'health':health,
+            evidence={'elapsed_seconds':round(time.monotonic()-started,2),'health':health,'audio_mode':mode,
                       'observation':state['bridge']['observation']}
             (runtime/'last-launch.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
             progress('Whiterun is ready to observe. No character setup or playthrough required.')

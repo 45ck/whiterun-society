@@ -6,15 +6,15 @@ Initial demonstration: a farm, a bakery, three households, finite gold and food,
 
 | Measure | Initial acceptance | Current evidence |
 |---|---|---|
-| Money accounting | Every transfer balanced; every mint/burn explicit | Standalone tests pass; no mint/burn in baseline |
-| Goods accounting | Trades conserve stock; production/consumption record transformations | Standalone tests and event ledger |
-| Autonomous commerce | NPC-to-NPC wages, input purchases and household purchases | Standalone farm/bakery/household loop |
-| Resilience | Retry never charges twice; partial failure rolls back | Standalone tests pass |
+| Money accounting | Every transfer balanced; every mint/burn explicit | Live trade and agent-agreed wage conserve gold; explicit initial stocks |
+| Goods accounting | Trades conserve stock; production/consumption record transformations | Native inventory trade, bread consumption and finite grain conversion verified |
+| Autonomous commerce | NPC-to-NPC wages, input purchases and household purchases | Agent-agreed wages live; input and household markets remain incomplete |
+| Resilience | Retry never charges twice; partial failure reconciles safely | Tested intermediate inventory states; live duplicate events have no repeat effects; live interrupted operations remain open |
 | Scarcity | Harvest failure causes measurable unmet food demand | Standalone scenario test passes |
-| Visible action | One observed NPC moves or responds to our command | Not demonstrated |
+| Visible action | One observed NPC moves or responds to our command | Owned route movement/arrival and package release demonstrated |
 | Unattended launch | Start directly in Whiterun without playing the opening | Clean launch reached observer readiness in 27.56 seconds; 26 actors detected |
-| World consistency | Inventory and ledger agree after trades and reloads | One live inventory trade and duplicate retry verified; save/load still unimplemented |
-| Save lineage | Loading an older save restores its matching society state | Not implemented |
+| World consistency | Inventory and ledger agree after trades and reloads | Trade, food and paid-work before/after saves match; recurring audio crashes prevent stability acceptance |
+| Save lineage | Loading an older save restores its matching society state | Actual save markers select matching inventories, plans, people and journals |
 | Conversation | NPC answers reflect witnessed events and personal interests | Rule-based opinion example only |
 | Voice | Spoken response and matching lip movement in-game | Not implemented |
 | Enjoyment | Player can explain a consequence and chooses to continue | Requires actual playtesting |

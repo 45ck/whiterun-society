@@ -14,6 +14,12 @@
  <div class="row" style="margin-top:12px"><span>1 grain → 2 loaves</span><span style="color:var(--gold)">2 gold wage</span></div>
  <div class="small" style="margin-top:8px">Simulated production · animation pending</div>
 </section>
+<section id="day-card" class="panel" hidden style="position:absolute;top:163px;left:28px;width:292px;padding:16px 19px">
+ <div class="eyebrow">A day in the town</div><div class="section-title">Work, trade &amp; food</div>
+ <div id="day-steps" class="small" style="margin-top:12px;line-height:1.8"></div>
+ <div id="day-detail" style="margin-top:12px;color:var(--gold);line-height:1.5"></div>
+ <div class="small" style="margin-top:10px">Residents choose. Refusal changes the outcome.</div>
+</section>
 <aside class="sidebar panel">
  <div class="row"><div><div class="label">The city, right now</div><div class="section-title">People & exchange</div></div><span class="badge">LIVE</span></div>
  <div class="row"><div><div class="metric" id="count">—</div><div class="small">actors visible to the game</div></div><div style="text-align:right"><div class="metric" id="trade-count">0</div><div class="small">verified exchanges</div></div></div>
@@ -55,7 +61,7 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  const society=state.society;
  if(society?.plan){const plan=society.plan;thoughts.replaceChildren();const title=document.createElement('div');title.style.color='var(--gold)';title.textContent=`${plan.kind==='work_shift'?'Paid work':plan.kind==='stock_review'?'Stock review':'Meal-time plan'} · ${(plan.outcome||plan.phase).replaceAll('_',' ')}${plan.decisions?.some(d=>['seek_bread','raise_offer','sell_bread'].includes(d.decision.action_id))?' · '+plan.unit_price+' gold offered':''}`;thoughts.append(title);for(const d of plan.decisions||[]){const note=document.createElement('div');note.style.marginTop='7px';const action=d.decision.action_id==='raise_offer'?'raise offer to 5 gold':d.decision.action_id.replaceAll('_',' ');note.textContent=`${names[d.actor_id]}: ${action} · ${d.model.includes('jev')?'Jev':d.model} · ${d.elapsed_seconds}s`;thoughts.append(note);}const note=document.createElement('div');note.style.marginTop='7px';note.textContent='Observed choices, not spoken dialogue. Thinking runs only for this event.';thoughts.append(note);}
  if(society){const person=society.people?.[String(focusId||108186)];const note=document.createElement('div');note.style.color='var(--gold)';note.style.marginTop='8px';note.textContent=society.error?'Society paused: '+society.error:`Save checkpoint ${society.checkpoint}${society.transition?' · synchronizing':''} · ${person?.memories?.length||0} remembered events`;thoughts.append(note);}
- text('count',actors.length);text('trade-count',state.committedCount||committed.length);text('connection','Connected to Skyrim · inventories observed live');
+ text('count',actors.length);text('trade-count',state.committedCount||committed.length);text('connection',state.audioDiagnostic?'Connected · audio off for diagnosis':'Connected to Skyrim · inventories observed live');
  text('tour',tour?'Pause tour':'Start tour');text('notice',tour?'Guided tour · camera changes every 12 seconds':'Manual camera · hover over a view or resident');
  text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='trade'?'Carlotta & Ysolda':camera==='street'?'Whiterun approach':'Market overview');
  if(state.movement?.phase==='walking')text('notice',`${names[state.movement.actor]} → ${names[state.movement.target]} · destination requested`);
@@ -81,6 +87,8 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  const workPlan=society?.plan?.kind==='work_shift'?society.plan:null;
  document.getElementById('work-card').hidden=!workPlan;
  if(workPlan){const w=state.productionWork,finished=workPlan.outcome==='paid_work_completed';document.getElementById('work-progress').value=finished?30:(w?.id==='produce-'+workPlan.id?w.workedMinutes:0);text('work-stage',finished?'Output made · wage received':workPlan.phase==='working'?`${w?.workedMinutes??0} / 30 game minutes`:workPlan.phase==='travelling'?'Walking to the agreed job':(workPlan.outcome||workPlan.phase).replaceAll('_',' '));}
+ const day=society?.market_day;document.getElementById('day-card').hidden=!day;
+ if(day){document.getElementById('work-card').hidden=true;const steps=document.getElementById('day-steps');steps.replaceChildren();['Paid work','Household stock review',"Ysolda’s meal","Carlotta’s meal"].forEach((label,i)=>{const line=document.createElement('div');line.textContent=(i<day.cursor?'✓ ':i===day.cursor&&day.status==='running'?'› ':'○ ')+label+(day.results[i]?' · '+(day.results[i].outcome||day.results[i].status).replaceAll('_',' '):'');line.style.color=i===day.cursor?'var(--gold)':'var(--muted)';steps.append(line);});text('day-detail',day.status==='complete'?`${day.metrics.production} batch · ${day.metrics.trades} purchase · ${day.metrics.consumptions} meal\nParticipant gold: ${day.metrics.gold_before} → ${day.metrics.gold_after}`:day.status==='held'?'Paused for review · no automatic retry':society.plan?.phase==='working'?`Work attendance: ${state.productionWork?.workedMinutes??0} / 30 game minutes`:'Following the residents’ next decision');}
  const svg=document.getElementById('map');svg.replaceChildren();const local=actors.filter(a=>a.x>17000&&a.x<30000&&a.y>-15000&&a.y<1000);for(const a of local){const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',12+(a.x-17000)/13000*234);dot.setAttribute('cy',83-(a.y+15000)/16000*71);dot.setAttribute('r',names[a.id]?3.5:2);dot.setAttribute('class',names[a.id]?'map-special':'map-dot');svg.append(dot);}
 }
 window.whiterunRender=data=>{state=data;lastUpdate=Date.now();document.body.classList.remove('stale');draw();};

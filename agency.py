@@ -9,6 +9,7 @@ import secrets
 from decisions import validate_decision
 from food import allocation
 from production import work_inventory
+from market_day import event_for
 
 TERMINAL = ('complete', 'held')
 
@@ -53,6 +54,11 @@ class Agency:
                 if plan['actor'] != actor or plan['kind'] != kind:
                     raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
+        scenario=self.active.get('market_day')
+        if scenario and scenario['status']!='complete':
+            expected=event_for(scenario)
+            if not expected or (event_id,actor,kind)!=(expected['id'],expected['actor'],expected['kind']):
+                raise ValueError('The market-day sequence owns the next resident event')
         if self.agency_busy():
             raise ValueError('Another resident plan is active')
         state = copy.deepcopy(self.active)
@@ -248,7 +254,8 @@ class Agency:
             if plan.get('outcome')=='seller_declined' and not plan.get('refusals_recorded'):
                 self._remember_refusal(state, updated)
             elif plan.get('outcome') in ('deferred','visited_only','left_without_food','work_declined'):
-                person=state['people'][str(plan['actor'])]
+                decision_actor=plan['decisions'][-1]['actor_id'] if plan.get('decisions') else plan['actor']
+                person=state['people'][str(decision_actor)]
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
                     'other':plan.get('target'),'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
                 person['memories']=person['memories'][-32:]

@@ -111,6 +111,13 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
+                elif self.path in ('/market-day/start','/market-day/advance'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']: raise ValueError('another command is pending')
+                    if self.path=='/market-day/start':result=world.start_market_day(data['id'],bridge['observation'])
+                    else:result=world.advance_market_day(data['id'],data['event_id'],bridge['observation'])
+                    self.reply(202,result)
                 elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')

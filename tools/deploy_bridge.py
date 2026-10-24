@@ -13,6 +13,8 @@ game=Path(manifest['game']).resolve()
 if game.parent!=root or Path(manifest['source']).resolve()==game:
     raise SystemExit('Refusing unverified runtime directory')
 config=json.loads((root/'runtime'/'bridge-config.json').read_text())
+audio_mode=root/'runtime'/'audio-mode.json'
+config['audioDiagnostic']=json.loads(audio_mode.read_text()).get('disabled',False) if audio_mode.exists() else False
 source=(Path(__file__).resolve().parents[1]/'bridge'/'whiterun-society.js').read_text()
 factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
 source=source.replace('__TRANSFER_FACTORY__',factory)

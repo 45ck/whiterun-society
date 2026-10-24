@@ -273,9 +273,11 @@ on('update', () => {
   }
   if (hud!==null) sp.setTextString(hud,'WHITERUN SOCIETY | Observer | '+residents.length+' actors loaded');
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
+  let audioEnabled=null;
+  try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),
+    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

@@ -13,11 +13,12 @@ from world_economy import snapshot
 from agency import Agency
 from food import FoodEconomy, allocation
 from production import Production
+from market_day import MarketDay
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -200,4 +201,5 @@ class TimelineEconomy(Agency, FoodEconomy, Production):
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
-                'imports': self.active.get('imports', []) if self.active else []}
+                'imports': self.active.get('imports', []) if self.active else [],
+                'market_day': self.scenario_status()}
