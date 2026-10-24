@@ -50,7 +50,7 @@ window.drawEncounter=()=>{
  inspectorText(panel,person.agency?.reason||'No current reason recorded');
  inspectorText(panel,'Relationships','label');
  const relations=Object.entries(person.relationships||{});if(!relations.length)inspectorText(panel,'No relationship history recorded yet.');
- for(const [id,value] of relations)inspectorText(panel,(names[id]||id)+' · '+JSON.stringify(value));
+ for(const [id,value] of relations)inspectorText(panel,(names[id]||id)+' · familiarity '+Math.round((value.familiarity||0)*100)+'% · affinity '+Number(value.affinity||0).toFixed(2)+' · '+(value.heard_turns||0)+' heard turns');
  inspectorText(panel,'Traits are authored gameplay tendencies, not psychological measurements.').style.marginTop='14px';
 };
 setInterval(()=>{const c=state?.society?.conversation;if(c&&!['complete','held'].includes(c.phase)){

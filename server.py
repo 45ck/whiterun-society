@@ -155,7 +155,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation)
+                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'))
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':

@@ -1,0 +1,451 @@
+{
+  "scope": "Two scheduled resident-chosen social opportunities in the live isolated Skyrim lab; serialized, no full-town concurrency or lip-sync claim",
+  "trials": [
+    {
+      "id": "social-11-108138",
+      "checkpoint": 493,
+      "elapsed_seconds": 53.976,
+      "model_calls": {
+        "propose": 2,
+        "select": 2,
+        "social": 4
+      },
+      "reported_model_cost_usd": 0.001468246,
+      "models": [
+        "openai/gpt-4.1-mini",
+        "typesafe/jev-1.14-20261014"
+      ],
+      "meeting": {
+        "id": "meet-social-11-108138",
+        "movement": {
+          "actor": 108138,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792829649615,
+          "distance": 134.44856637677685,
+          "dynamic": true,
+          "enginePackage": 117442561,
+          "expectedPackage": 117442561,
+          "hasOwnedPackage": true,
+          "id": "meet-social-11-108138",
+          "mailboxAt": 1792829649630,
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "serial": 4,
+          "startAt": 1792829649663,
+          "startComplete": true,
+          "startDistance": 134.4283531764771,
+          "startResult": true,
+          "target": 108140
+        },
+        "status": "applied"
+      },
+      "release": {
+        "id": "release-chat-social-11-108138",
+        "released": true,
+        "status": "applied"
+      },
+      "decisions": [
+        {
+          "actor": 108138,
+          "stage": "choose_partner",
+          "choice": "approach_108140",
+          "probabilities": {
+            "approach_108140": 0.85,
+            "approach_108186": 0.01,
+            "defer": 0.14
+          }
+        },
+        {
+          "actor": 108140,
+          "stage": "respond",
+          "choice": "chat",
+          "probabilities": {
+            "chat": 0.91,
+            "decline": 0.09
+          }
+        },
+        {
+          "actor": 108138,
+          "stage": "reflect_first",
+          "choice": "felt_supported",
+          "probabilities": {
+            "felt_annoyed": 0.01,
+            "felt_supported": 0.92,
+            "neutral": 0.07
+          }
+        },
+        {
+          "actor": 108140,
+          "stage": "reflect_second",
+          "choice": "felt_supported",
+          "probabilities": {
+            "felt_annoyed": 0.02,
+            "felt_supported": 0.83,
+            "neutral": 0.15
+          }
+        }
+      ],
+      "turns": [
+        {
+          "speaker": 108138,
+          "listener": 108140,
+          "line": "Saffir, I feel quite worn out today. Would you care to sit a while and keep me company?",
+          "voice": "bm_lewis",
+          "audio_seconds": 5.4893,
+          "delivered": true,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 6.43,
+            "facing": [
+              {
+                "actor": 108138,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108140,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-141fa85a8ba9fcd70389ce74",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 5.489333,
+            "status": "ended",
+            "volume": 1
+          }
+        },
+        {
+          "speaker": 108140,
+          "listener": 108138,
+          "line": "Amren, I may be quite tired, but I'd be glad to sit with you and share some quiet moments.",
+          "voice": "bf_emma",
+          "audio_seconds": 5.0327,
+          "delivered": true,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 5.145,
+            "facing": [
+              {
+                "actor": 108140,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108138,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-4af7d3176e6b9f6031e08426",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 5.032667,
+            "status": "ended",
+            "volume": 1
+          }
+        }
+      ],
+      "participants": [
+        {
+          "id": 108138,
+          "name": "Amren",
+          "social_need_before": 1,
+          "social_need_after": 0.8,
+          "relationship_to_partner": {
+            "affinity": 0.05,
+            "appraisals": [
+              {
+                "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+                "choice": "felt_supported",
+                "event_id": "social-11-108138"
+              }
+            ],
+            "familiarity": 0.05,
+            "heard_turns": 1
+          }
+        },
+        {
+          "id": 108140,
+          "name": "Saffir",
+          "social_need_before": 1,
+          "social_need_after": 0.8,
+          "relationship_to_partner": {
+            "affinity": 0.05,
+            "appraisals": [
+              {
+                "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+                "choice": "felt_supported",
+                "event_id": "social-11-108138"
+              }
+            ],
+            "familiarity": 0.05,
+            "heard_turns": 1
+          }
+        }
+      ],
+      "queue_outcomes": [
+        {
+          "actor": 108138,
+          "outcome": "social_exchange_completed",
+          "status": "complete"
+        }
+      ],
+      "save_restore": {
+        "save": "WS-Social-20261024-AA",
+        "fresh_session": true,
+        "matches": {
+          "checkpoint": true,
+          "plan": true,
+          "people": true,
+          "world": true,
+          "consumptions": true,
+          "production": true,
+          "rests": true,
+          "imports": true,
+          "market_day": true,
+          "conversation": true,
+          "town": true,
+          "inventory": true,
+          "asset_inventory": true
+        }
+      }
+    },
+    {
+      "id": "social-11-108156",
+      "checkpoint": 516,
+      "elapsed_seconds": 66.09,
+      "model_calls": {
+        "propose": 2,
+        "select": 2,
+        "social": 4
+      },
+      "reported_model_cost_usd": 0.001533266,
+      "models": [
+        "openai/gpt-4.1-mini",
+        "typesafe/jev-1.14-20261014"
+      ],
+      "meeting": {
+        "id": "meet-social-11-108156",
+        "movement": {
+          "actor": 108156,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792829908178,
+          "distance": 132.77305137194304,
+          "dynamic": true,
+          "enginePackage": 117442561,
+          "expectedPackage": 117442561,
+          "hasOwnedPackage": true,
+          "id": "meet-social-11-108156",
+          "mailboxAt": 1792829908192,
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "serial": 5,
+          "startAt": 1792829908210,
+          "startComplete": true,
+          "startDistance": 132.75735730277412,
+          "startResult": true,
+          "target": 108169
+        },
+        "status": "applied"
+      },
+      "release": {
+        "id": "release-chat-social-11-108156",
+        "released": true,
+        "status": "applied"
+      },
+      "decisions": [
+        {
+          "actor": 108156,
+          "stage": "choose_partner",
+          "choice": "approach_108169",
+          "probabilities": {
+            "approach_108169": 0.66,
+            "defer": 0.34
+          }
+        },
+        {
+          "actor": 108169,
+          "stage": "respond",
+          "choice": "chat",
+          "probabilities": {
+            "chat": 0.87,
+            "decline": 0.13
+          }
+        },
+        {
+          "actor": 108156,
+          "stage": "reflect_first",
+          "choice": "neutral",
+          "probabilities": {
+            "felt_annoyed": 0.11,
+            "felt_supported": 0.3,
+            "neutral": 0.59
+          }
+        },
+        {
+          "actor": 108169,
+          "stage": "reflect_second",
+          "choice": "neutral",
+          "probabilities": {
+            "felt_annoyed": 0.13,
+            "felt_supported": 0.34,
+            "neutral": 0.53
+          }
+        }
+      ],
+      "turns": [
+        {
+          "speaker": 108156,
+          "listener": 108169,
+          "line": "Good day, Idolaf. The weather's been quite pleasant lately, hasn't it? Makes the work at the forge a bit more bearable.",
+          "voice": "bf_emma",
+          "audio_seconds": 6.462,
+          "delivered": true,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 6.584,
+            "facing": [
+              {
+                "actor": 108156,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108169,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-a607aeda2d513617ba4fcbd9",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 6.462,
+            "status": "ended",
+            "volume": 1
+          }
+        },
+        {
+          "speaker": 108169,
+          "listener": 108156,
+          "line": "Aye, it\u2019s pleasant, but I\u2019m feeling worn down today. Might need to rest soon. Care to share some news to lift my mood?",
+          "voice": "bm_george",
+          "audio_seconds": 7.7646,
+          "delivered": true,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 7.91,
+            "facing": [
+              {
+                "actor": 108169,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108156,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-bcdf1ccbe63f121df588116f",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 7.764625,
+            "status": "ended",
+            "volume": 1
+          }
+        }
+      ],
+      "participants": [
+        {
+          "id": 108156,
+          "name": "Adrianne Avenicci",
+          "social_need_before": 1,
+          "social_need_after": 0.8,
+          "relationship_to_partner": {
+            "affinity": 0,
+            "appraisals": [
+              {
+                "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+                "choice": "neutral",
+                "event_id": "social-11-108156"
+              }
+            ],
+            "familiarity": 0.05,
+            "heard_turns": 1
+          }
+        },
+        {
+          "id": 108169,
+          "name": "Idolaf Battle-Born",
+          "social_need_before": 1,
+          "social_need_after": 0.8,
+          "relationship_to_partner": {
+            "affinity": 0,
+            "appraisals": [
+              {
+                "basis": "completed nearby audio playback; subjective authored response, not verified truth",
+                "choice": "neutral",
+                "event_id": "social-11-108156"
+              }
+            ],
+            "familiarity": 0.05,
+            "heard_turns": 1
+          }
+        }
+      ],
+      "queue_outcomes": [
+        {
+          "actor": 108156,
+          "outcome": "social_exchange_completed",
+          "status": "complete"
+        },
+        {
+          "actor": 108169,
+          "outcome": "participated_as_partner",
+          "status": "complete"
+        }
+      ],
+      "save_restore": {
+        "save": "WS-Social-20261024-AB",
+        "fresh_session": true,
+        "matches": {
+          "checkpoint": true,
+          "plan": true,
+          "people": true,
+          "world": true,
+          "consumptions": true,
+          "production": true,
+          "rests": true,
+          "imports": true,
+          "market_day": true,
+          "conversation": true,
+          "town": true,
+          "inventory": true,
+          "asset_inventory": true
+        }
+      }
+    }
+  ],
+  "guarded_attempt": {
+    "actor": "Fralia Gray-Mane",
+    "outcome": "No qualified nearby social partner remains",
+    "model_calls": 0
+  },
+  "limits": [
+    "Developer chose which pending opportunity to execute; resident chose partner",
+    "Proximity is native; vision unqualified",
+    "Short authored two-turn protocol; not unrestricted conversations",
+    "Stocks unchanged by social state transitions; no sale caused by speech",
+    "Relationship increments and need recovery are authored gameplay rules",
+    "Native game audio disabled; voices use CEF playback",
+    "No active encounter save/load qualification"
+  ]
+}

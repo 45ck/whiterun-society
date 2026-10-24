@@ -48,4 +48,4 @@ def observer_state(bridge,society):
         'limits':['29 is the initialized census, not a claim of every Whiterun NPC.',
             'One resident plan executes at a time. Reviews and model workers run in bounded sessions.',
             'Traits, needs and relationship scores are gameplay models, not measured psychology.',
-            'Autonomous social encounters, family households and broad production chains remain incomplete.']}
+            'Family households, concurrent routines and broad production chains remain incomplete.']}

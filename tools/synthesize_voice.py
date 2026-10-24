@@ -9,7 +9,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--input',type=Path,required=True)
     args=p.parse_args();data=json.loads(args.input.read_text(encoding='utf-8'))
     text=data['text'];voice=data['voice']
-    if not isinstance(text,str) or not 1<=len(text)<=240 or voice not in ('bf_emma','bf_alice'):
+    if not isinstance(text,str) or not 1<=len(text)<=240 or voice not in ('bf_emma','bf_alice','bm_george','bm_lewis'):
         raise ValueError('Invalid bounded stock-voice request')
     import onnxruntime as rt
     import soundfile as sf

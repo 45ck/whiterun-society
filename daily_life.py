@@ -8,6 +8,7 @@ import math
 from routing import route_available
 from labour import work_opportunities
 from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
+from social import social_candidates
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -50,7 +51,7 @@ class DailyLife:
             rates = {'hunger': HUNGER_PER_GAME_HOUR, 'fatigue': FATIGUE_PER_GAME_HOUR,
                      'social_contact': .018 + .025 * person['profile']['big_five']['extraversion']}
             for need, rate in rates.items():
-                recovery_clock={'hunger':'hunger_clock','fatigue':'fatigue_clock'}.get(need)
+                recovery_clock={'hunger':'hunger_clock','fatigue':'fatigue_clock','social_contact':'social_clock'}.get(need)
                 elapsed = max(0, day-max(last_day,person.get(recovery_clock,last_day))) * 24 if recovery_clock else hours
                 person['needs'][need] = round(min(1, person['needs'][need] + rate * elapsed), 6)
             person['needs_clock'] = day
@@ -121,7 +122,15 @@ class DailyLife:
                 daily['queue'].append(event);added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
             elif person['needs']['social_contact'] >= .7:
-                agency.update(state='unmet_social_need', reason='An autonomous social encounter selector is not implemented')
+                agency.update(state='unmet_social_need', reason='No qualified nearby partner is available')
+            # A light social opportunity remains possible when the rest executor
+            # is unavailable. The model can defer because of fatigue; no forced chat.
+            if (agency['state'] in ('quiet_interval','unmet_social_need','unmet_rest_need')
+                    and person['needs']['social_contact']>=.7 and social_candidates(state,observation,int(key))):
+                event={'id':f"social-{daily['sequence']}-{key}",'actor':int(key),'kind':'social_review','status':'pending',
+                    'created_day':day,'priority':.45,'reason':'Social need and a nearby eligible person; either resident may decline'}
+                daily['queue'].append(event);added.append(event['id'])
+                agency.update(state='decision_pending',reason=event['reason'],event_id=event['id'])
         # Keep current work; retain a bounded terminal audit tail in each snapshot.
         live = [e for e in daily['queue'] if e['status'] in ('pending', 'started')]
         settled = [e for e in daily['queue'] if e['status'] not in ('pending', 'started')][-128:]

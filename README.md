@@ -24,6 +24,8 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Live observer:** select any initialized resident, inspect needs, personality, memories and existing relationships, and control Skyrim's camera with follow, zoom, orbit and pan. Browser controls were exercised against the game; a tour-control conflict was found and fixed. The seated-rest plugin remains excluded after a failed cold launch. [Control room, screenshot and exact limits](docs/live-observer.md).
 
+**Resident-chosen social encounters:** Amren chose Saffir; Adrianne chose Idolaf. Both pairs approached under owned tasks, accepted, completed generated voiced exchanges and separately appraised what they heard. Amren and Saffir felt supported; Adrianne and Idolaf stayed neutral. Both settled saves restored correctly. [Social decisions, actual game screenshot, costs and limits](docs/resident-social.md).
+
 ## Run the tests
 
 Python 3.12+, no third-party Python dependencies:

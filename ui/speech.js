@@ -18,11 +18,11 @@ window.drawConversation=()=>{
  if(!c)return;
  document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const speaking=c.phase==='speaking';
- if(speaking){camera='focus';focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}
- document.getElementById('conversation-stage').textContent=c.phase==='complete'?'Both residents heard and remember':c.phase==='held'?'Conversation paused':c.phase==='meeting'?'Walking over to talk':c.phase==='releasing'?'Returning to the day':c.phase.includes('propose')?'Language model: forming intentions':c.phase.includes('select')?'Jev: choosing an intention':c.phase==='synthesize'?'Creating a local voice':'Speaking · listening';
+ if(speaking&&!state.camera?.manual){camera='focus';focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}
+ document.getElementById('conversation-stage').textContent=c.phase==='complete'?(c.outcome||'Both residents heard and remember').replaceAll('_',' '):c.phase==='held'?'Conversation paused':c.phase==='meeting'?'Walking over to talk':c.phase==='releasing'?'Returning to the day':c.phase.includes('propose')?'Language model: forming intentions':c.phase.includes('select')?'Jev: choosing an intention':c.phase==='synthesize'?'Creating a local voice':c.phase==='speaking'?'Speaking · listening':c.phase.replaceAll('_',' ');
  const transcript=document.getElementById('conversation-transcript');transcript.replaceChildren();
  for(const turn of c.turns){const row=document.createElement('div');row.style.marginTop='12px';const name=document.createElement('strong');name.textContent=names[turn.speaker];name.style.color='var(--gold)';const quote=document.createElement('div');quote.textContent=turn.selected.line;row.append(name,quote);transcript.append(row);}
- text('notice',c.phase==='complete'?'A conversation becomes a memory':c.phase==='held'?c.error:'Living conversation · two residents, different priorities');
+ text('notice',c.phase==='complete'?(c.outcome==='continued_quietly'?'Continued quietly · no conversation':'An encounter becomes a memory'):c.phase==='held'?c.error:'Living conversation · two residents, different priorities');
  if(c.phase==='complete'||c.phase==='held')document.getElementById('speech-caption').hidden=true;
  if(c.phase==='held'||c.final_phase==='held')window.whiterunStopSpeech();
 };

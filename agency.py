@@ -163,7 +163,8 @@ class Agency:
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
                 'prior_knowledge': 'Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents\' private inventories are not known.',
-                'memories': person['memories'][-8:], 'trust': person['trust'], 'options': options}
+                'memories': person['memories'][-8:], 'trust': person['trust'],
+                'my_relationships':person.get('relationships',{}), 'options': options}
 
     @staticmethod
     def _resident_perception(observation, actor):

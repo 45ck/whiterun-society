@@ -32,6 +32,6 @@ The original `WhiterunRest.esp` builder passed binary readback, and deterministi
 
 ## Scope remaining
 
-The current director executes one resident plan at a time in bounded runs. Whole-town concurrent action ownership, autonomous social pairing, bilateral social consent, relationship development, households with dependants, more production chains, prices responding to demand, politics and player interventions remain development work. Native audio is still disabled for crash diagnosis; previous generated voices use CEF playback, with lip sync unfinished.
+The current director executes one resident plan at a time in bounded runs. Whole-town concurrent action ownership, households with dependants, more production chains, prices responding to demand, politics and player interventions remain development work. Native audio is still disabled for crash diagnosis; previous generated voices use CEF playback, with lip sync unfinished.
 
-Next acceptance target: two residents choose a social opportunity, approach and face one another, complete a bounded voiced exchange or decline, then record only observed social consequences. A second independent worker should be able to continue an economic task concurrently without conflicting actor ownership. Neither target is claimed by this observer release.
+Update: [resident-chosen social encounters](resident-social.md) now demonstrate partner choice, acceptance, nearby voiced speech and private appraisals in two live pairs. Concurrent independent economic work still needs actor-level ownership and is not claimed.
