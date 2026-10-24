@@ -90,6 +90,14 @@ class DynamicSocialIdentityTests(unittest.TestCase):
     begin = social_fixtures.SocialTests.begin
     decide = social_fixtures.SocialTests.decide
 
+    def test_recent_failed_attempt_does_not_monopolize_operator_opportunities(self):
+        self.review()
+        for person in self.world.active['people'].values():
+            person['social_clock']=0;person['social_attempt_day']=10
+        self.world.active['people']['108149']['social_attempt_day']=1
+        self.world.start_conversation('fair-offer',self.obs);self.sync()
+        self.assertEqual(self.world.conversation_status()['initiator'],108149)
+
     def test_operator_offer_uses_current_cast_but_does_not_require_conversation(self):
         before=copy.deepcopy(self.obs['residents'])
         self.world.start_conversation('offered-current-cast',self.obs);self.sync()

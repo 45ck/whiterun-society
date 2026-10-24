@@ -2,6 +2,9 @@
 import math
 from collections import Counter
 from statistics import mean, median
+from relationship_metrics import relationship_metrics
+from dialogue_metrics import dialogue_metrics
+from quality_goals import quality_goals
 
 
 def number(value):
@@ -65,9 +68,13 @@ def simulation_metrics(state):
     relations=[r for p in state.get('people',{}).values() for r in p.get('relationships',{}).values()]
     plans=state.get('plans',[])
     terminal_plans=[p for p in plans if p['phase'] in ('complete','held')]
+    economic_turns=[t for p in plans for t in p.get('economic_turns',[]) if t.get('delivered')]
     option_counts=[len(d['context']['options']) for p in plans for d in p.get('decisions',[]) if isinstance(d.get('context',{}).get('options'),list)]
     total_actions=sum(actions.values())
-    return {
+    interrupted=[c for c in terminal if c.get('interruption')]
+    natural_chats=[c for c in chats if not c.get('interruption')]
+    stop_reports=[c['release_evidence']['speechStop'] for c in interrupted if c.get('release_evidence',{}).get('speechStop')]
+    result={
         'scope':'Current save lineage and retained encounter history. Not lifetime telemetry or a representative population study.',
         'encounters':{'eligible':len(scenes),'excluded_fixtures':sum(fixture(c) for c in history),
             'legacy_authored':sum(c.get('mode')!='autonomous_social' for c in history),
@@ -76,6 +83,14 @@ def simulation_metrics(state):
             'quiet_outcomes':sum(c.get('outcome')=='continued_quietly' for c in terminal),
             'polite_refusals':sum(c.get('outcome')=='spoke_brief_refusal' for c in terminal),
             'end_reasons':dict(Counter(c.get('end_reason','legacy_unrecorded') for c in terminal)),
+            'observer_interruptions':len(interrupted),
+            'interruption_stages':dict(Counter(c['interruption']['stage'] for c in interrupted)),
+            'technical_failures':sum(c['phase']=='held' and not c.get('interruption') for c in terminal),
+            'uninterrupted_chat_completion':rate(sum(c.get('outcome')=='social_exchange_completed' for c in natural_chats),len(natural_chats)),
+            'interruption_audio_stop_ack':rate(sum(r.get('acknowledged') is True for r in stop_reports),len(stop_reports)),
+            'interruption_audio_stop_unmeasured':sum(bool(c.get('current',{}).get('delivery_id')) for c in interrupted)-len(stop_reports),
+            'interruption_cleanup':rate(sum(c['interruption'].get('release_not_required') is True or c.get('release_evidence',{}).get('released') is True for c in interrupted),len(interrupted)),
+            'interruption_settle_seconds':distribution([c['finished_at']-c['interruption']['requested_at'] for c in interrupted if number(c.get('finished_at')) and number(c['interruption'].get('requested_at'))]),
             'resolution_rate':rate(sum(c['phase']=='complete' for c in terminal),len(terminal)),
             'accepted_chat_completion':rate(sum(c.get('outcome')=='social_exchange_completed' for c in chats),len(chats)),
             'failures_by_category':dict(Counter(failure_category(c.get('error')) for c in terminal if c['phase']=='held')),
@@ -83,6 +98,7 @@ def simulation_metrics(state):
             'turns_per_accepted_chat':distribution([len(c.get('turns',[])) for c in chats]),
             'reply_dispatch_gap_seconds':distribution(gaps)},
         'embodiment':{'playback_completion':rate(len(turns),len(attempts)),
+            'uninterrupted_playback_completion':rate(len(turns),len(attempts)-sum(bool(c.get('interruption') and c.get('current',{}).get('delivery_id')) for c in scenes)),
             'nearby_playback':rate(sum(t.get('playback',{}).get('nearbyThroughout') is True for t in turns),len(turns)),
             'body_orientation':{'samples':orientation_n,
                 'mean_error_degrees':round(sum(o['sum_error_degrees'] for o in orientations)/orientation_n,2) if orientation_n else None,
@@ -94,6 +110,10 @@ def simulation_metrics(state):
             'results_with_cost':sum(number(v) for v in model_cost),
             'cost_coverage':'Accepted retained results only. Rejected provider calls remain in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
+            'voiced_trade_plans':sum(bool(p.get('voiced_trade') and p.get('economic_pair')) for p in plans),
+            'delivered_trade_utterances':len(economic_turns),
+            'spoken_trade_acts':dict(Counter(t['act'] for t in economic_turns)),
+            'speech_scope':'Deterministic terms driven by resident decisions. Heard acceptance is not a committed sale. Includes staged protocol tests.',
             'committed_meals':sum(r['status']=='committed' for r in state.get('consumptions',[])),
             'gold_conservation':rate(sum(conserved),len(conserved)),
             'distinct_observed_sale_prices':len({c['cost']/c['quantity'] for c in trades if c.get('quantity',0)>0}),
@@ -115,3 +135,7 @@ def simulation_metrics(state):
         'realism':{'human_dialogue_rating':None,'psychological_validity':None,'economic_realism_rating':None,
             'interoperability_score':None,
             'reason':'No calibrated human ratings or interoperability benchmark. Completion, entropy and feature counts are not realism scores.'}}
+    result['relationships']=relationship_metrics(state.get('people',{}))
+    result['dialogue_analysis']=dialogue_metrics(scenes)
+    result['quality_goals']=quality_goals(result)
+    return result

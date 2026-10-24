@@ -1,6 +1,8 @@
 """Read-only society projection and a narrowly scoped local camera control."""
 import math
 import time
+from collections import Counter
+from statistics import mean
 from enterprises import production_policy
 
 
@@ -37,6 +39,7 @@ def observer_state(bridge,society):
         actor=loaded.get(key)
         residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),'is_guard':resident.get('is_guard',False),
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
+            'race':actor.get('race') if actor else None,
             'inventory':stock.get(key),'person':person,'household':resident.get('household')})
     businesses = []
     for key, business in town.get('businesses', {}).items():
@@ -45,16 +48,22 @@ def observer_state(bridge,society):
             'active':business.get('active',True), 'production_policy':production_policy(business),
             'observed_inventory':stock.get(str(business['custodian'])),
             'account_scope':'Custodian inventory shared with household and any other charters; not a separate company wallet'})
+    metrics=dict(society.get('metrics') or {})
+    metrics['population_breakdown']={'loaded_races':dict(Counter((r.get('race') or {}).get('name') or 'unknown' for r in residents if r['loaded'])),
+        'personality_trait_means':{trait:round(mean(p['profile']['big_five'][trait] for p in society.get('people',{}).values() if trait in p.get('profile',{}).get('big_five',{})),3)
+            for trait in sorted({t for p in society.get('people',{}).values() for t in p.get('profile',{}).get('big_five',{})})},
+        'scope':'Race is current native descriptive metadata; unloaded races remain unknown. Personality traits are seeded independently of race. No group causal or psychological claims.'}
     return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'metrics':society.get('metrics'),
+        'metrics':metrics,
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),
         'movement':obs.get('movement'),'work':obs.get('productionWork'),'rest':(obs.get('rest') or {}).get('activity'),
         'rests':society.get('rests',[])[-10:],'consumptions':society.get('consumptions',[])[-10:],
         'production':society.get('production',[])[-10:],
+        'trades':society.get('trades',[])[-10:],
         'cancelled_production':society.get('cancelled_production',[])[-10:],
         'unsettled_effect':society.get('unsettled_effect'),
         'limits':[str(len(residents))+' initialized residents, not a claim of every Whiterun NPC.',

@@ -1,0 +1,408 @@
+{
+  "scope": "Two bounded live attempts after established-neighbour initial state. Preserves native route failure and semantic dialogue defect. Refusal-specific fix was applied afterward and is not yet live-qualified.",
+  "attempts": [
+    {
+      "id": "encounter-9fb27ce2c0dd4ed6a121",
+      "phase": "held",
+      "response": null,
+      "outcome": null,
+      "error": "Meeting route failed",
+      "started_at": 1792885552.443201,
+      "finished_at": 1792885561.0147402,
+      "release_evidence": {
+        "id": "release-chat-encounter-9fb27ce2c0dd4ed6a121",
+        "released": true,
+        "status": "applied"
+      },
+      "participants": {
+        "108162": "Heimskr",
+        "108197": "Ahlam"
+      },
+      "calls": {
+        "propose": 0,
+        "select": 0,
+        "social": 1
+      },
+      "elapsed_seconds": 9.345,
+      "movement": {
+        "id": "meet-encounter-9fb27ce2c0dd4ed6a121",
+        "actor": 108162,
+        "target": 108197,
+        "origin": "resident_decision",
+        "method": "package",
+        "dynamic": true,
+        "adapter": "papyrus-mailbox",
+        "target_kind": "resident",
+        "phase": "released",
+        "at": 1792885559231,
+        "startDistance": 1440.7001095170074,
+        "distance": 1440.7001078819242,
+        "expectedPackage": 117442561,
+        "ownedPackage": false,
+        "hasOwnedPackage": true,
+        "aliasesConfirmed": true,
+        "enginePackage": 237916,
+        "serial": 17,
+        "mailboxAt": 1792885559243,
+        "startAt": 1792885559266,
+        "startComplete": true,
+        "startResult": true,
+        "outcome": "held",
+        "error": "Task interrupted by the engine; replanning required",
+        "releaseAt": 1792885560089
+      },
+      "synthesis_timings": [],
+      "turns": []
+    },
+    {
+      "id": "encounter-8c0ee66dde1e4a88ae17",
+      "phase": "complete",
+      "response": "decline",
+      "outcome": "spoke_brief_refusal",
+      "error": null,
+      "started_at": 1792885732.4736984,
+      "finished_at": 1792885762.5783896,
+      "release_evidence": {
+        "id": "release-chat-encounter-8c0ee66dde1e4a88ae17",
+        "released": true,
+        "status": "applied"
+      },
+      "participants": {
+        "108149": "Carlotta Valentia",
+        "108167": "Olfrid Battle-Born"
+      },
+      "calls": {
+        "propose": 1,
+        "select": 1,
+        "social": 4
+      },
+      "elapsed_seconds": 31.459,
+      "movement": {
+        "id": "meet-encounter-8c0ee66dde1e4a88ae17",
+        "actor": 108167,
+        "target": 108149,
+        "origin": "resident_decision",
+        "method": "package",
+        "dynamic": true,
+        "adapter": "papyrus-mailbox",
+        "target_kind": "resident",
+        "phase": "released",
+        "at": 1792885738947,
+        "startDistance": 338.85367781378784,
+        "distance": 249.7441293472261,
+        "expectedPackage": 117442561,
+        "ownedPackage": false,
+        "hasOwnedPackage": true,
+        "aliasesConfirmed": true,
+        "enginePackage": 117442561,
+        "serial": 18,
+        "mailboxAt": 1792885738956,
+        "startAt": 1792885738973,
+        "startComplete": true,
+        "startResult": true
+      },
+      "synthesis_timings": [
+        {
+          "turn": 0,
+          "seconds": 1.219,
+          "engine_seconds": 1.219
+        }
+      ],
+      "turns": [
+        {
+          "speaker": 108149,
+          "listener": 108167,
+          "selected": {
+            "id": "option_2",
+            "intention": "Indicate a need to return to household duties without making up reasons",
+            "line": "I need to tend to some things at home. Goodbye.",
+            "tone": "calm"
+          },
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Politely acknowledge the end of the encounter and wish the listener well",
+              "line": "It's been pleasant chatting. Take care, Olfrid.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Indicate a need to return to household duties without making up reasons",
+              "line": "I need to tend to some things at home. Goodbye.",
+              "tone": "calm"
+            }
+          ],
+          "delivered": true,
+          "prepared_at": 1792885751.913219,
+          "ended_at": 1792885756.174389,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.332,
+            "facing": [
+              {
+                "actor": 108149,
+                "bodyTurnRequested": false,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108167,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-acdbfde3b433ac304a9e1bed",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 96.170280693844,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 366,
+              "sum_error_degrees": 17613.749031654632
+            },
+            "playedSeconds": 3.215333,
+            "status": "ended",
+            "volume": 1
+          },
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "f42f8dd2631afcdde1b46a767b561c92f6cd08ece67d268ffaff8d4a2617bd4d.wav",
+            "seconds": 3.2153,
+            "sha256": "f42f8dd2631afcdde1b46a767b561c92f6cd08ece67d268ffaff8d4a2617bd4d",
+            "voice": "bf_alice"
+          },
+          "context": {
+            "interaction": {
+              "already_spoken": false,
+              "approach_reason": "Operator offered opportunity; current residents choose partner, consent, speech and appraisal",
+              "clock": {
+                "hour": 16.29,
+                "known": true,
+                "period": "afternoon",
+                "source": "native game clock; authored greeting bands"
+              },
+              "closing_reason": "Encounter turn budget is ending",
+              "last_line_has_question_mark": false,
+              "last_line_heard": null,
+              "not_observed": [
+                "current work orders or deadlines",
+                "forge temperature",
+                "a promise to sit or execute another task",
+                "the other resident private motives or stock"
+              ],
+              "own_recorded_commitments": [],
+              "physical_capabilities": [
+                "talk",
+                "listen",
+                "end this conversation"
+              ],
+              "relationship_band": "acquaintance",
+              "rules": [
+                "Address the latest question or acknowledge uncertainty before changing topic.",
+                "Do not restart a greeting after already speaking in this encounter.",
+                "A farewell needs no invented excuse or appointment.",
+                "Do not propose sitting or another physical task that this social interaction cannot execute.",
+                "Use time-of-day greetings only when the clock supports them."
+              ]
+            },
+            "listener": {
+              "id": 108167,
+              "identity_source": {
+                "epistemic_status": "scenario initial acquaintance, not witnessed interaction or canonical lore",
+                "event_id": "established-neighbours-20261025",
+                "kind": "authored_shared_town_background"
+              },
+              "name": "Olfrid Battle-Born",
+              "name_known": true
+            },
+            "event": {
+              "dialogue_stage": "closing",
+              "id": "encounter-8c0ee66dde1e4a88ae17",
+              "information": "This is a short polite refusal of a social approach. Say that you cannot chat now without inventing a reason or hostility. The other person's private motives, needs and inventory are unknown. An unfamiliar person's name is unknown. You may introduce yourself or ask their name, but do not invent an acquaintance. Speech cannot itself complete a trade or change a policy.",
+              "kind": "nearby_conversation"
+            }
+          },
+          "language": {
+            "model": "inception/mercury-2.5",
+            "elapsed_seconds": 1.484,
+            "usage": {
+              "completion_tokens": 242,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 97
+              },
+              "cost": 0.0001295,
+              "cost_details": {
+                "upstream_inference_completions_cost": 3.63e-05,
+                "upstream_inference_cost": 0.0001295,
+                "upstream_inference_prompt_cost": 9.32e-05
+              },
+              "is_byok": false,
+              "prompt_tokens": 2330,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2572
+            }
+          },
+          "decision": {
+            "model": "typesafe/jev-1.14-20261014",
+            "elapsed_seconds": 0.641,
+            "decision": {
+              "action_id": "option_2",
+              "emotion": "unspecified",
+              "reason": "Selected action: Indicate a need to return to household duties without making up reasons Say: I need to tend to some things at home. Goodbye. Tone: calm"
+            },
+            "usage": {
+              "cost": 0.000105294,
+              "input_tokens": 2507,
+              "output_tokens": 37
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "developer_model_review": [
+    "Heimskr approach to Ahlam was interrupted by native package ownership loss; no speech was delivered.",
+    "Carlotta refused Olfrid with one delivered line. No first-introduction claim was delivered, but household duties were invented without a recorded commitment.",
+    "The unselected alternative incorrectly asserted pleasant chatting before any conversation. Refusal had been labelled closing; now it has its own stage.",
+    "No multi-turn response relevance or reply latency was measured by this one-line refusal. Physical yaw was poor; eye gaze remains unknown."
+  ],
+  "metrics": {
+    "encounters": {
+      "eligible": 14,
+      "excluded_fixtures": 0,
+      "legacy_authored": 6,
+      "in_progress": 0,
+      "completed": 9,
+      "failed": 5,
+      "quiet_outcomes": 0,
+      "polite_refusals": 1,
+      "end_reasons": {
+        "legacy_unrecorded": 10,
+        "polite_closure": 1,
+        "observer_interruption": 2,
+        "turn_limit": 1
+      },
+      "observer_interruptions": 2,
+      "interruption_stages": {
+        "speaking": 2
+      },
+      "technical_failures": 3,
+      "uninterrupted_chat_completion": {
+        "success": 8,
+        "n": 10,
+        "percent": 80.0
+      },
+      "interruption_audio_stop_ack": {
+        "success": 1,
+        "n": 1,
+        "percent": 100.0
+      },
+      "interruption_audio_stop_unmeasured": 1,
+      "interruption_cleanup": {
+        "success": 2,
+        "n": 2,
+        "percent": 100.0
+      },
+      "interruption_settle_seconds": {
+        "n": 2,
+        "mean": 1.192,
+        "median": 1.192,
+        "p95": 1.257
+      },
+      "resolution_rate": {
+        "success": 9,
+        "n": 14,
+        "percent": 64.29
+      },
+      "accepted_chat_completion": {
+        "success": 8,
+        "n": 12,
+        "percent": 66.67
+      },
+      "failures_by_category": {
+        "language_output": 1,
+        "attendance": 1,
+        "other": 2,
+        "routing": 1
+      },
+      "duration_seconds": {
+        "n": 8,
+        "mean": 42.904,
+        "median": 44.09,
+        "p95": 67.03
+      },
+      "delivered_turns": 19,
+      "turns_per_accepted_chat": {
+        "n": 12,
+        "mean": 1.5,
+        "median": 2.0,
+        "p95": 3
+      },
+      "reply_dispatch_gap_seconds": {
+        "n": 5,
+        "mean": 12.897,
+        "median": 11.997,
+        "p95": 15.881
+      }
+    },
+    "dialogue_analysis": {
+      "delivered_lines": 19,
+      "lexical_cues": {
+        "question_mark": 6,
+        "greeting": 4,
+        "weather": 3,
+        "business": 10,
+        "courtesy": 1,
+        "farewell": 2
+      },
+      "repeated_greeting_turns": 0,
+      "known_clock_lines": 1,
+      "time_checked_greetings": 0,
+      "time_mismatched_greetings": 0,
+      "closing_turns": 2,
+      "closing_question_marks": 0,
+      "mean_words_per_line": 19.11,
+      "exact_repeated_lines_within_scene": 0,
+      "unique_speakers": 9,
+      "unique_pairs": 10,
+      "largest_speaker_share_percent": 31.58,
+      "question_answer_relevance": null,
+      "topic_coherence": null,
+      "human_smalltalk_rating": null,
+      "scope": "Overlapping English keyword cues over delivered social lines, not semantic topics. A question mark is not proof of a question answered; conflict words do not prove drama. Pair counts include refused approaches."
+    },
+    "embodiment": {
+      "playback_completion": {
+        "success": 19,
+        "n": 21,
+        "percent": 90.48
+      },
+      "uninterrupted_playback_completion": {
+        "success": 19,
+        "n": 19,
+        "percent": 100.0
+      },
+      "nearby_playback": {
+        "success": 19,
+        "n": 19,
+        "percent": 100.0
+      },
+      "body_orientation": {
+        "samples": 6782,
+        "mean_error_degrees": 2.74,
+        "maximum_error_degrees": 96.170280693844
+      },
+      "eye_gaze_error_degrees": null,
+      "head_gaze_error_degrees": null,
+      "line_of_sight_raycast_accuracy": null,
+      "lip_sync_error_ms": null,
+      "physical_audio_output_verified": null
+    }
+  }
+}

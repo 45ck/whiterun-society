@@ -13,6 +13,7 @@ from decisions import validate_decision
 from routing import dynamic_route
 from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal
+from dialogue_context import dialogue_frame,validate_situated_candidates
 
 
 def validate_candidates(value):
@@ -29,7 +30,7 @@ def validate_candidates(value):
         for field, limit in [('intention', 100), ('line', 240)]:
             if not isinstance(c[field], str) or not 1 <= len(c[field]) <= limit or any(ord(x)<32 for x in c[field]):
                 raise ValueError('Invalid candidate text')
-        if not 3 <= len(c['line'].split()) <= 40 or c['tone'] not in ('calm','worried','hopeful','frustrated'):
+        if not 1 <= len(c['line'].split()) <= 40 or c['tone'] not in ('calm','worried','hopeful','frustrated'):
             raise ValueError('Invalid spoken length or tone')
     if candidates[0]['line'] == candidates[1]['line']:
         raise ValueError('Two distinct alternatives required')
@@ -67,7 +68,12 @@ class Conversation:
             if not eligible:raise ValueError('No qualified nearby social participants remain')
             # The operator offers an opportunity, never a required conversation.
             # The resident still chooses a partner or defers, and the partner consents.
-            actor=min(eligible,key=lambda aid:(self.active['people'][str(aid)].get('social_clock',0),aid))
+            def last_attempt(aid):
+                person=self.active['people'][str(aid)]
+                prior=[e.get('settled_day',0) for e in self.active['town'].get('daily',{}).get('queue',[])
+                       if e.get('actor')==aid and e.get('kind')=='social_review' and e.get('status') in ('held','complete')]
+                return max([person.get('social_attempt_day',0),person.get('social_clock',0),*prior])
+            actor=min(eligible,key=lambda aid:(last_attempt(aid),aid))
             self._social_day(observation)
         elif actor is None:distance(observation, 108186, 108149)
         else:
@@ -126,6 +132,7 @@ class Conversation:
                     f"I hired {other} to make bread with my grain. I paid them {memory['gold']} gold. The produced bread belongs to me.")
             elif memory['kind']=='consumed_bread':facts.append('I ate one of my carried loaves.')
         return {'actor_id': actor, 'profile': person['profile'], 'needs': person['needs'],
+            'interaction':dialogue_frame(c,observation,person,actor),
             'known_facts_in_first_person':facts,
             'own_inventory': own['inventory'], 'own_food_policy': person.get('food_policy'),
             'memories': person['memories'][-8:], 'trust': person['trust'],
@@ -135,7 +142,7 @@ class Conversation:
             'heard_in_this_conversation': [{'speaker':t['speaker'], 'line':t['selected']['line'],
                 'epistemic_status':'heard claim, not verified fact'} for t in c['turns'] if t.get('delivered')],
             'event': {'id':c['id'], 'kind':'nearby_conversation',
-                'dialogue_stage':'closing' if c.get('end_after_turn') or c['turn']>=c.get('max_turns',2)-1 else 'opening' if c['turn']==0 else 'reply',
+                'dialogue_stage':'refusal' if c.get('response')=='decline' else 'closing' if c.get('end_after_turn') or c['turn']>=c.get('max_turns',2)-1 else 'opening' if c['turn']==0 else 'reply',
                 'information':('This is a short polite refusal of a social approach. Say that you cannot chat now without inventing a reason or hostility.' if c.get('response')=='decline' else
                     'You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history.')+
                     ' The other person\'s private motives, needs and inventory are unknown. An unfamiliar person\'s name is unknown. '
@@ -196,6 +203,8 @@ class Conversation:
             return {'checkpoint':self._write(state,'resident social '+stage+' decision accepted')}
         if claim['stage']=='propose':
             candidates = validate_candidates(result['proposal'])
+            frame=self._speech_context(c,observation)
+            validate_situated_candidates(candidates,frame['interaction'],frame['event']['dialogue_stage'] in ('closing','refusal'))
             c['current'] = {'speaker':claim['context']['actor_id'], 'listener':claim['context']['listener']['id'],
                 'candidates':candidates, 'language':result, 'context':claim['context']}
             c['phase']='select'
@@ -210,14 +219,7 @@ class Conversation:
     def prepare_speech(self, event_id, audio, observation):
         c = self._conversation_guard(event_id, observation)
         if c['phase']!='synthesize': raise ValueError('Speech is not awaiting synthesis')
-        if not isinstance(audio,dict) or set(audio)!={'file','sha256','seconds','voice','engine'}:
-            raise ValueError('Invalid audio metadata')
-        if not re.fullmatch(r'[a-f0-9]{64}\.wav',audio['file']) or audio['file']!=audio['sha256']+'.wav':
-            raise ValueError('Audio must use a content hash filename')
-        if type(audio['seconds']) not in (float,int) or not math.isfinite(audio['seconds']) or not .2<audio['seconds']<=30:
-            raise ValueError('Speech duration out of bounds')
-        if audio['voice'] not in ('bf_emma','bf_alice','bm_george','bm_lewis') or audio['engine']!='kokoro-onnx-0.6.1':
-            raise ValueError('Unknown stock voice')
+        self.validate_audio_metadata(audio)
         if distance(observation,c['current']['speaker'],c['current']['listener'])>500:
             raise ValueError('Listener left before delivery')
         if c.get('paired_attendance') and not self._paired_present(c,observation):
@@ -227,6 +229,16 @@ class Conversation:
         state=copy.deepcopy(self.active);state['conversation']=c
         return {'checkpoint':self._write(state,'speech delivery persisted before playback')}
 
+    @staticmethod
+    def validate_audio_metadata(audio):
+        if not isinstance(audio,dict) or set(audio)!={'file','sha256','seconds','voice','engine'}:
+            raise ValueError('Invalid audio metadata')
+        if not re.fullmatch(r'[a-f0-9]{64}\.wav',audio['file']) or audio['file']!=audio['sha256']+'.wav':
+            raise ValueError('Audio must use a content hash filename')
+        if type(audio['seconds']) not in (float,int) or not math.isfinite(audio['seconds']) or not .2<audio['seconds']<=30:
+            raise ValueError('Speech duration out of bounds')
+        if audio['voice'] not in ('bf_emma','bf_alice','bm_george','bm_lewis') or audio['engine']!='kokoro-onnx-0.6.1':
+            raise ValueError('Unknown stock voice')
     def speech_command(self, session):
         c=self.conversation_status()
         if c and c['phase']=='attending':
@@ -238,6 +250,7 @@ class Conversation:
                 'method':'package','retain':True,'origin':'resident_decision' if c.get('mode') else 'authored_encounter','session':session,'checkpoint':self.marker}
         if c and c['phase']=='releasing':
             return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':c.get('initiator',108186),
+                **({'stop_speech_id':c['current']['delivery_id']} if c.get('final_phase')=='held' and c.get('current',{}).get('delivery_id') else {}),
                 **({'participants':[c['initiator'],c['partner']]} if c.get('paired_attendance') else {}),
                 'session':session,'checkpoint':self.marker}
         if not c or c['phase']!='speaking' or c['current']['delivery_session']!=session: return None
@@ -314,10 +327,16 @@ class Conversation:
         state['conversation']=c
         self._write(state,'completed speech recorded as witnessed claims')
 
-    def hold_conversation(self,event_id,reason,observation):
+    def interrupt_conversation(self,event_id,observation):
+        return self.hold_conversation(event_id,'Observer interrupted conversation',observation,interruption=True)
+
+    def hold_conversation(self,event_id,reason,observation,interruption=False):
         c=self._conversation_guard(event_id,observation)
-        if c['phase'] in ('complete','held'): return {'duplicate':True}
+        if c['phase'] in ('complete','held') or c.get('interruption'): return {'duplicate':True}
         no_route=c['phase'] in ('choose_partner','thinking_choose_partner','reflect_first','thinking_reflect_first','reflect_second','thinking_reflect_second')
+        if interruption:
+            c['interruption']={'kind':'observer','requested_at':time.time(),'stage':c['phase'],'delivered_turns':len(c['turns']),'release_not_required':no_route}
+            c.update(outcome='observer_interrupted',end_reason='observer_interruption')
         c.update(phase='held' if no_route else 'releasing',final_phase='held',error=str(reason)[:200])
         if no_route:c['finished_at']=time.time()
         state=copy.deepcopy(self.active);state['conversation']=c

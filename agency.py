@@ -51,8 +51,9 @@ class Agency:
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
             raise ValueError('Observation belongs to another save checkpoint')
 
-    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time'):
+    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time', voiced_trade=False):
         self._agency_guard(observation)
+        if type(voiced_trade) is not bool:raise ValueError('Voiced trade must be boolean')
         if self.conversation_busy():
             raise ValueError('A conversation owns the participants')
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
@@ -61,7 +62,7 @@ class Agency:
             raise ValueError('Unsupported resident or event kind')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
-                if plan['actor'] != actor or plan['kind'] != kind:
+                if plan['actor'] != actor or plan['kind'] != kind or plan.get('voiced_trade',False)!=voiced_trade:
                     raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
         scenario=self.active.get('market_day')
@@ -88,6 +89,7 @@ class Agency:
         plan = {'id': event_id, 'kind': kind, 'actor': actor, 'phase': 'allocate' if kind=='stock_review' else 'choose',
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
                 'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
+        if voiced_trade:plan['voiced_trade']=True
         if scheduled:plan['scheduled']=True
         state.setdefault('plans', []).append(plan)
         if kind == 'work_shift':
@@ -300,6 +302,9 @@ class Agency:
             updated.update(phase='complete',outcome='bought_bread')
         else:
             updated.update(phase='complete', outcome='deferred')
+        speech_act={'raise_offer':'counteroffer','sell_bread':'accept','decline':'refuse','leave_without_food':'leave'}.get(action)
+        if claim['stage']=='reconsider' and action.startswith(('visit_','visit_person_')) and updated.get('economic_attendance'):speech_act='leave'
+        if speech_act:self.queue_trade_speech(state,updated,speech_act)
         return {'checkpoint': self._write(state, 'resident decision accepted'), 'plan': updated}
 
     @staticmethod
@@ -328,9 +333,10 @@ class Agency:
         plan = self.agency_plan()
         ack = observation.get('ack') or {}
         if plan and plan['phase'] in TERMINAL and plan.get('release_required'):
-            if ack.get('id') == 'release-' + plan['id'] and ack.get('status') == 'applied':
+            if ack.get('id') == 'release-' + plan['id'] and ack.get('status') == 'applied' and (not plan.get('economic_pair') or ack.get('released') is True):
                 state = copy.deepcopy(self.active)
                 state['plans'][-1]['release_required'] = False
+                if plan.get('voiced_trade'):state['plans'][-1]['economic_release']=copy.deepcopy(ack)
                 self._write(state, 'resident task release observed')
             return
         if plan and plan['phase'] in TERMINAL and not plan.get('remembered'):
@@ -370,6 +376,7 @@ class Agency:
             return
         if not plan or plan['phase'] in TERMINAL:
             return
+        if self.observe_trade_speech(observation):return
         if plan['phase'] == 'thinking' and plan['claim']['context']['session'] != self.session:
             self.hold_plan(plan['id'], 'Game session changed during inference; do not repeat the claimed call', observation)
         elif plan['phase'] == 'travelling':
@@ -400,6 +407,7 @@ class Agency:
                     if updated['phase'] == 'complete':updated['outcome'] = 'visited_only'
             else:
                 updated.update(phase='held', error='Travel did not establish owned arrival')
+            if updated['phase']=='consent':self.queue_trade_speech(state,updated,'offer')
             self._write(state, 'resident travel outcome observed')
         elif plan['phase'] == 'ready_to_trade':
             try:
@@ -429,7 +437,10 @@ class Agency:
         plan = self.agency_plan()
         if plan and plan['phase'] in TERMINAL and plan.get('release_required'):
             return {'id': 'release-' + plan['id'], 'kind': 'release_routine', 'actor': plan['actor'],
+                    **({'participants':plan['economic_pair']} if plan.get('economic_pair') else {}),
                     'session': session, 'checkpoint': self.marker}
+        speech=self.trade_speech_command(session)
+        if speech:return speech
         if not plan or plan['phase'] != 'travelling':
             return None
         return {'id': plan['travel_id'], 'kind': 'walk_to', 'actor': plan['actor'], 'target': plan['target'],

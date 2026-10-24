@@ -1,5 +1,9 @@
 # Society quality lab
 
+Latest additions: [situated dialogue and established acquaintances](situated-dialogue.md), [26 quantitative development OKRs](society-okrs.md), [voiced transaction protocol](voiced-trade.md), and [all finished visual documentation](gallery.md). Historical baselines below retain their original counts and limitations.
+
+Two controlled playing-turn interruptions released both speakers in approximately 1.74 and 1.68 seconds. The second also recorded an explicit native audio-controller stop acknowledgement. Neither created a heard turn. The first lacks a stop acknowledgement, and neither measures acoustic stop latency. Deliberate observer interruption is reported separately from technical failure; uninterrupted completion rates exclude it while raw rates retain it. [Receipts and save restoration](evidence/society-okr-live.json)
+
 The observer's live metrics come from the **current save lineage**. They are not cumulative across reloads and not a representative population study. Explicit test-model encounters and pre-census authored conversations are excluded from autonomous social rates. All counts carry denominators or scope. Changing the names of potential partners does not increase semantic action diversity.
 
 ## Initial live baseline — 25 October 2026

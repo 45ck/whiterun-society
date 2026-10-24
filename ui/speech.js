@@ -15,6 +15,15 @@ window.whiterunSpeak=command=>{
 };
 window.drawConversation=()=>{
  const c=state?.society?.conversation,card=document.getElementById('conversation-card');card.hidden=!c;
+ const plan=state?.society?.plan;
+ if(plan?.voiced_trade&&!['complete','held'].includes(plan.phase)&&(plan.economic_speech||plan.economic_turns?.length)){
+  card.hidden=false;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
+  text('conversation-stage','Trade · '+plan.phase.replaceAll('_',' '));
+  text('notice',plan.purchase_completed?'Inventory transfer verified':'Offers and agreement are not yet a completed sale');
+  const transcript=document.getElementById('conversation-transcript');transcript.replaceChildren();
+  for(const turn of plan.economic_turns||[]){const row=document.createElement('div');row.style.marginTop='12px';row.textContent=(names[turn.actor]||'Resident')+': '+turn.line;transcript.append(row);}
+  document.getElementById('speech-caption').hidden=plan.phase!=='economic_speaking';return;
+ }
  if(!c)return;
  const activePlan=state?.society?.plan&&!['complete','held'].includes(state.society.plan.phase);
  if(['complete','held'].includes(c.phase)&&activePlan){card.hidden=true;document.getElementById('speech-caption').hidden=true;return;}

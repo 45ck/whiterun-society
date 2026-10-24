@@ -57,6 +57,9 @@ function createSpeechController(getSp, now=()=>Date.now()) {
     },
     tick(){sampleOrientation();if(pendingMessage){const m=pendingMessage;pendingMessage=null;this.applyMessage(m);}if(!active)return;if(!nearby(active)){report.nearbyThroughout=false;return fail('Listener left hearing range');}
       if(now()-started>(active.audio.seconds+15)*1000)fail('Overlay playback timed out');},
+    interrupt(id){if(report?.id!==id)return false;if(report.status==='interrupted')return true;
+      if(!active)return report.status==='ended'||report.status==='failed';
+      pendingMessage=null;report={...report,status:'interrupted',interruptedAt:now()};stop();return true;},
     reset(){stop();report=null;pendingMessage=null;}, status(){return report?{...report}:null;},
     actor(){return active?.actor||null;}
   };

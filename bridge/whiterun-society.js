@@ -257,11 +257,12 @@ on('update', () => {
         }
         else if(command.kind==='release_routine'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Release checkpoint mismatch');
+          const stopped=command.stop_speech_id?speech.interrupt(command.stop_speech_id):null;
           const original=routines.finish(command);
           const paired=command.participants?conversationAttendance.finish(command):null;
           const result=paired?(!original.done||!paired.done?{done:false}:original.ack.released?paired:original):original;
           if(!result.done)pending=command;
-          else {ack=result.ack;completed.add(command.id);}
+          else {ack={...result.ack,...(command.stop_speech_id?{speechStop:{id:command.stop_speech_id,acknowledged:stopped,status:speech.status()?.status}}:{})};completed.add(command.id);}
         }
         else if (command.kind === 'bind_checkpoint') {
           if (!Number.isInteger(command.next)||command.next<1||command.next>16777215) throw new Error('Invalid checkpoint');
@@ -296,7 +297,8 @@ on('update', () => {
   }
   const activeConversation=presentation.society?.conversation;
   const activeDelivery=presentation.society?.resource_delivery?.status==='pending';
-  const cadence=activeDelivery?250:(activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000);
+  const economicSpeaking=presentation.society?.plan?.phase?.startsWith('economic_');
+  const cadence=activeDelivery?250:(economicSpeaking||activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000);
   if (busy || Date.now()-lastSent<cadence) return;
   const currentSession = session;
   residents = [];
@@ -308,14 +310,15 @@ on('update', () => {
       if (typeof resident.getItemCount==='function') {
         for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
       }
-      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null;
+      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null;
+      try{if(typeof resident.getRace==='function'){const nativeRace=resident.getRace();if(nativeRace){const label=typeof nativeRace.getName==='function'?nativeRace.getName():null;race={id:nativeRace.getFormID(),name:typeof label==='string'&&label?label.slice(0,80):null,source:'native Skyrim race; descriptive game metadata only'};}}}catch(_){}
       try{const raw=resident.getActorBase?.()||resident.getBaseObject?.();const base=raw&&sp.ActorBase?.from(raw);if(base&&typeof base.getSex==='function')voiceSex=base.getSex();}catch(_){}
       try{if(sp.Keyword&&typeof resident.hasKeyword==='function'){
         const keyword=sp.Keyword.from(sp.Game.getFormEx(0x13794));if(keyword)isPerson=resident.hasKeyword(keyword);
       }}catch(_){}
       try{if(typeof resident.isGuard==='function')isGuard=resident.isGuard();}catch(_){}
       try{const ownCell=resident.getParentCell();if(ownCell&&typeof ownCell.isInterior==='function')outdoors=!ownCell.isInterior();}catch(_){}
-      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,
+      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,
         classificationSource:isPerson===null?'unavailable':'native ActorTypeNPC keyword; child/dead filters applied',
         x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
     }

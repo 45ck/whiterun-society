@@ -59,6 +59,41 @@ def eligible_actors(observation):
 
 
 class Population:
+    def establish_social_background(self,event_id,cohort,observation):
+        """Explicit scenario prior for established neighbours, never heard events."""
+        self._agency_guard(observation)
+        if not isinstance(event_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,48}',event_id):raise ValueError('Invalid background event ID')
+        if self.agency_busy() or self.conversation_busy():raise ValueError('Finish the active encounter before changing social background')
+        town=self.active.get('town') or {}
+        if not isinstance(cohort,list) or not 2<=len(cohort)<=128 or any(type(a) is not int for a in cohort) or len(set(cohort))!=len(cohort):
+            raise ValueError('An explicit distinct resident cohort is required')
+        cohort=sorted(cohort)
+        for old in town.get('social_backgrounds',[]):
+            if old['id']==event_id:
+                if old['cohort']!=cohort:raise ValueError('Background ID reused for another cohort')
+                return {'duplicate':True,'background':copy.deepcopy(old)}
+        if any(str(a) not in town.get('residents',{}) or str(a) not in self.active['people'] for a in cohort):
+            raise ValueError('Background members must already belong to the save-bound census')
+        state=copy.deepcopy(self.active);added=0
+        source={'kind':'authored_shared_town_background','event_id':event_id,
+                'epistemic_status':'scenario initial acquaintance, not witnessed interaction or canonical lore'}
+        for actor in cohort:
+            person=state['people'][str(actor)]
+            for other in cohort:
+                if actor==other:continue
+                known=person.setdefault('known_people',{}).setdefault(str(other),{'heard_events':[]})
+                if not known.get('name'):
+                    known.update(name=state['people'][str(other)]['profile']['name'],name_source=copy.deepcopy(source));added+=1
+                relation=person.setdefault('relationships',{}).setdefault(str(other),
+                    {'affinity':0.,'familiarity':0.,'heard_turns':0,'appraisals':[]})
+                if 'background' not in relation:
+                    relation['background']=copy.deepcopy(source)
+                    relation['familiarity']=max(relation.get('familiarity',0),.1)
+        background={'id':event_id,'cohort':cohort,'new_known_names':added,'source':source,
+                    'policy':'Recognize established neighbours by name; no invented friendship, work history, memories or transfers.'}
+        state['town'].setdefault('social_backgrounds',[]).append(background)
+        return {'checkpoint':self._write(state,'explicit established-neighbour scenario background applied'),'background':background}
+
     def initialize_population(self,event_id,seed,observation):
         self._agency_guard(observation)
         if not isinstance(event_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,48}',event_id):raise ValueError('Invalid census event ID')

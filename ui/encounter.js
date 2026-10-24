@@ -11,7 +11,8 @@ window.whiterunProject=points=>{
  const c=state?.society?.conversation,active=c&&!['complete','held'].includes(c.phase);
  const cohort=state?.society?.routine_batch,cohortIds=cohort?.phase==='travelling'?cohort.members.filter(m=>m.phase==='travelling').map(m=>m.actor):[];
  const rts=window.whiterunRtsActive?.()===true;
- const ids=rts?(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)]).map(r=>r.id):cohortIds.length?cohortIds:inspectedResident?[inspectedResident]:active?c.speakers:focusId?[focusId]:[];
+ const economicPair=state?.society?.plan?.economic_speech?state.society.plan.economic_pair:null;
+ const ids=rts?(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)]).map(r=>r.id):cohortIds.length?cohortIds:inspectedResident?[inspectedResident]:economicPair|| (active?c.speakers:focusId?[focusId]:[]);
  for(const node of markerNodes.values())node.hidden=true;
  for(const point of points){if(!ids.includes(point.id))continue;
   const [x,y,z]=point.head,[fx,fy]=point.foot;
@@ -19,7 +20,7 @@ window.whiterunProject=points=>{
   let node=markerNodes.get(point.id);
   if(!node){node=document.createElement('div');node.className='resident-marker';const label=document.createElement('span');node.append(label);document.getElementById('resident-markers').append(node);markerNodes.set(point.id,node);}
   const height=Math.max(45,Math.min(innerHeight*.85,Math.abs(fy-y)*innerHeight)),width=Math.max(45,height*.4);
-  const talking=state?.speech?.status==='playing'&&c?.current?.speaker===point.id;
+  const talking=state?.speech?.status==='playing'&&(state?.society?.plan?.economic_speech?.actor||c?.current?.speaker)===point.id;
   node.classList.toggle('talking',talking);node.classList.toggle('rts-pick',rts);node.classList.toggle('selected',point.id===inspectedResident);node.onclick=rts?()=>{inspectedResident=point.id;window.drawEncounter();}:null;node.hidden=false;
   node.style.left=(x*innerWidth-width/2)+'px';node.style.top=((1-y)*innerHeight)+'px';
   node.style.width=width+'px';node.style.height=height+'px';
@@ -34,7 +35,7 @@ window.drawEncounter=()=>{
  if(c){const t=c.current||c.turns?.at(-1),language=t?.language?.elapsed_seconds,decision=t?.decision?.elapsed_seconds;
   timing.textContent=[language!==undefined?'Language '+language.toFixed(2)+'s':null,decision!==undefined?'Decision '+decision.toFixed(2)+'s':null,t?.audio?'Voice '+t.audio.seconds.toFixed(1)+'s':null].filter(Boolean).join(' · ');}
  if(state?.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' peak simultaneous journeys observed');
- const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&camera==='focus'?focusId:null);
+ const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&!state?.society?.plan?.economic_speech&&camera==='focus'?focusId:null);
  const panel=document.getElementById('resident-inspector');panel.hidden=!displayResident;
  if(!displayResident)return;
  document.getElementById('focus-card').hidden=true;
@@ -72,7 +73,7 @@ window.drawEncounter=()=>{
   const progress=document.createElement('progress');progress.max=30;progress.value=rest.rested_minutes||0;progress.style.width='100%';panel.append(progress);
   inspectorText(panel,rest.phase==='applied'?'Attendance and release verified.':'Recovery waits for completed attendance and release.');
  }
- inspectorText(panel,person.profile.role);const hunger=inspectorText(panel,'Simulated hunger · '+Math.round(person.needs.hunger*100)+'%');hunger.style.marginTop='12px';
+ inspectorText(panel,person.profile.role);inspectorText(panel,'Skyrim race · '+(state?.residents?.find(r=>r.id===displayResident)?.race?.name||'unobserved')+' · descriptive game metadata');const hunger=inspectorText(panel,'Simulated hunger · '+Math.round(person.needs.hunger*100)+'%');hunger.style.marginTop='12px';
  const hungerBar=document.createElement('progress');hungerBar.max=1;hungerBar.value=person.needs.hunger;hungerBar.style.width='100%';panel.append(hungerBar);
  const traits=inspectorText(panel,'Authored Big Five traits','label');traits.style.marginTop='14px';
  for(const [name,value] of Object.entries(person.profile.big_five)){const row=document.createElement('div');row.className='trait-row';const label=document.createElement('span');label.textContent=name;const bar=document.createElement('meter');bar.min=0;bar.max=1;bar.value=value;row.append(label,bar);panel.append(row);}
@@ -88,7 +89,7 @@ window.drawEncounter=()=>{
  for(const k of known.slice(-6))inspectorText(panel,(k.name||'Familiar unnamed resident')+' · '+(k.name_source?'self-reported name':'name unknown'));
  inspectorText(panel,'Relationships','label');
  const relations=Object.entries(person.relationships||{});if(!relations.length)inspectorText(panel,'No relationship history recorded yet.');
- for(const [id,value] of relations)inspectorText(panel,(names[id]||id)+' · familiarity '+Math.round((value.familiarity||0)*100)+'% · affinity '+Number(value.affinity||0).toFixed(2)+' · '+(value.heard_turns||0)+' heard turns');
+ for(const [id,value] of relations){const edge=state?.society?.metrics?.relationships?.edges.find(e=>e.actor===displayResident&&e.other===Number(id));inspectorText(panel,(names[id]||id)+' · '+(edge?.level||'unclassified').replaceAll('_',' ')+' · familiarity '+Math.round((value.familiarity||0)*100)+'% · affinity '+Number(value.affinity||0).toFixed(2)+' · '+(value.heard_turns||0)+' heard turns');}
  inspectorText(panel,'Traits are authored gameplay tendencies, not psychological measurements.').style.marginTop='14px';
 };
 setInterval(()=>{const c=state?.society?.conversation;if(c&&!['complete','held'].includes(c.phase)){

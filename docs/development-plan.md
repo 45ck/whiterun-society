@@ -4,6 +4,9 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Accepted direction
 
+- Make the town feel established and continuously inhabited. Existing neighbours should recognize each other; new arrivals need their own knowledge history. An explicit scenario background now supplies initial acquaintance without fake conversations or automatic friendship. [Implementation and live limits](situated-dialogue.md)
+- Expand from a staged pair to concurrent independent lives: persistent resident plans, participant reservations, local encounters, resumable routines and overlapping work/travel/conversation. Current serialization and vanilla routine ownership are unfinished architecture, not the desired final experience. More model calls alone do not remove these limits.
+
 - Use cloud models through OpenRouter. Local inference is optional future comparison, not a prerequisite. Mercury 2.5 is the leading dialogue candidate, subject to actual adapter, grounding, latency and voice checks. Keep Jev for bounded decisions and deterministic code for rules, accounting and native execution.
 - Ordinary simulation must not depend on Ysolda, Carlotta, Adrianne or any fixed named resident. NPCs can enter, leave or change. Select partners, sellers, employers and destinations from current population, capabilities, observations and commitments. Keep named demonstrations explicitly labelled as fixtures.
 - Each resident has a changing personal view of the world. Global simulation knowledge must not leak into their decisions. Meeting a stranger does not reveal their name, wealth, motives, personality or private memories. Names and other information require a recorded source. Rumours and speech remain claims until independently verified. Familiarity, affinity and trust are separate.

@@ -1,5 +1,16 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createSpeechController}=require('../bridge/speech.js');
+test('finished social scene cannot hide an active economic speech caption',()=>{
+ const vm=require('node:vm'),fs=require('node:fs'),nodes=new Map();
+ const node=()=>({hidden:false,textContent:'',style:{},children:[],replaceChildren(){this.children=[];},append(x){this.children.push(x);}});
+ const document={getElementById(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);},createElement:node};
+ const context={window:{},document,names:{7:'Buyer'},state:{society:{conversation:{phase:'complete'},plan:{voiced_trade:true,phase:'economic_speaking',economic_speech:{actor:7},economic_turns:[]}}},text:(id,t)=>{document.getElementById(id).textContent=t;}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../ui/speech.js'),'utf8'),context);
+ context.window.drawConversation();assert.equal(document.getElementById('speech-caption').hidden,false);
+ assert.match(document.getElementById('notice').textContent,/not yet a completed sale/);
+ context.state.society.plan.phase='trading';context.window.drawConversation();assert.equal(document.getElementById('speech-caption').hidden,true);
+ context.state.society.plan.purchase_completed=true;context.window.drawConversation();assert.match(document.getElementById('notice').textContent,/verified/);
+});
 function harness(){let clock=10000,range=100;const scripts=[],looks=[];
  const actor=id=>({is3DLoaded:()=>true,isDead:()=>false,getPositionX:()=>id===1?0:range,getPositionY:()=>0,getPositionZ:()=>0,setLookAt:()=>looks.push(id),clearLookAt:()=>{}});
  const sp={Actor:{from:a=>a},Game:{getFormEx:actor},browser:{executeJavaScript:s=>scripts.push(s)}};
@@ -11,6 +22,7 @@ test('listener departure fails instead of adding a false witness',()=>{const h=h
 test('early completion and muted playback are rejected',()=>{for(const muted of [true,false]){const h=harness();h.speech.start(h.c);if(muted)h.time(3100);h.speech.message({id:h.c.id,status:'ended',playedSeconds:3,volume:1,muted});h.speech.tick();assert.equal(h.speech.status().status,'failed');}});
 test('timeout and load reset stop playback',()=>{const h=harness();h.speech.start(h.c);h.time(20000);h.speech.tick();assert.equal(h.speech.status().status,'failed');h.speech.reset();assert.equal(h.speech.status(),null);});
 test('unknown report ID cannot settle current speech',()=>{const h=harness();h.speech.start(h.c);h.time(3100);h.speech.message({id:'wrong',status:'ended',playedSeconds:3,volume:1});assert.equal(h.speech.status().status,'starting');});
+test('targeted interruption clears active voice and ignores late completion',()=>{const h=harness();h.speech.start(h.c);assert.equal(h.speech.interrupt('wrong'),false);assert.equal(h.speech.interrupt(h.c.id),true);assert.equal(h.speech.actor(),null);assert.equal(h.speech.status().status,'interrupted');h.time(4000);h.speech.message({id:h.c.id,status:'ended',playedSeconds:3,volume:1,muted:false});h.speech.tick();assert.equal(h.speech.status().status,'interrupted');assert.equal(h.speech.interrupt(h.c.id),true);});
 test('browser acknowledgements wait for a game update before native cleanup',()=>{const h=harness();h.speech.start(h.c);h.time(3100);h.speech.message({id:h.c.id,status:'ended',playedSeconds:3,volume:1,muted:false});assert.equal(h.scripts.length,1);assert.equal(h.speech.status().status,'starting');h.speech.tick();assert.equal(h.scripts.length,2);h.time(25000);h.speech.tick();assert.equal(h.speech.status().status,'ended');});
 test('body turns are requested only for standing actors; head looks include both',()=>{
  const turns=[],looks=[],actors={1:{getSitState:()=>0,getPositionX:()=>0,getPositionY:()=>0},2:{getSitState:()=>3,getPositionX:()=>100,getPositionY:()=>0}};

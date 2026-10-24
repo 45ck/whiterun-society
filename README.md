@@ -6,6 +6,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
+**Visual documentation:** [all 27 finished images](docs/gallery.md) · [gallery website](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
 ## The whole simulation
@@ -25,6 +27,18 @@ Residents should work, trade with one another, consume goods, remember events an
 The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. Mercury 2.5 is now the experimental lab default after a complete two-turn voiced encounter: 58.811 seconds including approach and playback, with US$0.000718912 reported across two language requests and six Jev decisions. Grounding failures from earlier probes remain documented; one successful scene is not broad qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
 ## Examples from the running prototype
+
+### Conversations in an established town
+
+Speech now receives game time, the latest heard line, known relationships and actual commitments. Short acknowledgements and goodbyes no longer need padded sentences. The current 20 civilian residents have an explicit initial shared-town acquaintance, separately labelled from earned relationship history; future arrivals can still be strangers. Concurrent town-wide conversation and full routine ownership remain unfinished. [Dialogue context, initial state and evaluation](docs/situated-dialogue.md)
+
+### Hear an actual negotiation
+
+![Generated illustration of the implemented voiced trade protocol, not gameplay](docs/images/voiced-trade-loop.png)
+
+Jev chooses the economic actions; deterministic wording keeps spoken amounts aligned with the terms; local Kokoro speaks them; Skyrim performs movement and inventory changes. A live Amren–Carlotta trial delivered **four turns**: offer 3 gold, refusal, offer 5 gold, refusal. Both actors were released and **no gold or bread transferred**. This proves a voiced refusal/counteroffer path, not a successful sale. [Protocol and limits](docs/voiced-trade.md)
+
+The observer now includes an interruption control, derived friendship bands, small-talk word cues, current native Skyrim race labels and **26 OKRs** spanning social, economic, physical and behavioural experiments. Most psychology, semantic-dialogue and evolutionary-mechanism measures remain **unmeasured**. Friendship bands are authored game rules, not psychological diagnoses. [Definitions and thresholds](docs/society-okrs.md)
 
 ### Watch a running society and measure its limits
 
@@ -177,3 +191,173 @@ The isolated game now displays a transparent society panel over Whiterun: observ
 **Verified in the live game:** camera repositioning and close-ups, changing actor counts, actual gold/bread inventory, and the completed trade receipt. **Browser controls now verified:** resident selection, follow, zoom and orbit. The local `/observer` control room also exposes map panning, needs, memories and relationships. Native overlay mouse delivery remains separately unqualified. Camera collision avoidance is not implemented, so moving NPCs can occasionally cause occlusion. The standalone production simulation does not yet autonomously drive these NPCs.
 
 The deployer hashes the UI into the bridge revision so HTML changes trigger hot reload. No game restart is needed for this development loop. The browser UI never receives the local service bearer token.
+
+<!-- IMAGE_GALLERY_START -->
+<details>
+
+<summary>Browse every finished project image (27)</summary>
+
+### Npc four systems
+
+Generated system illustration — not gameplay
+
+![Npc four systems](docs/images/npc-four-systems.png)
+
+### Personal knowledge loop
+
+Generated system illustration — not gameplay
+
+![Personal knowledge loop](docs/images/personal-knowledge-loop.png)
+
+### Voiced trade loop
+
+Generated system illustration — not gameplay
+
+![Voiced trade loop](docs/images/voiced-trade-loop.png)
+
+### Whole simulation
+
+Generated system illustration — not gameplay
+
+![Whole simulation](docs/images/whole-simulation.png)
+
+### Agent task panel
+
+Captured game or observer interface — historical prototype
+
+![Agent task panel](docs/images/agent-task-panel.jpg)
+
+### Agent travel in game
+
+Captured game or observer interface — historical prototype
+
+![Agent travel in game](docs/images/agent-travel-in-game.jpg)
+
+### Conversation closeup
+
+Captured game or observer interface — historical prototype
+
+![Conversation closeup](docs/images/conversation-closeup.jpg)
+
+### Food consumption restored
+
+Captured game or observer interface — historical prototype
+
+![Food consumption restored](docs/images/food-consumption-restored.jpg)
+
+### Jev resident decisions
+
+Captured game or observer interface — historical prototype
+
+![Jev resident decisions](docs/images/jev-resident-decisions.jpg)
+
+### Live control room
+
+Captured game or observer interface — historical prototype
+
+![Live control room](docs/images/live-control-room.jpg)
+
+### Local ai in game
+
+Captured game or observer interface — historical prototype
+
+![Local ai in game](docs/images/local-ai-in-game.jpg)
+
+### Market day complete
+
+Captured game or observer interface — historical prototype
+
+![Market day complete](docs/images/market-day-complete.jpg)
+
+### Market observer
+
+Captured game or observer interface — historical prototype
+
+![Market observer](docs/images/market-observer.jpg)
+
+### Market travel live
+
+Captured game or observer interface — historical prototype
+
+![Market travel live](docs/images/market-travel-live.png)
+
+### Negotiation reconsideration
+
+Captured game or observer interface — historical prototype
+
+![Negotiation reconsideration](docs/images/negotiation-reconsideration.jpg)
+
+### Negotiation restored
+
+Captured game or observer interface — historical prototype
+
+![Negotiation restored](docs/images/negotiation-restored.jpg)
+
+### Paid work complete
+
+Captured game or observer interface — historical prototype
+
+![Paid work complete](docs/images/paid-work-complete.jpg)
+
+### Paid work in progress
+
+Captured game or observer interface — historical prototype
+
+![Paid work in progress](docs/images/paid-work-in-progress.jpg)
+
+### Parallel native
+
+Captured game or observer interface — historical prototype
+
+![Parallel native](docs/images/parallel-native.png)
+
+### Parallel observer
+
+Captured game or observer interface — historical prototype
+
+![Parallel observer](docs/images/parallel-observer.jpg)
+
+### Resident follow live
+
+Captured game or observer interface — historical prototype
+
+![Resident follow live](docs/images/resident-follow-live.png)
+
+### Resident social live
+
+Captured game or observer interface — historical prototype
+
+![Resident social live](docs/images/resident-social-live.png)
+
+### Rest seated live
+
+Captured game or observer interface — historical prototype
+
+![Rest seated live](docs/images/rest-seated-live.png)
+
+### Rts live overview
+
+Captured game or observer interface — historical prototype
+
+![Rts live overview](docs/images/rts-live-overview.jpg)
+
+### Seven resident observer
+
+Captured game or observer interface — historical prototype
+
+![Seven resident observer](docs/images/seven-resident-observer.jpg)
+
+### Social control room
+
+Captured game or observer interface — historical prototype
+
+![Social control room](docs/images/social-control-room.jpg)
+
+### Spectator ui
+
+Captured game or observer interface — historical prototype
+
+![Spectator ui](docs/images/spectator-ui.jpg)
+
+</details>
+<!-- IMAGE_GALLERY_END -->

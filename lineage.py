@@ -22,11 +22,12 @@ from rest import Rest
 from parallel_routines import ParallelRoutines
 from metrics import simulation_metrics
 from enterprises import Enterprises
+from economic_speech import EconomicSpeech
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -140,6 +141,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             if state.get('plans') and state['plans'][-1]['trade_id'] == record['id']:
                 if state['plans'][-1].get('food_actions'):
                     state['plans'][-1].update(phase='after_purchase', purchase_completed=True)
+                    self.queue_trade_speech(state,state['plans'][-1],'receipt')
                 else:
                     state['plans'][-1].update(phase='complete', outcome='bought_bread')
             for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
@@ -223,6 +225,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 'metrics':simulation_metrics(self.active),
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
                 'routine_batch': self.routine_batch(),
+                'trades':self.active.get('trades',[]) if self.active else [],
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
                 'cancelled_production': self.active.get('cancelled_production', []) if self.active else [],

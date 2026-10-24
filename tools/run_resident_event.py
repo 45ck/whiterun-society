@@ -14,6 +14,8 @@ import urllib.request
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from decisions import infer
+from tools.voice_worker import VoiceWorker
+from tools.run_conversation import stock_voice
 
 
 def main():
@@ -22,6 +24,7 @@ def main():
     parser.add_argument('--event-id', required=True)
     parser.add_argument('--model-config', type=Path)
     parser.add_argument('--actor', type=int, default=108186)
+    parser.add_argument('--voice-trade',action='store_true',help='Speak grounded offers and outcomes before continuing the trade')
     parser.add_argument('--kind', choices=('meal_time','stock_review','work_shift','need_review'), default='meal_time')
     args = parser.parse_args()
     config = json.loads((args.runtime/'bridge-config.json').read_text())
@@ -49,11 +52,11 @@ def main():
         path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
         print(json.dumps({'phase': stage, 'model_calls': evidence['model_calls']}), flush=True)
 
-    started = request('/agency/event', {'id': args.event_id, 'actor':args.actor, 'kind':args.kind})
+    started = request('/agency/event', {'id': args.event_id, 'actor':args.actor, 'kind':args.kind,'voiced_trade':args.voice_trade})
     if started.get('duplicate'):
         print(json.dumps({'duplicate': True, 'model_calls': 0, 'phase': started['plan']['phase']}), flush=True)
         return
-    previous = None
+    previous = None;voice_worker=None
     deadline = time.monotonic()+480
     try:
         while time.monotonic() < deadline:
@@ -71,6 +74,8 @@ def main():
             if previous != phase:
                 record(phase, state)
                 previous = phase
+            if args.voice_trade and phase in ('travelling','economic_attending','economic_synthesize') and voice_worker is None:
+                voice_worker=VoiceWorker(args.runtime.parent,5,[model.get('key_env')])
             if phase in ('complete', 'held') and not plan.get('release_required') and plan.get('remembered'):
                 evidence['after'] = state
                 evidence['status'] = phase
@@ -78,7 +83,12 @@ def main():
                 path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
                 print(json.dumps({'status': phase, 'outcome': plan.get('outcome'), 'evidence': str(path)}), flush=True)
                 return
-            if phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
+            if phase=='economic_synthesize':
+                turn=plan['economic_speech'];began=time.monotonic()
+                audio=voice_worker.synthesize(turn['line'],stock_voice(turn['actor'],state['bridge']['observation']))
+                evidence.setdefault('synthesis_timings',[]).append({'act':turn['act'],'seconds':round(time.monotonic()-began,3),'engine_seconds':audio['synthesis_seconds']})
+                request('/agency/audio',{'id':args.event_id,'audio':audio['audio']})
+            elif phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
                 if evidence['model_calls'] >= 5:
                     raise ValueError('Resident event exhausted its five-call decision budget')
                 claim = request('/agency/claim', {'id': args.event_id})['claim']
@@ -108,6 +118,8 @@ def main():
             evidence['hold_not_confirmed'] = True
         path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
         raise
+    finally:
+        if voice_worker:voice_worker.close()
 
 
 if __name__ == '__main__':

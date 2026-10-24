@@ -50,7 +50,10 @@ class ServiceLifecycleTests(unittest.TestCase):
                 observer_token=re.search("const token='([^']+)'",page).group(1)
                 with urllib.request.urlopen(origin+'/observer/state') as response:
                     self.assertFalse(json.load(response)['connected'])
-                for route in ('/observer/camera','/observer/enterprise','/observer/director'):
+                with urllib.request.urlopen(origin+'/docs') as response:
+                    self.assertEqual(response.url,origin+'/docs/')
+                    self.assertIn('Whiterun',response.read().decode())
+                for route in ('/observer/camera','/observer/enterprise','/observer/director','/observer/conversation'):
                     for headers in ({},{'Origin':'https://unrelated.example','X-Observer-Token':observer_token},
                                     {'Origin':origin,'X-Observer-Token':'wrong'}):
                         req=urllib.request.Request(origin+route,data=b'{"mode":"market"}',headers=headers)

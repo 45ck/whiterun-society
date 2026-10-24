@@ -1,0 +1,863 @@
+{
+  "scope": "Current save lineage. Deliberate interruptions are controlled tests, not spontaneous agent failure. Native stop acknowledgement is not acoustic timing proof.",
+  "interruptions": [
+    {
+      "id": "encounter-4204a20dc9354f71b5cc",
+      "controlled_experiment": true,
+      "phase": "held",
+      "interruption": {
+        "delivered_turns": 0,
+        "kind": "observer",
+        "release_not_required": false,
+        "requested_at": 1792884692.1078613,
+        "stage": "speaking"
+      },
+      "before_speech": {
+        "id": "speech-f6bfedb9c115cd3045cdfd5e",
+        "status": "playing",
+        "nearbyThroughout": true,
+        "playedSeconds": 0,
+        "orientation": {
+          "samples": 476,
+          "sum_error_degrees": 482.7374252915513,
+          "max_error_degrees": 22.747878760806998,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast"
+        },
+        "facing": [
+          {
+            "actor": 108164,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          },
+          {
+            "actor": 108186,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          }
+        ]
+      },
+      "after_speech": {
+        "id": "speech-f6bfedb9c115cd3045cdfd5e",
+        "status": "ended",
+        "nearbyThroughout": true,
+        "playedSeconds": 4.761333,
+        "orientation": {
+          "samples": 538,
+          "sum_error_degrees": 546.4140811916031,
+          "max_error_degrees": 22.747878760806998,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast"
+        },
+        "facing": [
+          {
+            "actor": 108164,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          },
+          {
+            "actor": 108186,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          }
+        ],
+        "elapsedSeconds": 4.865,
+        "channel": "CEF overlay audio",
+        "muted": false,
+        "volume": 1
+      },
+      "delivered_turns": 0,
+      "release": {
+        "attendance": {
+          "id": "attend-encounter-4204a20dc9354f71b5cc",
+          "participants": [
+            {
+              "actor": 108164,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 0
+            },
+            {
+              "actor": 108186,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 1
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-encounter-4204a20dc9354f71b5cc",
+        "released": true,
+        "status": "applied"
+      },
+      "wall_settlement_seconds": 1.737
+    },
+    {
+      "id": "encounter-687941db7bdb4801b5ec",
+      "controlled_experiment": true,
+      "phase": "held",
+      "interruption": {
+        "delivered_turns": 0,
+        "kind": "observer",
+        "release_not_required": false,
+        "requested_at": 1792884853.66761,
+        "stage": "speaking"
+      },
+      "before_speech": {
+        "id": "speech-9d388cfb2c25acbc729cad39",
+        "status": "playing",
+        "nearbyThroughout": true,
+        "playedSeconds": 0,
+        "orientation": {
+          "samples": 36,
+          "sum_error_degrees": 110.42258796938677,
+          "max_error_degrees": 69.07142138200834,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast"
+        },
+        "facing": [
+          {
+            "actor": 108164,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          },
+          {
+            "actor": 108196,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          }
+        ]
+      },
+      "after_speech": {
+        "id": "speech-9d388cfb2c25acbc729cad39",
+        "status": "interrupted",
+        "nearbyThroughout": true,
+        "playedSeconds": 0,
+        "orientation": {
+          "samples": 162,
+          "sum_error_degrees": 110.4449614255766,
+          "max_error_degrees": 69.07142138200834,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast"
+        },
+        "facing": [
+          {
+            "actor": 108164,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          },
+          {
+            "actor": 108196,
+            "headLookRequested": true,
+            "bodyTurnRequested": true
+          }
+        ],
+        "interruptedAt": 1792884854544
+      },
+      "delivered_turns": 0,
+      "release": {
+        "attendance": {
+          "id": "attend-encounter-687941db7bdb4801b5ec",
+          "participants": [
+            {
+              "actor": 108164,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 0
+            },
+            {
+              "actor": 108196,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 1
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-encounter-687941db7bdb4801b5ec",
+        "released": true,
+        "speechStop": {
+          "acknowledged": true,
+          "id": "speech-9d388cfb2c25acbc729cad39",
+          "status": "interrupted"
+        },
+        "status": "applied"
+      },
+      "wall_settlement_seconds": 1.678
+    }
+  ],
+  "metrics": {
+    "scope": "Current save lineage and retained encounter history. Not lifetime telemetry or a representative population study.",
+    "encounters": {
+      "eligible": 12,
+      "excluded_fixtures": 0,
+      "legacy_authored": 6,
+      "in_progress": 0,
+      "completed": 8,
+      "failed": 4,
+      "quiet_outcomes": 0,
+      "polite_refusals": 0,
+      "end_reasons": {
+        "legacy_unrecorded": 9,
+        "polite_closure": 1,
+        "observer_interruption": 2
+      },
+      "observer_interruptions": 2,
+      "interruption_stages": {
+        "speaking": 2
+      },
+      "technical_failures": 2,
+      "uninterrupted_chat_completion": {
+        "success": 8,
+        "n": 10,
+        "percent": 80.0
+      },
+      "interruption_audio_stop_ack": {
+        "success": 1,
+        "n": 1,
+        "percent": 100.0
+      },
+      "interruption_audio_stop_unmeasured": 1,
+      "interruption_cleanup": {
+        "success": 2,
+        "n": 2,
+        "percent": 100.0
+      },
+      "interruption_settle_seconds": {
+        "n": 2,
+        "mean": 1.192,
+        "median": 1.192,
+        "p95": 1.257
+      },
+      "resolution_rate": {
+        "success": 8,
+        "n": 12,
+        "percent": 66.67
+      },
+      "accepted_chat_completion": {
+        "success": 8,
+        "n": 12,
+        "percent": 66.67
+      },
+      "failures_by_category": {
+        "language_output": 1,
+        "attendance": 1,
+        "other": 2
+      },
+      "duration_seconds": {
+        "n": 6,
+        "mean": 50.759,
+        "median": 60.853,
+        "p95": 67.03
+      },
+      "delivered_turns": 18,
+      "turns_per_accepted_chat": {
+        "n": 12,
+        "mean": 1.5,
+        "median": 2.0,
+        "p95": 3
+      },
+      "reply_dispatch_gap_seconds": {
+        "n": 5,
+        "mean": 12.897,
+        "median": 11.997,
+        "p95": 15.881
+      }
+    },
+    "embodiment": {
+      "playback_completion": {
+        "success": 18,
+        "n": 20,
+        "percent": 90.0
+      },
+      "uninterrupted_playback_completion": {
+        "success": 18,
+        "n": 18,
+        "percent": 100.0
+      },
+      "nearby_playback": {
+        "success": 18,
+        "n": 18,
+        "percent": 100.0
+      },
+      "body_orientation": {
+        "samples": 6416,
+        "mean_error_degrees": 0.15,
+        "maximum_error_degrees": 15.15699507784916
+      },
+      "eye_gaze_error_degrees": null,
+      "head_gaze_error_degrees": null,
+      "line_of_sight_raycast_accuracy": null,
+      "lip_sync_error_ms": null,
+      "physical_audio_output_verified": null
+    },
+    "models": {
+      "recorded_results": 84,
+      "latency_seconds": {
+        "n": 84,
+        "mean": 0.926,
+        "median": 0.641,
+        "p95": 1.953
+      },
+      "known_cost_usd": 0.00912991,
+      "results_with_cost": 84,
+      "cost_coverage": "Accepted retained results only. Rejected provider calls remain in worker receipts; this is not a total bill."
+    },
+    "economy": {
+      "committed_sales": 0,
+      "committed_production": 2,
+      "voiced_trade_plans": 1,
+      "delivered_trade_utterances": 4,
+      "spoken_trade_acts": {
+        "offer": 1,
+        "refuse": 2,
+        "counteroffer": 1
+      },
+      "speech_scope": "Deterministic terms driven by resident decisions. Heard acceptance is not a committed sale. Includes staged protocol tests.",
+      "committed_meals": 40,
+      "gold_conservation": {
+        "success": 2,
+        "n": 2,
+        "percent": 100.0
+      },
+      "distinct_observed_sale_prices": 0,
+      "active_enterprises": 2,
+      "supported_production_recipes": 1,
+      "supported_sale_goods": 1,
+      "supported_supply_chain_transforms": 1,
+      "pricing": "Authored quote choices; no market-clearing price formation.",
+      "scope": "Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour."
+    },
+    "resident_plans": {
+      "terminal": 59,
+      "held": 3,
+      "outcomes": {
+        "paid_work_completed": 2,
+        "allocated_stock": 3,
+        "seller_declined": 2,
+        "ate_bread": 40,
+        "visited_only": 1,
+        "deferred": 5,
+        "rested_at_bench": 2,
+        "market_seller_not_observed": 1,
+        "held_without_outcome": 2,
+        "interrupted_before_action": 1
+      },
+      "failures_by_category": {
+        "availability": 3
+      },
+      "feasible_options_per_decision": {
+        "n": 66,
+        "mean": 3.364,
+        "median": 3.0,
+        "p95": 5
+      },
+      "scope": "Retained economic/routine plans, including staged fixtures. Feasible options are not a realism score."
+    },
+    "social_complexity": {
+      "directed_relationships": 8,
+      "positive_affinity_edges": 5,
+      "negative_affinity_edges": 0,
+      "distinct_social_choices": 6,
+      "choices": {
+        "approach_nearby_person": 12,
+        "chat": 12,
+        "felt_supported": 7,
+        "neutral": 9,
+        "reply": 1,
+        "close_politely": 1
+      },
+      "choice_entropy_bits": 2.197,
+      "implemented_drama_mechanism": "Subjective appraisal and affinity only; no multi-party conflict/resolution system."
+    },
+    "realism": {
+      "human_dialogue_rating": null,
+      "psychological_validity": null,
+      "economic_realism_rating": null,
+      "interoperability_score": null,
+      "reason": "No calibrated human ratings or interoperability benchmark. Completion, entropy and feature counts are not realism scores."
+    },
+    "relationships": {
+      "directed_levels": {
+        "acquaintance": 8
+      },
+      "edges": [
+        {
+          "actor": 108138,
+          "other": 108140,
+          "level": "acquaintance",
+          "affinity_points": 5.0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        },
+        {
+          "actor": 108140,
+          "other": 108138,
+          "level": "acquaintance",
+          "affinity_points": 5.0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        },
+        {
+          "actor": 108149,
+          "other": 108186,
+          "level": "acquaintance",
+          "affinity_points": 0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        },
+        {
+          "actor": 108156,
+          "other": 108169,
+          "level": "acquaintance",
+          "affinity_points": 0,
+          "familiarity_percent": 25.0,
+          "heard_turns": 5
+        },
+        {
+          "actor": 108160,
+          "other": 182543,
+          "level": "acquaintance",
+          "affinity_points": 5.0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        },
+        {
+          "actor": 108169,
+          "other": 108156,
+          "level": "acquaintance",
+          "affinity_points": 15.0,
+          "familiarity_percent": 30.0,
+          "heard_turns": 6
+        },
+        {
+          "actor": 108186,
+          "other": 108149,
+          "level": "acquaintance",
+          "affinity_points": 5.0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        },
+        {
+          "actor": 182543,
+          "other": 108160,
+          "level": "acquaintance",
+          "affinity_points": 0,
+          "familiarity_percent": 5.0,
+          "heard_turns": 1
+        }
+      ],
+      "mutual_friend_pairs": 0,
+      "one_sided_friendships": 0,
+      "scope": "Only recorded directed relationships. Missing edges mean no relationship evidence, not hostility. Bands are authored gameplay rules; there is no forced friend quota.",
+      "rules": {
+        "friend": "affinity >= 0.25, familiarity >= 0.25, heard turns >= 6",
+        "close_friend": "affinity >= 0.60, familiarity >= 0.60, heard turns >= 12",
+        "strained": "affinity <= -0.25"
+      }
+    },
+    "dialogue_analysis": {
+      "delivered_lines": 18,
+      "lexical_cues": {
+        "question_mark": 6,
+        "greeting": 4,
+        "weather": 3,
+        "business": 10,
+        "courtesy": 1,
+        "farewell": 1
+      },
+      "repeated_greeting_turns": 0,
+      "exact_repeated_lines_within_scene": 0,
+      "unique_speakers": 9,
+      "unique_pairs": 8,
+      "largest_speaker_share_percent": 33.33,
+      "question_answer_relevance": null,
+      "topic_coherence": null,
+      "human_smalltalk_rating": null,
+      "scope": "Overlapping English keyword cues over delivered social lines, not semantic topics. A question mark is not proof of a question answered; conflict words do not prove drama. Pair counts include refused approaches."
+    },
+    "quality_goals": {
+      "version": 1,
+      "source": "Authored development targets, not validated scientific norms",
+      "items": [
+        {
+          "id": "SOC-01",
+          "objective": "Believable encounters",
+          "measure": "Uninterrupted accepted chat completion",
+          "current": 80.0,
+          "target": 90,
+          "unit": "percent",
+          "n": 10,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "insufficient_sample",
+          "scope": "Excludes deliberate observer interruptions; all-attempt completion remains separately reported"
+        },
+        {
+          "id": "SOC-02",
+          "objective": "Believable encounters",
+          "measure": "Median reply dispatch gap",
+          "current": 11.997,
+          "target": 2,
+          "unit": "seconds",
+          "n": 5,
+          "minimum_sample": 30,
+          "direction": "lte",
+          "status": "insufficient_sample",
+          "scope": "Retained save lineage; not a representative study"
+        },
+        {
+          "id": "SOC-03",
+          "objective": "Believable encounters",
+          "measure": "Exact repeated lines in a scene",
+          "current": 0,
+          "target": 0,
+          "unit": "lines",
+          "n": 18,
+          "minimum_sample": 100,
+          "direction": "lte",
+          "status": "insufficient_sample",
+          "scope": "Overlapping English keyword cues over delivered social lines, not semantic topics. A question mark is not proof of a question answered; conflict words do not prove drama. Pair counts include refused approaches."
+        },
+        {
+          "id": "SOC-04",
+          "objective": "Believable encounters",
+          "measure": "Human reply relevance",
+          "current": null,
+          "target": 4,
+          "unit": "anchored 1\u20135 rating",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Requires independent human rubric and disagreement reporting"
+        },
+        {
+          "id": "SOC-05",
+          "objective": "Believable encounters",
+          "measure": "Human small-talk naturalness",
+          "current": null,
+          "target": 4,
+          "unit": "anchored 1\u20135 rating",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Requires diverse human reviewers; no model self-rating substituted"
+        },
+        {
+          "id": "SOC-06",
+          "objective": "Safe interruption",
+          "measure": "Verified interruption cleanup",
+          "current": 100.0,
+          "target": 100,
+          "unit": "percent",
+          "n": 2,
+          "minimum_sample": 10,
+          "direction": "gte",
+          "status": "insufficient_sample",
+          "scope": "Retained save lineage; not a representative study"
+        },
+        {
+          "id": "SOC-07",
+          "objective": "Safe interruption",
+          "measure": "Median interruption settlement",
+          "current": 1.192,
+          "target": 3,
+          "unit": "seconds",
+          "n": 2,
+          "minimum_sample": 10,
+          "direction": "lte",
+          "status": "insufficient_sample",
+          "scope": "Request to terminal release; not acoustic stop latency"
+        },
+        {
+          "id": "PHY-01",
+          "objective": "Physical credibility",
+          "measure": "Uninterrupted issued voice completion",
+          "current": 100.0,
+          "target": 99,
+          "unit": "percent",
+          "n": 18,
+          "minimum_sample": 100,
+          "direction": "gte",
+          "status": "insufficient_sample",
+          "scope": "Excludes deliberately interrupted current delivery; raw issued completion remains separately reported"
+        },
+        {
+          "id": "PHY-02",
+          "objective": "Physical credibility",
+          "measure": "Independent eye-gaze trials within tolerance",
+          "current": null,
+          "target": 95,
+          "unit": "percent",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Requires calibrated eye geometry and a declared angular tolerance"
+        },
+        {
+          "id": "PHY-03",
+          "objective": "Physical credibility",
+          "measure": "Occlusion raycast agreement with labelled scenes",
+          "current": null,
+          "target": 95,
+          "unit": "percent",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Retained save lineage; not a representative study"
+        },
+        {
+          "id": "PHY-04",
+          "objective": "Physical credibility",
+          "measure": "Lip-sync absolute timing error",
+          "current": null,
+          "target": 100,
+          "unit": "milliseconds",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "lte",
+          "status": "unmeasured",
+          "scope": "Retained save lineage; not a representative study"
+        },
+        {
+          "id": "ECO-01",
+          "objective": "Functioning economy",
+          "measure": "Committed sales",
+          "current": 0,
+          "target": 10,
+          "unit": "sales",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "below_target",
+          "scope": "Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour."
+        },
+        {
+          "id": "ECO-02",
+          "objective": "Functioning economy",
+          "measure": "Supported traded goods",
+          "current": 1,
+          "target": 3,
+          "unit": "goods",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "below_target",
+          "scope": "Implementation breadth, not economic realism"
+        },
+        {
+          "id": "ECO-03",
+          "objective": "Functioning economy",
+          "measure": "Supported productive transformations",
+          "current": 1,
+          "target": 2,
+          "unit": "steps",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "below_target",
+          "scope": "Implementation breadth, not linked-chain qualification"
+        },
+        {
+          "id": "ECO-04",
+          "objective": "Functioning economy",
+          "measure": "Observed gold conservation",
+          "current": 100.0,
+          "target": 100,
+          "unit": "percent",
+          "n": 2,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "insufficient_sample",
+          "scope": "Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour."
+        },
+        {
+          "id": "ECO-05",
+          "objective": "Functioning economy",
+          "measure": "Shortage/recovery scenarios without fabricated assets",
+          "current": null,
+          "target": 5,
+          "unit": "qualified scenarios",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Requires a supply shock, observed prices/stock and recovery evidence"
+        },
+        {
+          "id": "ECO-06",
+          "objective": "Functioning economy",
+          "measure": "Autonomous profitable business days",
+          "current": null,
+          "target": 3,
+          "unit": "game days",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Requires revenues, wages, input costs and explicit accounting period"
+        },
+        {
+          "id": "BEH-01",
+          "objective": "Behavioural sensitivity",
+          "measure": "Hunger intervention changes food-seeking probability",
+          "current": null,
+          "target": 15,
+          "unit": "percentage-point effect",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Proposed authored sensitivity target, not a human psychological law; paired counterfactual conditions and uncertainty required"
+        },
+        {
+          "id": "BEH-02",
+          "objective": "Behavioural sensitivity",
+          "measure": "Fatigue intervention changes rest choice probability",
+          "current": null,
+          "target": 15,
+          "unit": "percentage-point effect",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Proposed authored sensitivity target, not a human psychological law; paired counterfactual conditions and uncertainty required"
+        },
+        {
+          "id": "BEH-03",
+          "objective": "Behavioural sensitivity",
+          "measure": "Price increase changes purchase acceptance probability",
+          "current": null,
+          "target": 15,
+          "unit": "percentage-point effect",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Proposed authored sensitivity target, not a human psychological law; paired counterfactual conditions and uncertainty required"
+        },
+        {
+          "id": "BEH-04",
+          "objective": "Behavioural sensitivity",
+          "measure": "Personality contrast changes social approach probability",
+          "current": null,
+          "target": 15,
+          "unit": "percentage-point effect",
+          "n": null,
+          "minimum_sample": 30,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Proposed authored sensitivity target, not a human psychological law; paired counterfactual conditions and uncertainty required"
+        },
+        {
+          "id": "REL-01",
+          "objective": "Social mechanism experiments",
+          "measure": "Known favourable history versus stranger affects cooperation",
+          "current": null,
+          "target": 30,
+          "unit": "paired trials",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Experiment coverage target. No evolutionary mechanism or real-world validity inferred; kinship and cultural systems remain incomplete"
+        },
+        {
+          "id": "REL-02",
+          "objective": "Social mechanism experiments",
+          "measure": "Refusal does not create automatic hostility",
+          "current": null,
+          "target": 30,
+          "unit": "paired trials",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Experiment coverage target. No evolutionary mechanism or real-world validity inferred; kinship and cultural systems remain incomplete"
+        },
+        {
+          "id": "REL-03",
+          "objective": "Social mechanism experiments",
+          "measure": "Conflict can resolve through later observed interaction",
+          "current": null,
+          "target": 30,
+          "unit": "paired trials",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Experiment coverage target. No evolutionary mechanism or real-world validity inferred; kinship and cultural systems remain incomplete"
+        },
+        {
+          "id": "EVO-01",
+          "objective": "Social mechanism experiments",
+          "measure": "Resource scarcity alters sharing under controlled opportunities",
+          "current": null,
+          "target": 30,
+          "unit": "paired trials",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Experiment coverage target. No evolutionary mechanism or real-world validity inferred; kinship and cultural systems remain incomplete"
+        },
+        {
+          "id": "EVO-02",
+          "objective": "Social mechanism experiments",
+          "measure": "Reciprocity history affects cooperation when cost is controlled",
+          "current": null,
+          "target": 30,
+          "unit": "paired trials",
+          "n": null,
+          "minimum_sample": 0,
+          "direction": "gte",
+          "status": "unmeasured",
+          "scope": "Experiment coverage target. No evolutionary mechanism or real-world validity inferred; kinship and cultural systems remain incomplete"
+        }
+      ]
+    },
+    "population_breakdown": {
+      "loaded_races": {
+        "Nord": 11,
+        "Redguard": 5,
+        "IMPERIAL": 2,
+        "Wood Elf": 1,
+        "Old People Race": 4
+      },
+      "personality_trait_means": {
+        "agreeableness": 0.542,
+        "conscientiousness": 0.554,
+        "extraversion": 0.558,
+        "neuroticism": 0.577,
+        "openness": 0.483
+      },
+      "scope": "Race is current native descriptive metadata; unloaded races remain unknown. Personality traits are seeded independently of race. No group causal or psychological claims."
+    }
+  },
+  "save_restore": {
+    "name": "WS-VoicedTrade-20261025-AR",
+    "checkpoint": 928,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  }
+}

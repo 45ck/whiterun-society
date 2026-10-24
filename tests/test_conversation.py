@@ -7,6 +7,12 @@ CANDIDATES=[{'id':'option_1','intention':'Ask for bread','line':'Could you spare
             {'id':'option_2','intention':'Express frustration','line':'I worked hard and still have no bread.','tone':'frustrated'}]
 AUDIO={'file':'a'*64+'.wav','sha256':'a'*64,'seconds':3.,'voice':'bf_emma','engine':'kokoro-onnx-0.6.1'}
 
+def candidates_for(context):
+    if context['event']['dialogue_stage'] in ('closing','refusal'):
+        return [{'id':'option_1','intention':'Close politely','line':'Thanks. Take care.','tone':'calm'},
+                {'id':'option_2','intention':'Say goodbye','line':'Goodbye.','tone':'calm'}]
+    return copy.deepcopy(CANDIDATES)
+
 
 class ConversationTests(unittest.TestCase):
     setUp=test_food.FoodTests.setUp
@@ -22,7 +28,7 @@ class ConversationTests(unittest.TestCase):
         self.world.observe(self.obs);self.sync()
     def select(self):
         claim=self.world.claim_conversation('chat',self.obs)['claim'];self.sync()
-        self.world.finish_conversation_inference('chat',claim['id'],{'model':'test-llm','proposal':{'candidates':CANDIDATES}},self.obs);self.sync()
+        self.world.finish_conversation_inference('chat',claim['id'],{'model':'test-llm','proposal':{'candidates':candidates_for(claim['context'])}},self.obs);self.sync()
         claim=self.world.claim_conversation('chat',self.obs)['claim'];self.sync()
         self.world.finish_conversation_inference('chat',claim['id'],{'model':'test-jev','decision':{'action_id':'option_1','reason':'test','emotion':'hopeful'}},self.obs);self.sync()
         self.world.prepare_speech('chat',AUDIO,self.obs);self.sync()

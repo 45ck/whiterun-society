@@ -1,7 +1,7 @@
 import copy
 import unittest
 import test_daily_life
-from test_conversation import AUDIO,CANDIDATES
+from test_conversation import AUDIO,CANDIDATES,candidates_for
 from social import social_candidates
 
 
@@ -53,7 +53,7 @@ class SocialTests(unittest.TestCase):
 
     def speak(self):
         claim=self.world.claim_conversation(self.event['id'],self.obs)['claim'];self.sync()
-        self.world.finish_conversation_inference(self.event['id'],claim['id'],{'model':'test-llm','proposal':{'candidates':CANDIDATES}},self.obs);self.sync()
+        self.world.finish_conversation_inference(self.event['id'],claim['id'],{'model':'test-llm','proposal':{'candidates':candidates_for(claim['context'])}},self.obs);self.sync()
         self.decide('option_1');self.world.prepare_speech(self.event['id'],AUDIO,self.obs);self.sync()
         command=self.world.pending(self.obs['session'])
         self.obs['speech']={'id':command['id'],'status':'ended','playedSeconds':3,'nearbyThroughout':True}

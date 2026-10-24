@@ -14,6 +14,7 @@ from society import Society
 from lineage import TimelineEconomy
 from observer import observer_state, camera_request
 from director_control import DirectorControl
+from doc_assets import documentation_asset
 
 
 class LocalServer(HTTPServer):
@@ -45,6 +46,16 @@ def main():
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args): pass
 
+        def checked_audio(self,data):
+            audio=data['audio'];world.validate_audio_metadata(audio)
+            asset=args.runtime.parent/'game/Data/Platform/UI/audio'/audio['file']
+            if not asset.is_file() or asset.stat().st_size>2000000:raise ValueError('Missing or oversized speech asset')
+            if hashlib.sha256(asset.read_bytes()).hexdigest()!=audio['sha256']:raise ValueError('Speech hash mismatch')
+            with wave.open(str(asset),'rb') as wav:
+                seconds=wav.getnframes()/wav.getframerate()
+                if wav.getnchannels()!=1 or wav.getsampwidth()!=2 or abs(seconds-audio['seconds'])>.01:raise ValueError('Speech format mismatch')
+            return audio
+
         def reply(self,status,payload):
             encoded=json.dumps(payload).encode()
             self.send_response(status)
@@ -54,6 +65,16 @@ def main():
             self.wfile.write(encoded)
 
         def do_GET(self):
+            if self.path=='/docs' or self.path.startswith('/docs/'):
+                if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
+                if self.path=='/docs':
+                    self.send_response(308);self.send_header('Location','/docs/');self.send_header('Content-Length','0');self.end_headers();return
+                asset=documentation_asset(Path(__file__).parent,self.path)
+                if asset is None:return self.reply(404,{'error':'not found'})
+                kind,body=asset;self.send_response(200);self.send_header('Content-Type',kind)
+                self.send_header('Content-Security-Policy',"default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'")
+                self.send_header('X-Frame-Options','DENY');self.send_header('Content-Length',str(len(body)))
+                self.end_headers();self.wfile.write(body);return
             if self.path=='/' or self.path.startswith('/observer'):
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
                 if self.path=='/observer/state':return self.reply(200,{**observer_state(bridge,world.status()),'director':director.status()})
@@ -73,7 +94,7 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
-            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director'):
+            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director','/observer/conversation'):
                 origin=f'http://127.0.0.1:{args.port}'
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
                     return self.reply(403,{'error':'Same-origin observer control required'})
@@ -87,6 +108,9 @@ def main():
                         if data.get('action')!='start':raise ValueError('Unknown society control')
                         return self.reply(202,director.start(data,bridge,world.status()))
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if self.path=='/observer/conversation':
+                        if data.get('action')!='interrupt':raise ValueError('Unknown conversation control')
+                        return self.reply(202,world.interrupt_conversation(data['id'],bridge['observation']))
                     if self.path=='/observer/enterprise':
                         if bridge['command']:raise ValueError('Another command is pending')
                         return self.reply(202,world.configure_enterprise(data['id'],data['enterprise'],bridge['observation']))
@@ -156,11 +180,12 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
-                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise'):
+                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
                     if self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
+                    elif self.path=='/town/social-background':result=world.establish_social_background(data['id'],data['cohort'],bridge['observation'])
                     elif self.path=='/town/enterprise':result=world.configure_enterprise(data['id'],data['enterprise'],bridge['observation'])
                     elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
                     else:result=world.review_population(bridge['observation'])
@@ -174,15 +199,7 @@ def main():
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':
-                        audio=data['audio'];name=audio.get('file','')
-                        if not re.fullmatch(r'[a-f0-9]{64}\.wav',name):raise ValueError('Invalid speech asset')
-                        asset=args.runtime.parent/'game/Data/Platform/UI/audio'/name
-                        if not asset.is_file() or asset.stat().st_size>2000000:raise ValueError('Missing or oversized speech asset')
-                        if hashlib.sha256(asset.read_bytes()).hexdigest()!=audio['sha256']:raise ValueError('Speech hash mismatch')
-                        with wave.open(str(asset),'rb') as wav:
-                            seconds=wav.getnframes()/wav.getframerate()
-                            if wav.getnchannels()!=1 or wav.getsampwidth()!=2 or abs(seconds-audio['seconds'])>.01:raise ValueError('Speech format mismatch')
-                        result=world.prepare_speech(data['id'],audio,observation)
+                        result=world.prepare_speech(data['id'],self.checked_audio(data),observation)
                     elif self.path=='/conversation/hold':result=world.hold_conversation(data['id'],data['reason'],observation)
                     else:raise ValueError('Unknown conversation operation')
                     self.reply(202,result)
@@ -201,12 +218,13 @@ def main():
                     elif self.path=='/routines/decisions':result=world.finish_routines(data['id'],data['claim_id'],data['results'],observation)
                     else:result=world.hold_routines(data['id'],data['reason'],observation)
                     self.reply(202,result)
-                elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold'):
+                elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold','/agency/audio'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'))
+                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'),data.get('voiced_trade',False))
+                    elif self.path=='/agency/audio':result=world.prepare_trade_speech(data['id'],self.checked_audio(data),observation)
                     elif self.path=='/agency/claim': result=world.claim_plan_decision(data['id'],observation)
                     elif self.path=='/agency/decision': result=world.finish_plan_decision(data['id'],data['claim_id'],data['result'],observation)
                     else: result=world.hold_plan(data['id'],data['reason'],observation)

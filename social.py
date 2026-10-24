@@ -6,6 +6,7 @@ needs, traits, inventories or memories are exposed to another resident.
 import math
 from routing import route_available
 from knowledge import person_view
+from dialogue_context import time_context
 
 SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
 
@@ -35,6 +36,7 @@ def social_context(state,c,observation,stage):
     if stage=='continue_dialogue':actor=c['speakers'][c['turn']%2]
     person=state['people'][str(actor)]
     context={'actor_id':actor,'profile':person['profile'],'scenario_state':{'needs':person['needs']},
+             'clock':time_context(observation.get('gameDays')),'own_commitments':person.get('commitments',[]),
              'memories':person['memories'][-8:],'trust':person.get('trust',{}),
              'event':{'id':c['id'],'kind':stage},'options':[]}
     if stage=='choose_partner':
@@ -79,6 +81,9 @@ def settle_social(state,c,day):
         if event['id']==c['id']:event.update(status=c['phase'],outcome=c.get('outcome',c['phase']),settled_day=day)
     for actor in set([c['initiator']]+([c['partner']] if c.get('partner') else [])):
         p=state['people'][str(actor)]
+        # Attempt fairness is separate from need relief: a failed meeting must
+        # not monopolize future opportunities or count as satisfying company.
+        p['social_attempt_day']=day
         p['agency'].update(state='quiet_interval' if c['phase']=='complete' else 'social_held',
             reason='Social review '+c.get('outcome',c['phase']),next_review_day=day+1/24)
         # A decline or a held delivery does not imply resentment or satisfaction.

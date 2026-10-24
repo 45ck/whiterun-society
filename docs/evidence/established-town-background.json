@@ -1,0 +1,105 @@
+{
+  "scope": "Explicit authored initial acquaintance for current civilian census; no fictitious heard events or friendship.",
+  "result": {
+    "checkpoint": 929,
+    "background": {
+      "id": "established-neighbours-20261025",
+      "cohort": [
+        108138,
+        108140,
+        108149,
+        108156,
+        108160,
+        108162,
+        108164,
+        108165,
+        108167,
+        108168,
+        108169,
+        108170,
+        108185,
+        108186,
+        108196,
+        108197,
+        108248,
+        182543,
+        843123,
+        1106614
+      ],
+      "new_known_names": 379,
+      "source": {
+        "kind": "authored_shared_town_background",
+        "event_id": "established-neighbours-20261025",
+        "epistemic_status": "scenario initial acquaintance, not witnessed interaction or canonical lore"
+      },
+      "policy": "Recognize established neighbours by name; no invented friendship, work history, memories or transfers."
+    }
+  },
+  "checkpoint": 929,
+  "cohort_size": 20,
+  "names": {
+    "108138": "Amren",
+    "108140": "Saffir",
+    "108149": "Carlotta Valentia",
+    "108156": "Adrianne Avenicci",
+    "108160": "Anoriath",
+    "108162": "Heimskr",
+    "108164": "Fralia Gray-Mane",
+    "108165": "Olfina Gray-Mane",
+    "108167": "Olfrid Battle-Born",
+    "108168": "Bergritte Battle-Born",
+    "108169": "Idolaf Battle-Born",
+    "108170": "Jon Battle-Born",
+    "108185": "Olava the Feeble",
+    "108186": "Ysolda",
+    "108196": "Nazeem",
+    "108197": "Ahlam",
+    "108248": "Ria",
+    "182543": "Brenuin",
+    "843123": "Sigurd",
+    "1106614": "Lillith Maiden-Loom"
+  },
+  "memories_preserved": true,
+  "relationships": {
+    "directed_levels": {
+      "acquaintance": 380
+    },
+    "mutual_friend_pairs": 0,
+    "authored_background_edges": 380,
+    "one_sided_friendships": 0,
+    "scope": "Only recorded directed relationships. Missing edges mean no relationship evidence, not hostility. Bands are authored gameplay rules; there is no forced friend quota.",
+    "rules": {
+      "friend": "affinity >= 0.25, familiarity >= 0.25, heard turns >= 6",
+      "close_friend": "affinity >= 0.60, familiarity >= 0.60, heard turns >= 12",
+      "strained": "affinity <= -0.25"
+    },
+    "sample_edges": [
+      {
+        "actor": 108138,
+        "other": 108140,
+        "level": "acquaintance",
+        "affinity_points": 5.0,
+        "familiarity_percent": 10.0,
+        "heard_turns": 1,
+        "background": {
+          "epistemic_status": "scenario initial acquaintance, not witnessed interaction or canonical lore",
+          "event_id": "established-neighbours-20261025",
+          "kind": "authored_shared_town_background"
+        }
+      },
+      {
+        "actor": 108138,
+        "other": 108149,
+        "level": "acquaintance",
+        "affinity_points": 0.0,
+        "familiarity_percent": 10.0,
+        "heard_turns": 0,
+        "background": {
+          "epistemic_status": "scenario initial acquaintance, not witnessed interaction or canonical lore",
+          "event_id": "established-neighbours-20261025",
+          "kind": "authored_shared_town_background"
+        }
+      }
+    ]
+  }
+}

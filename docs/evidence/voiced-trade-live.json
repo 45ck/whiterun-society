@@ -1,0 +1,362 @@
+{
+  "scope": "One real Jev-driven, operator-triggered meal review. Four deterministic spoken trade acts; refusal path, not a sale.",
+  "id": "voiced-trade-20261025-a",
+  "participants": {
+    "108138": "Amren",
+    "108149": "Carlotta Valentia"
+  },
+  "phase": "complete",
+  "outcome": "seller_declined",
+  "model_calls": 4,
+  "choices": [
+    {
+      "actor": 108138,
+      "decision": {
+        "action_id": "seek_bread",
+        "emotion": "unspecified",
+        "reason": "Selected action: Walk to an unfamiliar resident, a publicly registered food seller, and offer 3 gold for one loaf. Stock is unknown and they may refuse."
+      },
+      "model": "typesafe/jev-1.14-20261014",
+      "latency_seconds": 0.844,
+      "usage": {
+        "cost": 9.1434e-05,
+        "input_tokens": 2177,
+        "output_tokens": 81
+      }
+    },
+    {
+      "actor": 108149,
+      "decision": {
+        "action_id": "decline",
+        "emotion": "unspecified",
+        "reason": "Selected action: Decline the request; keep your goods."
+      },
+      "model": "typesafe/jev-1.14-20261014",
+      "latency_seconds": 0.797,
+      "usage": {
+        "cost": 8.4252e-05,
+        "input_tokens": 2006,
+        "output_tokens": 26
+      }
+    },
+    {
+      "actor": 108138,
+      "decision": {
+        "action_id": "raise_offer",
+        "emotion": "unspecified",
+        "reason": "Selected action: Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again."
+      },
+      "model": "typesafe/jev-1.14-20261014",
+      "latency_seconds": 0.562,
+      "usage": {
+        "cost": 0.000102984,
+        "input_tokens": 2452,
+        "output_tokens": 110
+      }
+    },
+    {
+      "actor": 108149,
+      "decision": {
+        "action_id": "decline",
+        "emotion": "unspecified",
+        "reason": "Selected action: Decline the request; keep your goods."
+      },
+      "model": "typesafe/jev-1.14-20261014",
+      "latency_seconds": 0.625,
+      "usage": {
+        "cost": 8.253e-05,
+        "input_tokens": 1965,
+        "output_tokens": 26
+      }
+    }
+  ],
+  "turns": [
+    {
+      "act": "offer",
+      "actor": 108138,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "4b13487b909df4965ab5b431327f30f7c4da5190f3ed943ee0ed5577c120b3f4.wav",
+        "seconds": 2.74,
+        "sha256": "4b13487b909df4965ab5b431327f30f7c4da5190f3ed943ee0ed5577c120b3f4",
+        "voice": "bm_lewis"
+      },
+      "delivered": true,
+      "delivery_id": "speech-21c708ae993893d66d18fbb3",
+      "ended_at": 1792884324.644618,
+      "line": "Would you sell me one loaf for 3 gold?",
+      "listener": 108149,
+      "origin_session": "1792884145398-0.746987399116952",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.867,
+        "facing": [
+          {
+            "actor": 108138,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-21c708ae993893d66d18fbb3",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 24.732447373253308,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 318,
+          "sum_error_degrees": 525.0772361755222
+        },
+        "playedSeconds": 2.74,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792884320.7151074,
+      "resume_phase": "consent",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "refuse",
+      "actor": 108149,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "789c301ac117ba75adf2ad13449bc050eb36a6610bb74a178c3cde80cac68efd.wav",
+        "seconds": 2.8393,
+        "sha256": "789c301ac117ba75adf2ad13449bc050eb36a6610bb74a178c3cde80cac68efd",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "delivery_id": "speech-e544838d806cc04c4dd2d06b",
+      "ended_at": 1792884339.2711813,
+      "line": "No, I will not sell a loaf on those terms.",
+      "listener": 108138,
+      "origin_session": "1792884145398-0.746987399116952",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.95,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108138,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-e544838d806cc04c4dd2d06b",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 1.8278346468287054,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 332,
+          "sum_error_degrees": 3.7113785573943687
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792884335.3409872,
+      "resume_phase": "reconsider",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "counteroffer",
+      "actor": 108138,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "89db42a171cb30c6c3b18b6bfd57b999819c4e6a7811ecd2e472e40d2bcde571.wav",
+        "seconds": 4.788,
+        "sha256": "89db42a171cb30c6c3b18b6bfd57b999819c4e6a7811ecd2e472e40d2bcde571",
+        "voice": "bm_lewis"
+      },
+      "delivered": true,
+      "delivery_id": "speech-dfab6f930783e2162ec7d497",
+      "ended_at": 1792884355.759752,
+      "line": "Would 5 gold change your mind? That is my final offer for one loaf.",
+      "listener": 108149,
+      "origin_session": "1792884145398-0.746987399116952",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.903,
+        "facing": [
+          {
+            "actor": 108138,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-dfab6f930783e2162ec7d497",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.0017755980185256703,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 552,
+          "sum_error_degrees": 0.1307839443636567
+        },
+        "playedSeconds": 4.788,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792884350.061067,
+      "resume_phase": "consent",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "refuse",
+      "actor": 108149,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "2721f8418619c8b88b9f881456e4f075b5ddc72004eb0e2e1d4823bd942e0ec9.wav",
+        "seconds": 2.8393,
+        "sha256": "2721f8418619c8b88b9f881456e4f075b5ddc72004eb0e2e1d4823bd942e0ec9",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "delivery_id": "speech-3b6a31bd81bbea8eb8efb202",
+      "ended_at": 1792884369.1469734,
+      "line": "No, I will not sell a loaf on those terms.",
+      "listener": 108138,
+      "origin_session": "1792884145398-0.746987399116952",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.92,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108138,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-3b6a31bd81bbea8eb8efb202",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.00024359975645893428,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 320,
+          "sum_error_degrees": 0.07362773313707294
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792884365.3730485,
+      "resume_phase": "complete",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    }
+  ],
+  "attendance": {
+    "attendance": {
+      "id": "economic-attend-voiced-trade-20261025-a",
+      "participants": [
+        {
+          "actor": 108138,
+          "loaded": true,
+          "ownedPackage": true,
+          "released": false,
+          "slot": 0
+        },
+        {
+          "actor": 108149,
+          "loaded": true,
+          "ownedPackage": true,
+          "released": false,
+          "slot": 1
+        }
+      ],
+      "phase": "attending"
+    },
+    "id": "economic-attend-voiced-trade-20261025-a",
+    "status": "applied"
+  },
+  "release": {
+    "attendance": {
+      "id": "economic-attend-voiced-trade-20261025-a",
+      "participants": [
+        {
+          "actor": 108138,
+          "loaded": true,
+          "ownedPackage": false,
+          "released": true,
+          "slot": 0
+        },
+        {
+          "actor": 108149,
+          "loaded": true,
+          "ownedPackage": false,
+          "released": true,
+          "slot": 1
+        }
+      ],
+      "phase": "released"
+    },
+    "id": "release-voiced-trade-20261025-a",
+    "released": true,
+    "status": "applied"
+  },
+  "before_inventory": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 102,
+      "bread": 6,
+      "grain": 20
+    }
+  },
+  "after_inventory": {
+    "108149": {
+      "gold": 102,
+      "bread": 6,
+      "grain": 20
+    },
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "synthesis_timings": [
+    {
+      "act": "offer",
+      "seconds": 1.203,
+      "engine_seconds": 1.203
+    },
+    {
+      "act": "refuse",
+      "seconds": 0.969,
+      "engine_seconds": 0.969
+    },
+    {
+      "act": "counteroffer",
+      "seconds": 1.688,
+      "engine_seconds": 1.688
+    },
+    {
+      "act": "refuse",
+      "seconds": 0.969,
+      "engine_seconds": 0.969
+    }
+  ]
+}
