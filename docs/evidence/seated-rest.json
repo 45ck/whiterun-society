@@ -1,0 +1,465 @@
+{
+  "scope": "One resident-selected seated break in the isolated Skyrim lab; not sleep, long-term stability or sustainable production",
+  "actor": 108169,
+  "name": "Idolaf Battle-Born",
+  "event_id": "daily-15-108169",
+  "model": "typesafe/jev-1.14-20261014",
+  "model_calls": 1,
+  "reported_model_cost_usd": 8.715e-05,
+  "decision": {
+    "action_id": "rest_at_bench",
+    "emotion": "unspecified",
+    "reason": "Selected action: Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a sho"
+  },
+  "probabilities": {
+    "defer": 0.02,
+    "rest_at_bench": 0.55,
+    "seek_bread": 0.36,
+    "seek_work": 0.03,
+    "visit_adrianne": 0.04
+  },
+  "elapsed_seconds": 120.359,
+  "launch_elapsed_seconds": 42.53,
+  "rest_receipt": {
+    "command": {
+      "actor": 108169,
+      "id": "rest-daily-15-108169",
+      "kind": "rest_at_bench",
+      "rest_minutes": 30,
+      "target": 329463
+    },
+    "evidence": {
+      "id": "rest-daily-15-108169",
+      "rest": {
+        "actor": 108169,
+        "began": 1792830681715,
+        "exact_furniture_verified": true,
+        "id": "rest-daily-15-108169",
+        "lastGame": 1.9564054012298584,
+        "outcome": "applied",
+        "phase": "applied",
+        "releaseAt": 1792830784132,
+        "release_verified": true,
+        "rested_minutes": 30.002117156982422,
+        "route": {
+          "actor": 108169,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792830681715,
+          "distance": 50.724246350123614,
+          "dynamic": true,
+          "enginePackage": 134219777,
+          "expectedPackage": 134219777,
+          "hasOwnedPackage": true,
+          "id": "rest-daily-15-108169",
+          "mailboxAt": 1792830681729,
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": false,
+          "phase": "released",
+          "serial": 1,
+          "startAt": 1792830681746,
+          "startComplete": true,
+          "startDistance": 4129.239543220495,
+          "startResult": true,
+          "target": 329463
+        },
+        "seated_samples": 5401,
+        "target": 329463
+      },
+      "status": "applied"
+    },
+    "fatigue_after": 0.65,
+    "fatigue_before": 1,
+    "id": "rest-daily-15-108169",
+    "status": "committed"
+  },
+  "native_accounts_before": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "native_accounts_after": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "native_accounts_unchanged": true,
+  "save_restores": [
+    {
+      "name": "WS-Rest-20261024-AD",
+      "checkpoint": 526,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "plugins": null
+    },
+    {
+      "name": "WS-Rest-20261024-AF",
+      "checkpoint": 530,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "plugins": [
+        {
+          "name": "WhiterunSociety.esp",
+          "sha256": "71c44f1358068d49546b4d5eb6c3ea4bd65ad4b8a13f46e6f437efd58c7e86ae"
+        },
+        {
+          "name": "WhiterunAgents.esp",
+          "sha256": "3b7bd304a87cb9d37a801869b83ca1abb81878f76053bb685cfc624b95e3fbbc"
+        },
+        {
+          "name": "WhiterunRouter.esp",
+          "sha256": "c4fee9f7bf1258759fa9870fe779e9284e8ab36ff2f80f8cc30ce1b48f745761"
+        },
+        {
+          "name": "WhiterunRest.esp",
+          "sha256": "062da410c6270bfdc00774e7648ca62ceb93b1086e03da287561926fe4726223"
+        }
+      ]
+    }
+  ],
+  "retained_failures": [
+    {
+      "save": "WS-Rest-20261024-AC",
+      "reason": "Snapshot changed while saving; detailed diagnostic not captured"
+    },
+    {
+      "save": "WS-Rest-20261024-AE",
+      "reason": "Society changed while saving",
+      "differences": [
+        "inventory"
+      ],
+      "accounting_balances_unchanged": true,
+      "loaded_actor_removed": 225390
+    }
+  ],
+  "other_resident_review": {
+    "actor": 108156,
+    "outcome": "deferred",
+    "calls": 1,
+    "decision": {
+      "action_id": "defer",
+      "emotion": "unspecified",
+      "reason": "Selected action: Postpone this errand; no travel or purchase."
+    },
+    "rest_completed": false
+  },
+  "limits": [
+    "Earlier cold-launch hang unexplained; rest remains explicit experimental opt-in",
+    "No overnight sleep or fatigue validation",
+    "Unloaded employer prevented a qualified follow-on production opportunity",
+    "No food replenishment or wage is claimed by this rest trial"
+  ]
+}

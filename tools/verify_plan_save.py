@@ -13,7 +13,25 @@ import time
 import urllib.request
 
 
-def snapshot(state):
+def plugin_manifest(root):
+    """Keep load order and our generated records bound to a managed save."""
+    profile=root/'mod-organizer/profiles/Default/plugins.txt'
+    if not profile.is_file():raise ValueError('Managed plugin list is unavailable')
+    result=[]
+    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp'}
+    for line in profile.read_text(encoding='utf-8-sig').splitlines():
+        if not line.startswith('*'):continue
+        name=line[1:]
+        if '/' in name or '\\' in name or not name.lower().endswith(('.esm','.esp','.esl')):
+            raise ValueError('Invalid enabled plugin name')
+        record={'name':name}
+        if name.lower() in owned:
+            record['sha256']=hashlib.sha256((root/'game/Data'/name).read_bytes()).hexdigest()
+        result.append(record)
+    return result
+
+
+def snapshot(state, inventory_ids=None):
     result={'checkpoint': state['society']['checkpoint'],
             'plan': state['society']['plan'], 'people': state['society']['people'],
             'world': state['world'],
@@ -30,6 +48,11 @@ def snapshot(state):
     if 'inventory_observations' in state['bridge']['observation']:
         result['asset_inventory']={str(a['id']):a['inventory'] for a in state['bridge']['observation']['inventory_observations']
             if str(a['id']) in state['society']['people']}
+    if inventory_ids is not None:
+        # Compare the same accounts after unloading, using fresh native reads.
+        # Never fill a missing observation from the expected saved balances.
+        observed={**result.get('asset_inventory',{}),**result['inventory']}
+        result['inventory']={key:observed[key] for key in inventory_ids if key in observed}
     return result
 
 
@@ -75,13 +98,15 @@ def main():
     before = wait(lambda s: True,allow_uninitialized=args.restore)
     if args.restore:
         evidence = json.loads(evidence_path.read_text())
+        if 'plugins' in evidence and plugin_manifest(args.root)!=evidence['plugins']:
+            raise ValueError('Enabled plugin order or generated plugin bytes differ from the recorded save')
         for file in files:
             if hashlib.sha256(file.read_bytes()).hexdigest() != evidence['files'][file.name]['sha256']:
                 raise ValueError('Recorded save changed; refusing ambiguous restore')
         request('/command', {'kind': 'load_game', 'name': args.name})
         restored = wait(lambda s: s['bridge']['session'] != before['bridge']['session']
                         and s['society']['checkpoint'] == evidence['expected']['checkpoint'])
-        actual = snapshot(restored)
+        actual = snapshot(restored,evidence['expected']['inventory'])
         comparison = {key: actual[key] == value for key, value in evidence['expected'].items()}
         evidence.setdefault('restores', []).append({'at': time.time(),
             'fresh_session': True, 'matches': comparison, 'actual': actual})
@@ -94,11 +119,14 @@ def main():
     if evidence_path.exists() or any(file.exists() for file in files):
         raise ValueError('Refusing to overwrite an existing save or proof')
     plan = before['society']['plan']
+    conversation=before['society'].get('conversation')
+    if conversation and conversation['phase'] not in ('complete','held'):
+        raise ValueError('This probe records settled conversations only')
     if before['society'].get('resource_delivery'):
         raise ValueError('Record a settled resource delivery, not a partial grant')
     if plan and (plan['phase'] not in ('complete', 'held') or plan.get('release_required')):
         raise ValueError('This probe records settled plans only; active-plan recovery needs separate qualification')
-    expected = snapshot(before)
+    expected = snapshot(before);plugins=plugin_manifest(args.root)
     request('/command', {'kind': 'save_game', 'name': args.name})
     wait(lambda s: all(file.exists() and file.stat().st_size > 100 for file in files))
     # Ensure both files have finished writing, not merely appeared.
@@ -106,10 +134,17 @@ def main():
     time.sleep(1)
     if sizes != [file.stat().st_size for file in files]:
         raise ValueError('Save files are still changing; evidence not recorded')
-    if snapshot(wait(lambda s: True)) != expected:
+    observed_after_save=snapshot(wait(lambda s: True),expected['inventory'])
+    if plugin_manifest(args.root)!=plugins:
+        raise ValueError('Enabled plugin configuration changed while saving; evidence not recorded')
+    if observed_after_save != expected:
+        failure={'name':args.name,'status':'rejected','reason':'Society changed while saving',
+            'differences':[key for key in expected if expected[key]!=observed_after_save[key]],
+            'expected':expected,'observed_after_save':observed_after_save}
+        (runtime/(args.name+'-save-rejected.json')).write_text(json.dumps(failure,indent=2),encoding='utf-8')
         raise ValueError('Society changed while saving; evidence not recorded')
     evidence = {'name': args.name, 'scope': 'Settled plan, people, inventory and journal; not long-term stability',
-        'expected': expected, 'recorded_at': time.time(), 'files': {
+        'expected': expected, 'plugins':plugins, 'recorded_at': time.time(), 'files': {
             file.name: {'bytes': file.stat().st_size, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest()}
             for file in files}}
     evidence_path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')

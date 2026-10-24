@@ -22,9 +22,11 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Latest employment experiment:** the planner now supports eligible workers beyond Ysolda, business stock reviews, bilateral job consent and save-bound contracts. Live trials completed 25 further meals, a stock review and two employer refusals across 28 decisions. Carlotta retained her reserve policy and did not hire; no new worker's completed shift is claimed. The final state restored correctly. [Employment, economic bottlenecks and evidence](docs/resident-employment.md).
 
-**Live observer:** select any initialized resident, inspect needs, personality, memories and existing relationships, and control Skyrim's camera with follow, zoom, orbit and pan. Browser controls were exercised against the game; a tour-control conflict was found and fixed. The seated-rest plugin remains excluded after a failed cold launch. [Control room, screenshot and exact limits](docs/live-observer.md).
+**Live observer:** select any initialized resident, inspect needs, personality, memories and existing relationships, and control Skyrim's camera with follow, zoom, orbit and pan. Browser controls were exercised against the game; a tour-control conflict was found and fixed. The earlier rest-launch failure is retained; a later explicitly enabled trial now verifies seated recovery. [Control room, screenshot and exact limits](docs/live-observer.md).
 
 **Resident-chosen social encounters:** Amren chose Saffir; Adrianne chose Idolaf. Both pairs approached under owned tasks, accepted, completed generated voiced exchanges and separately appraised what they heard. Amren and Saffir felt supported; Adrianne and Idolaf stayed neutral. Both settled saves restored correctly. [Social decisions, actual game screenshot, costs and limits](docs/resident-social.md).
+
+**Rest milestone:** Idolaf chose a bench, walked there, completed 30 observed game minutes seated and recovered simulated fatigue only after verified release. Save/load preserved the result. The plugin remains experimental; a successful retry does not explain the earlier hang. [Native rest, save diagnostics and limits](docs/seated-rest.md).
 
 ## Run the tests
 

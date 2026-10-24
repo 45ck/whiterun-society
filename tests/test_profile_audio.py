@@ -30,3 +30,8 @@ class ProfileAudioTests(unittest.TestCase):
                 self.assertEqual(json.loads((root/'runtime/audio-mode.json').read_text())['disabled'],diagnostic)
                 self.assertEqual((game/'Skyrim_Default.ini').read_text(),source)
                 self.assertEqual((profile/'plugins.txt').read_text().splitlines(),existing+['*WhiterunRouter.esp'])
+            (game/'Data/WhiterunRest.esp').write_bytes(b'fixture')
+            subprocess.run([sys.executable,str(script),'--root',str(root),'--experimental-rest'],check=True,capture_output=True)
+            self.assertIn('*WhiterunRest.esp',(profile/'plugins.txt').read_text().splitlines())
+            subprocess.run([sys.executable,str(script),'--root',str(root)],check=True,capture_output=True)
+            self.assertEqual((profile/'plugins.txt').read_text().splitlines(),existing+['*WhiterunRouter.esp','WhiterunRest.esp'])

@@ -24,6 +24,18 @@ class RestTests(unittest.TestCase):
         self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync();self.decide('rest_at_bench',event['id'])
         self.command=self.world.pending(self.obs['session']);return event
 
+    def test_unavailable_food_does_not_block_an_available_rest_decision(self):
+        self.world.active['people']['99']['needs']['hunger']=.9
+        self.actor['inventory'].update(bread=0,gold=0)
+        self.obs['residents']=[r for r in self.obs['residents'] if r['id']!=108149]
+        self.review()
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
+        self.assertIn('Food is unavailable',event['reason'])
+        self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
+        options={o['id'] for o in self.world._plan_context(self.obs,self.world.agency_plan())['options']}
+        self.assertIn('rest_at_bench',options);self.assertNotIn('eat_bread',options);self.assertNotIn('seek_bread',options)
+        self.assertEqual(self.world.active['people']['99']['needs']['hunger'],.9)
+
     def ack(self,**changes):
         rest={'actor':99,'target':0x8f15b,'rested_minutes':30,'seated_samples':100,'release_verified':True,'exact_furniture_verified':True}
         rest.update(changes);self.obs['ack']={'id':self.command['id'],'status':'applied','rest':rest}

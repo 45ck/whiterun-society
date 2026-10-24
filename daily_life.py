@@ -85,13 +85,16 @@ class DailyLife:
             if person['needs']['hunger'] >= .6:
                 can_eat = inventory['bread'] > 0
                 can_seek = route_available(observation,int(key),108149) and inventory['gold'] >= 3
-                if not can_eat and not can_seek:
+                can_rest = person['needs']['fatigue']>=.8 and bool(rest_opportunities(state,observation,int(key)))
+                can_work = bool(work_opportunities(state,observation,int(key)))
+                if not any((can_eat,can_seek,can_rest,can_work)):
                     agency.update(state='unmet_food_need', reason='No carried bread or qualified affordable seller route')
                     continue
                 event = {'id': f"daily-{daily['sequence']}-{key}", 'actor': int(key),
                     'kind': 'need_review', 'status': 'pending', 'created_day': day,
                     'priority': person['needs']['hunger'],
-                    'reason': 'Simulated hunger crossed the meal-review threshold',
+                    'reason': ('Simulated hunger crossed the meal-review threshold' if can_eat or can_seek else
+                               'Food is unavailable; consider an available break or livelihood without claiming hunger relief'),
                     'observed_inventory': copy.deepcopy(inventory)}
                 daily['queue'].append(event)
                 added.append(event['id'])

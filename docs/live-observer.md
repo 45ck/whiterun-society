@@ -28,7 +28,7 @@ Local verification: 124 Python tests and 78 JavaScript tests passed. Changed bri
 
 Code now supports a bounded 30-game-minute bench break: a resident chooses rest; an owned SitTarget package targets an allowlisted unowned bench; exact furniture reference, native sitting state, proximity, package ownership and continuous game time must agree. Recovery is applied only after verified release. Occupancy, combat, interrupted attendance, unavailable sensors and clock jumps hold the event without recovery. The recovery amount is an authored gameplay rule.
 
-The original `WhiterunRest.esp` builder passed binary readback, and deterministic bridge/backend tests passed. Its first cold launch hung during loading. The new plugin was removed from the active lab profile; the previous plugin set then loaded successfully. This correlation does not establish the hang's root cause. Rest is **not accepted in-game**, and the experimental plugin is not part of the current playable configuration. No seated recovery is claimed.
+The original `WhiterunRest.esp` builder passed binary readback, and deterministic bridge/backend tests passed. Its first cold launch hung during loading. The new plugin was removed from the active lab profile; the previous plugin set then loaded successfully. This correlation does not establish the hang's root cause. At that point, rest was **not accepted in-game** and was excluded. A later [explicitly enabled seated-rest trial](seated-rest.md) loaded the same package, verified Idolaf’s attendance and recovery, and restored the result. The original failed launch remains unexplained; this is still experimental.
 
 ## Scope remaining
 

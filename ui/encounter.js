@@ -37,12 +37,20 @@ window.drawEncounter=()=>{
  document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
+ const rest=state?.rest?.activity;
+ if(rest?.actor===displayResident&&rest.id==='rest-'+state?.society?.plan?.id){
+  text('notice',rest.phase==='applied'?'Seated break verified':'Resident-chosen rest · '+rest.phase.replaceAll('_',' '));
+  inspectorText(panel,'Seated break · '+rest.phase.replaceAll('_',' '),'label');
+  inspectorText(panel,Number(rest.rested_minutes||0).toFixed(1)+' / 30 game minutes observed');
+  const progress=document.createElement('progress');progress.max=30;progress.value=rest.rested_minutes||0;progress.style.width='100%';panel.append(progress);
+  inspectorText(panel,rest.phase==='applied'?'Attendance and release verified.':'Recovery waits for completed attendance and release.');
+ }
  inspectorText(panel,person.profile.role);const hunger=inspectorText(panel,'Simulated hunger · '+Math.round(person.needs.hunger*100)+'%');hunger.style.marginTop='12px';
  const hungerBar=document.createElement('progress');hungerBar.max=1;hungerBar.value=person.needs.hunger;hungerBar.style.width='100%';panel.append(hungerBar);
  const traits=inspectorText(panel,'Authored Big Five traits','label');traits.style.marginTop='14px';
  for(const [name,value] of Object.entries(person.profile.big_five)){const row=document.createElement('div');row.className='trait-row';const label=document.createElement('span');label.textContent=name;const bar=document.createElement('meter');bar.min=0;bar.max=1;bar.value=value;row.append(label,bar);panel.append(row);}
  let current=c?.current?.speaker===displayResident?c.current:[...(c?.turns||[])].reverse().find(t=>t.speaker===displayResident);
- if(current?.selected){const title=inspectorText(panel,'Character intention · generated','label');title.style.marginTop='14px';inspectorText(panel,current.selected.intention);inspectorText(panel,'Tone: '+current.selected.tone);}
+ if(current?.selected){const title=inspectorText(panel,c&&!['complete','held'].includes(c.phase)?'Current speech intention · generated':'Previous speech intention · generated','label');title.style.marginTop='14px';inspectorText(panel,current.selected.intention);inspectorText(panel,'Tone: '+current.selected.tone);}
  const memories=inspectorText(panel,'Recent memories','label');memories.style.marginTop='14px';
  for(const m of person.memories.slice(-2)){const item=inspectorText(panel,m.quote?'“'+m.quote+'”':m.kind.replaceAll('_',' '));item.style.marginTop='9px';if(m.quote)inspectorText(panel,'Remembered claim · truth unverified');}
  for(const [need,value] of Object.entries(person.needs)){if(need==='hunger')continue;inspectorText(panel,need.replaceAll('_',' ')+' · '+Math.round(value*100)+'%');const bar=document.createElement('progress');bar.max=1;bar.value=value;bar.style.width='100%';panel.append(bar);}

@@ -35,6 +35,7 @@ def main():
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--timeout',type=int,default=180)
     parser.add_argument('--audio-diagnostic',action='store_true')
+    parser.add_argument('--experimental-rest',action='store_true',help='Enable the experimental rest plugin for an isolated cold-launch trial')
     parser.add_argument('--save',help='Restore this existing managed WS- save and verify its recorded proof')
     args=parser.parse_args()
     if os.name!='nt': raise RuntimeError('The observer launcher currently requires Windows')
@@ -82,7 +83,7 @@ def main():
     if not existing:
         subprocess.run([sys.executable,str(SOURCE/'tools'/'build_plugin.py'),'--output',str(game/'Data'/'WhiterunSociety.esp')],check=True)
         subprocess.run([sys.executable,str(SOURCE/'tools'/'patch_overlay_save.py'),'--root',str(root)],check=True)
-        subprocess.run([sys.executable,str(SOURCE/'tools'/'configure_profile.py'),'--root',str(root),*(['--audio-diagnostic'] if args.audio_diagnostic else [])],check=True)
+        subprocess.run([sys.executable,str(SOURCE/'tools'/'configure_profile.py'),'--root',str(root),*(['--audio-diagnostic'] if args.audio_diagnostic else []),*(['--experimental-rest'] if args.experimental_rest else [])],check=True)
     elif args.audio_diagnostic and not (runtime/'audio-mode.json').exists():
         raise RuntimeError('Audio diagnostics need a new lab process, not a hot reload')
     mode=json.loads((runtime/'audio-mode.json').read_text()) if (runtime/'audio-mode.json').exists() else {'disabled':False}
