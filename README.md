@@ -28,6 +28,8 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Rest milestone:** Idolaf chose a bench, walked there, completed 30 observed game minutes seated and recovered simulated fatigue only after verified release. Save/load preserved the result. The plugin remains experimental; a successful retry does not explain the earlier hang. [Native rest, save diagnostics and limits](docs/seated-rest.md).
 
+**Known destinations:** Idolaf chose to check the public market while Carlotta was unloaded, completed the native walk and remembered that no seller was nearby. All 29 native inventories stayed unchanged, and the result survived saving and loading. The observer now displays public destinations and travel intentions. [Evidence and limits](docs/known-destinations.md).
+
 ## Run the tests
 
 Python 3.12+, no third-party Python dependencies:

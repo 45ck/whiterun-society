@@ -21,15 +21,17 @@ function createPapyrusRouterController(platform,now=Date.now,options={}){
   observeRelease(owned){if(active){active.phase=owned?'held':'released';active.ownedPackage=owned;}},
   step(command){
    const r=records(),sp=r.sp;
-   const actor=sp.Actor.from(sp.Game.getFormEx(command.actor)),target=options.furniture?sp.ObjectReference?.from(sp.Game.getFormEx(command.target)):sp.Actor.from(sp.Game.getFormEx(command.target));
+   const place=command.target_kind==='place';
+   const actor=sp.Actor.from(sp.Game.getFormEx(command.actor)),target=options.furniture||place?sp.ObjectReference?.from(sp.Game.getFormEx(command.target)):sp.Actor.from(sp.Game.getFormEx(command.target));
    const fail=error=>{this.release();if(active){active.phase='held';active.error=error;}
     return {done:true,ack:{id:command.id,status:'held',error,movement:this.status()}};};
    if(!r.quest||!r.pkg||!r.resident||!r.destination||!r.request||!r.ack||!r.status)return fail('Papyrus router plugin unavailable');
-   if(!actor||!target||!actor.is3DLoaded()||!target.is3DLoaded()||actor.isDead()||actor.isChild()||actor===target||command.actor===command.target)
+   const placeValid=place&&options.placeObserver?.validTarget(actor,target)===true;
+   if(!actor||!target||!actor.is3DLoaded()||(place?!placeValid:!target.is3DLoaded())||actor.isDead()||actor.isChild()||actor===target||command.actor===command.target)
     return fail('Loaded adult resident and distinct destination required');
    if(!active||active.id!==command.id){
     active={id:command.id,actor:command.actor,target:command.target,origin:command.origin||'test',method:'package',dynamic:true,
-     adapter:'papyrus-mailbox',phase:'resetting',at:now(),startDistance:gap(actor,target),distance:gap(actor,target),
+     adapter:'papyrus-mailbox',target_kind:place?'place':'resident',phase:'resetting',at:now(),startDistance:gap(actor,target),distance:gap(actor,target),
      expectedPackage:r.pkg.getFormID(),ownedPackage:false,hasOwnedPackage:false,aliasesConfirmed:false};
     this.release();return {done:false};
    }

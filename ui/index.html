@@ -69,6 +69,7 @@ setInterval(()=>{const c=state?.society?.conversation;if(tour&&!routeActive()&&(
 function text(id,value){document.getElementById(id).textContent=value;}
 function draw(){if(!state)return;const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
  for(const [id,p] of Object.entries(state.society?.people||{}))names[id]=p.profile.name;
+ for(const place of state.places||[])names[place.id]=place.name;
  const route=state.movement;
  if(tour&&routeActive()){camera='focus';focusId=route.actor;}
  document.getElementById('routine-panel').hidden=!route||route.phase==='released';

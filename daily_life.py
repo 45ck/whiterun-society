@@ -9,6 +9,7 @@ from routing import route_available
 from labour import work_opportunities
 from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from social import social_candidates
+from places import market_opportunity
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -57,7 +58,7 @@ class DailyLife:
             person['needs_clock'] = day
             actor = actors.get(key)
             agency = person['agency']
-            supported=bool(actor) and any(route_available(observation,int(key),int(other)) for other in actors if other!=key)
+            supported=bool(actor) and (any(route_available(observation,int(key),int(other)) for other in actors if other!=key) or bool(market_opportunity(state,observation,int(key))))
             resident['native_route_supported']=supported
             agency['native_route_supported']=supported
             if key in outstanding:
@@ -84,7 +85,7 @@ class DailyLife:
                 continue
             if person['needs']['hunger'] >= .6:
                 can_eat = inventory['bread'] > 0
-                can_seek = route_available(observation,int(key),108149) and inventory['gold'] >= 3
+                can_seek = (route_available(observation,int(key),108149) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 3
                 can_rest = person['needs']['fatigue']>=.8 and bool(rest_opportunities(state,observation,int(key)))
                 can_work = bool(work_opportunities(state,observation,int(key)))
                 if not any((can_eat,can_seek,can_rest,can_work)):

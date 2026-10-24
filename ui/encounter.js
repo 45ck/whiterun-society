@@ -37,6 +37,14 @@ window.drawEncounter=()=>{
  document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
+ const plan=state?.society?.plan;
+ if(plan?.actor===displayResident&&plan.destination){
+  text('notice',plan.phase==='travelling'?'Resident-chosen journey · '+plan.destination.name:'Market visit · '+(plan.outcome||plan.phase).replaceAll('_',' '));
+  inspectorText(panel,'Known destination · '+plan.destination.name,'label');
+  inspectorText(panel,'Plan · '+(plan.outcome||plan.phase).replaceAll('_',' '));
+  if(plan.phase==='travelling'&&state.movement?.actor===displayResident)inspectorText(panel,Math.round(state.movement.distance)+' units remaining · '+state.movement.phase);
+  if(plan.market_visit)inspectorText(panel,plan.market_visit.seller_nearby?'Seller observed nearby. Sale requires consent.':'Seller not observed nearby. No food or money changed.');
+ }
  const rest=state?.rest?.activity;
  if(rest?.actor===displayResident&&rest.id==='rest-'+state?.society?.plan?.id){
   text('notice',rest.phase==='applied'?'Seated break verified':'Resident-chosen rest · '+rest.phase.replaceAll('_',' '));

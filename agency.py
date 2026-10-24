@@ -13,6 +13,7 @@ from market_day import event_for
 from routing import route_available, dynamic_route
 from labour import work_opportunities, settle_contract
 from rest import rest_opportunities
+from places import MARKET, market_opportunity, at_market
 
 TERMINAL = ('complete', 'held')
 
@@ -151,6 +152,8 @@ class Agency:
                 options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
             if route_available(observation,actor,108149) and inventory['gold'] >= 3 and inventory['bread'] == 0:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
+            elif inventory['gold'] >= 3 and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
+                options.append({'id':'check_market','effect':'Walk to the known public market to look for Carlotta. Her presence and stock are unknown. If she is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review' and work_opportunities(self.active, observation, actor):
                 options.append({'id':'seek_work','effect':'Ask the food enterprise about a 30-game-minute bread-making shift paying 2 gold. The employer must offer and you must accept before travel or work. No wage is guaranteed.'})
             if plan['kind']=='need_review' and person['needs'].get('fatigue',0)>=.6 and rest_opportunities(self.active,observation,actor):
@@ -207,7 +210,12 @@ class Agency:
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action == 'rest_at_bench':
+        if action == 'check_market':
+            site=market_opportunity(self.active,observation,updated['actor'])
+            if not site:raise ValueError('The known public destination is no longer executable')
+            updated.update(phase='travelling',target=MARKET,target_kind='place',destination=site,
+                intent=action,travel_id='travel-'+event_id,dynamic_route=True,release_required=True)
+        elif action == 'rest_at_bench':
             sites=rest_opportunities(self.active,observation,updated['actor'])
             if not sites:raise ValueError('No available rest site remains')
             updated.update(phase='ready_to_rest',rest_target=sites[0]['id'])
@@ -302,6 +310,12 @@ class Agency:
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
                     'other':other,'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
                 person['memories']=person['memories'][-32:]
+            elif plan.get('outcome')=='market_seller_not_observed':
+                person=state['people'][str(plan['actor'])]
+                person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
+                    'place':MARKET,'other':108149,'day':observation.get('gameDays'),
+                    'source':'Owned arrival; seller not observed within interaction range. This does not prove the business is closed.'})
+                person['memories']=person['memories'][-32:]
             elif plan.get('outcome')=='allocated_stock':
                 person=state['people'][str(plan['actor'])]
                 person['memories'].append({'event_id':plan['id'],'kind':'allocated_food',
@@ -329,7 +343,7 @@ class Agency:
                 return
             movement = ack.get('movement') or {}
             try:
-                arrived = distance(observation, plan['actor'], plan['target']) <= 300
+                arrived = at_market(observation,plan['actor']) if plan.get('target_kind')=='place' else distance(observation, plan['actor'], plan['target']) <= 300
             except ValueError:
                 arrived = False
             state = copy.deepcopy(self.active)
@@ -337,11 +351,18 @@ class Agency:
             updated['travel'] = copy.deepcopy(ack)
             binding_ok=not plan.get('dynamic_route') or (movement.get('aliasesConfirmed') is True
                 and movement.get('adapter')=='papyrus-mailbox' and movement.get('actor')==plan['actor']
-                and movement.get('target')==plan['target'])
+                and movement.get('target')==plan['target']
+                and (plan.get('target_kind')!='place' or movement.get('target_kind')=='place'))
             if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived and binding_ok:
-                updated['phase'] = {'seek_bread':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')
-                if updated['phase'] == 'complete':
-                    updated['outcome'] = 'visited_only'
+                if plan['intent']=='check_market':
+                    try:nearby=at_market(observation,108149) and distance(observation,plan['actor'],108149)<=300
+                    except ValueError:nearby=False
+                    updated['market_visit']={'place':MARKET,'seller_nearby':nearby,'day':observation.get('gameDays')}
+                    if nearby:updated.update(phase='consent',target=108149,target_kind='resident')
+                    else:updated.update(phase='complete',outcome='market_seller_not_observed')
+                else:
+                    updated['phase'] = {'seek_bread':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')
+                    if updated['phase'] == 'complete':updated['outcome'] = 'visited_only'
             else:
                 updated.update(phase='held', error='Travel did not establish owned arrival')
             self._write(state, 'resident travel outcome observed')
@@ -379,4 +400,5 @@ class Agency:
         return {'id': plan['travel_id'], 'kind': 'walk_to', 'actor': plan['actor'], 'target': plan['target'],
                 'method': 'package', 'origin': 'resident_decision', 'plan_id': plan['id'], 'retain': True,
                 'dynamic':plan.get('dynamic_route',False),
+                'target_kind':plan.get('target_kind','resident'),
                 'session': session, 'checkpoint': self.marker}

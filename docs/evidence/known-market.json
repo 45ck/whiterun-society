@@ -1,0 +1,405 @@
+{
+  "event_id": "daily-16-108169",
+  "actor": 108169,
+  "model_calls": 1,
+  "model": "typesafe/jev-1.14-20261014",
+  "inference_seconds": 0.765,
+  "usage": {
+    "cost": 8.9712e-05,
+    "input_tokens": 2136,
+    "output_tokens": 54
+  },
+  "start_to_complete_stage_seconds": 73.25132441520691,
+  "chosen_action": {
+    "action_id": "check_market",
+    "emotion": "unspecified",
+    "reason": "Selected action: Walk to the known public market to look for Carlotta. Her presence and stock are unknown. If she is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed."
+  },
+  "offered_options": [
+    {
+      "effect": "Postpone this errand; no travel or purchase.",
+      "id": "defer"
+    },
+    {
+      "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+      "id": "visit_adrianne"
+    },
+    {
+      "effect": "Walk to the known public market to look for Carlotta. Her presence and stock are unknown. If she is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.",
+      "id": "check_market"
+    },
+    {
+      "effect": "Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.",
+      "id": "rest_at_bench"
+    }
+  ],
+  "destination": {
+    "id": 179739,
+    "knowledge": "Authored starting knowledge of a public market; seller presence, stock and opening hours are unknown.",
+    "name": "Whiterun market"
+  },
+  "travel_receipt": {
+    "id": "travel-daily-16-108169",
+    "movement": {
+      "actor": 108169,
+      "adapter": "papyrus-mailbox",
+      "aliasesConfirmed": true,
+      "at": 1792832043782,
+      "distance": 249.58757341347697,
+      "dynamic": true,
+      "enginePackage": 117442561,
+      "expectedPackage": 117442561,
+      "hasOwnedPackage": true,
+      "id": "travel-daily-16-108169",
+      "mailboxAt": 1792832043797,
+      "method": "package",
+      "origin": "resident_decision",
+      "ownedPackage": true,
+      "phase": "arrived",
+      "serial": 6,
+      "startAt": 1792832043813,
+      "startComplete": true,
+      "startDistance": 4171.930529104281,
+      "startResult": true,
+      "target": 179739,
+      "target_kind": "place"
+    },
+    "status": "applied"
+  },
+  "visit": {
+    "day": 2.2395944595336914,
+    "place": 179739,
+    "seller_nearby": false
+  },
+  "outcome": "market_seller_not_observed",
+  "release_required": false,
+  "remembered": true,
+  "native_account_count": 29,
+  "all_native_accounts_unchanged": true,
+  "native_inventory_before": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "native_inventory_after": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "hunger_before": 0.922521,
+  "hunger_after": 0.922521,
+  "save": {
+    "name": "WS-Market-20261024-AG",
+    "checkpoint": 537,
+    "restores": [
+      {
+        "fresh_session": true,
+        "matches": {
+          "checkpoint": true,
+          "plan": true,
+          "people": true,
+          "world": true,
+          "consumptions": true,
+          "production": true,
+          "rests": true,
+          "imports": true,
+          "market_day": true,
+          "conversation": true,
+          "town": true,
+          "inventory": true,
+          "asset_inventory": true
+        }
+      }
+    ]
+  },
+  "limits": [
+    "Developer selected a pending resident event; Jev selected the action.",
+    "One exterior public destination; interior navigation not qualified.",
+    "Seller absent on this run: no negotiation, purchase, production or wage.",
+    "One active native routine at a time."
+  ]
+}

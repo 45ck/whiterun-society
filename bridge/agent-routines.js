@@ -2,7 +2,9 @@
 // survive updates; every native handle is reacquired before use.
 function createAgentRoutineController(platform,now=Date.now){
  const makeRouter=typeof createPapyrusRouterController==='function'?createPapyrusRouterController:require('./papyrus-router.js').createPapyrusRouterController;
- const router=makeRouter(platform,now);
+ const makePlaces=typeof createPlaceObserver==='function'?createPlaceObserver:require('./places.js').createPlaceObserver;
+ const places=makePlaces(platform);
+ const router=makeRouter(platform,now,{placeObserver:places});
  let useRouter=false;
  let active=null,releaseStarted=null;
  const residents=[108186,108149,108156],routes=[];
@@ -10,7 +12,8 @@ function createAgentRoutineController(platform,now=Date.now){
  const gap=(a,b)=>Math.hypot(a.getPositionX()-b.getPositionX(),a.getPositionY()-b.getPositionY(),a.getPositionZ()-b.getPositionZ());
  return {
   reset(){active=null;releaseStarted=null;router.reset();useRouter=false;},
-  capabilities(){return {adapter:'papyrus-mailbox-v1',available:router.available()};},
+  capabilities(){return {adapter:'papyrus-mailbox-v1',available:router.available(),places:true};},
+  places(residents){return places.sense(residents);},
   release(){
    const sp=platform();
    if(!sp.Quest)return;

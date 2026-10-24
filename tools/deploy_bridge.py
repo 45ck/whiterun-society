@@ -26,6 +26,7 @@ movement=(Path(__file__).resolve().parents[1]/'bridge'/'movement.js').read_text(
 source=source.replace('__MOVEMENT_FACTORY__',movement)
 router=(Path(__file__).resolve().parents[1]/'bridge'/'papyrus-router.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__PAPYRUS_ROUTER_FACTORY__',router)
+source=source.replace('__PLACE_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'places.js').read_text().split('\nif(typeof module')[0])
 rest=(Path(__file__).resolve().parents[1]/'bridge'/'rest.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__REST_FACTORY__',rest)
 routines=(Path(__file__).resolve().parents[1]/'bridge'/'agent-routines.js').read_text().split('\nif(typeof module')[0]

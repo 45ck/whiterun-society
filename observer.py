@@ -40,7 +40,7 @@ def observer_state(bridge,society):
     return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'residents':residents,'businesses':list(town.get('businesses',{}).values()),
+        'residents':residents,'places':obs.get('places',[]),'businesses':list(town.get('businesses',{}).values()),
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'movement':obs.get('movement'),'work':obs.get('productionWork'),'rest':(obs.get('rest') or {}).get('activity'),
         'rests':society.get('rests',[])[-10:],'consumptions':society.get('consumptions',[])[-10:],

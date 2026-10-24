@@ -12,6 +12,7 @@ const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __PAPYRUS_ROUTER_FACTORY__
+__PLACE_FACTORY__
 __REST_FACTORY__
 const rest=createRestController(()=>sp);
 __ROUTINE_FACTORY__
@@ -383,7 +384,7 @@ on('update', () => {
   const observation = {
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };
