@@ -11,21 +11,28 @@ let busy = false;
 let lastSent = 0;
 let announced = false;
 const completed = new Set();
+// Hot reload must replace subscriptions instead of adding a second controller.
+const registrationKey = 'whiterunSocietyHandlers';
+const previous = sp.storage[registrationKey];
+if (Array.isArray(previous)) previous.forEach(handle => sp.unsubscribe(handle));
+const registrations = [];
+sp.storage[registrationKey] = registrations;
+function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
   session = Date.now() + '-' + Math.random();
   selected = 0; pending = null; ack = null; completed.clear(); announced = false;
 }
-sp.on('preLoadGame', reset);
-sp.on('newGame', reset);
-sp.on('activate', event => {
+on('preLoadGame', reset);
+on('newGame', reset);
+on('activate', event => {
   if (event.caster && event.caster.getFormID() === 0x14 && event.target) {
     const actor = sp.Actor.from(event.target);
     if (actor) selected = actor.getFormID();
   }
 });
-sp.once('tick', () => sp.printConsole('[Whiterun Society] custom bridge loaded'));
-sp.on('update', () => {
+registrations.push(sp.once('tick', () => sp.printConsole('[Whiterun Society] custom bridge loaded')));
+on('update', () => {
   const player = sp.Game.getPlayer();
   if (!player) return;
   if (!announced) {
