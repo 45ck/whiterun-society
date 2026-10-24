@@ -4,7 +4,30 @@ Ordinary dialogue should use the least expensive model that meets the scene's qu
 
 The current runtime configuration remains GPT-4.1 mini. Smaller candidates were tested without changing the game or its model configuration. A future escalation policy for difficult planning or social negotiation is a design target, not an implemented automatic router.
 
-## External shortlist
+## Latest shortlist: August–October 2026 releases
+
+Researched on 25 October 2026 using [Artificial Analysis releases](https://artificialanalysis.ai/models/releases) and the live OpenRouter catalog. GPT-4.1 mini is the existing baseline, not the recommended destination. The earlier Ministral probe below is a narrow historical experiment, not a comparison of the latest models.
+
+Prices are USD per million input/output tokens from this [public catalog snapshot](evidence/model-catalog-20261025.json). They exclude caching and extra reasoning tokens; catalog listing timestamps are not release dates. All six cloud candidates advertise structured outputs, but none has yet passed our dialogue adapter and scene-grounding tests.
+
+| Candidate | OpenRouter input / output | Evidence and intended experiment |
+| --- | ---: | --- |
+| `ibm-granite/granite-4.2-8b` | $0.06 / $0.25 | Genuine 8B open-weight model, released August. [AA](https://artificialanalysis.ai/models/granite-4-2-8b/) reports about 92 output tokens/s and 0.71s TTFT on IBM's API. Its tested variant reasons: TTFT does not establish time to a usable answer. First compact API candidate to qualify with minimal thinking. |
+| `inception/mercury-2.5` | $0.04 / $0.15 | September diffusion model; parameter count not established here. [AA](https://artificialanalysis.ai/models/mercury-2-5) reports about 742 tokens/s and 3.59s TTFT. [OpenRouter](https://openrouter.ai/inception/mercury-2.5/) labels this pricing an 80% discount and reports different route performance. Attractive cloud-cost candidate, not demonstrated local SLM. |
+| `inception/mercury-3` | $0.10 / $0.35 | Newer catalog entry, listed October 16. Independent AA performance was not found in this research. Keep as an unqualified candidate, not an AA-confirmed winner. |
+| `anthropic/claude-haiku-5.5` | $0.10 / $0.50 | October release, undisclosed size. [AA's Low setting](https://artificialanalysis.ai/models/claude-haiku-5-5-low) reports about 176 tokens/s; its [release comparison](https://artificialanalysis.ai/models/releases/claude-haiku-5-5) reports about 6.6s to the first answer. Candidate for harder dialogue, not an automatic low-latency speech choice. |
+| `upstage/solar-mini4` | $0.05 / $0.20 | September release; [AA](https://artificialanalysis.ai/models/solar-mini4) reports about 95 tokens/s for a reasoning variant. Cheap API pricing alone does not qualify it for short conversational turns. |
+| `inclusionai/ling-3.1-flash` | $0.075 / $0.225 | October release; [AA comparison](https://artificialanalysis.ai/models/comparisons/ling-3-1-flash-vs-glm-5-3-flash) lists 560B total / 25B active parameters and about 11s to first answer. Cheap cloud inference, not a small local model. |
+
+The genuine tiny local shortlist is [K2 Horizon 3.7B](https://artificialanalysis.ai/models/k2-horizon-3-7b) and [MiniCPM5-2B](https://artificialanalysis.ai/models/minicpm5-2b), both September releases. AA lists 3.7B and 2.6B parameters respectively, with open weights. No OpenRouter route was found for either in this catalog snapshot, and no speed under this PC's Skyrim workload has been measured. K2's benchmarked variant reasons, so small size alone does not guarantee quick replies. Quantization, runtime support and GPU contention need qualification before installation becomes a default.
+
+Recommended next experiment: Granite 4.2 8B and Mercury 2.5 for cloud dialogue, then K2 Horizon 3.7B versus MiniCPM5-2B locally. Use matched short scenes, an explicit reasoning budget or supported thinking-off mode, and measure p50/p95 time to **validated usable line** and **audible speech**, grounding failures, repetition, JSON validity and actual billed cost. Check provider support before sending reasoning controls. Keep deterministic fallbacks when inference is late; never block the economy waiting for a sentence.
+
+For scale, an illustrative 1,000-input + 100-output-token utterance costs $0.000055 on Mercury 2.5, $0.000085 on Granite, or $0.00056 on the existing GPT-4.1 mini baseline. At 10,000 such utterances that is $0.55, $0.85 or $5.60 respectively, excluding reasoning, retries and TTS. These are arithmetic estimates, not measured production bills. Shortening and grounding context can matter as much as the model choice.
+
+AA measurements use its benchmark workloads and routes, not our game prompts. Search snapshots and live measurements fluctuate. Do not combine an OpenRouter discount with AA's first-party throughput and present it as one measured service. AA's general intelligence score also does not directly measure believable NPC conversation.
+
+## Earlier external shortlist
 
 Checked on 25 October 2026. Artificial Analysis measures intelligence, output speed and latency separately. Its [Ministral 3 3B report](https://artificialanalysis.ai/models/ministral-3-3b) lists approximately 207 output tokens/second; its [Mistral comparison](https://artificialanalysis.ai/models/creators/mistral) lists approximately 0.68 seconds to the first answer token. Those are external measurements, not this game's complete dialogue latency or a test of character consistency.
 
