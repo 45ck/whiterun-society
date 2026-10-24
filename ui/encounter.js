@@ -31,7 +31,7 @@ window.drawEncounter=()=>{
  const timing=document.getElementById('encounter-timing');
  if(c){const t=c.current||c.turns?.at(-1),language=t?.language?.elapsed_seconds,decision=t?.decision?.elapsed_seconds;
   timing.textContent=[language!==undefined?'Language '+language.toFixed(2)+'s':null,decision!==undefined?'Decision '+decision.toFixed(2)+'s':null,t?.audio?'Voice '+t.audio.seconds.toFixed(1)+'s':null].filter(Boolean).join(' · ');}
- if(state?.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' simultaneous journeys observed');
+ if(state?.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' peak simultaneous journeys observed');
  const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&camera==='focus'?focusId:null);
  const panel=document.getElementById('resident-inspector');panel.hidden=!displayResident;
  if(!displayResident)return;
@@ -40,7 +40,7 @@ window.drawEncounter=()=>{
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
- if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
+ if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
  if(plan?.actor===displayResident&&plan.destination){
   text('notice',plan.phase==='travelling'?'Resident-chosen journey · '+plan.destination.name:'Market visit · '+(plan.outcome||plan.phase).replaceAll('_',' '));

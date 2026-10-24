@@ -289,6 +289,8 @@ class Agency:
             raise ValueError('No active matching plan')
         state = copy.deepcopy(self.active)
         state['plans'][-1].update(phase='held', error=str(reason)[:240])
+        if not plan['decisions'] and not plan.get('travel') and not plan.get('release_required'):
+            state['plans'][-1].update(outcome='interrupted_before_action', effect_free_hold=True)
         return {'checkpoint': self._write(state, 'resident plan held for review')}
 
     def _agency_observe(self, observation):

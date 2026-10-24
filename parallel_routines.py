@@ -9,6 +9,7 @@ import re
 import secrets
 from decisions import validate_decision
 from places import MARKET, market_opportunity
+from routing import route_available
 
 
 def select_routine_events(state, observation, events, limit=8):
@@ -20,6 +21,9 @@ def select_routine_events(state, observation, events, limit=8):
         actor=event['actor'];native=actors.get(actor);person=state.get('people',{}).get(str(actor),{})
         if len(selected)>=limit:break
         if actor in seen or event['status']!='pending' or event['kind']!='need_review' or not native:continue
+        # Keep the richer negotiation/work/rest choices when the merchant can
+        # already be reached. A travel-only cohort must not erase those options.
+        if route_available(observation, actor, 108149):continue
         inventory=native.get('inventory',{})
         if (inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3
                 or person.get('needs',{}).get('hunger',0)<.6 or not market_opportunity(state,observation,actor)):continue

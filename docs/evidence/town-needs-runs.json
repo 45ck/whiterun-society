@@ -1,0 +1,171 @@
+{
+  "first_run": {
+    "status": "held",
+    "error": "Scheduled resident event did not finish cleanly",
+    "events": [
+      {
+        "id": "daily-17-108169",
+        "actor": 108169,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-108138",
+        "actor": 108138,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-108140",
+        "actor": 108140,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-108156",
+        "actor": 108156,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-108160",
+        "actor": 108160,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-108164",
+        "actor": 108164,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-18-182543",
+        "actor": 182543,
+        "status": "complete",
+        "outcome": "market_seller_not_observed",
+        "model_calls": 1,
+        "cohort": "daily-routes-074edea0e3cc22ba"
+      },
+      {
+        "id": "daily-9-108162",
+        "actor": 108162,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-9-108185",
+        "actor": 108185,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-9-108196",
+        "actor": 108196,
+        "status": "started"
+      }
+    ],
+    "save": {
+      "name": "WS-Town-20261024-AL",
+      "checkpoint": 561,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "routine_batch": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      }
+    }
+  },
+  "follow_up": {
+    "status": "complete",
+    "events": [
+      {
+        "id": "daily-10-108186",
+        "actor": 108186,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-108167",
+        "actor": 108167,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-108168",
+        "actor": 108168,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-108170",
+        "actor": 108170,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-108183",
+        "actor": 108183,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-108248",
+        "actor": 108248,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-225368",
+        "actor": 225368,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      },
+      {
+        "id": "daily-11-225386",
+        "actor": 225386,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "model_calls": 1
+      }
+    ],
+    "saved_before_pc_restart": false
+  },
+  "limits": [
+    "Nazeem disappeared before an accepted decision. The original director receipt remains started; the held plan was saved.",
+    "The follow-up eight meals completed in-game but were not saved before the PC restart. They are not present in the restored AL lineage.",
+    "No new completed production contract or replenishing supply chain in these two runs."
+  ]
+}

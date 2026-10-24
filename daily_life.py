@@ -61,6 +61,29 @@ class DailyLife:
             supported=bool(actor) and (any(route_available(observation,int(key),int(other)) for other in actors if other!=key) or bool(market_opportunity(state,observation,int(key))))
             resident['native_route_supported']=supported
             agency['native_route_supported']=supported
+            # An unaccepted invitation is not an obligation. Reassess it after
+            # aging needs, so old low-priority work cannot starve a resident's
+            # queue. Never interrupt a started event or manufacture acceptance.
+            pending = [e for e in daily['queue'] if str(e['actor']) == key and e['status'] == 'pending']
+            inventory = actor.get('inventory', {}) if actor else {}
+            urgent_food = person['needs']['hunger'] >= .6 and actor and (
+                type(inventory.get('bread')) is int and inventory['bread'] > 0 or
+                type(inventory.get('gold')) is int and inventory['gold'] >= 3 and (
+                    route_available(observation, int(key), 108149) or market_opportunity(state, observation, int(key))))
+            urgent_rest = person['needs']['fatigue'] >= .8 and actor and rest_opportunities(state, observation, int(key))
+            interrupted = False
+            for queued in pending:
+                if queued['kind'] == 'need_review':
+                    queued['priority'] = max(person['needs']['hunger'], person['needs']['fatigue'])
+                    queued['priority_reviewed_day'] = day
+                elif queued['kind'] in ('social_review', 'stock_review') and (urgent_food or urgent_rest):
+                    queued.update(status='superseded', settled_day=day,
+                        outcome='urgent_needs_review', reason_before_interruption=queued.get('reason'),
+                        interruption_reason='An executable personal need took priority before this activity started')
+                    interrupted = True
+            if interrupted and not any(str(e['actor']) == key and e['status'] in ('pending', 'started') for e in daily['queue']):
+                outstanding.discard(key)
+                agency['next_review_day'] = day
             if key in outstanding:
                 continue
             if day < agency['next_review_day']:

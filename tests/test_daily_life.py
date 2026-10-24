@@ -116,6 +116,53 @@ class DailyLifeTests(unittest.TestCase):
     def test_arbitrary_scheduled_event_cannot_bypass_queue(self):
         with self.assertRaisesRegex(ValueError,'matching pending'):self.world.begin_plan('invented',self.obs,99,'need_review')
 
+    def queued_social(self, status='pending'):
+        self.review()
+        self.world.active['town']['daily']['queue'].append({'id':'old-social', 'actor':99,
+            'kind':'social_review','status':status,'priority':.45,'created_day':self.obs['gameDays'],
+            'reason':'A previously available conversation'})
+        self.world.active['people']['99']['agency']['next_review_day']=self.obs['gameDays']+1
+
+    def test_urgent_food_supersedes_unaccepted_invitation_without_changing_inventory(self):
+        self.queued_social();stock=copy.deepcopy(self.obs['residents'])
+        self.review(4)
+        events=[e for e in self.world.active['town']['daily']['queue'] if e['actor']==99]
+        self.assertEqual([(e['kind'],e['status']) for e in events],
+                         [('social_review','superseded'),('need_review','pending')])
+        self.assertEqual(stock,self.obs['residents'])
+        self.assertEqual(self.world.active['people']['99']['memories'],[])
+        with self.assertRaises(ValueError):
+            self.world.start_conversation('old-social',self.obs,99)
+
+    def test_started_invitation_and_unexecutable_need_are_not_preempted(self):
+        self.queued_social('started');self.review(4)
+        self.assertEqual([e['status'] for e in self.world.active['town']['daily']['queue'] if e['actor']==99],['started'])
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['id']=='old-social')
+        event['status']='pending';self.obs['residents'][2]['inventory']['bread']=0
+        self.review(1)
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['id']=='old-social')
+        self.assertEqual(event['status'],'pending')
+
+    def test_pending_need_priority_tracks_current_needs_without_duplicate_event(self):
+        self.review(4)
+        old=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)['id']
+        self.review(4)
+        events=[e for e in self.world.active['town']['daily']['queue'] if e['actor']==99]
+        self.assertEqual(len(events),1);self.assertEqual(events[0]['id'],old)
+        self.assertGreaterEqual(events[0]['priority'],.84)
+
+    def test_interrupted_claim_is_certified_effect_free_but_retains_claim_audit(self):
+        self.review(4)
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
+        self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
+        claim=self.world.claim_plan_decision(event['id'],self.obs)['claim'];self.sync()
+        self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=99]
+        self.world.hold_plan(event['id'],'Participant left during inference',self.obs);self.sync()
+        self.assertTrue(self.world.agency_plan()['effect_free_hold'])
+        self.assertEqual(self.world.agency_plan()['claim']['id'],claim['id'])
+        self.assertEqual(self.world.agency_plan()['decisions'],[])
+        self.assertIsNone(self.world.pending(self.obs['session']))
+
     def test_scheduled_consumption_settles_queue_and_ages_only_post_meal_time(self):
         self.review(4)
         e=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)

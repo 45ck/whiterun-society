@@ -4,7 +4,50 @@ An experimental, open-source society simulation for Skyrim Special Edition: a ci
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The player can participate as a resident or influence policy. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
+
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
+
+## The whole simulation
+
+![Generated overview of the Whiterun society simulation and its planned expansion](docs/images/whole-simulation.png)
+
+*Generated system illustration, not a game screenshot. Each panel labels the current foundation; the bottom band describes future work.*
+
+## How one NPC works
+
+![Generated infographic showing the deterministic simulation, Jev, optional language and voice, and Skyrim execution](docs/images/npc-four-systems.png)
+
+**Our code maintains state and valid options → Jev chooses → Skyrim performs the physical task → our code verifies the result and remembers it.** When conversation is appropriate, a language model proposes lines, Jev selects, and local Kokoro voices the chosen words. Walking, work attendance and quiet periods need no continuous model calls. Skyrim handles navigation and movement; choosing a destination does not mean asking a model to calculate every footstep.
+
+[Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
+
+## Examples from the running prototype
+
+### People talk and remember
+
+![Actual Skyrim capture of Adrianne and Idolaf during a generated voiced encounter](docs/images/resident-social-live.png)
+
+Adrianne chose Idolaf, approached, and completed a short generated exchange. Each formed a separate appraisal; both stayed neutral in this trial. The screenshot shows the delivered line and her inspector. She is partly hidden by a post, so camera framing still needs work. These are two-turn exchanges, not yet sustained natural conversations. [Social evidence](docs/resident-social.md)
+
+### Work creates goods and pays wages
+
+![Actual Skyrim capture of completed bread production and the wage transfer](docs/images/paid-work-complete.jpg)
+
+Carlotta offered work and Ysolda accepted. Thirty qualified game minutes converted one grain into two bread and transferred two gold from employer to worker. Native inventories and save/load were checked. This is an authored attendance recipe; an oven animation and sustainable upstream supply are unfinished. [Production evidence](docs/paid-work.md)
+
+### Watch separate lives across town
+
+![Actual connected observer with resident selection, camera controls and independent journey states](docs/images/seven-resident-observer.jpg)
+
+The browser control room selects residents and controls the game camera with follow, zoom, orbit and pan. A bounded director run reached **seven concurrently owned native journeys**, each with its own Jev choice, arrival and release. Some had already finished when this screenshot was captured; the current UI separates peak concurrency from the number travelling now. A failed market visit remains a failed visit, without invented food or hunger relief. [Latest receipts and limitations](docs/town-progress.md)
+
+**Current scope:** 29 initialized adults, 23 decision families across multiple stages, and one executable production recipe. Those families include policies and private appraisals, not 23 physical actions available at once. Whole-town autonomy, connected businesses, families, richer drama and political intervention remain the target. [What counts as meaningful variety](docs/system-guide.md#how-many-possibilities)
+
+## Development evidence history
+
+<details>
+<summary>Earlier milestones, experiments and retained limitations</summary>
 
 **Voiced encounters:** Ysolda and Carlotta discussed their bread disagreement using generated voices. A language model proposed intentions, Jev chose, and deterministic code delivered speech and recorded heard claims only after playback. Those memories reached Carlotta's next stock decision. The latest two-turn encounter took 47.098 seconds, including local synthesis and playback, with US$0.001638432 in reported model cost. Voices currently use the overlay audio channel; native audio is disabled for crash diagnosis. [Voiced encounters and evidence](docs/voiced-encounters.md) · [Finite market day](docs/market-day.md) · [Paid work](docs/paid-work.md) · [Human behaviour design](docs/human-behaviour.md).
 
@@ -30,7 +73,9 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Known destinations:** Idolaf chose to check the public market while Carlotta was unloaded, completed the native walk and remembered that no seller was nearby. All 29 native inventories stayed unchanged, and the result survived saving and loading. The observer now displays public destinations and travel intentions. [Evidence and limits](docs/known-destinations.md).
 
-**Concurrent journeys:** Amren and Adrianne independently chose the market and walked there simultaneously under separate native packages. Both arrivals and releases were verified, and their outcomes survived save/load. Eight slots are built; two are qualified live. [Architecture, evidence and bounded director](docs/parallel-routines.md).
+**Concurrent journeys:** the first trial verified Amren and Adrianne travelling together. A later bounded director run verified seven concurrent journeys, with all seven outcomes preserved after save/load. Eight slots are built; seven have now been qualified live. [Architecture and initial evidence](docs/parallel-routines.md) · [Seven-person follow-up](docs/town-progress.md).
+
+</details>
 
 ## Run the tests
 
@@ -46,10 +91,12 @@ The tests exercise conservation of currency and stock, insufficient resources, d
 
 ## Architecture
 
-1. A local simulation service holds balances, inventory, events and beliefs in SQLite.
-2. A Skyrim Platform plugin reports observed game state and performs bounded commands on the game thread.
-3. Event-triggered planners propose decisions. Validated economic rules decide whether they can happen.
-4. Separate language and decision adapters propose and select intentions; local Kokoro generates speech. A completed utterance becomes a source-tagged memory, not proof that its words are true.
+1. Skyrim owns native items and gold. A local service records observations, economic journals, needs, decisions and beliefs in save-linked SQLite checkpoints.
+2. A Skyrim Platform bridge and Papyrus packages report game state and perform bounded commands. Native navigation executes chosen destinations.
+3. Event-triggered reviews build feasible options. Jev chooses; deterministic rules validate both the decision and its observed consequences.
+4. The language adapter proposes dialogue alternatives; Jev selects and local Kokoro generates speech. Verified nearby playback becomes a source-tagged memory, not proof that the statement is true.
+
+See the [complete flow and data model](docs/system-guide.md) for authority boundaries, current action counts and the next acceptance targets.
 
 An unloaded citizen can participate in abstract simulation, but we must not claim they physically walked or spoke unless the game reports it. Pausing or closing the game should pause progression by default.
 

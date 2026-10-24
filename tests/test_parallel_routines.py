@@ -96,6 +96,7 @@ class ParallelRoutineTests(unittest.TestCase):
         self.assertFalse(plugins_compatible(old,[{'name':'Old.esp','sha256':'changed'},new[-1]],'WhiterunLanes.esp'))
 
     def test_director_selector_obeys_budget_eligibility_and_one_slot_per_resident(self):
+        self.obs['residents']=[r for r in self.obs['residents'] if r['id']!=108149]
         queue=self.world.active['town']['daily']['queue']
         self.assertEqual(len(select_routine_events(self.world.active,self.obs,queue)),2)
         self.assertEqual(select_routine_events(self.world.active,self.obs,queue,0),[])
@@ -105,3 +106,7 @@ class ParallelRoutineTests(unittest.TestCase):
         self.assertEqual(len(select_routine_events(self.world.active,self.obs,queue)),1)
         self.obs['parallel_routines']['available']=False
         self.assertEqual(select_routine_events(self.world.active,self.obs,queue),[])
+
+    def test_director_keeps_full_decision_menu_when_seller_is_reachable(self):
+        self.obs['routing'].update(adapter='papyrus-mailbox-v1')
+        self.assertEqual(select_routine_events(self.world.active,self.obs,self.world.active['town']['daily']['queue']),[])

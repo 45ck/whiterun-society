@@ -27,6 +27,21 @@ def event_available(state,event):
     return event['kind']!='social_review' or bool(social_candidates(society,observation,event['actor']))
 
 
+def isolated_before_action(state, event):
+    """A failed inference may finish without blocking unrelated residents.
+
+    The service must have certified no accepted decision or native effect.
+    Never infer this from a worker exit code, exception text or timeout.
+    """
+    society=state['society'];plan=society.get('plan') or {}
+    return (event['kind']!='social_review' and plan.get('id')==event['id']
+            and plan.get('phase')=='held' and plan.get('effect_free_hold') is True
+            and plan.get('remembered') is True and not plan.get('decisions')
+            and not plan.get('travel') and not plan.get('release_required')
+            and not society.get('error') and not society.get('transition')
+            and not state['bridge'].get('command'))
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',type=Path,required=True)
@@ -78,7 +93,8 @@ def main():
             loaded={a['id'] for a in state['bridge']['observation']['residents'] if a.get('isPerson') is True}
             queue=(state['society']['town'].get('daily') or {}).get('queue',[])
             pending=sorted((e for e in queue if e['status']=='pending' and e['actor'] in loaded
-                            and (e['kind']!='social_review' or args.language_config)),key=lambda e:(-e['priority'],e['id']))
+                            and (e['kind']!='social_review' or args.language_config)),
+                           key=lambda e:(-e['priority'],e.get('created_day',0),e['id']))
             if args.parallel_journeys:
                 selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(8,args.max_events-len(evidence['events'])))
                 if len(selected)>=2:
@@ -109,6 +125,18 @@ def main():
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')
                 plan=current['society']['conversation'] if event['kind']=='social_review' else current['society']['plan']
+                if event['kind']!='social_review' and plan and plan.get('effect_free_hold'):
+                    settle_until=time.monotonic()+30
+                    while not isolated_before_action(current,event) and time.monotonic()<settle_until:
+                        time.sleep(.5);current=fresh()
+                        if current['bridge']['session']!=session:raise ValueError('Session changed while settling an interrupted decision')
+                    if isolated_before_action(current,event):
+                        worker_file=runtime/('resident-event-'+hashlib.sha256(event['id'].encode()).hexdigest()[:12]+'.json')
+                        worker=json.loads(worker_file.read_text(encoding='utf-8'))
+                        if worker.get('event_id')!=event['id']:raise ValueError('Worker receipt belongs to a different event')
+                        evidence['events'][-1].update(status='held',outcome='interrupted_before_action',
+                            model_calls=worker['model_calls'],continued_other_residents=True)
+                        record();continue
                 if result.returncode or not plan or plan['id']!=event['id']:raise ValueError('Scheduled resident event did not finish cleanly')
                 calls=(len(plan.get('social_decisions',[]))+2*len(plan.get('turns',[]))) if event['kind']=='social_review' else len(plan['decisions'])
                 evidence['events'][-1].update(status=plan['phase'],outcome=plan.get('outcome'),model_calls=calls)

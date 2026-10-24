@@ -1,5 +1,7 @@
 # Independent resident journeys
 
+This page preserves the initial two-person experiment. The [later bounded director run](town-progress.md) verified seven simultaneous journeys, plus save/load persistence and follow-up scheduling fixes.
+
 Amren and Adrianne independently chose to check the market. Skyrim ran two different owned travel packages at the same time, delivered both residents to the destination, and released each package independently. Both recorded that Carlotta was not within interaction range at their respective arrivals.
 
 ![Amren under independent control while Adrianne travels in another slot](images/parallel-native.png)
