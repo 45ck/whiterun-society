@@ -9,6 +9,7 @@ __PRODUCTION_FACTORY__
 const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
+__PAPYRUS_ROUTER_FACTORY__
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
 __SPEECH_FACTORY__
@@ -324,7 +325,7 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
-    session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
+    session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,perception,gameDays,weather,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack

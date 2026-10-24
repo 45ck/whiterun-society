@@ -1,0 +1,33 @@
+{
+  "name": "WS-Router-20261024-P",
+  "checkpoint": 190,
+  "files": {
+    "WS-Router-20261024-P.ess": {
+      "bytes": 2525442,
+      "sha256": "6dabef4e8dc9a50208575e1de51f72a953ec785f52a91b5b2ff0c34e2677ba2d"
+    },
+    "WS-Router-20261024-P.skse": {
+      "bytes": 439,
+      "sha256": "21c81d13e7c623a5d8789e6ae95375a48c9f595f3221dbf48a4af27212e0cf96"
+    }
+  },
+  "restores": [
+    {
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true
+      },
+      "inventory_differences": {}
+    }
+  ]
+}

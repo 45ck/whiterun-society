@@ -49,21 +49,23 @@ def main():
         with urllib.request.urlopen(req, timeout=5) as response:
             return json.load(response)
 
-    def stable(state):
+    def stable(state, allow_uninitialized=False):
         seen = state['bridge']['last_seen']
-        return (seen and time.time()-seen < 8 and not state['society']['error']
+        error_ok=not state['society']['error'] or (allow_uninitialized and state['society']['checkpoint']==0
+            and state['society']['error']=='New world: initialize society or load a managed save')
+        return (seen and time.time()-seen < 8 and error_ok
                 and not state['society']['transition'] and not state['bridge']['command'])
 
-    def wait(predicate, timeout=60):
+    def wait(predicate, timeout=60, allow_uninitialized=False):
         deadline = time.monotonic()+timeout
         while time.monotonic() < deadline:
             state = request('/state')
-            if stable(state) and predicate(state):
+            if stable(state,allow_uninitialized) and predicate(state):
                 return state
             time.sleep(.5)
         raise TimeoutError('Fresh stable game state did not match the expected save')
 
-    before = wait(lambda s: True)
+    before = wait(lambda s: True,allow_uninitialized=args.restore)
     if args.restore:
         evidence = json.loads(evidence_path.read_text())
         for file in files:

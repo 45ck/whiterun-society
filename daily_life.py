@@ -5,6 +5,7 @@ activity. Unsupported rest, social and travel actions remain explicitly unmet.
 """
 import copy
 import math
+from routing import route_available
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -52,6 +53,9 @@ class DailyLife:
             person['needs_clock'] = day
             actor = actors.get(key)
             agency = person['agency']
+            supported=bool(actor) and any(route_available(observation,int(key),int(other)) for other in actors if other!=key)
+            resident['native_route_supported']=supported
+            agency['native_route_supported']=supported
             if key in outstanding:
                 continue
             if day < agency['next_review_day']:
@@ -76,7 +80,7 @@ class DailyLife:
                 continue
             if person['needs']['hunger'] >= .6:
                 can_eat = inventory['bread'] > 0
-                can_seek = int(key) in (108186, 108156) and '108149' in actors and inventory['gold'] >= 3
+                can_seek = route_available(observation,int(key),108149) and inventory['gold'] >= 3
                 if not can_eat and not can_seek:
                     agency.update(state='unmet_food_need', reason='No carried bread or qualified affordable seller route')
                     continue

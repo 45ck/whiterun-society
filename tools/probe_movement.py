@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import time
 import urllib.request
+import urllib.error
 import argparse
 
 parser=argparse.ArgumentParser()
@@ -19,7 +20,10 @@ def request(route,data=None):
     req=urllib.request.Request(f"http://127.0.0.1:{config['port']}"+route,
         None if data is None else json.dumps(data).encode(),
         headers={'Authorization':'Bearer '+config['token'],'Content-Type':'application/json'})
-    with urllib.request.urlopen(req,timeout=5) as response:return json.load(response)
+    try:
+        with urllib.request.urlopen(req,timeout=5) as response:return json.load(response)
+    except urllib.error.HTTPError as error:
+        raise RuntimeError('Local bridge rejected probe: '+error.read().decode()) from None
 
 before=request('/state')
 command=request('/command',{'kind':'walk_to','actor':args.actor,'target':args.target,'method':args.method,'dynamic':args.dynamic})

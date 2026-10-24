@@ -6,7 +6,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
-**Latest experiment:** Ysolda and Carlotta discussed their bread disagreement using generated voices. A language model proposed intentions, Jev chose, and deterministic code delivered speech and recorded heard claims only after playback. Those memories reached Carlotta's next stock decision. The latest two-turn encounter took 47.098 seconds, including local synthesis and playback, with US$0.001638432 in reported model cost. Voices currently use the overlay audio channel; native audio is disabled for crash diagnosis. [Voiced encounters and evidence](docs/voiced-encounters.md) · [Finite market day](docs/market-day.md) · [Paid work](docs/paid-work.md) · [Human behaviour design](docs/human-behaviour.md).
+**Voiced encounters:** Ysolda and Carlotta discussed their bread disagreement using generated voices. A language model proposed intentions, Jev chose, and deterministic code delivered speech and recorded heard claims only after playback. Those memories reached Carlotta's next stock decision. The latest two-turn encounter took 47.098 seconds, including local synthesis and playback, with US$0.001638432 in reported model cost. Voices currently use the overlay audio channel; native audio is disabled for crash diagnosis. [Voiced encounters and evidence](docs/voiced-encounters.md) · [Finite market day](docs/market-day.md) · [Paid work](docs/paid-work.md) · [Human behaviour design](docs/human-behaviour.md).
 
 ![Generated speech and speaker close-up in the actual Skyrim observer overlay](docs/images/conversation-closeup.jpg)
 
@@ -14,7 +14,9 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 
 **Population milestone:** 26 loaded adult NPCs now have persistent starting needs, traits and household records, with two business charters referencing real inventories. Actual before/after Skyrim saves restored the population correctly. This does not yet extend native routine ownership to all of them. [Population state, visual overview and evidence](docs/population.md).
 
-**Daily-life milestone:** the roster has expanded to 29 residents. Game-clock reviews advance needs, preserve quiet periods and queue feasible decisions without constant model calls. Live reviews and the later save restored correctly; an earlier restore exposed differing guard purses, so whole-town inventory persistence remains unresolved. An arbitrary-resident Papyrus router compiles but is not deployed. [Daily life, limitations and evidence](docs/daily-life.md).
+**Daily-life milestone:** the roster has expanded to 29 residents. Game-clock reviews advance needs, preserve quiet periods and queue feasible decisions without constant model calls. Live reviews and the later save restored correctly; an earlier restore exposed differing guard purses, so whole-town inventory persistence remains unresolved. The Papyrus router is now deployed and connected to decisions; see the newer routing experiment below. [Daily life, limitations and evidence](docs/daily-life.md).
+
+**Latest routing experiment:** Idolaf took an owned task outside the original three-resident system, travelled from 3,840 to 247 units and returned to a vanilla package. Separate Jev trials selected a nearby visit and a deferral. The daily planner can now offer supported food errands to other loaded adults. Save P restored all compared fields; save N exposed gold differences in named residents as well as guards. [Routing, decisions and retained failures](docs/papyrus-routing.md).
 
 ## Run the tests
 
@@ -23,7 +25,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/production.test.cjs tests/speech.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/production.test.cjs tests/speech.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.

@@ -1,0 +1,153 @@
+{
+  "event_id": "town-router-idolaf-001",
+  "scope": "Real decision and native handoff; visit can start within arrival range",
+  "model_calls": 1,
+  "outcome": "visited_only",
+  "status": "complete",
+  "before_checkpoint": 179,
+  "after_checkpoint": 185,
+  "plan": {
+    "actor": 108169,
+    "claim": null,
+    "decisions": [
+      {
+        "actor_id": 108169,
+        "claim_id": "1318c3efb9658d88f6338352",
+        "context": {
+          "actor_id": 108169,
+          "event": {
+            "id": "town-router-idolaf-001",
+            "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+            "kind": "meal_time"
+          },
+          "memories": [],
+          "observed_inventory": {
+            "bread": 0,
+            "gold": 9,
+            "grain": 0
+          },
+          "options": [
+            {
+              "effect": "Postpone this errand; no travel or purchase.",
+              "id": "defer"
+            },
+            {
+              "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+              "id": "visit_adrianne"
+            }
+          ],
+          "own_food_allocation": {
+            "allocated": false,
+            "unallocated": 0
+          },
+          "perception": {
+            "available": false,
+            "information": "Vision is unavailable; this does not mean nobody is nearby."
+          },
+          "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+          "profile": {
+            "bias": "uses familiar options first when tired or uncertain",
+            "big_five": {
+              "agreeableness": 0.658,
+              "conscientiousness": 0.458,
+              "extraversion": 0.642,
+              "neuroticism": 0.561,
+              "openness": 0.508
+            },
+            "name": "Idolaf Battle-Born",
+            "priorities": [
+              "meet household needs",
+              "maintain important relationships",
+              "fulfil commitments"
+            ],
+            "provenance": "Seeded scenario interpretation, not a measurement or canonical biography",
+            "role": "resident; occupation not yet assigned"
+          },
+          "scenario_state": {
+            "needs": {
+              "comfort": 0.235,
+              "fatigue": 0.459591,
+              "hunger": 1,
+              "safety": 0.568,
+              "social_contact": 0.738712
+            },
+            "source": "authored society simulation, not Skyrim hunger"
+          },
+          "session": "1792824975934-0.5721650469951958",
+          "trust": {}
+        },
+        "decision": {
+          "action_id": "visit_adrianne",
+          "emotion": "unspecified",
+          "reason": "Selected action: Visit Adrianne instead; travel only, no purchase or conversation yet."
+        },
+        "elapsed_seconds": 0.75,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "defer": 0.48,
+          "visit_adrianne": 0.52
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "usage": {
+          "cost": 4.1748e-05,
+          "input_tokens": 994,
+          "output_tokens": 38
+        }
+      }
+    ],
+    "dynamic_route": true,
+    "food_actions": true,
+    "id": "town-router-idolaf-001",
+    "intent": "visit_adrianne",
+    "kind": "meal_time",
+    "outcome": "visited_only",
+    "phase": "complete",
+    "refusals_recorded": 0,
+    "release_required": false,
+    "remembered": true,
+    "target": 108156,
+    "trade_id": "meal-town-router-idolaf-001",
+    "travel": {
+      "id": "travel-town-router-idolaf-001",
+      "movement": {
+        "actor": 108169,
+        "adapter": "papyrus-mailbox",
+        "aliasesConfirmed": true,
+        "at": 1792825006733,
+        "distance": 128.57716537939856,
+        "dynamic": true,
+        "enginePackage": 117442561,
+        "expectedPackage": 117442561,
+        "hasOwnedPackage": true,
+        "id": "travel-town-router-idolaf-001",
+        "mailboxAt": 1792825006749,
+        "method": "package",
+        "origin": "resident_decision",
+        "ownedPackage": true,
+        "phase": "arrived",
+        "serial": 3,
+        "startAt": 1792825006766,
+        "startComplete": true,
+        "startDistance": 128.7629697146568,
+        "startResult": true,
+        "target": 108156
+      },
+      "status": "applied"
+    },
+    "travel_id": "travel-town-router-idolaf-001",
+    "unit_price": 3
+  },
+  "memories": [
+    {
+      "event_id": "town-router-idolaf-001",
+      "kind": "visited_only",
+      "other": 108156,
+      "source": "observed arrival, not conversation"
+    }
+  ],
+  "native_ack": {
+    "id": "checkpoint-185",
+    "status": "applied",
+    "actor": 225358
+  }
+}

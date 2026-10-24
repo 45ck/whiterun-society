@@ -41,9 +41,11 @@ print('Observer profile: automatic Whiterun start; local saves and INIs; 1280x72
 
 plugins=profile/'plugins.txt'
 lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []
-lines=[line for line in lines if line.lstrip('*').lower()!='whiterunsociety.esp']
-plugins.write_text('\n'.join(lines+['*WhiterunSociety.esp'])+'\n',encoding='utf-8')
-if (root/'game/Data/WhiterunAgents.esp').exists():
-    lines=plugins.read_text(encoding='utf-8').splitlines()
-    lines=[line for line in lines if line.lstrip('*').lower()!='whiterunagents.esp']
-    plugins.write_text('\n'.join(lines+['*WhiterunAgents.esp'])+'\n',encoding='utf-8')
+for name in ('WhiterunSociety.esp','WhiterunAgents.esp','WhiterunRouter.esp'):
+    if name!='WhiterunSociety.esp' and not (root/'game/Data'/name).exists():continue
+    # Enable in place. Reordering existing plugins would change saved form IDs.
+    matches=[i for i,line in enumerate(lines) if line.lstrip('*').lower()==name.lower()]
+    if len(matches)>1:raise ValueError('Duplicate society plugin entry')
+    if matches:lines[matches[0]]='*'+name
+    else:lines.append('*'+name)
+plugins.write_text('\n'.join(lines)+'\n',encoding='utf-8')

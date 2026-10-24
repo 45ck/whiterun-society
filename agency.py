@@ -10,6 +10,7 @@ from decisions import validate_decision
 from food import allocation
 from production import work_inventory
 from market_day import event_for
+from routing import route_available, dynamic_route
 
 TERMINAL = ('complete', 'held')
 
@@ -127,7 +128,7 @@ class Agency:
             information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
         elif reconsidering:
             options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
-            if actor in (108149,108186):
+            if route_available(observation,actor,108156):
                 options.append({'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'})
             if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
                 options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
@@ -136,9 +137,9 @@ class Agency:
             options = [{'id': 'defer', 'effect': 'Postpone this errand; no travel or purchase.'}]
             if inventory['bread'] > 0:
                 options.append({'id':'eat_bread','effect':'Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.'})
-            if actor in (108149,108186):
+            if route_available(observation,actor,108156):
                 options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
-            if actor in (108186,108156) and 108149 in actors and inventory['gold'] >= 3 and inventory['bread'] == 0:
+            if route_available(observation,actor,108149) and inventory['gold'] >= 3 and inventory['bread'] == 0:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
             information = 'Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
@@ -203,6 +204,7 @@ class Agency:
                 travel_id += '-replan-' + str(len(updated['decisions']))
             updated.update(phase='travelling', target=108149 if action in ('seek_bread','take_shift') else 108156,
                            intent=action, travel_id=travel_id, release_required=True)
+            updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
         elif action == 'raise_offer':
             updated.update(phase='consent', unit_price=5)
         elif action == 'sell_bread':
@@ -301,7 +303,10 @@ class Agency:
             state = copy.deepcopy(self.active)
             updated = state['plans'][-1]
             updated['travel'] = copy.deepcopy(ack)
-            if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived:
+            binding_ok=not plan.get('dynamic_route') or (movement.get('aliasesConfirmed') is True
+                and movement.get('adapter')=='papyrus-mailbox' and movement.get('actor')==plan['actor']
+                and movement.get('target')==plan['target'])
+            if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived and binding_ok:
                 updated['phase'] = {'seek_bread':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')
                 if updated['phase'] == 'complete':
                     updated['outcome'] = 'visited_only'
@@ -338,4 +343,5 @@ class Agency:
             return None
         return {'id': plan['travel_id'], 'kind': 'walk_to', 'actor': plan['actor'], 'target': plan['target'],
                 'method': 'package', 'origin': 'resident_decision', 'plan_id': plan['id'], 'retain': True,
+                'dynamic':plan.get('dynamic_route',False),
                 'session': session, 'checkpoint': self.marker}

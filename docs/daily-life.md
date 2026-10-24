@@ -34,7 +34,7 @@ The game overlay now has a town-needs card. The offline population overview can 
 
 ## Arbitrary resident movement
 
-Two explicit Sigurd-to-Carlotta probes failed because the installed JavaScript bridge returned no usable reference aliases, including after the quest started. Neither is accepted as movement. [First probe](evidence/dynamic-alias-b0be2a0649f7d7bb.json) · [Startup-aware probe](evidence/dynamic-alias-f517e5cc66ab35a1.json). The `--dynamic` movement option is an experimental diagnostic, not a supported travel mode on this installation.
+Two explicit Sigurd-to-Carlotta probes failed because the installed JavaScript bridge returned no usable reference aliases, including after the quest started. Neither is accepted as movement. [First probe](evidence/dynamic-alias-b0be2a0649f7d7bb.json) · [Startup-aware probe](evidence/dynamic-alias-f517e5cc66ab35a1.json). These probes used the old JavaScript alias path. The replacement Papyrus path is now demonstrated in the [new routing experiment](papyrus-routing.md).
 
 This matches the earlier finding in [agent control](agent-control.md). The upstream [native object conversion](https://github.com/skyrim-multiplayer/skymp/blob/main/skyrim-platform/src/platform_se/skyrim_platform/CallNative.cpp) searches ordinary form types when resolving returned objects; an alias conversion limitation remains the working hypothesis. Existing fixed routes continue to be the qualified movement path. Completion now also waits for the owned package to leave the actor, even after the quest stops.
 
@@ -44,6 +44,6 @@ An original Papyrus adapter, `papyrus/WSSocietyRouter.psc`, keeps alias operatio
 python tools/build_router_script.py --compiler D:\WhiterunLab\vendor\caprica-v0.3.0\Caprica.exe --output work\papyrus-stage
 ```
 
-**The adapter is staged, not installed or proven in-game.** Its quest, optional aliases, mailbox records and bridge integration still need building and qualification. Compile-only base declarations must never be installed into the game. No runtime plugin or game asset was replaced for these probes.
+At the end of this earlier experiment the adapter was staged only. The subsequent [Papyrus routing experiment](papyrus-routing.md) built and installed its original quest, optional aliases, two reference mailboxes and bridge integration, then demonstrated native travel. Compile-only base declarations must never be installed into the game. No runtime plugin or game asset was replaced for the earlier failed JavaScript probes.
 
-Next: complete that adapter, address guard inventory persistence, give production and household endowments explicit sources, and connect supported social/rest/business actions to the daily queue. These are required for the requested whole-town society.
+Next: expand qualification of that adapter, address resident inventory persistence, give production and household endowments explicit sources, and connect supported social/rest/business actions to the daily queue. These are required for the requested whole-town society.

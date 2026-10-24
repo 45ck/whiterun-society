@@ -1,7 +1,8 @@
 Scriptname WSSocietyRouter extends Quest
 ; Original routing adapter. All alias objects stay inside Papyrus because the
 ; installed JavaScript bridge cannot convert returned ReferenceAlias objects.
-FormList Property RequestReferences Auto
+FormList Property ResidentReference Auto
+FormList Property DestinationReference Auto
 GlobalVariable Property RequestSerial Auto
 GlobalVariable Property AcknowledgedSerial Auto
 GlobalVariable Property RouteStatus Auto
@@ -16,8 +17,8 @@ Event OnUpdate()
         Int serial = RequestSerial.GetValue() as Int
         If serial > 0 && serial != (AcknowledgedSerial.GetValue() as Int)
             RouteStatus.SetValue(0.0)
-            Actor resident = RequestReferences.GetAt(0) as Actor
-            ObjectReference destination = RequestReferences.GetAt(1) as ObjectReference
+            Actor resident = ResidentReference.GetAt(0) as Actor
+            ObjectReference destination = DestinationReference.GetAt(0) as ObjectReference
             ReferenceAlias residentAlias = GetAlias(0) as ReferenceAlias
             ReferenceAlias destinationAlias = GetAlias(1) as ReferenceAlias
             If resident && destination && residentAlias && destinationAlias && resident != destination && !resident.IsDead() && !resident.IsChild()
@@ -45,6 +46,16 @@ Event OnUpdate()
             RouteStatus.SetValue(-2.0)
             Stop()
             routeBegan = 0.0
+        ElseIf RouteStatus.GetValue() == 1.0
+            ReferenceAlias activeResident = GetAlias(0) as ReferenceAlias
+            ReferenceAlias activeDestination = GetAlias(1) as ReferenceAlias
+            If !activeResident || !activeDestination
+                RouteStatus.SetValue(-3.0)
+                Stop()
+            ElseIf activeResident.GetReference() != (ResidentReference.GetAt(0) as ObjectReference) || activeDestination.GetReference() != (DestinationReference.GetAt(0) as ObjectReference)
+                RouteStatus.SetValue(-3.0)
+                Stop()
+            EndIf
         EndIf
     EndIf
     ; This lightweight native timer is not model inference. It also permits a

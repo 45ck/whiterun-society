@@ -1,0 +1,82 @@
+{
+  "name": "WS-Router-20261024-N",
+  "checkpoint": 179,
+  "files": {
+    "WS-Router-20261024-N.ess": {
+      "bytes": 2533531,
+      "sha256": "aed5821463d2cda9db37f4de60a163ea73979913bd44f30bbd37e5c8448df6ff"
+    },
+    "WS-Router-20261024-N.skse": {
+      "bytes": 418,
+      "sha256": "fd35644dcd40bcd5d0206783a2dbe459ac7ba0a0073c71d3ae4f01e893102c9b"
+    }
+  },
+  "restores": [
+    {
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": false
+      },
+      "inventory_differences": {
+        "225366": {
+          "expected": {
+            "gold": 6,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 10,
+            "bread": 0,
+            "grain": 0
+          }
+        },
+        "108169": {
+          "expected": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 9,
+            "bread": 0,
+            "grain": 0
+          }
+        },
+        "1048823": {
+          "expected": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 0,
+            "bread": 0,
+            "grain": 0
+          }
+        },
+        "108167": {
+          "expected": {
+            "gold": 19,
+            "bread": 0,
+            "grain": 0
+          },
+          "actual": {
+            "gold": 12,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      }
+    }
+  ]
+}

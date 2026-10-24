@@ -1,0 +1,22 @@
+{
+  "status": "complete",
+  "reviews": [
+    {
+      "checkpoint": 190,
+      "new_events": [],
+      "next_review_day": 1.0583558479944866
+    }
+  ],
+  "events": [],
+  "checkpoint": 190,
+  "counts": {
+    "residents": 29,
+    "households": 29,
+    "businesses": 2,
+    "native_route_supported": 6
+  },
+  "routing": {
+    "adapter": "papyrus-mailbox-v1",
+    "available": true
+  }
+}

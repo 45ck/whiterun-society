@@ -1,0 +1,122 @@
+{
+  "event_id": "town-router-guard-001",
+  "scope": "Real decision and native handoff; visit can start within arrival range",
+  "model_calls": 1,
+  "outcome": "deferred",
+  "status": "complete",
+  "before_checkpoint": 185,
+  "after_checkpoint": 189,
+  "plan": {
+    "actor": 1048823,
+    "claim": null,
+    "decisions": [
+      {
+        "actor_id": 1048823,
+        "claim_id": "d769aa2eca2a601886fe23f3",
+        "context": {
+          "actor_id": 1048823,
+          "event": {
+            "id": "town-router-guard-001",
+            "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+            "kind": "meal_time"
+          },
+          "memories": [],
+          "observed_inventory": {
+            "bread": 0,
+            "gold": 0,
+            "grain": 0
+          },
+          "options": [
+            {
+              "effect": "Postpone this errand; no travel or purchase.",
+              "id": "defer"
+            },
+            {
+              "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+              "id": "visit_adrianne"
+            }
+          ],
+          "own_food_allocation": {
+            "allocated": false,
+            "unallocated": 0
+          },
+          "perception": {
+            "available": false,
+            "information": "Vision is unavailable; this does not mean nobody is nearby."
+          },
+          "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+          "profile": {
+            "bias": "uses familiar options first when tired or uncertain",
+            "big_five": {
+              "agreeableness": 0.777,
+              "conscientiousness": 0.706,
+              "extraversion": 0.55,
+              "neuroticism": 0.755,
+              "openness": 0.225
+            },
+            "name": "Whiterun Guard",
+            "priorities": [
+              "meet household needs",
+              "maintain important relationships",
+              "fulfil commitments"
+            ],
+            "provenance": "Seeded scenario interpretation, not a measurement or canonical biography",
+            "role": "guard"
+          },
+          "scenario_state": {
+            "needs": {
+              "comfort": 0.565,
+              "fatigue": 0.416591,
+              "hunger": 0.9359,
+              "safety": 0.512,
+              "social_contact": 0.747261
+            },
+            "source": "authored society simulation, not Skyrim hunger"
+          },
+          "session": "1792824975934-0.5721650469951958",
+          "trust": {}
+        },
+        "decision": {
+          "action_id": "defer",
+          "emotion": "unspecified",
+          "reason": "Selected action: Postpone this errand; no travel or purchase."
+        },
+        "elapsed_seconds": 0.5,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "defer": 0.53,
+          "visit_adrianne": 0.47
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "usage": {
+          "cost": 4.1622e-05,
+          "input_tokens": 991,
+          "output_tokens": 36
+        }
+      }
+    ],
+    "food_actions": true,
+    "id": "town-router-guard-001",
+    "kind": "meal_time",
+    "outcome": "deferred",
+    "phase": "complete",
+    "refusals_recorded": 0,
+    "remembered": true,
+    "trade_id": "meal-town-router-guard-001",
+    "travel": null,
+    "unit_price": 3
+  },
+  "memories": [
+    {
+      "event_id": "town-router-guard-001",
+      "kind": "deferred",
+      "other": null,
+      "source": "own decision"
+    }
+  ],
+  "native_ack": {
+    "id": "checkpoint-189",
+    "status": "applied",
+    "actor": 225358
+  }
+}

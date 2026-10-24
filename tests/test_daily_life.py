@@ -48,6 +48,48 @@ class DailyLifeTests(unittest.TestCase):
         self.assertEqual(self.world.active['people']['99']['agency']['state'],'unmet_food_need')
         self.assertNotIn(99,[e['actor'] for e in self.world.active['town']['daily']['queue']])
 
+    def test_router_allows_new_resident_to_seek_food_without_inventing_a_sale(self):
+        self.obs['residents'][2]['inventory']['bread']=0
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        self.review(4)
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
+        self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
+        claim=self.world.claim_plan_decision(event['id'],self.obs);self.sync()
+        options={o['id'] for o in claim['claim']['context']['options']}
+        self.assertIn('seek_bread',options)
+        self.assertEqual(self.obs['residents'][2]['inventory'],{'gold':7,'bread':0,'grain':0})
+        self.assertTrue(self.world.active['people']['99']['agency']['native_route_supported'])
+        self.world.finish_plan_decision(event['id'],claim['claim']['id'],{'decision':{
+            'action_id':'seek_bread','reason':'Authored test choice','emotion':'calm'}},self.obs);self.sync()
+        command=self.world.pending(self.obs['session'])
+        self.assertTrue(command['dynamic']);self.assertEqual(command['actor'],99)
+        self.obs['residents'][2].update(x=100,y=0,z=0)
+        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'hasOwnedPackage':True}}
+        self.world.observe(self.obs);self.sync()
+        self.assertEqual(self.world.agency_plan()['phase'],'held')
+
+    def test_dynamic_owned_arrival_requires_matching_papyrus_acknowledgement(self):
+        self.obs['residents'][2]['inventory']['bread']=0
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        self.review(4)
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
+        self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
+        claim=self.world.claim_plan_decision(event['id'],self.obs)['claim'];self.sync()
+        self.world.finish_plan_decision(event['id'],claim['id'],{'decision':{
+            'action_id':'seek_bread','reason':'Authored test choice','emotion':'calm'}},self.obs);self.sync()
+        command=self.world.pending(self.obs['session']);self.obs['residents'][2].update(x=100,y=0,z=0)
+        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'hasOwnedPackage':True,
+            'aliasesConfirmed':True,'adapter':'papyrus-mailbox','actor':99,'target':108149}}
+        self.world.observe(self.obs);self.sync()
+        self.assertEqual(self.world.agency_plan()['phase'],'consent')
+
+    def test_missing_seller_or_unclassified_resident_cannot_gain_router_opportunity(self):
+        self.obs['residents'][2]['inventory']['bread']=0
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=108149]
+        self.review(4)
+        self.assertEqual(self.world.active['people']['99']['agency']['state'],'unmet_food_need')
+
     def test_unloaded_residents_age_but_get_no_fictitious_execution(self):
         self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=99]
         self.review(4)

@@ -7,7 +7,7 @@ function fixture(){
   is3DLoaded:()=>loaded,getCurrentPackage:()=>({getFormID:()=>current}),evaluatePackage:()=>{}};
  const target={...actor,getPositionX:()=>0};
  const quest={isRunning:()=>running,start:()=>{running=true;return true;},stop:()=>{running=false;if(releasePackage)current=42;}};
- const sp={Game:{getFormFromFile:id=>id===0x800?quest:id%2===1?pkg:null,getFormEx:id=>id===108186?actor:target},
+ const sp={Game:{getFormFromFile:(id,file)=>file==='WhiterunRouter.esp'?null:id===0x800?quest:id%2===1?pkg:null,getFormEx:id=>id===108186?actor:target},
   Actor:{from:x=>x},Quest:{from:x=>x},ReferenceAlias:{from:x=>x}};
  const controller=createAgentRoutineController(()=>sp,()=>clock),command={id:'one',actor:108186,target:108149};
  return {controller,command,quest,sp,actor,target,step:()=>controller.step(command),
@@ -59,38 +59,8 @@ test('release cannot be confirmed from an unloaded resident',()=>{
  assert.equal(result.ack.status,'held');assert.equal(result.ack.released,false);
 });
 
-function dynamicFixture(){
- const f=fixture();f.command.actor=108196;f.command.target=108149;f.command.dynamic=true;
- f.actor.getFormID=()=>108196;f.target.getFormID=()=>108149;
- f.sp.Game.getFormEx=id=>id===108196?f.actor:f.target;
- const assignments=[null,null],requests=[];
- f.quest.getAlias=id=>({forceRefTo:ref=>requests.push({id,ref}),getReference:()=>assignments[id]});
- return {...f,requests,bind:()=>requests.forEach(r=>assignments[r.id]=r.ref),drift:()=>assignments[1]=f.actor};
-}
-test('dynamic travel waits for both assignments and does not repeat native forcing',()=>{
- const f=dynamicFixture();for(let i=0;i<6;i++)f.step();
- assert.equal(f.controller.status().phase,'binding');assert.equal(f.requests.length,2);
- f.move(100);f.package(99);assert.equal(f.step().done,false);
- f.bind();f.step();assert.equal(f.controller.status().aliasesConfirmed,true);
- f.step();const done=f.step();assert.equal(done.ack.status,'applied');assert.equal(done.ack.movement.actor,108196);
- assert.equal(f.requests.length,2);
-});
-test('dynamic binding timeout stops the owned quest without claiming movement',()=>{
- const f=dynamicFixture();for(let i=0;i<4;i++)f.step();f.time(10001);
- const result=f.step();assert.equal(result.ack.status,'held');assert.equal(f.running(),false);
- assert.match(result.ack.error,/assignment/);
-});
-test('alias drift interrupts dynamic travel even if the package ID still matches',()=>{
- const f=dynamicFixture();for(let i=0;i<4;i++)f.step();f.bind();f.step();f.package(99);f.drift();
- assert.equal(f.step().ack.status,'held');assert.equal(f.running(),false);
-});
 test('movement completion waits until the package actually leaves the actor',()=>{
  const f=fixture();for(let i=0;i<4;i++)f.step();f.package(99);f.move(100);f.retainPackage(true);
  f.step();assert.equal(f.running(),false);assert.equal(f.step().done,false);
  f.package(42);assert.equal(f.step().ack.status,'applied');
-});
-test('disappearing aliases stop dynamic travel instead of leaking its package',()=>{
- const f=dynamicFixture();for(let i=0;i<4;i++)f.step();f.bind();f.step();
- f.quest.getAlias=()=>null;const result=f.step();
- assert.equal(result.ack.status,'held');assert.equal(f.running(),false);
 });

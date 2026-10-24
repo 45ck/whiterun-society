@@ -1,0 +1,617 @@
+{
+  "command": {
+    "id": "41a51c971bddb76e",
+    "kind": "walk_to",
+    "session": "1792824805915-0.5216307482353597",
+    "actor": 108169,
+    "target": 108156,
+    "method": "package",
+    "dynamic": true
+  },
+  "before": {
+    "session": "1792824805915-0.5216307482353597",
+    "checkpoint": 179,
+    "movement": null,
+    "platform": "2.9.0",
+    "ready": true,
+    "mode": "observer",
+    "residents": [
+      {
+        "id": 225358,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 2,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 19688.1875,
+        "y": -7258.1142578125,
+        "z": -3641.95654296875
+      },
+      {
+        "id": 108169,
+        "name": "Idolaf Battle-Born",
+        "inventory": {
+          "gold": 9,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 20626.59375,
+        "y": -7588.7890625,
+        "z": -3638.011962890625
+      },
+      {
+        "id": 108156,
+        "name": "Adrianne Avenicci",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 20664.822265625,
+        "y": -7740.02880859375,
+        "z": -3626.849853515625
+      },
+      {
+        "id": 108146,
+        "name": "Belethor",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 21357.212890625,
+        "y": -4094.37646484375,
+        "z": -2973.37060546875
+      },
+      {
+        "id": 225366,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 22517.580078125,
+        "y": -3449.375244140625,
+        "z": -2943.648193359375
+      },
+      {
+        "id": 1048823,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24572.416015625,
+        "y": -8284.4619140625,
+        "z": -3394.285400390625
+      },
+      {
+        "id": 1108911,
+        "name": "Cow",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": false,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24163.904296875,
+        "y": -5236.84619140625,
+        "z": -3005.71923828125
+      },
+      {
+        "id": 225403,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24808.732421875,
+        "y": -5926.71337890625,
+        "z": -3024.697265625
+      },
+      {
+        "id": 225404,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 25383.29296875,
+        "y": -3985.2734375,
+        "z": -3002.472412109375
+      },
+      {
+        "id": 225355,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 9,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 26361.39453125,
+        "y": -3.427236795425415,
+        "z": -1753.9930419921875
+      },
+      {
+        "id": 225390,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 25744.501953125,
+        "y": 537.7720947265625,
+        "z": -1755.0068359375
+      }
+    ],
+    "perception": {
+      "108149": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception"
+      },
+      "108156": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception",
+        "diagnostics": {
+          "headingDegrees": 348.5415954589844,
+          "nearby": 2,
+          "inCone": 2,
+          "nativeVisible": 0
+        }
+      },
+      "108186": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception"
+      }
+    },
+    "gameDays": 0.9900727272033691,
+    "weather": {
+      "id": 1090112,
+      "classification": 0,
+      "label": "pleasant",
+      "source": "native current-weather classification; not a forecast"
+    },
+    "productionWork": null,
+    "speech": null,
+    "projection": [
+      {
+        "id": 108156,
+        "head": [
+          -0.32190918922424316,
+          -0.24707084894180298,
+          -1.008015751838684
+        ],
+        "foot": [
+          -0.3434644341468811,
+          -0.3301966190338135,
+          -1.008224368095398
+        ]
+      }
+    ],
+    "audioDiagnostic": true,
+    "audioEnabled": false,
+    "player": {
+      "id": 20,
+      "cell": "",
+      "cellId": 107135,
+      "x": 19486.939453125,
+      "y": -7458.109375,
+      "z": -3642.4765625
+    },
+    "selected": {
+      "id": 225358,
+      "name": "Whiterun Guard"
+    },
+    "ack": null
+  },
+  "samples": [
+    {
+      "id": "41a51c971bddb76e",
+      "actor": 108169,
+      "target": 108156,
+      "origin": "test",
+      "method": "package",
+      "dynamic": true,
+      "adapter": "papyrus-mailbox",
+      "phase": "applied",
+      "at": 1792824849601,
+      "startDistance": 154.94897936931525,
+      "distance": 153.39649473028118,
+      "expectedPackage": 117442561,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "aliasesConfirmed": true,
+      "enginePackage": 837714,
+      "serial": 1,
+      "mailboxAt": 1792824849617,
+      "startAt": 1792824849634,
+      "startComplete": true,
+      "startResult": true,
+      "outcome": "applied",
+      "releaseAt": 1792824850343
+    }
+  ],
+  "scope": "Explicit movement probe, not autonomous destination selection",
+  "passed": false,
+  "ack": {
+    "id": "41a51c971bddb76e",
+    "status": "applied",
+    "movement": {
+      "id": "41a51c971bddb76e",
+      "actor": 108169,
+      "target": 108156,
+      "origin": "test",
+      "method": "package",
+      "dynamic": true,
+      "adapter": "papyrus-mailbox",
+      "phase": "applied",
+      "at": 1792824849601,
+      "startDistance": 154.94897936931525,
+      "distance": 153.39649473028118,
+      "expectedPackage": 117442561,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "aliasesConfirmed": true,
+      "enginePackage": 837714,
+      "serial": 1,
+      "mailboxAt": 1792824849617,
+      "startAt": 1792824849634,
+      "startComplete": true,
+      "startResult": true,
+      "outcome": "applied",
+      "releaseAt": 1792824850343
+    }
+  },
+  "after": {
+    "session": "1792824805915-0.5216307482353597",
+    "checkpoint": 179,
+    "movement": {
+      "id": "41a51c971bddb76e",
+      "actor": 108169,
+      "target": 108156,
+      "origin": "test",
+      "method": "package",
+      "dynamic": true,
+      "adapter": "papyrus-mailbox",
+      "phase": "applied",
+      "at": 1792824849601,
+      "startDistance": 154.94897936931525,
+      "distance": 153.39649473028118,
+      "expectedPackage": 117442561,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "aliasesConfirmed": true,
+      "enginePackage": 837714,
+      "serial": 1,
+      "mailboxAt": 1792824849617,
+      "startAt": 1792824849634,
+      "startComplete": true,
+      "startResult": true,
+      "outcome": "applied",
+      "releaseAt": 1792824850343
+    },
+    "platform": "2.9.0",
+    "ready": true,
+    "mode": "observer",
+    "residents": [
+      {
+        "id": 225358,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 2,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 19688.412109375,
+        "y": -7258.14404296875,
+        "z": -3647.374755859375
+      },
+      {
+        "id": 108169,
+        "name": "Idolaf Battle-Born",
+        "inventory": {
+          "gold": 9,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 20660.82421875,
+        "y": -7617.7265625,
+        "z": -3639.36669921875
+      },
+      {
+        "id": 108156,
+        "name": "Adrianne Avenicci",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 20664.91015625,
+        "y": -7740.13525390625,
+        "z": -3634.72216796875
+      },
+      {
+        "id": 108146,
+        "name": "Belethor",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 21490.265625,
+        "y": -3894.84033203125,
+        "z": -2939.92822265625
+      },
+      {
+        "id": 225366,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 22181.85546875,
+        "y": -3512.258544921875,
+        "z": -2916.35888671875
+      },
+      {
+        "id": 1048823,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24572.416015625,
+        "y": -8284.4619140625,
+        "z": -3394.285400390625
+      },
+      {
+        "id": 1108911,
+        "name": "Cow",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": false,
+        "isGuard": false,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24163.904296875,
+        "y": -5236.84619140625,
+        "z": -3005.71923828125
+      },
+      {
+        "id": 225403,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 24775.275390625,
+        "y": -6284.9892578125,
+        "z": -3239.155517578125
+      },
+      {
+        "id": 225404,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 25340.208984375,
+        "y": -4403.19677734375,
+        "z": -3005.263427734375
+      },
+      {
+        "id": 225390,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 25874.72265625,
+        "y": 247.7967071533203,
+        "z": -1760.197509765625
+      },
+      {
+        "id": 225355,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 9,
+          "bread": 0,
+          "grain": 0
+        },
+        "isPerson": true,
+        "isGuard": true,
+        "outdoors": true,
+        "classificationSource": "native ActorTypeNPC keyword; child/dead filters applied",
+        "x": 26361.39453125,
+        "y": -3.427236795425415,
+        "z": -1753.9930419921875
+      }
+    ],
+    "perception": {
+      "108149": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception"
+      },
+      "108156": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception",
+        "diagnostics": {
+          "headingDegrees": 348.5415954589844,
+          "nearby": 2,
+          "inCone": 2,
+          "nativeVisible": 0
+        }
+      },
+      "108186": {
+        "available": false,
+        "visible": [],
+        "source": "experimental engine line of sight; not yet qualified as resident perception"
+      }
+    },
+    "gameDays": 0.9910096526145935,
+    "weather": {
+      "id": 1090112,
+      "classification": 0,
+      "label": "pleasant",
+      "source": "native current-weather classification; not a forecast"
+    },
+    "productionWork": null,
+    "speech": null,
+    "projection": [
+      {
+        "id": 108156,
+        "head": [
+          -0.3654395341873169,
+          0.9949308633804321,
+          0.8014483451843262
+        ],
+        "foot": [
+          -0.12467974424362183,
+          -0.32151323556900024,
+          0.856684148311615
+        ]
+      }
+    ],
+    "audioDiagnostic": true,
+    "audioEnabled": false,
+    "player": {
+      "id": 20,
+      "cell": "",
+      "cellId": 107135,
+      "x": 19486.939453125,
+      "y": -7458.109375,
+      "z": -3642.476318359375
+    },
+    "selected": {
+      "id": 225358,
+      "name": "Whiterun Guard"
+    },
+    "ack": {
+      "id": "41a51c971bddb76e",
+      "status": "applied",
+      "movement": {
+        "id": "41a51c971bddb76e",
+        "actor": 108169,
+        "target": 108156,
+        "origin": "test",
+        "method": "package",
+        "dynamic": true,
+        "adapter": "papyrus-mailbox",
+        "phase": "applied",
+        "at": 1792824849601,
+        "startDistance": 154.94897936931525,
+        "distance": 153.39649473028118,
+        "expectedPackage": 117442561,
+        "ownedPackage": false,
+        "hasOwnedPackage": true,
+        "aliasesConfirmed": true,
+        "enginePackage": 837714,
+        "serial": 1,
+        "mailboxAt": 1792824849617,
+        "startAt": 1792824849634,
+        "startComplete": true,
+        "startResult": true,
+        "outcome": "applied",
+        "releaseAt": 1792824850343
+      }
+    }
+  }
+}
