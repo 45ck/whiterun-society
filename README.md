@@ -22,6 +22,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 [Full system guide, NPC loop and data model](docs/system-guide.md) · [Latest verified progress](docs/town-progress.md) · [Video demonstration plan](docs/demo-videos.md)
 
+The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. An initial nine-call comparison found cheaper small-model output but grounding and length failures, so the current default remains unchanged. [Model pricing, measured timings and routing direction](docs/model-routing.md)
+
 ## Examples from the running prototype
 
 ### People talk and remember

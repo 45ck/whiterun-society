@@ -1,0 +1,771 @@
+{
+  "scope": "Nine language-only probes; no Jev, voice or game effects; one sample per model per case",
+  "max_calls": 9,
+  "started_at": 1792876718.8708541,
+  "cases": {
+    "remembered_refusal": {
+      "actor_id": 108186,
+      "event": {
+        "id": "voice-20261025-resume",
+        "information": "You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+        "kind": "nearby_conversation"
+      },
+      "heard_in_this_conversation": [],
+      "known_facts_in_first_person": [
+        "I ate one of my carried loaves."
+      ],
+      "listener": {
+        "id": 108149,
+        "name": "Carlotta Valentia"
+      },
+      "memories": [
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-1673cd53662d9160c432f60e",
+          "kind": "said",
+          "listener": 108149,
+          "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108186
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-5b5c2ef0e255816887fc6277",
+          "kind": "heard_speech",
+          "listener": 108186,
+          "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108149
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-1ff3fbddd98203b01a0235f7",
+          "kind": "said",
+          "listener": 108149,
+          "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108186
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-0c9c5320883f943196c2306c",
+          "kind": "heard_speech",
+          "listener": 108186,
+          "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108149
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-a45d1fac167195a81cd38429",
+          "kind": "said",
+          "listener": 108149,
+          "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108186
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-27613d476a676275bb9151ea",
+          "kind": "heard_speech",
+          "listener": 108186,
+          "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108149
+        },
+        {
+          "event_id": "founding-resources-v1-108186",
+          "kind": "starting_resources_received",
+          "resources": {
+            "bread": 2,
+            "gold": 20,
+            "grain": 0
+          },
+          "source": "Observed finite external founding grant; not trade or wages"
+        },
+        {
+          "bread": 1,
+          "event_id": "consume-daily-7-108186",
+          "hunger_after": 0.4,
+          "hunger_before": 1,
+          "kind": "consumed_bread",
+          "source": "native food-use command and observed inventory; animation not verified"
+        }
+      ],
+      "my_relationship": {},
+      "needs": {
+        "comfort": 0.522,
+        "fatigue": 1,
+        "hunger": 1,
+        "safety": 0.627,
+        "social_contact": 1
+      },
+      "own_food_policy": null,
+      "own_inventory": {
+        "bread": 1,
+        "gold": 28,
+        "grain": 0
+      },
+      "profile": {
+        "bias": "optimistic about making up a small loss later",
+        "big_five": {
+          "agreeableness": 0.55,
+          "conscientiousness": 0.6,
+          "extraversion": 0.8,
+          "neuroticism": 0.3,
+          "openness": 0.8
+        },
+        "name": "Ysolda",
+        "priorities": [
+          "build trade relationships",
+          "preserve money for future business"
+        ],
+        "role": "aspiring merchant"
+      },
+      "trust": {},
+      "weather": {
+        "classification": 0,
+        "id": 1090115,
+        "label": "pleasant",
+        "source": "native current-weather classification; not a forecast"
+      }
+    },
+    "reply": {
+      "actor_id": 108149,
+      "event": {
+        "id": "voice-20261025-resume",
+        "information": "You meet a nearby resident. Respond naturally to their latest words, or use your own experiences, observed weather, ordinary courtesy, a question or a remembered disagreement. Do not force economics into every conversation. Do not invent shared history. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+        "kind": "nearby_conversation"
+      },
+      "heard_in_this_conversation": [
+        {
+          "epistemic_status": "heard claim, not verified fact",
+          "line": "Carlotta, I truly understand your need to keep your bread safe. Let's watch for a better time to support each other soon.",
+          "speaker": 108186
+        }
+      ],
+      "known_facts_in_first_person": [
+        "I ate one of my carried loaves.",
+        "I ate one of my carried loaves."
+      ],
+      "listener": {
+        "id": 108186,
+        "name": "Ysolda"
+      },
+      "memories": [
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-27613d476a676275bb9151ea",
+          "kind": "said",
+          "listener": 108186,
+          "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108149
+        },
+        {
+          "event_id": "founding-resources-v1-108149",
+          "kind": "starting_resources_received",
+          "resources": {
+            "bread": 2,
+            "gold": 100,
+            "grain": 20
+          },
+          "source": "Observed finite external founding grant; not trade or wages"
+        },
+        {
+          "event_id": "labour-amren-20261024-01",
+          "kind": "deferred",
+          "other": 108149,
+          "source": "own decision"
+        },
+        {
+          "bread": 1,
+          "event_id": "consume-daily-7-108149",
+          "hunger_after": 0.4,
+          "hunger_before": 1,
+          "kind": "consumed_bread",
+          "source": "native food-use command and observed inventory; animation not verified"
+        },
+        {
+          "event_id": "daily-9-108149",
+          "kind": "allocated_food",
+          "policy": {
+            "mode": "household_all",
+            "observed_bread": 5,
+            "reserve_target": 0,
+            "reviewed_day": 1.5014872550964355,
+            "source": "resident selected among authored allocation policies",
+            "source_event": "daily-9-108149"
+          },
+          "source": "own allocation decision; no inventory change"
+        },
+        {
+          "event_id": "labour-brenuin-20261024-01",
+          "kind": "deferred",
+          "other": 182543,
+          "source": "own decision"
+        },
+        {
+          "bread": 1,
+          "event_id": "consume-daily-10-108149",
+          "hunger_after": 0.051317,
+          "hunger_before": 0.6513172845230102,
+          "kind": "consumed_bread",
+          "source": "native food-use command and observed inventory; animation not verified"
+        },
+        {
+          "epistemic_status": "claim, not verified fact",
+          "event_id": "speech-59a21a818f6a81da8185102f",
+          "kind": "heard_speech",
+          "listener": 108149,
+          "quote": "Carlotta, I truly understand your need to keep your bread safe. Let's watch for a better time to support each other soon.",
+          "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+          "speaker": 108186
+        }
+      ],
+      "my_relationship": {},
+      "needs": {
+        "comfort": 0.443,
+        "fatigue": 1,
+        "hunger": 1,
+        "safety": 0.533,
+        "social_contact": 1
+      },
+      "own_food_policy": {
+        "mode": "household_all",
+        "observed_bread": 5,
+        "reserve_target": 0,
+        "reviewed_day": 1.5014872550964355,
+        "source": "resident selected among authored allocation policies",
+        "source_event": "daily-9-108149"
+      },
+      "own_inventory": {
+        "bread": 4,
+        "gold": 106,
+        "grain": 21
+      },
+      "profile": {
+        "bias": "a recent scare makes shortages feel more likely",
+        "big_five": {
+          "agreeableness": 0.65,
+          "conscientiousness": 0.85,
+          "extraversion": 0.55,
+          "neuroticism": 0.55,
+          "openness": 0.35
+        },
+        "name": "Carlotta Valentia",
+        "priorities": [
+          "keep food for family",
+          "earn a stable living"
+        ],
+        "role": "produce merchant and parent"
+      },
+      "trust": {},
+      "weather": {
+        "classification": 0,
+        "id": 1090115,
+        "label": "pleasant",
+        "source": "native current-weather classification; not a forecast"
+      }
+    },
+    "polite_decline": {
+      "actor_id": 108186,
+      "event": {
+        "kind": "courteous_refusal",
+        "information": "The nearby resident invited you to talk, but you have declined. Say a brief polite refusal. No grievance or shared history is known."
+      },
+      "heard_in_this_conversation": [],
+      "known_facts_in_first_person": [],
+      "listener": {
+        "id": 108149,
+        "name": "Carlotta Valentia"
+      },
+      "memories": [],
+      "my_relationship": {},
+      "needs": {
+        "comfort": 0.522,
+        "fatigue": 1,
+        "hunger": 1,
+        "safety": 0.627,
+        "social_contact": 1
+      },
+      "own_food_policy": null,
+      "own_inventory": {
+        "bread": 1,
+        "gold": 28,
+        "grain": 0
+      },
+      "profile": {
+        "bias": "optimistic about making up a small loss later",
+        "big_five": {
+          "agreeableness": 0.55,
+          "conscientiousness": 0.6,
+          "extraversion": 0.8,
+          "neuroticism": 0.3,
+          "openness": 0.8
+        },
+        "name": "Ysolda",
+        "priorities": [
+          "build trade relationships",
+          "preserve money for future business"
+        ],
+        "role": "aspiring merchant"
+      },
+      "trust": {},
+      "weather": {
+        "classification": 0,
+        "id": 1090115,
+        "label": "pleasant",
+        "source": "native current-weather classification; not a forecast"
+      }
+    }
+  },
+  "results": [
+    {
+      "case": "remembered_refusal",
+      "model": "mistralai/ministral-3b-2512",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Offer a practical alternative to trade while acknowledging her constraints",
+              "line": "Carlotta, I\u2019d love to help you find a way to share resources without risking yours. Maybe we could exchange other goods you might have\u2014like herbs or cheese\u2014when you\u2019re ready to trade? My family could use some of those too.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Express willingness to wait with a lighthearted but hopeful tone",
+              "line": "Well, I\u2019ve eaten my last loaf, but I\u2019ve got plenty of gold if you\u2019d ever want to talk about a future deal. Maybe when the scares are over, we\u2019ll have a proper trade instead of just whispers?",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "mistralai/ministral-3b-2512",
+        "elapsed_seconds": 1.703,
+        "usage": {
+          "prompt_tokens": 1612,
+          "completion_tokens": 201,
+          "total_tokens": 1813,
+          "cost": 0.0001813,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0001813,
+            "upstream_inference_prompt_cost": 0.0001612,
+            "upstream_inference_completions_cost": 2.01e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        39,
+        37
+      ],
+      "word_limit_pass": false,
+      "wall_seconds": 1.703
+    },
+    {
+      "case": "remembered_refusal",
+      "model": "mistralai/ministral-8b-2512",
+      "status": "failed",
+      "error_type": "ValueError",
+      "http_status": null,
+      "wall_seconds": 4.562
+    },
+    {
+      "case": "remembered_refusal",
+      "model": "openai/gpt-4.1-mini",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "express_courtesy_and_share_mood",
+              "line": "Good day, Carlotta. The weather is quite pleasant today, isn't it? It lifts my spirits despite the worries we both carry.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "offer_hopeful_future_collaboration",
+              "line": "Carlotta, though times are tough now, I believe we can find a way to help each other when the situation steadies.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "openai/gpt-4.1-mini",
+        "elapsed_seconds": 1.625,
+        "usage": {
+          "prompt_tokens": 1493,
+          "completion_tokens": 110,
+          "total_tokens": 1603,
+          "cost": 0.0007732,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0007732,
+            "upstream_inference_prompt_cost": 0.0005972,
+            "upstream_inference_completions_cost": 0.000176
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        21,
+        21
+      ],
+      "word_limit_pass": true,
+      "wall_seconds": 1.625
+    },
+    {
+      "case": "reply",
+      "model": "mistralai/ministral-3b-2512",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "express concern about Ysolda\u2019s stability and offer practical help",
+              "line": "The wind\u2019s still pleasant today, but I\u2019ve noticed how hard you\u2019ve been working. Maybe we could share some grain when your harvest\u2019s ready? I\u2019ve got gold if you\u2019d take it.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "reassure and gently suggest mutual aid without pressure",
+              "line": "Your words mean a lot, Ysolda. I\u2019ll keep an eye out for when things settle\u2014perhaps we could swap a few loaves or seeds if you ever need them. No rush, but I\u2019d be glad to help.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "mistralai/ministral-3b-2512",
+        "elapsed_seconds": 1.563,
+        "usage": {
+          "prompt_tokens": 1532,
+          "completion_tokens": 190,
+          "total_tokens": 1722,
+          "cost": 0.00015474,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 194,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.00015474,
+            "upstream_inference_prompt_cost": 0.00013574,
+            "upstream_inference_completions_cost": 1.9e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        30,
+        36
+      ],
+      "word_limit_pass": false,
+      "wall_seconds": 1.563
+    },
+    {
+      "case": "reply",
+      "model": "mistralai/ministral-8b-2512",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Acknowledge shared caution while gently redirecting to a lighter topic.",
+              "line": "Ysolda, I appreciate your care too\u2014though I\u2019d rather not dwell on shortages. Tell me, have you seen the new crops near the river? I\u2019ve been meaning to check them out myself.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "Express gratitude and reinforce the bond while subtly affirming mutual trust.",
+              "line": "Your understanding means a lot, especially after what happened last week. I\u2019d still feel safer with a little more time. Still, I\u2019d love to hear how your mill\u2019s been running\u2014it\u2019s been quiet around there lately.",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "mistralai/ministral-8b-2512",
+        "elapsed_seconds": 3.265,
+        "usage": {
+          "prompt_tokens": 1532,
+          "completion_tokens": 194,
+          "total_tokens": 1726,
+          "cost": 0.00023271,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 194,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.00023271,
+            "upstream_inference_prompt_cost": 0.00020361,
+            "upstream_inference_completions_cost": 2.91e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        31,
+        35
+      ],
+      "word_limit_pass": false,
+      "wall_seconds": 3.265
+    },
+    {
+      "case": "reply",
+      "model": "openai/gpt-4.1-mini",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "express gratitude and hope",
+              "line": "Thank you, Ysolda. It's comforting to know we can wait for a better moment to help each other out.",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "share a thought about the weather",
+              "line": "The weather\u2019s so pleasant today, it almost makes me forget the worries about our bread supplies.",
+              "tone": "calm"
+            }
+          ]
+        },
+        "model": "openai/gpt-4.1-mini",
+        "elapsed_seconds": 1.25,
+        "usage": {
+          "prompt_tokens": 1409,
+          "completion_tokens": 94,
+          "total_tokens": 1503,
+          "cost": 0.000714,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.000714,
+            "upstream_inference_prompt_cost": 0.0005636,
+            "upstream_inference_completions_cost": 0.0001504
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        19,
+        16
+      ],
+      "word_limit_pass": true,
+      "wall_seconds": 1.25
+    },
+    {
+      "case": "polite_decline",
+      "model": "mistralai/ministral-3b-2512",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "politely decline with a cheerful offer to return later",
+              "line": "Ah, Carlotta, I\u2019m afraid I\u2019ve got pressing matters to attend to today, but perhaps another time\u2014maybe we can swap stories over a cup of tea when my schedule clears?",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "briefly decline with a nod toward future potential",
+              "line": "Thank you, Carlotta, but I\u2019m just taking it easy for now. Still, I\u2019d be delighted to chat when I\u2019ve had a moment\u2014perhaps you\u2019d like to join me for a walk later?",
+              "tone": "hopeful"
+            }
+          ]
+        },
+        "model": "mistralai/ministral-3b-2512",
+        "elapsed_seconds": 1.547,
+        "usage": {
+          "prompt_tokens": 602,
+          "completion_tokens": 177,
+          "total_tokens": 779,
+          "cost": 6.044e-05,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 194,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 6.044e-05,
+            "upstream_inference_prompt_cost": 4.274e-05,
+            "upstream_inference_completions_cost": 1.77e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        29,
+        31
+      ],
+      "word_limit_pass": false,
+      "wall_seconds": 1.547
+    },
+    {
+      "case": "polite_decline",
+      "model": "mistralai/ministral-8b-2512",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "Gently decline with a lighthearted excuse to avoid overstaying.",
+              "line": "I\u2019d love to, but I\u2019ve got a few things to tend to\u2014rain or shine, my cart won\u2019t wait forever!",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "Refuse politely while subtly hinting at future availability.",
+              "line": "Not today, but if the wind shifts and we cross paths again, I\u2019d be happy to chat!",
+              "tone": "calm"
+            }
+          ]
+        },
+        "model": "mistralai/ministral-8b-2512",
+        "elapsed_seconds": 2.312,
+        "usage": {
+          "prompt_tokens": 602,
+          "completion_tokens": 155,
+          "total_tokens": 757,
+          "cost": 8.736e-05,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 194,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 8.736e-05,
+            "upstream_inference_prompt_cost": 6.411e-05,
+            "upstream_inference_completions_cost": 2.325e-05
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        19,
+        17
+      ],
+      "word_limit_pass": true,
+      "wall_seconds": 2.312
+    },
+    {
+      "case": "polite_decline",
+      "model": "openai/gpt-4.1-mini",
+      "status": "valid",
+      "result": {
+        "proposal": {
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "politely decline socializing for now",
+              "line": "Thank you for the invitation, Carlotta, but I must tend to some urgent matters right now. Perhaps another time.",
+              "tone": "calm"
+            },
+            {
+              "id": "option_2",
+              "intention": "express appreciation but refuse to talk",
+              "line": "I appreciate your offer, Carlotta, but I\u2019m feeling a bit worn out and need some quiet this moment.",
+              "tone": "calm"
+            }
+          ]
+        },
+        "model": "openai/gpt-4.1-mini",
+        "elapsed_seconds": 1.469,
+        "usage": {
+          "prompt_tokens": 647,
+          "completion_tokens": 103,
+          "total_tokens": 750,
+          "cost": 0.0004236,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0004236,
+            "upstream_inference_prompt_cost": 0.0002588,
+            "upstream_inference_completions_cost": 0.0001648
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        }
+      },
+      "word_counts": [
+        19,
+        18
+      ],
+      "word_limit_pass": true,
+      "wall_seconds": 1.469
+    }
+  ],
+  "finished_at": 1792876738.6375942,
+  "cost_scope": "Reported usage only for accepted responses; failed-response usage unavailable. Not total billed cost.",
+  "limitations": [
+    "One sample per model per case; unpinned provider routing; no broad quality or speed ranking.",
+    "No game state or runtime configuration changed."
+  ]
+}

@@ -24,6 +24,8 @@ This remains an active development goal. The current foundation covers 29 initia
 
 Event-driven intelligence means decisions happen at meaningful opportunities. Walking, work attendance and quiet periods do not continuously invoke models. The current director runs bounded sessions; it is not an always-on autonomous service.
 
+The language component can be a small non-reasoning model. [The initial model comparison](model-routing.md) records current prices, nine real dialogue-only requests and the grounding failures that prevented a blind default switch.
+
 ## One resident's loop
 
 ```mermaid
