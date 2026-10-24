@@ -52,7 +52,7 @@ The development installation currently targets Skyrim 1.6.1170 and SKSE 2.2.6. D
 
 The isolated game launched from the helper without character setup or manual play. Its new bridge session reported WhiterunOrigin (0x1a27f), a loaded player and 26 loaded actors after 27.56 seconds. Counts include guards and animals; they are not a count of fully simulated citizens. Live names included Ysolda, Nazeem, Carlotta Valentia and Adrianne Avenicci.
 
-The custom bridge received and acknowledged a look-at command. That proves execution of the native call, not yet a close visual measurement of head movement. The observer screenshot and structured evidence are retained locally. Existing game assets and screenshots are not distributed with this source repository.
+The custom bridge received and acknowledged a look-at command. That proves execution of the native call, not yet a close visual measurement of head movement. The observer screenshot and structured evidence are retained; selected screenshots document the running prototype. Game asset archives and third-party binaries are not distributed with this source repository.
 
 Cold-start testing exposed an incomplete SKSE script library in the initial isolated copy. Installing all 62 compiled scripts from the official matching 2.2.6 package fixed the cold startup. Native NPC handles expire between callbacks in this runtime; the bridge now keeps only IDs and resolves fresh handles before actions. These failures are covered separately from the standalone economy tests.
 
@@ -100,4 +100,8 @@ The timeline database is now authoritative for managed commerce and social state
 
 ## Agent ownership of routines
 
-Location and routine decisions must come from the society planner. The current movement probes do not yet meet that requirement. See [agent control acceptance](agent-control.md) for the measured failures and next implementation step.
+Location and routine decisions must come from the society planner. Custom quest packages now demonstrably override Ysolda's ordinary schedule: one trip to Adrianne covered 4,116.88 to 247.98 game units in 47 seconds, and another to Carlotta covered 698.91 to 248.93 units in about 7 seconds. Both reported the expected custom package while travelling, then its release. [Forge evidence](evidence/agent-package-forge.json), [market evidence](evidence/agent-package-market.json).
+
+These destinations were test-selected. Autonomous choice, continuous daily routines, multi-resident scheduling and save-linked plans are still open. The in-game panel shows the traveller, destination, phase and distance, explicitly labelled as a test. [Agent control acceptance and build instructions](agent-control.md).
+
+![Observed travel result in Skyrim](images/agent-task-panel.jpg)

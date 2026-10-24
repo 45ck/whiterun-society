@@ -36,3 +36,7 @@ plugins=profile/'plugins.txt'
 lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []
 lines=[line for line in lines if line.lstrip('*').lower()!='whiterunsociety.esp']
 plugins.write_text('\n'.join(lines+['*WhiterunSociety.esp'])+'\n',encoding='utf-8')
+if (root/'game/Data/WhiterunAgents.esp').exists():
+    lines=plugins.read_text(encoding='utf-8').splitlines()
+    lines=[line for line in lines if line.lstrip('*').lower()!='whiterunagents.esp']
+    plugins.write_text('\n'.join(lines+['*WhiterunAgents.esp'])+'\n',encoding='utf-8')

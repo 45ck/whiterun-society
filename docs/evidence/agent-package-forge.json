@@ -1,0 +1,1133 @@
+{
+  "command": {
+    "id": "40b45c4877bf802d",
+    "kind": "walk_to",
+    "session": "1792818284530-0.16812896092836338",
+    "actor": 108186,
+    "target": 108156,
+    "method": "package"
+  },
+  "before": {
+    "session": "1792818284530-0.16812896092836338",
+    "checkpoint": 0,
+    "movement": null,
+    "platform": "2.9.0",
+    "ready": true,
+    "mode": "observer",
+    "residents": [
+      {
+        "id": 225358,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 19687.12109375,
+        "y": -7258.1552734375,
+        "z": -3647.60888671875
+      },
+      {
+        "id": 112452,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20144.482421875,
+        "y": -6815.64208984375,
+        "z": -3233.41357421875
+      },
+      {
+        "id": 112451,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20243.673828125,
+        "y": -6669.20849609375,
+        "z": -3233.41357421875
+      },
+      {
+        "id": 108169,
+        "name": "Idolaf Battle-Born",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20663.404296875,
+        "y": -7611.97119140625,
+        "z": -3638.773193359375
+      },
+      {
+        "id": 108156,
+        "name": "Adrianne Avenicci",
+        "inventory": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20668.763671875,
+        "y": -7727.72314453125,
+        "z": -3637.5
+      },
+      {
+        "id": 112455,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 8,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20637.232421875,
+        "y": -7005.33984375,
+        "z": -3642.583740234375
+      },
+      {
+        "id": 229976,
+        "name": "Commander Caius",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20334.470703125,
+        "y": -6648.56591796875,
+        "z": -3233.41162109375
+      },
+      {
+        "id": 843123,
+        "name": "Sigurd",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23483.201171875,
+        "y": -8304.8193359375,
+        "z": -3397.73291015625
+      },
+      {
+        "id": 108149,
+        "name": "Carlotta Valentia",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24384.75,
+        "y": -7088.40625,
+        "z": -3401.2216796875
+      },
+      {
+        "id": 1048823,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 6,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24572.416015625,
+        "y": -8284.4619140625,
+        "z": -3394.2861328125
+      },
+      {
+        "id": 1108911,
+        "name": "Cow",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24018.74609375,
+        "y": -5056.814453125,
+        "z": -2998.4130859375
+      },
+      {
+        "id": 108186,
+        "name": "Ysolda",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24829.265625,
+        "y": -7463.7568359375,
+        "z": -3389.32763671875
+      },
+      {
+        "id": 108196,
+        "name": "Nazeem",
+        "inventory": {
+          "gold": 52,
+          "bread": 1,
+          "grain": 0
+        },
+        "x": 24832.4140625,
+        "y": -7515.95654296875,
+        "z": -3390.006103515625
+      },
+      {
+        "id": 108138,
+        "name": "Amren",
+        "inventory": {
+          "gold": 6,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23823.421875,
+        "y": -4266.38623046875,
+        "z": -3002.819580078125
+      },
+      {
+        "id": 108140,
+        "name": "Saffir",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23781.5078125,
+        "y": -4136.791015625,
+        "z": -3007.64111328125
+      },
+      {
+        "id": 1106614,
+        "name": "Lillith Maiden-Loom",
+        "inventory": {
+          "gold": 38,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25078.107421875,
+        "y": -7168.15185546875,
+        "z": -3391.999755859375
+      },
+      {
+        "id": 108160,
+        "name": "Anoriath",
+        "inventory": {
+          "gold": 10,
+          "bread": 1,
+          "grain": 0
+        },
+        "x": 25167.064453125,
+        "y": -6982.748046875,
+        "z": -3401.7666015625
+      },
+      {
+        "id": 225409,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24859.982421875,
+        "y": -5585.08251953125,
+        "z": -2986.499267578125
+      },
+      {
+        "id": 182543,
+        "name": "Brenuin",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24843.75390625,
+        "y": -5339.40625,
+        "z": -3006.051513671875
+      },
+      {
+        "id": 108164,
+        "name": "Fralia Gray-Mane",
+        "inventory": {
+          "gold": 11,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25326.837890625,
+        "y": -7390.1572265625,
+        "z": -3395.41845703125
+      },
+      {
+        "id": 225408,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25248,
+        "y": -4495.99951171875,
+        "z": -3005.25830078125
+      },
+      {
+        "id": 108162,
+        "name": "Heimskr",
+        "inventory": {
+          "gold": 20,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25640.3359375,
+        "y": -3071.500244140625,
+        "z": -3005.998779296875
+      },
+      {
+        "id": 225392,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26172.337890625,
+        "y": -114.607421875,
+        "z": -1754.96923828125
+      },
+      {
+        "id": 225355,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26513.87890625,
+        "y": -211.03700256347656,
+        "z": -1741.30078125
+      },
+      {
+        "id": 225367,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26360,
+        "y": -8.0078125,
+        "z": -1753.5047607421875
+      },
+      {
+        "id": 225368,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26960.06640625,
+        "y": 532.051513671875,
+        "z": -1755.29541015625
+      }
+    ],
+    "player": {
+      "id": 20,
+      "cell": "",
+      "cellId": 107135,
+      "x": 19486.9609375,
+      "y": -7458.07080078125,
+      "z": -3641.9921875
+    },
+    "selected": {
+      "id": 225358,
+      "name": "Whiterun Guard"
+    },
+    "ack": null
+  },
+  "samples": [
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3950.37312840081,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3788.193792990825,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3627.203767889785,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3467.4002810586294,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3306.507749878523,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 3147.417089242488,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2988.3155913323612,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2821.6383156231036,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2653.708517672058,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2486.14139124681,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2318.8236738437463,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 2152.42484558047,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1986.9513051764702,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1822.4480243925198,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1657.0905039822383,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1485.2467960601175,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1317.384095510391,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 1150.419880928913,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 982.6221516169928,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 814.6736831993234,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 646.37118345646,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 478.78221013307956,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "travelling",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 311.19370143089225,
+      "expectedPackage": 100665347,
+      "ownedPackage": true,
+      "hasOwnedPackage": true,
+      "enginePackage": 100665347,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true
+    },
+    {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "applied",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 247.9804574703744,
+      "expectedPackage": 100665347,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "enginePackage": 181177,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true,
+      "outcome": "applied",
+      "releaseAt": 1792818333947
+    }
+  ],
+  "scope": "Explicit movement probe, not autonomous destination selection",
+  "passed": true,
+  "ack": {
+    "id": "40b45c4877bf802d",
+    "status": "applied",
+    "movement": {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "applied",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 247.9804574703744,
+      "expectedPackage": 100665347,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "enginePackage": 181177,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true,
+      "outcome": "applied",
+      "releaseAt": 1792818333947
+    }
+  },
+  "after": {
+    "session": "1792818284530-0.16812896092836338",
+    "checkpoint": 0,
+    "movement": {
+      "id": "40b45c4877bf802d",
+      "actor": 108186,
+      "target": 108156,
+      "method": "package",
+      "phase": "applied",
+      "at": 1792818286701,
+      "startDistance": 4116.883698383279,
+      "distance": 247.9804574703744,
+      "expectedPackage": 100665347,
+      "ownedPackage": false,
+      "hasOwnedPackage": true,
+      "enginePackage": 181177,
+      "startRequestedAt": 1792818286715,
+      "startResult": true,
+      "startComplete": true,
+      "outcome": "applied",
+      "releaseAt": 1792818333947
+    },
+    "platform": "2.9.0",
+    "ready": true,
+    "mode": "observer",
+    "residents": [
+      {
+        "id": 225358,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 19687.314453125,
+        "y": -7258.17333984375,
+        "z": -3647.327392578125
+      },
+      {
+        "id": 108169,
+        "name": "Idolaf Battle-Born",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20663.501953125,
+        "y": -7612.01416015625,
+        "z": -3640.032470703125
+      },
+      {
+        "id": 108156,
+        "name": "Adrianne Avenicci",
+        "inventory": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20671.98828125,
+        "y": -7726.0751953125,
+        "z": -3635.94140625
+      },
+      {
+        "id": 229976,
+        "name": "Commander Caius",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20469.0703125,
+        "y": -6802.9677734375,
+        "z": -3233.413330078125
+      },
+      {
+        "id": 108186,
+        "name": "Ysolda",
+        "inventory": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 20977.314453125,
+        "y": -7706.89892578125,
+        "z": -3613.83349609375
+      },
+      {
+        "id": 225409,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 21014.146484375,
+        "y": -6934.439453125,
+        "z": -3612.579833984375
+      },
+      {
+        "id": 182543,
+        "name": "Brenuin",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 22775.70703125,
+        "y": -7748.3037109375,
+        "z": -3512.908447265625
+      },
+      {
+        "id": 843123,
+        "name": "Sigurd",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23483.435546875,
+        "y": -8305.23046875,
+        "z": -3381.624267578125
+      },
+      {
+        "id": 108149,
+        "name": "Carlotta Valentia",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24384.748046875,
+        "y": -7088.40625,
+        "z": -3401.2216796875
+      },
+      {
+        "id": 1048823,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 6,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24572.416015625,
+        "y": -8284.4619140625,
+        "z": -3394.285400390625
+      },
+      {
+        "id": 1108911,
+        "name": "Cow",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24011.07421875,
+        "y": -5043.74658203125,
+        "z": -2998.650634765625
+      },
+      {
+        "id": 1106614,
+        "name": "Lillith Maiden-Loom",
+        "inventory": {
+          "gold": 38,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24893.814453125,
+        "y": -7405.46484375,
+        "z": -3391.99951171875
+      },
+      {
+        "id": 108138,
+        "name": "Amren",
+        "inventory": {
+          "gold": 6,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23823.421875,
+        "y": -4266.38623046875,
+        "z": -3002.819580078125
+      },
+      {
+        "id": 108140,
+        "name": "Saffir",
+        "inventory": {
+          "gold": 10,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 23781.5078125,
+        "y": -4136.791015625,
+        "z": -3007.64111328125
+      },
+      {
+        "id": 108196,
+        "name": "Nazeem",
+        "inventory": {
+          "gold": 52,
+          "bread": 1,
+          "grain": 0
+        },
+        "x": 24983.12109375,
+        "y": -7064.5751953125,
+        "z": -3396.607421875
+      },
+      {
+        "id": 108160,
+        "name": "Anoriath",
+        "inventory": {
+          "gold": 10,
+          "bread": 1,
+          "grain": 0
+        },
+        "x": 25167.064453125,
+        "y": -6982.748046875,
+        "z": -3401.7666015625
+      },
+      {
+        "id": 108164,
+        "name": "Fralia Gray-Mane",
+        "inventory": {
+          "gold": 11,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25326.833984375,
+        "y": -7390.15478515625,
+        "z": -3395.417724609375
+      },
+      {
+        "id": 225408,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24512.333984375,
+        "y": -4523.548828125,
+        "z": -3004.849609375
+      },
+      {
+        "id": 108191,
+        "name": "Danica Pure-Spring",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24509.44140625,
+        "y": -3964.142578125,
+        "z": -2995.8857421875
+      },
+      {
+        "id": 225368,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 5,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 24902.154296875,
+        "y": -2402.368408203125,
+        "z": -2814.31396484375
+      },
+      {
+        "id": 108162,
+        "name": "Heimskr",
+        "inventory": {
+          "gold": 20,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 25640.333984375,
+        "y": -3071.500244140625,
+        "z": -3005.998779296875
+      },
+      {
+        "id": 108179,
+        "name": "Farkas",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 28335.6953125,
+        "y": -3871.35205078125,
+        "z": -2617.70166015625
+      },
+      {
+        "id": 225392,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 0,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26262.619140625,
+        "y": -152.97398376464844,
+        "z": -1755.677734375
+      },
+      {
+        "id": 225355,
+        "name": "Whiterun Guard",
+        "inventory": {
+          "gold": 7,
+          "bread": 0,
+          "grain": 0
+        },
+        "x": 26359.890625,
+        "y": -8.008871078491211,
+        "z": -1753.5052490234375
+      }
+    ],
+    "player": {
+      "id": 20,
+      "cell": "",
+      "cellId": 107135,
+      "x": 19486.9609375,
+      "y": -7458.07080078125,
+      "z": -3641.9921875
+    },
+    "selected": {
+      "id": 225358,
+      "name": "Whiterun Guard"
+    },
+    "ack": {
+      "id": "40b45c4877bf802d",
+      "status": "applied",
+      "movement": {
+        "id": "40b45c4877bf802d",
+        "actor": 108186,
+        "target": 108156,
+        "method": "package",
+        "phase": "applied",
+        "at": 1792818286701,
+        "startDistance": 4116.883698383279,
+        "distance": 247.9804574703744,
+        "expectedPackage": 100665347,
+        "ownedPackage": false,
+        "hasOwnedPackage": true,
+        "enginePackage": 181177,
+        "startRequestedAt": 1792818286715,
+        "startResult": true,
+        "startComplete": true,
+        "outcome": "applied",
+        "releaseAt": 1792818333947
+      }
+    }
+  }
+}

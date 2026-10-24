@@ -11,6 +11,7 @@
  <div class="row"><div><div class="metric" id="count">—</div><div class="small">actors visible to the game</div></div><div style="text-align:right"><div class="metric" id="trade-count">0</div><div class="small">verified exchanges</div></div></div>
  <svg id="map" viewBox="0 0 258 95" aria-label="Live actor positions"></svg>
  <div><div class="row"><span class="label">Follow a resident</span><span class="small">Tour residents</span></div><div id="people"></div></div>
+ <div class="divider"></div><div id="routine-panel" hidden><div class="label">Current travel task</div><div id="routine" class="small" style="margin-top:7px"></div></div>
  <div class="divider"></div>
  <div><div class="label">Latest exchange</div><div id="trade" style="margin-top:10px" class="trade"><div class="empty">Waiting for the trade journal…</div></div></div>
  <div class="divider"></div><div><div class="label">Local AI · proposed decisions</div><div id="decisions" class="small" style="margin-top:8px">Waiting for an event. No background thinking.</div></div>
@@ -29,9 +30,14 @@ function bind(b,fn){if(!manualControls){b.disabled=true;return;}b.onclick=fn;let
 document.querySelectorAll('[data-camera]').forEach(b=>bind(b,()=>choose(b.dataset.camera)));
 document.getElementById('tour').hidden=!manualControls;
 document.getElementById('tour').onclick=()=>{tour=!tour;draw();};
-setInterval(()=>{if(tour){tourStep=(tourStep+1)%shots.length;choose(shots[tourStep][0],shots[tourStep][1],true);}},12000);
+function routeActive(){return state?.movement&& !['held','applied'].includes(state.movement.phase);}
+setInterval(()=>{if(tour&&!routeActive()){tourStep=(tourStep+1)%shots.length;choose(shots[tourStep][0],shots[tourStep][1],true);}},12000);
 function text(id,value){document.getElementById(id).textContent=value;}
 function draw(){if(!state)return;const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
+ const route=state.movement;
+ if(routeActive()){camera='focus';focusId=route.actor;}
+ document.getElementById('routine-panel').hidden=!route;
+ if(route){text('routine',`${names[route.actor]} → ${names[route.target]} · ${route.phase==='applied'?'Arrived':route.phase==='held'?'Needs a new plan':route.ownedPackage?'Walking under our travel task':'Requesting travel'} · ${Math.round(route.distance||0)} game units away. Test-selected destination.`);}
  const thoughts=document.getElementById('decisions');thoughts.replaceChildren();
  const decisions=state.decisions||[];
  if(!decisions.length)thoughts.textContent='Waiting for an event. No background thinking.';
@@ -45,6 +51,8 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='trade'?'Carlotta & Ysolda':camera==='street'?'Whiterun approach':'Market overview');
  if(state.movement?.phase==='walking')text('notice',`${names[state.movement.actor]} → ${names[state.movement.target]} · destination requested`);
  if(state.movement?.phase==='held')text('notice','Route not completed · destination control needs work');
+ if(routeActive()&&route.method==='package')text('notice',`${names[route.actor]} → ${names[route.target]} · ${route.ownedPackage?'custom travel task active':'requesting task'}`);
+ if(route?.phase==='applied')text('notice','Destination reached · travel task released');
  document.querySelectorAll('[data-camera]').forEach(b=>b.classList.toggle('active',b.dataset.camera===camera));
  const people=document.getElementById('people');people.replaceChildren();
  for(const id of [108149,108186,108156]){const a=actors.find(a=>a.id===id);const b=document.createElement('button');b.className='person'+(focusId===id?' active':'');b.disabled=!a;

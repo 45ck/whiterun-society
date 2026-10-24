@@ -7,6 +7,10 @@ __TRANSFER_FACTORY__
 const transfers=createInventoryTransfers(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
+__ROUTINE_FACTORY__
+const routines=createAgentRoutineController(()=>sp);
+let movementSource=null;
+let routineRecoveryNeeded=true;
 const config = __BRIDGE_CONFIG__;
 const economyForms={gold:0xf,bread:0x65c97,grain:0x4b0ba};
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
@@ -45,6 +49,7 @@ function reset() {
   cameraDirty=true;
   transfers.reset();
   movement.reset();
+  routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
 on('preLoadGame', () => {reset();loading=true;sp.printConsole('[Society] preLoadGame');});
 // The engine loadGame event can arrive before SKSE preLoadGame. Pair the
@@ -122,6 +127,7 @@ on('update', () => {
     if (typeof sp.Game.getFormEx!=='function') {refreshBindings=true;return;}
     bindingsReady=true;
   }
+  if(routineRecoveryNeeded){routines.release();routineRecoveryNeeded=false;}
   if (!announced) {
     if (sp.browser) {
       sp.browser.loadUrl('file:///Data/Platform/UI/index.html?rev='+Date.now());
@@ -143,7 +149,8 @@ on('update', () => {
         }
         else if (command.kind === 'walk_to') {
           cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
-          const result=movement.step(command);
+          movementSource=command.method==='package'?routines:movement;
+          const result=movementSource.step(command);
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
@@ -224,7 +231,7 @@ on('update', () => {
   if (hud!==null) sp.setTextString(hud,'WHITERUN SOCIETY | Observer | '+residents.length+' actors loaded');
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
   const observation = {
-    session, checkpoint:checkpointValue(), movement:movement.status(), platform:sp.getPlatformVersion(),
+    session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack

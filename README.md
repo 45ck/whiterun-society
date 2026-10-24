@@ -10,7 +10,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 ![Local AI proposals in the actual Skyrim observer overlay](docs/images/local-ai-in-game.jpg)
 
-Save-linked trade history, factual memories and trust have now restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. Agents do not yet own residents' routines; initial movement probes were insufficient. [Evidence and limitations](docs/acceptance.md) - [Required agent control](docs/agent-control.md).
+Save-linked trade history, factual memories and trust have now restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. A custom quest package has now overridden Ysolda's ordinary schedule and taken her to Adrianne, with package ownership, arrival and release observed. The test selected the destination; autonomous selection and complete daily routines remain open. [Evidence and limitations](docs/acceptance.md) - [Required agent control](docs/agent-control.md).
 
 ## Run the tests
 
@@ -19,7 +19,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.

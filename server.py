@@ -99,7 +99,7 @@ def main():
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
                     if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
                     if data['kind']=='walk_to':
-                        if data.get('method','path') not in ('path','offset'): raise ValueError('Unsupported movement method')
+                        if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')
                         if data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:
                             raise ValueError('Choose two different demo residents')
                     if data['kind']=='prepare_market' and bridge['observation'].get('checkpoint')!=0:

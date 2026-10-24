@@ -17,4 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs
+      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet restore tools/AgentPluginBuilder/AgentPluginBuilder.csproj --locked-mode
+      - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunAgents.esp
