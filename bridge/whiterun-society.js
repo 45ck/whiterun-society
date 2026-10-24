@@ -3,7 +3,10 @@
 (() => {
 // The installed Node-backed build exposes native exports as a global.
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
+__TRANSFER_FACTORY__
+const transfers=createInventoryTransfers(()=>sp);
 const config = __BRIDGE_CONFIG__;
+const economyForms={gold:0xf,bread:0x65c97,grain:0x4b0ba};
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
 let session = Date.now() + '-' + Math.random();
 let selected = 0;
@@ -19,6 +22,8 @@ let lastBindingAttempt = 0;
 let bindingAttempts = 0;
 let residents = [];
 let hud = null;
+let cameraMode='market',cameraActor=0,cameraDirty=true,cursor=true;
+let presentation={trades:[],committedCount:0};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
 const completed = new Set();
@@ -34,9 +39,48 @@ function reset() {
   session = Date.now() + '-' + Math.random();
   selected = 0; pending = null; ack = null; completed.clear(); announced = false;
   observerReady = false; residents = [];
+  cameraDirty=true;
+  transfers.reset();
 }
 on('preLoadGame', reset);
 on('newGame', reset);
+on('browserMessage',event=>{
+  const message=event.arguments && event.arguments[0];
+  if (!message || message.type!=='society-camera') return;
+  if (!['market','trade','street','focus'].includes(message.mode)) return;
+  if (message.mode==='focus' && ![108149,108186,108156].includes(message.id)) return;
+  cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;
+});
+on('buttonEvent',event=>{
+  if (event.code===66 && event.isDown && sp.browser) {cursor=!cursor;sp.browser.setFocused(cursor);}
+});
+function updateCamera(player) {
+  if (typeof sp.setFreeCameraRotation!=='function') return;
+  let target=[24500,-7100,-3320],offset=[-650,-850,450];
+  if(cameraMode==='street'){target=[20950,-7500,-3540];offset=[-1250,-100,300];}
+  if(cameraMode==='trade'){
+    const a=sp.Actor.from(sp.Game.getFormEx(108149)),b=sp.Actor.from(sp.Game.getFormEx(108186));
+    if(a&&b&&a.is3DLoaded()&&b.is3DLoaded()) target=[(a.getPositionX()+b.getPositionX())/2,(a.getPositionY()+b.getPositionY())/2,(a.getPositionZ()+b.getPositionZ())/2+60];
+    offset=[-400,-500,280];
+  }
+  if(cameraMode==='focus'){
+    const actor=sp.Actor.from(sp.Game.getFormEx(cameraActor));
+    if(!actor||!actor.is3DLoaded())return;
+    target=[actor.getPositionX(),actor.getPositionY(),actor.getPositionZ()+80];
+    const heading=actor.getAngleZ()*Math.PI/180;
+    offset=[Math.sin(heading)*140,Math.cos(heading)*140,35];
+  }
+  const desired=target.map((v,i)=>v+offset[i]);
+  const rotation=[Math.atan2(offset[2],Math.hypot(offset[0],offset[1])),Math.atan2(-offset[0],-offset[1]),0];
+  if(cameraDirty||typeof sp.getFreeCameraPosition!=='function') {
+    sp.setFreeCameraPosition(desired);sp.setFreeCameraRotation(rotation);cameraDirty=false;
+  } else {
+    const current=sp.getFreeCameraPosition(),r=sp.getFreeCameraRotation();
+    sp.setFreeCameraPosition(current.map((v,i)=>v+(desired[i]-v)*0.08));
+    const delta=Math.atan2(Math.sin(rotation[1]-r[1]),Math.cos(rotation[1]-r[1]));
+    sp.setFreeCameraRotation([r[0]+(rotation[0]-r[0])*0.08,r[1]+delta*0.08,0]);
+  }
+}
 on('activate', event => {
   if (event.caster && event.caster.getFormID() === 0x14 && event.target) {
     const actor = sp.Actor.from(event.target);
@@ -63,23 +107,31 @@ on('update', () => {
     bindingsReady=true;
   }
   if (!announced) {
-    if (sp.browser) { sp.browser.setFocused(false); sp.browser.setVisible(false); }
-    sp.Debug.notification('Whiterun Society: local development bridge loaded');
+    if (sp.browser) {
+      sp.browser.loadUrl('file:///Data/Platform/UI/index.html?rev='+Date.now());
+      sp.browser.setVisible(true);sp.browser.setFocused(true);
+    }
+    // The overlay presents connection status without overlapping native notifications.
     announced = true;
   }
+  if(observerReady) updateCamera(player);
   if (pending) {
     const command = pending; pending = null;
     if (command.session === session && !completed.has(command.id)) {
       try {
-        if (command.kind === 'notify') sp.Debug.notification('Whiterun Society: command received from local service');
+        if (command.kind === 'inventory_trade') {
+          const result=transfers.step(command);
+          if (!result.done) pending=command;
+          else {ack=result.ack;completed.add(command.id);}
+        }
+        else if (command.kind === 'notify') sp.Debug.notification('Whiterun Society: command received from local service');
         else if (command.kind === 'look_at_player') {
           const actor = sp.Actor.from(sp.Game.getFormEx(selected));
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        ack = {id:command.id,status:'applied',actor:selected};
-      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)}; }
-      completed.add(command.id);
+        if (command.kind!=='inventory_trade') {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
   if (busy || Date.now()-lastSent<2000) return;
@@ -89,7 +141,11 @@ on('update', () => {
   function observe(resident) {
     if (resident && resident.getFormID()!==0x14 && !seen.has(resident.getFormID()) && resident.is3DLoaded() && !resident.isDead() && !resident.isChild()) {
       seen.add(resident.getFormID());
-      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
+      const inventory={};
+      if (typeof resident.getItemCount==='function') {
+        for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
+      }
+      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
     }
   }
   // Only numeric IDs cross frame boundaries: native object handles are pooled
@@ -112,9 +168,9 @@ on('update', () => {
     sp.enableFreeCamera(true);
     sp.setFreeCameraPosition([player.getPositionX(),player.getPositionY(),player.getPositionZ()+240]);
     observerReady=true;
-    sp.Debug.notification('Whiterun Society: observer ready; actors discovered automatically');
+    // Observer readiness is shown by the live overlay.
   }
-  if (hud===null && typeof sp.createText==='function') {
+  if (!sp.browser && hud===null && typeof sp.createText==='function') {
     sp.setTextsVisibility('on');
     hud=sp.createText(640,110,'WHITERUN SOCIETY | Observer',[1,1,1,1],'DIN-Pro-bold');
     sp.setTextOrigin(hud,[0,0]);
@@ -129,10 +185,17 @@ on('update', () => {
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };
+  if (sp.browser) {
+    sp.setTextsVisibility('off');
+    sp.browser.executeJavaScript('window.whiterunRender && window.whiterunRender('+JSON.stringify({...observation,...presentation})+');');
+  }
   busy=true; lastSent=Date.now();
   client.post('/heartbeat',{body:JSON.stringify(observation),contentType:'application/json',headers:{Authorization:'Bearer '+config.token}})
     .then(response => {
-      if (session===currentSession && response.status===200) pending=JSON.parse(response.body).command;
+      if (session===currentSession && response.status===200) {
+        const result=JSON.parse(response.body);pending=result.command;
+        if(result.presentation) presentation=result.presentation;
+      }
     }).catch(error => sp.writeLogs('whiterun-society',String(error))).finally(()=>{busy=false;});
 });
 })();

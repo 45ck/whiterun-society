@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
+  .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
 function harness(nativeGlobal=false) {
@@ -61,7 +62,7 @@ test('empty town reports waiting instead of observer ready',()=>{
 });
 test('hot reload unsubscribes the previous controller',()=>{
   const h=harness();const old=h.handlers.get('update');
-  h.reload();assert.notEqual(h.handlers.get('update'),old);assert.equal(h.handlers.size,5);
+  h.reload();assert.notEqual(h.handlers.get('update'),old);assert.equal(h.handlers.size,7);
 });
 
 test('loaded IDs discover actors beyond the player cell',()=>{
@@ -86,4 +87,17 @@ test('a command resolves a new native handle on its application frame',async()=>
   h.setResponse(body=>({id:'pooled',kind:'look_at_player',session:body.session}));
   h.handlers.get('update')();await settle();frame++;
   h.handlers.get('update')();assert.equal(h.looks.length,1);
+});
+
+test('camera messages are allowlisted and resolved only on the game update',()=>{
+  const h=harness();const positions=[],rotations=[];
+  h.sp.setFreeCameraPosition=p=>positions.push(p);h.sp.setFreeCameraRotation=r=>rotations.push(r);
+  h.actor.getAngleZ=()=>0;h.sp.Game.getFormEx=id=>id===108186?h.actor:null;
+  h.handlers.get('update')();positions.length=0;
+  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:108186}]});
+  assert.equal(positions.length,0);
+  h.handlers.get('update')();assert.deepEqual(Array.from(positions[0]),[1,142,118]);
+  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:999}]});
+  h.handlers.get('update')();assert.deepEqual(Array.from(positions[1]),[1,142,118]);
+  assert.ok(rotations.flat().every(Number.isFinite));
 });

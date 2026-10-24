@@ -6,6 +6,7 @@ import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from society import Society
+from world_economy import WorldEconomy
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
     (args.runtime/'bridge-config.json').write_text(json.dumps({'port':args.port,'token':token}))
     sim=Society(args.runtime/'society.sqlite')
     sim.seed()
+    world=WorldEconomy(args.runtime/'world.sqlite')
     bridge={'last_seen':None,'observation':None,'session':None,'command':None,'last_ack':None}
 
     class Handler(BaseHTTPRequestHandler):
@@ -39,7 +41,7 @@ def main():
                     'bridge_connected':connected,'observer_ready':connected and observation.get('ready') is True,
                     'residents_loaded':len(observation.get('residents',[])) if connected else 0})
             elif self.path=='/state' and self.headers.get('Authorization')=='Bearer '+token:
-                self.reply(200,{'bridge':bridge,'simulation':sim.state()})
+                self.reply(200,{'bridge':bridge,'simulation':sim.state(),'world':world.state()})
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
@@ -59,17 +61,28 @@ def main():
                     if ack is not None and not isinstance(ack,dict): raise ValueError('invalid acknowledgement')
                     if not isinstance(data.get('residents',[]),list): raise ValueError('invalid residents')
                     bridge.update(last_seen=time.time(),observation=data,session=session)
+                    world.observe(data)
                     if ack:
                         bridge['last_ack']=ack
                         if bridge['command'] and ack.get('id')==bridge['command']['id']:
                             bridge['command']=None
                     with (args.runtime/'bridge-events.jsonl').open('a',encoding='utf-8') as log:
                         log.write(json.dumps({'at':time.time(),'observation':data})+'\n')
-                    self.reply(200,{'command':bridge['command']})
+                    journal=world.state()
+                    presentation={'committedCount':sum(row['status']=='committed' for row in journal),
+                        'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]]}
+                    self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation})
+                elif self.path=='/world/trade':
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']: raise ValueError('another command is pending')
+                    result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
+                        data.get('quantity',1),data.get('unit_price',3))
+                    self.reply(202,result)
                 elif self.path=='/command':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
-                    if bridge['command']: raise ValueError('command pending')
+                    if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
                     if data.get('kind') not in ('notify','look_at_player'): raise ValueError('unknown command')
                     command={'id':secrets.token_hex(8),'kind':data['kind'],'session':bridge['session']}
                     bridge['command']=command
@@ -85,6 +98,8 @@ def main():
 
     print(json.dumps({'listening':f'http://127.0.0.1:{args.port}','runtime':str(args.runtime)}),flush=True)
     try: HTTPServer(('127.0.0.1',args.port),Handler).serve_forever()
-    finally: sim.db.close()
+    finally:
+        sim.db.close()
+        world.db.close()
 
 if __name__=='__main__': main()

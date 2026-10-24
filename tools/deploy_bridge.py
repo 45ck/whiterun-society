@@ -1,6 +1,7 @@
 """Deploy only to an explicitly prepared isolated test installation."""
 import argparse
 import json
+import hashlib
 from pathlib import Path
 
 parser=argparse.ArgumentParser()
@@ -13,7 +14,14 @@ if game.parent!=root or Path(manifest['source']).resolve()==game:
     raise SystemExit('Refusing unverified runtime directory')
 config=json.loads((root/'runtime'/'bridge-config.json').read_text())
 source=(Path(__file__).resolve().parents[1]/'bridge'/'whiterun-society.js').read_text()
+factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
+source=source.replace('__TRANSFER_FACTORY__',factory)
 target=game/'Data'/'Platform'/'PluginsDev'/'whiterun-society.js'
 target.parent.mkdir(parents=True,exist_ok=True)
+ui_source=(Path(__file__).resolve().parents[1]/'ui'/'index.html').read_text(encoding='utf-8')
+source+='\n// UI revision: '+hashlib.sha256(ui_source.encode()).hexdigest()+'\n'
 target.write_text(source.replace('__BRIDGE_CONFIG__',json.dumps(config)),encoding='utf-8')
+ui=game/'Data'/'Platform'/'UI'/'index.html'
+ui.parent.mkdir(parents=True,exist_ok=True)
+ui.write_text((Path(__file__).resolve().parents[1]/'ui'/'index.html').read_text(encoding='utf-8'),encoding='utf-8')
 print('Deployed custom bridge to isolated game')

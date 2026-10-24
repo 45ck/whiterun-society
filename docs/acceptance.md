@@ -13,7 +13,7 @@ Initial demonstration: a farm, a bakery, three households, finite gold and food,
 | Scarcity | Harvest failure causes measurable unmet food demand | Standalone scenario test passes |
 | Visible action | One observed NPC moves or responds to our command | Not demonstrated |
 | Unattended launch | Start directly in Whiterun without playing the opening | Clean launch reached observer readiness in 27.56 seconds; 26 actors detected |
-| World consistency | Inventory and ledger agree after trades and reloads | Not implemented |
+| World consistency | Inventory and ledger agree after trades and reloads | One live inventory trade and duplicate retry verified; save/load still unimplemented |
 | Save lineage | Loading an older save restores its matching society state | Not implemented |
 | Conversation | NPC answers reflect witnessed events and personal interests | Rule-based opinion example only |
 | Voice | Spoken response and matching lip movement in-game | Not implemented |
@@ -55,3 +55,16 @@ The isolated game launched from the helper without character setup or manual pla
 The custom bridge received and acknowledged a look-at command. That proves execution of the native call, not yet a close visual measurement of head movement. The observer screenshot and structured evidence are retained locally. Existing game assets and screenshots are not distributed with this source repository.
 
 Cold-start testing exposed an incomplete SKSE script library in the initial isolated copy. Installing all 62 compiled scripts from the official matching 2.2.6 package fixed the cold startup. Native NPC handles expire between callbacks in this runtime; the bridge now keeps only IDs and resolves fresh handles before actions. These failures are covered separately from the standalone economy tests.
+
+### First live inventory trade
+
+Experiment `live-purchase-20261024-001` transferred one loaf from Carlotta Valentia (0x1a675) to Ysolda (0x1a69a) for 3 gold. Before: Carlotta 10 gold / 1 loaf; Ysolda 9 gold / 0 loaves. After: Carlotta 13 gold / 0 loaves; Ysolda 6 gold / 1 loaf. These are actual game inventory observations, not seeded simulation accounts. The journal committed only after the native acknowledgement and subsequent inventory observation agreed. Repeating the same request returned the existing committed record and left the inventories unchanged.
+
+This was an externally requested probe. It does not demonstrate autonomous shopping, physical navigation to a seller, generated speech, or save/load restoration. Trade effects are applied in two native transfer legs; partial or ambiguous effects are held for reconciliation. The system does not claim a cross-container atomic game transaction.
+
+
+## Visual spectator slice — 24 October 2026
+
+Observed inside the live lab Skyrim process: transparent society overlay at 1280x720; live resident cards and inventory counts; an inventory-verified trade receipt; automatic market, resident, trade-pair and street cameras. The closer resident offset avoids the foreground stall obstruction seen in the first camera experiment. This is runtime visual evidence, not a claim of autonomous shopping or human believability.
+
+Manual mouse events did not reach the UI reliably during qualification. Manual controls are disabled while this is investigated. Automated tour messages did reach the native bridge and changed the actual game camera. Camera raycasts/occlusion handling, save-lineage restoration, autonomous commerce, conversation and speech/lip sync remain open.

@@ -4,7 +4,7 @@ An experimental, open-source society simulation for Skyrim Special Edition: a ci
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The player can participate as a resident or influence policy. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
-**Development prototype, not a complete society mod.** The isolated game can start directly in Whiterun with an observer camera, report loaded actors and accept bounded commands through a local service. The transaction ledger and autonomous farm–bakery–household economy run separately: game inventory integration, generated dialogue, lip sync and game-save synchronization remain under development. Decisions currently use explicit rules, not a language model.
+**Development prototype, not a complete society mod.** The isolated game can start directly in Whiterun with an observer camera, report loaded actors and accept bounded commands through a local service. A live bread purchase between Carlotta and Ysolda has been verified against actual game inventories, including a duplicate retry. The autonomous farm–bakery–household model still runs separately. Autonomous in-game decisions, generated dialogue, lip sync and game-save synchronization remain under development.
 
 ## Run the tests
 
@@ -13,7 +13,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.
@@ -47,6 +47,12 @@ The helper starts the local service, deploys the bridge, and launches the isolat
 
 Observer mode protects the player from combat and uses a raised free camera. The game runs while unfocused so development does not stop NPC routines. Nearby actors are read from the engine, filtered for loaded 3D, and reported every two seconds. Only numeric form IDs survive between frames; native handles are reacquired before commands. The separate economic simulation is not yet driving those actors. A prepared playable character and a return-to-player control are future work.
 
+## Physical trade journal
+
+The authenticated local `/world/trade` endpoint accepts an event ID, buyer and seller reference IDs, quantity and unit price. It quotes against currently observed bread and gold, persists the intended before/after state in `world.sqlite`, and asks the bridge to transfer existing goods followed by payment. Each native operation is issued once and checked on subsequent frames. The journal commits only when the acknowledgement and independent observation match the expected result. Retries with the same ID return the original record.
+
+A changed save/session, unexpected inventory or incomplete operation places the command on hold. Further physical trades stop until it is reconciled. This is deliberate preservation of uncertain effects, not completed save synchronization. The older `/scenario/trade` endpoint and `society.sqlite` remain standalone test simulation; their balances are not game inventory.
+
 ## First playable acceptance criteria
 
 - A real in-game handshake and observed NPC action.
@@ -59,3 +65,12 @@ Observer mode protects the player from combat and uses a raised free camera. The
 ## License
 
 MIT for the original code in this repository. No affiliation with Bethesda or the creators of Skyrim, Cities: Skylines, SKSE or Skyrim Platform is implied.
+
+
+### In-game spectator demo
+
+The isolated game now displays a transparent society panel over Whiterun: observed resident inventories, actor positions, and a receipt for the verified physical bread trade. A guided camera tour changes every 12 seconds between the market, Carlotta, Ysolda, the trade pair, and the approach. It starts without player input.
+
+**Verified in the live game:** camera repositioning and close-ups, changing actor counts, actual gold/bread inventory, and the completed trade receipt. **Still being qualified:** native mouse delivery. Manual camera controls are deliberately disabled in this preview; the automatic tour remains usable. Camera collision avoidance is not implemented, so moving NPCs can occasionally cause occlusion. The standalone production simulation does not yet autonomously drive these NPCs.
+
+The deployer hashes the UI into the bridge revision so HTML changes trigger hot reload. No game restart is needed for this development loop. The browser UI never receives the local service bearer token.
