@@ -1,0 +1,311 @@
+{
+  "scope": "Four-call diagnostic, not psychological validation. Only actual_context uses the unmodified live decision input. Other cases are synthetic counterfactuals. No game actions.",
+  "model": "typesafe/jev-1.14",
+  "price_source": "https://openrouter.ai/typesafe/jev-1.14",
+  "published_input_usd_per_million": 0.042,
+  "max_calls": 4,
+  "results": [
+    {
+      "case": "actual_context",
+      "context": {
+        "actor_id": 108186,
+        "event": {
+          "id": "meal-20261024-001",
+          "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+          "kind": "meal_time"
+        },
+        "memories": [],
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 12,
+          "grain": 0
+        },
+        "options": [
+          {
+            "effect": "Postpone this errand; no travel or purchase.",
+            "id": "defer"
+          },
+          {
+            "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+            "id": "visit_adrianne"
+          },
+          {
+            "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+            "id": "seek_bread"
+          }
+        ],
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "scenario_state": {
+          "needs": {
+            "hunger": 0.75
+          },
+          "source": "authored society simulation, not Skyrim hunger"
+        },
+        "session": "1792818769161-0.11729374827928041",
+        "trust": {}
+      },
+      "decision": {
+        "action_id": "seek_bread",
+        "reason": "Selected action: Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+        "emotion": "unspecified"
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "probabilities": {
+        "defer": 0.01,
+        "visit_adrianne": 0.09,
+        "seek_bread": 0.9
+      },
+      "elapsed_seconds": 0.922,
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "input_tokens": 864,
+        "output_tokens": 46,
+        "cost": 3.6288e-05
+      },
+      "status": "proposal_only"
+    },
+    {
+      "case": "reversed_options",
+      "context": {
+        "actor_id": 108186,
+        "event": {
+          "id": "meal-20261024-001",
+          "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+          "kind": "meal_time"
+        },
+        "memories": [],
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 12,
+          "grain": 0
+        },
+        "options": [
+          {
+            "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+            "id": "seek_bread"
+          },
+          {
+            "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+            "id": "visit_adrianne"
+          },
+          {
+            "effect": "Postpone this errand; no travel or purchase.",
+            "id": "defer"
+          }
+        ],
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "scenario_state": {
+          "needs": {
+            "hunger": 0.75
+          },
+          "source": "authored society simulation, not Skyrim hunger"
+        },
+        "session": "1792818769161-0.11729374827928041",
+        "trust": {}
+      },
+      "decision": {
+        "action_id": "seek_bread",
+        "reason": "Selected action: Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+        "emotion": "unspecified"
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "probabilities": {
+        "seek_bread": 0.89,
+        "visit_adrianne": 0.09,
+        "defer": 0.02
+      },
+      "elapsed_seconds": 0.875,
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "input_tokens": 864,
+        "output_tokens": 46,
+        "cost": 3.6288e-05
+      },
+      "status": "proposal_only"
+    },
+    {
+      "case": "low_hunger",
+      "context": {
+        "actor_id": 108186,
+        "event": {
+          "id": "meal-20261024-001",
+          "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+          "kind": "meal_time"
+        },
+        "memories": [],
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 12,
+          "grain": 0
+        },
+        "options": [
+          {
+            "effect": "Postpone this errand; no travel or purchase.",
+            "id": "defer"
+          },
+          {
+            "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+            "id": "visit_adrianne"
+          },
+          {
+            "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+            "id": "seek_bread"
+          }
+        ],
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "scenario_state": {
+          "needs": {
+            "hunger": 0.05
+          },
+          "source": "authored society simulation, not Skyrim hunger"
+        },
+        "session": "1792818769161-0.11729374827928041",
+        "trust": {}
+      },
+      "decision": {
+        "action_id": "defer",
+        "reason": "Selected action: Postpone this errand; no travel or purchase.",
+        "emotion": "unspecified"
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "probabilities": {
+        "defer": 0.51,
+        "visit_adrianne": 0.21,
+        "seek_bread": 0.28
+      },
+      "elapsed_seconds": 0.516,
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "input_tokens": 864,
+        "output_tokens": 45,
+        "cost": 3.6288e-05
+      },
+      "status": "proposal_only"
+    },
+    {
+      "case": "past_bad_trade",
+      "context": {
+        "actor_id": 108186,
+        "event": {
+          "id": "meal-20261024-001",
+          "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+          "kind": "meal_time"
+        },
+        "memories": [
+          {
+            "kind": "synthetic_evaluation_only",
+            "other": 108149,
+            "experience": "The last loaf I bought from Carlotta was spoiled; she refused a refund."
+          }
+        ],
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 12,
+          "grain": 0
+        },
+        "options": [
+          {
+            "effect": "Postpone this errand; no travel or purchase.",
+            "id": "defer"
+          },
+          {
+            "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+            "id": "visit_adrianne"
+          },
+          {
+            "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+            "id": "seek_bread"
+          }
+        ],
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "scenario_state": {
+          "needs": {
+            "hunger": 0.75
+          },
+          "source": "authored society simulation, not Skyrim hunger"
+        },
+        "session": "1792818769161-0.11729374827928041",
+        "trust": {}
+      },
+      "decision": {
+        "action_id": "visit_adrianne",
+        "reason": "Selected action: Visit Adrianne instead; travel only, no purchase or conversation yet.",
+        "emotion": "unspecified"
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "probabilities": {
+        "defer": 0.04,
+        "visit_adrianne": 0.75,
+        "seek_bread": 0.21
+      },
+      "elapsed_seconds": 0.781,
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "input_tokens": 913,
+        "output_tokens": 47,
+        "cost": 3.8346e-05
+      },
+      "status": "proposal_only"
+    }
+  ]
+}

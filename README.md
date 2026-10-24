@@ -4,13 +4,13 @@ An experimental, open-source society simulation for Skyrim Special Edition: a ci
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The player can participate as a resident or influence policy. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
-**Development prototype, not a complete society mod.** The isolated game can start directly in Whiterun with an observer camera, report loaded actors and accept bounded commands through a local service. A live bread purchase between Carlotta and Ysolda has been verified against actual game inventories, including a duplicate retry. The autonomous farm–bakery–household model still runs separately. Autonomous in-game decisions, generated dialogue, lip sync and game-save synchronization remain under development.
+**Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers and save-linked trade memories have been demonstrated. The autonomous farm–bakery–household model still runs separately; full daily routines, generated dialogue, lip sync and stable save/load remain under development.
 
-**Latest experiment:** a local Qwen model now proposes event-triggered decisions for three residents using authored Big Five profiles and observed inventories. Proposals appear inside Skyrim; they do not yet execute actions. The first runs exposed inconsistent or unnatural explanations, so believable behaviour is not accepted. [Measured results and next gates](docs/npc-decisions.md).
+**Latest experiment:** event-triggered Jev decisions now select an actual destination and seller response. Ysolda chose to seek bread, our travel package took her to Carlotta, and Carlotta declined. No goods or money moved. Both remembered the refusal; the next event received those memories but repeated the same choices. This is real, bounded agency, not accepted human believability. [Live evidence](docs/agent-control.md#resident-selected-errand-and-consent) · [Human behaviour design and research](docs/human-behaviour.md).
 
-![Local AI proposals in the actual Skyrim observer overlay](docs/images/local-ai-in-game.jpg)
+![Jev choices and refusal memories in the actual Skyrim observer overlay](docs/images/jev-resident-decisions.jpg)
 
-Save-linked trade history, factual memories and trust have now restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. A custom quest package has now overridden Ysolda's ordinary schedule and taken her to Adrianne, with package ownership, arrival and release observed. The test selected the destination; autonomous selection and complete daily routines remain open. [Evidence and limitations](docs/acceptance.md) - [Required agent control](docs/agent-control.md).
+Save-linked trade history, factual memories and trust restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. Saved decision-plan restoration has unit coverage but still needs a real save/load experiment. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
 ## Run the tests
 

@@ -70,10 +70,10 @@ explanation for losing alias objects. Prebound quest aliases avoid that conversi
 A future Papyrus or native adapter can support arbitrary destination assignment.
 
 The prototype runs one task at a time. It holds interrupted/stalled tasks, releases
-the override, and cancels prototype tasks on bridge reload or game load. Saved
-planner intent and automatic resumption are not yet implemented. The model still
-only proposes decisions. Combat, interiors, unloaded actors, concurrent residents
-and all six route variants are not qualified by the first trip.
+the override, and cancels native tasks on bridge reload or game load. The later
+resident planner below persists intent and can reissue a saved travelling stage;
+that restoration needs live qualification. Combat, interiors, unloaded actors,
+concurrent residents and all six route variants are not qualified by these trips.
 
 ### Build and install the original task plugin
 
@@ -97,3 +97,55 @@ python tools/probe_movement.py --method package --target 108156
 This bounded probe selects Ysolda and a destination explicitly. Its report requires
 observed ownership and arrival. The observer follows the traveller and displays
 the destination, execution phase and distance; the camera tour resumes afterward.
+
+## Resident-selected errand and consent
+
+The meal-time worker now connects a resident's needs, authored Big Five profile,
+own inventory and retrieved memories to choices. It persists a model-call claim
+before inference, validates the result, requests owned travel, waits for observed
+arrival, and asks the seller independently whether to sell. An acceptance enters
+the existing inventory-verified trade protocol. A refusal moves no inventory and
+creates factual memories for both people without automatically lowering trust.
+The retained travel package is explicitly released after the outcome.
+
+Actual experiments on 24 October 2026:
+
+| Event | Provider | Observed outcome |
+| --- | --- | --- |
+| meal-001 | Local Qwen | Deferred, one call, 8.86 seconds; explanation repeated instructions |
+| meal-002 | Jev | Chose Carlotta, travelled 762.52 to 249.63 game units under our package, seller declined; two calls, 2.734 and 0.515 seconds |
+| meal-003 | Jev | Received the previous refusal memory, again chose Carlotta and was refused; already within 200.98 units, so no new journey proved; two calls, 0.797 and 0.875 seconds |
+
+Evidence: [local event](evidence/resident-local-001.json),
+[first Jev event](evidence/resident-jev-002.json),
+[repeat Jev event](evidence/resident-jev-003.json),
+[four-case comparison](evidence/jev-comparison.json).
+The actual IDs use the `meal-20261024-` prefix. Initial stock was an explicit
+three-loaf fixture. Gold and bread were unchanged by the refusals. The first
+refusal's memory recording was added after its run, then derived from its saved
+outcome before the second Jev event; that later context contains the memory.
+The evidence is not rewritten to imply the first worker recorded it immediately.
+
+Jev's action descriptions are authored labels, not generated dialogue or inferred
+inner thoughts. No emotion is invented for its typed choice. Eight hosted calls
+(four comparison, four in-game decisions) reported a total US$0.000300342.
+The key stays outside source control; the worker accepts a named environment
+variable. It never makes a model call from the Skyrim update loop.
+
+To run one explicitly triggered event after a fresh world's explicit bootstrap:
+
+```powershell
+python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id meal-unique-id --model-config PATH_TO_PRIVATE_CONFIG
+```
+
+For Jev, config fields are `provider: openrouter_decisions`,
+`url: https://openrouter.ai/api/alpha/decisions`, `model: typesafe/jev-1.14`,
+and `key_env` naming an existing environment variable. There are at most two
+inference calls per successful errand and no automatic retries. Replaying the
+same event does not increase hunger or repeat decisions. A crashed inference
+claim is held for review instead of silently charging another request.
+
+This does not yet prove adaptive replanning after refusal, negotiated prices,
+alternative suppliers, consumption, continuous schedules or humanlike judgement.
+The local prompt was generalized after the recorded run; its quality improvement
+has not been measured. [Broader design and evaluation](human-behaviour.md).

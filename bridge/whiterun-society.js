@@ -148,9 +148,16 @@ on('update', () => {
           else {ack=result.ack;completed.add(command.id);}
         }
         else if (command.kind === 'walk_to') {
+          if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
           cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
           movementSource=command.method==='package'?routines:movement;
           const result=movementSource.step(command);
+          if(!result.done)pending=command;
+          else {ack=result.ack;completed.add(command.id);}
+        }
+        else if(command.kind==='release_routine'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Release checkpoint mismatch');
+          const result=routines.finish(command);
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
@@ -213,6 +220,33 @@ on('update', () => {
   const distance=r=>(r.x-player.getPositionX())**2+(r.y-player.getPositionY())**2+(r.z-player.getPositionZ())**2;
   residents.sort((a,b)=>distance(a)-distance(b));
   residents=residents.slice(0,40);
+  const perception={};
+  for(const id of [108149,108186,108156]){
+    const eye=sp.Actor.from(sp.Game.getFormEx(id));
+    const record={available:false,visible:[],source:'experimental engine line of sight; not yet qualified as resident perception'};
+    perception[id]=record;
+    if(!eye||!eye.is3DLoaded()||typeof eye.hasLOS!=='function'||typeof eye.getAngleZ!=='function')continue;
+    try{
+      const heading=eye.getAngleZ()*Math.PI/180;
+      record.diagnostics={headingDegrees:eye.getAngleZ(),nearby:0,inCone:0,nativeVisible:0};
+      for(const seen of residents){
+        if(seen.id===id)continue;
+        const dx=seen.x-eye.getPositionX(),dy=seen.y-eye.getPositionY(),dz=seen.z-eye.getPositionZ();
+        const range=Math.hypot(dx,dy,dz),bearing=Math.atan2(dx,dy)-heading;
+        if(range>2000)continue;
+        record.diagnostics.nearby++;
+        if(Math.abs(Math.atan2(Math.sin(bearing),Math.cos(bearing)))>Math.PI*.45)continue;
+        record.diagnostics.inCone++;
+        const other=sp.Actor.from(sp.Game.getFormEx(seen.id));
+        if(other&&eye.hasLOS(other))record.visible.push({id:seen.id,name:seen.name,distance:Math.round(range)});
+      }
+      record.visible.sort((a,b)=>a.distance-b.distance);record.visible=record.visible.slice(0,8);
+      record.diagnostics.nativeVisible=record.visible.length;
+      // Keep experimental native output out of resident knowledge until live
+      // positive/occlusion controls qualify the sensor.
+      record.visible=[];
+    }catch(_){record.visible=[];}
+  }
   if (!residents.some(resident=>resident.id===selected)) selected=residents.length?residents[0].id:0;
   if (!observerReady && residents.length) {
     player.setGhost(true);
@@ -232,7 +266,7 @@ on('update', () => {
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,
+    ready:observerReady,mode:'observer',residents,perception,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

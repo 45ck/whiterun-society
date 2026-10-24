@@ -105,3 +105,27 @@ Location and routine decisions must come from the society planner. Custom quest 
 These destinations were test-selected. Autonomous choice, continuous daily routines, multi-resident scheduling and save-linked plans are still open. The in-game panel shows the traveller, destination, phase and distance, explicitly labelled as a test. [Agent control acceptance and build instructions](agent-control.md).
 
 ![Observed travel result in Skyrim](images/agent-task-panel.jpg)
+
+## Resident-selected choices, consent and memory
+
+The later Jev experiment replaces test-selected destinations with a bounded
+resident decision. Two real meal-time events selected seeking bread from Carlotta,
+obtained a seller refusal, released the task and preserved inventories. The first
+travelled from 762.52 to 249.63 units under our package; the second started within
+200.98 units, proving package ownership at proximity but no new journey.
+The second event received the first refusal in
+both participants' memories, yet repeated the choice. Memory retrieval is proven;
+adaptive judgement is not. [Run evidence and reproduction](agent-control.md#resident-selected-errand-and-consent).
+
+The prototype now persists planner stages with the game checkpoint, and tests
+cover restoration and stale model-call claims. Actual Skyrim save/load of those
+new stages is still open. A model-approved completed purchase is covered by the
+integration test but has not occurred in these live Jev runs. The prior externally
+requested physical purchase remains separate evidence.
+
+The observer panel shows provider, selected actions, timings and remembered
+events. Labels explicitly distinguish choices from spoken dialogue. Vision is
+experimental and excluded from resident knowledge pending controlled validation.
+Full economy, adaptive daily routines, speech and player experience remain open.
+
+![Actual resident choices and refusal memories](images/jev-resident-decisions.jpg)

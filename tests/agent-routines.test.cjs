@@ -42,3 +42,19 @@ test('load or hot reload cleanup releases the prototype task',()=>{
  const f=fixture();for(let i=0;i<4;i++)f.step();
  f.controller.reset();f.controller.release();assert.equal(f.running(),false);
 });
+test('a resident plan retains its travel package while consent is pending',()=>{
+ const f=fixture();f.command.retain=true;f.command.origin='resident_decision';
+ for(let i=0;i<4;i++)f.step();f.package(99);f.move(200);
+ const result=f.step();assert.equal(result.ack.status,'applied');assert.equal(f.running(),true);
+ assert.equal(result.ack.movement.phase,'arrived');
+ const release={id:'release-one',actor:108186};
+ assert.equal(f.controller.finish(release).done,false);assert.equal(f.running(),false);
+ f.package(42);assert.equal(f.controller.finish(release).ack.released,true);
+});
+
+test('release cannot be confirmed from an unloaded resident',()=>{
+ const f=fixture();const release={id:'release-unloaded',actor:108186};
+ f.controller.finish(release);f.loaded(false);
+ const result=f.controller.finish(release);
+ assert.equal(result.ack.status,'held');assert.equal(result.ack.released,false);
+});

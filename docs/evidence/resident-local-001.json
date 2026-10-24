@@ -1,0 +1,1104 @@
+{
+  "event_id": "meal-20261024-001",
+  "started_at": 1792818789.814677,
+  "model_calls": 1,
+  "before": {
+    "bridge": {
+      "last_seen": 1792818789.4660883,
+      "observation": {
+        "session": "1792818769161-0.11729374827928041",
+        "checkpoint": 4,
+        "movement": null,
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225386,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.974609375,
+            "y": -7258.1103515625,
+            "z": -3642.172607421875
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20664.109375,
+            "y": -7612.28759765625,
+            "z": -3636.647705078125
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 18,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20652.970703125,
+            "y": -7722.34716796875,
+            "z": -3627.634521484375
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21859.41796875,
+            "y": -7647.5615234375,
+            "z": -3564.35595703125
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21050.810546875,
+            "y": -5633.26220703125,
+            "z": -3161.31689453125
+          },
+          {
+            "id": 108185,
+            "name": "Olava the Feeble",
+            "inventory": {
+              "gold": 9,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22365.021484375,
+            "y": -9283.458984375,
+            "z": -3606.456787109375
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23701.85546875,
+            "y": -7740.92138671875,
+            "z": -3450.052490234375
+          },
+          {
+            "id": 108170,
+            "name": "Jon Battle-Born",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24262.673828125,
+            "y": -7823.4296875,
+            "z": -3398.064453125
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 5,
+              "bread": 3,
+              "grain": 0
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 38,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24548.1484375,
+            "y": -7208.2919921875,
+            "z": -3399.1962890625
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24145.310546875,
+            "y": -5239.86474609375,
+            "z": -2995.48583984375
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.427734375,
+            "y": -4266.21923828125,
+            "z": -3002.82275390625
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.48828125,
+            "y": -4136.79052734375,
+            "z": -3007.639892578125
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 52,
+              "bread": 1,
+              "grain": 0
+            },
+            "x": 24985.13671875,
+            "y": -7071.6533203125,
+            "z": -3398.41015625
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25092.1953125,
+            "y": -7462.08642578125,
+            "z": -3393.520263671875
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24767.759765625,
+            "y": -5415.70361328125,
+            "z": -3005.523193359375
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 10,
+              "bread": 1,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 108165,
+            "name": "Olfina Gray-Mane",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21236.220703125,
+            "y": -1656.6181640625,
+            "z": -2631.371337890625
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24644.857421875,
+            "y": -3540.4970703125,
+            "z": -3001.381591796875
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25224.28125,
+            "y": -4381.32763671875,
+            "z": -3005.157958984375
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25067.79296875,
+            "y": -3967.057373046875,
+            "z": -2994.653076171875
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 20,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25665.140625,
+            "y": -3062.89599609375,
+            "z": -3005.87353515625
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28335.650390625,
+            "y": -3871.3291015625,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25700.830078125,
+            "y": 1149.1837158203125,
+            "z": -1755.281494140625
+          }
+        ],
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.07080078125,
+          "z": -3641.9921875
+        },
+        "selected": {
+          "id": 225386,
+          "name": "Whiterun Guard"
+        },
+        "ack": {
+          "id": "checkpoint-4",
+          "status": "applied",
+          "actor": 225386
+        }
+      },
+      "session": "1792818769161-0.11729374827928041",
+      "command": null,
+      "last_ack": {
+        "id": "checkpoint-4",
+        "status": "applied",
+        "actor": 225386
+      }
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 4,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": null
+    }
+  },
+  "stages": [
+    {
+      "at": 1792818793.7613997,
+      "phase": "choose",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [],
+        "id": "meal-20261024-001",
+        "kind": "meal_time",
+        "phase": "choose",
+        "trade_id": "meal-meal-20261024-001",
+        "travel": null
+      }
+    },
+    {
+      "at": 1792818810.2006295,
+      "phase": "complete",
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108186,
+            "claim_id": "ee686c0e50673485383e797d",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "meal-20261024-001",
+                "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                "kind": "meal_time"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 12,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Postpone this errand; no travel or purchase.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                },
+                {
+                  "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+                  "id": "seek_bread"
+                }
+              ],
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.75
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792818769161-0.11729374827928041",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "defer",
+              "emotion": "calm",
+              "reason": "Continuing a routine means I will not investigate now. Asking means I intend to ask. I prefer to preserve money for future business. I will check my own inventory first."
+            },
+            "elapsed_seconds": 8.86,
+            "model": "Qwen3.5-2B-Q4_K_M"
+          }
+        ],
+        "id": "meal-20261024-001",
+        "kind": "meal_time",
+        "outcome": "deferred",
+        "phase": "complete",
+        "trade_id": "meal-meal-20261024-001",
+        "travel": null
+      }
+    }
+  ],
+  "after": {
+    "bridge": {
+      "last_seen": 1792818809.7817993,
+      "observation": {
+        "session": "1792818769161-0.11729374827928041",
+        "checkpoint": 7,
+        "movement": null,
+        "platform": "2.9.0",
+        "ready": true,
+        "mode": "observer",
+        "residents": [
+          {
+            "id": 225386,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 19686.974609375,
+            "y": -7258.1103515625,
+            "z": -3642.172607421875
+          },
+          {
+            "id": 108169,
+            "name": "Idolaf Battle-Born",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20664.109375,
+            "y": -7612.28759765625,
+            "z": -3636.647705078125
+          },
+          {
+            "id": 108156,
+            "name": "Adrianne Avenicci",
+            "inventory": {
+              "gold": 18,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20656.67578125,
+            "y": -7719.1337890625,
+            "z": -3627.659423828125
+          },
+          {
+            "id": 843123,
+            "name": "Sigurd",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 20971.49609375,
+            "y": -7891.73828125,
+            "z": -3614.076416015625
+          },
+          {
+            "id": 182543,
+            "name": "Brenuin",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22155.513671875,
+            "y": -7715.845703125,
+            "z": -3538.973388671875
+          },
+          {
+            "id": 225409,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 21861.640625,
+            "y": -5177.1337890625,
+            "z": -2920.327392578125
+          },
+          {
+            "id": 108185,
+            "name": "Olava the Feeble",
+            "inventory": {
+              "gold": 9,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22365.021484375,
+            "y": -9283.458984375,
+            "z": -3606.456787109375
+          },
+          {
+            "id": 108170,
+            "name": "Jon Battle-Born",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24262.673828125,
+            "y": -7823.4296875,
+            "z": -3398.064453125
+          },
+          {
+            "id": 108149,
+            "name": "Carlotta Valentia",
+            "inventory": {
+              "gold": 5,
+              "bread": 3,
+              "grain": 0
+            },
+            "x": 24384.748046875,
+            "y": -7088.40625,
+            "z": -3401.2216796875
+          },
+          {
+            "id": 1106614,
+            "name": "Lillith Maiden-Loom",
+            "inventory": {
+              "gold": 38,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24460.046875,
+            "y": -7280.4248046875,
+            "z": -3394.00537109375
+          },
+          {
+            "id": 1048823,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24572.416015625,
+            "y": -8284.4619140625,
+            "z": -3394.285400390625
+          },
+          {
+            "id": 1108911,
+            "name": "Cow",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24145.306640625,
+            "y": -5239.8623046875,
+            "z": -3006.218994140625
+          },
+          {
+            "id": 108138,
+            "name": "Amren",
+            "inventory": {
+              "gold": 6,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23823.427734375,
+            "y": -4266.21923828125,
+            "z": -3002.82275390625
+          },
+          {
+            "id": 108140,
+            "name": "Saffir",
+            "inventory": {
+              "gold": 10,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 23781.48828125,
+            "y": -4136.79052734375,
+            "z": -3007.639892578125
+          },
+          {
+            "id": 108196,
+            "name": "Nazeem",
+            "inventory": {
+              "gold": 52,
+              "bread": 1,
+              "grain": 0
+            },
+            "x": 25078.5234375,
+            "y": -7169.05322265625,
+            "z": -3393.75390625
+          },
+          {
+            "id": 108186,
+            "name": "Ysolda",
+            "inventory": {
+              "gold": 12,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25092.1953125,
+            "y": -7462.08642578125,
+            "z": -3392.16015625
+          },
+          {
+            "id": 108160,
+            "name": "Anoriath",
+            "inventory": {
+              "gold": 10,
+              "bread": 1,
+              "grain": 0
+            },
+            "x": 25167.064453125,
+            "y": -6982.748046875,
+            "z": -3401.7666015625
+          },
+          {
+            "id": 108164,
+            "name": "Fralia Gray-Mane",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25326.833984375,
+            "y": -7390.15478515625,
+            "z": -3395.417724609375
+          },
+          {
+            "id": 108165,
+            "name": "Olfina Gray-Mane",
+            "inventory": {
+              "gold": 11,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 22062.75390625,
+            "y": -2277.735107421875,
+            "z": -2703.718017578125
+          },
+          {
+            "id": 225408,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24848.25390625,
+            "y": -4576.80078125,
+            "z": -3001.761962890625
+          },
+          {
+            "id": 108191,
+            "name": "Danica Pure-Spring",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25067.79296875,
+            "y": -3967.057373046875,
+            "z": -2994.653076171875
+          },
+          {
+            "id": 229976,
+            "name": "Commander Caius",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 24936.287109375,
+            "y": -3450.65185546875,
+            "z": -2998.406005859375
+          },
+          {
+            "id": 225368,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 5,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25223.734375,
+            "y": -3721.83447265625,
+            "z": -2995.87890625
+          },
+          {
+            "id": 108162,
+            "name": "Heimskr",
+            "inventory": {
+              "gold": 20,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 25665.140625,
+            "y": -3062.89599609375,
+            "z": -3005.87353515625
+          },
+          {
+            "id": 108179,
+            "name": "Farkas",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 28382.310546875,
+            "y": -3886.123046875,
+            "z": -2617.70166015625
+          },
+          {
+            "id": 225392,
+            "name": "Whiterun Guard",
+            "inventory": {
+              "gold": 0,
+              "bread": 0,
+              "grain": 0
+            },
+            "x": 26434.826171875,
+            "y": -319.8716735839844,
+            "z": -1748.049072265625
+          }
+        ],
+        "player": {
+          "id": 20,
+          "cell": "",
+          "cellId": 107135,
+          "x": 19486.9609375,
+          "y": -7458.07080078125,
+          "z": -3641.9921875
+        },
+        "selected": {
+          "id": 225386,
+          "name": "Whiterun Guard"
+        },
+        "ack": {
+          "id": "checkpoint-7",
+          "status": "applied",
+          "actor": 225386
+        }
+      },
+      "session": "1792818769161-0.11729374827928041",
+      "command": null,
+      "last_ack": {
+        "id": "checkpoint-7",
+        "status": "applied",
+        "actor": 225386
+      }
+    },
+    "simulation": {
+      "people": [
+        {
+          "id": "player",
+          "gold": 100
+        },
+        {
+          "id": "baker",
+          "gold": 60
+        },
+        {
+          "id": "farmer",
+          "gold": 40
+        }
+      ],
+      "inventory": [
+        {
+          "owner": "player",
+          "item": "bread",
+          "quantity": 0
+        },
+        {
+          "owner": "baker",
+          "item": "bread",
+          "quantity": 12
+        },
+        {
+          "owner": "farmer",
+          "item": "grain",
+          "quantity": 30
+        }
+      ],
+      "events": [],
+      "beliefs": []
+    },
+    "world": [],
+    "society": {
+      "checkpoint": 7,
+      "transition": null,
+      "error": null,
+      "people": {
+        "108149": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.75
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108186,
+            "claim_id": "ee686c0e50673485383e797d",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "meal-20261024-001",
+                "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                "kind": "meal_time"
+              },
+              "memories": [],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 12,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Postpone this errand; no travel or purchase.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                },
+                {
+                  "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+                  "id": "seek_bread"
+                }
+              ],
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.75
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792818769161-0.11729374827928041",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "defer",
+              "emotion": "calm",
+              "reason": "Continuing a routine means I will not investigate now. Asking means I intend to ask. I prefer to preserve money for future business. I will check my own inventory first."
+            },
+            "elapsed_seconds": 8.86,
+            "model": "Qwen3.5-2B-Q4_K_M"
+          }
+        ],
+        "id": "meal-20261024-001",
+        "kind": "meal_time",
+        "outcome": "deferred",
+        "phase": "complete",
+        "trade_id": "meal-meal-20261024-001",
+        "travel": null
+      }
+    }
+  },
+  "status": "complete",
+  "outcome": "deferred"
+}

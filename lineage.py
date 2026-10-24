@@ -10,11 +10,12 @@ import json
 import sqlite3
 from decisions import PROFILES
 from world_economy import snapshot
+from agency import Agency
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy:
+class TimelineEconomy(Agency):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -84,7 +85,10 @@ class TimelineEconomy:
             if ack.get('id') == 'checkpoint-' + str(self.transition['next']) and ack.get('status') != 'applied':
                 self.error = 'Game could not bind the prepared checkpoint'
             return
-        if self.error or not self.active or not self.active['pending']:
+        if self.error or not self.active:
+            return
+        if not self.active['pending']:
+            self._agency_observe(observation)
             return
         pending = self.active['pending']
         if pending['status'] != 'pending':
@@ -104,6 +108,8 @@ class TimelineEconomy:
             record['evidence'] = {'actual': actual, 'ack': ack, 'session': session}
             state['trades'].append(record)
             state['pending'] = None
+            if state.get('plans') and state['plans'][-1]['trade_id'] == record['id']:
+                state['plans'][-1].update(phase='complete', outcome='bought_bread')
             for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
                                         (command['seller'], command['buyer'], 'sold')]:
                 person = state['people'].get(str(actor))
@@ -116,9 +122,11 @@ class TimelineEconomy:
         else:
             state['pending']['status'] = 'held'
             state['pending']['evidence'] = {'actual': actual, 'ack': ack}
+            if state.get('plans') and state['plans'][-1]['trade_id'] == pending['id']:
+                state['plans'][-1].update(phase='held', error='Physical trade requires reconciliation')
             self._write(state, 'trade requires reconciliation')
 
-    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3):
+    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None):
         if self.error or not self.active or self.transition:
             raise ValueError('Society checkpoint is not synchronized')
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
@@ -148,6 +156,10 @@ class TimelineEconomy:
         record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
         state = copy.deepcopy(self.active)
         state['pending'] = record
+        if agency_plan:
+            if not state.get('plans') or state['plans'][-1]['id'] != agency_plan:
+                raise ValueError('Trade has no matching resident plan')
+            state['plans'][-1]['phase'] = 'trading'
         checkpoint = self._write(state, 'trade intent persisted before physical action')
         return {**record, 'prepared_checkpoint': checkpoint}
 
@@ -159,7 +171,7 @@ class TimelineEconomy:
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
-        return None
+        return self.agency_command(session)
 
     def state(self):
         if not self.active:
@@ -169,4 +181,4 @@ class TimelineEconomy:
 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
-                'people': self.active['people'] if self.active else {}}
+                'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan()}

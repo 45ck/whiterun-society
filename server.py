@@ -89,15 +89,27 @@ def main():
                 elif self.path=='/world/trade':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
-                    if bridge['command']: raise ValueError('another command is pending')
+                    if bridge['command'] or world.agency_busy(): raise ValueError('another command or resident plan is pending')
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
+                    self.reply(202,result)
+                elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']: raise ValueError('another command is pending')
+                    observation=bridge['observation']
+                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation)
+                    elif self.path=='/agency/claim': result=world.claim_plan_decision(data['id'],observation)
+                    elif self.path=='/agency/decision': result=world.finish_plan_decision(data['id'],data['claim_id'],data['result'],observation)
+                    else: result=world.hold_plan(data['id'],data['reason'],observation)
                     self.reply(202,result)
                 elif self.path=='/command':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
                     if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
+                    if world.agency_busy() and data['kind'] in ('prepare_market','walk_to'):
+                        raise ValueError('A resident currently owns the task')
                     if data['kind']=='walk_to':
                         if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')
                         if data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:

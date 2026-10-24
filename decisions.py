@@ -61,20 +61,25 @@ def validate_decision(value, context):
         raise ValueError('Action is not currently allowed')
     if not isinstance(value['reason'], str) or not 1 <= len(value['reason']) <= 240:
         raise ValueError('Invalid brief public rationale')
-    if value['emotion'] not in ('calm', 'worried', 'hopeful', 'frustrated'):
+    if value['emotion'] not in ('calm', 'worried', 'hopeful', 'frustrated', 'unspecified'):
         raise ValueError('Unsupported emotion')
     return value
 
 
 def infer(context, config, api_key):
     """One bounded call per event. No retries, tools, or model-written commands."""
+    if config.get('provider') == 'openrouter_decisions':
+        from decision_provider import infer_jev
+        result = infer_jev(context, config, api_key)
+        validate_decision(result['decision'], context)
+        return result
     schema = {'type': 'object', 'additionalProperties': False,
         'properties': {'action_id': {'type': 'string', 'enum': [o['id'] for o in context['options']]},
                        'reason': {'type': 'string', 'maxLength': 240},
                        'emotion': {'type': 'string', 'enum': ['calm', 'worried', 'hopeful', 'frustrated']}},
         'required': ['action_id', 'reason', 'emotion']}
     payload = {'model': config['model'], 'temperature': .65, 'seed': 42, 'max_tokens': 160,
-        'messages': [{'role': 'system', 'content': 'Roleplay this resident making one everyday decision. Use the supplied personality, priorities, bias, and limited information. Traits influence tendencies, not rigid rules. Do not claim unobserved events are facts. Zero carried bread does not mean no food at home. Choose one allowed action. The explanation must support that exact action: asking means you intend to ask; continuing a routine means you will not investigate now. Give one short first-person sentence the resident could actually say, at most 160 characters, not an analytical description or hidden reasoning. Return only JSON.'},
+        'messages': [{'role': 'system', 'content': 'Roleplay this resident making one everyday decision. Use the supplied personality, priorities, bias, and limited information. Traits influence tendencies, not rigid rules. Do not claim unobserved events are facts. Zero carried bread does not mean no food at home. Choose one allowed action. Give one short first-person sentence explaining that specific choice, at most 160 characters. Speak naturally as the resident; do not repeat these instructions or describe the decision process. Return only JSON.'},
                      {'role': 'user', 'content': json.dumps(context)}],
         'response_format': {'type': 'json_schema', 'json_schema': {'name': 'resident_decision', 'strict': True, 'schema': schema}}}
     request = urllib.request.Request(config['url'] + '/v1/chat/completions', json.dumps(payload).encode(),
