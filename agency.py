@@ -12,6 +12,7 @@ from production import work_inventory
 from market_day import event_for
 from routing import route_available, dynamic_route
 from labour import work_opportunities, settle_contract
+from rest import rest_opportunities
 
 TERMINAL = ('complete', 'held')
 
@@ -152,6 +153,8 @@ class Agency:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
             if plan['kind']=='need_review' and work_opportunities(self.active, observation, actor):
                 options.append({'id':'seek_work','effect':'Ask the food enterprise about a 30-game-minute bread-making shift paying 2 gold. The employer must offer and you must accept before travel or work. No wage is guaranteed.'})
+            if plan['kind']=='need_review' and person['needs'].get('fatigue',0)>=.6 and rest_opportunities(self.active,observation,actor):
+                options.append({'id':'rest_at_bench','effect':'Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.'})
             information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
@@ -203,7 +206,11 @@ class Agency:
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action == 'seek_work':
+        if action == 'rest_at_bench':
+            sites=rest_opportunities(self.active,observation,updated['actor'])
+            if not sites:raise ValueError('No available rest site remains')
+            updated.update(phase='ready_to_rest',rest_target=sites[0]['id'])
+        elif action == 'seek_work':
             jobs = work_opportunities(self.active, observation, updated['actor'])
             if not jobs:raise ValueError('Work opportunity is no longer available')
             updated.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
@@ -357,6 +364,9 @@ class Agency:
                 self.plan_production(observation, plan)
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
+        elif plan['phase'] == 'ready_to_rest':
+            try:self.plan_rest(observation,plan)
+            except ValueError as error:self.hold_plan(plan['id'],str(error),observation)
 
     def agency_command(self, session):
         plan = self.agency_plan()

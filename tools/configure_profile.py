@@ -7,6 +7,7 @@ from pathlib import Path
 parser=argparse.ArgumentParser()
 parser.add_argument('--root',type=Path,required=True)
 parser.add_argument('--audio-diagnostic',action='store_true',help='Disable audio for an explicitly labelled diagnostic run')
+parser.add_argument('--experimental-rest',action='store_true',help='Opt into the unqualified seated-rest plugin; a cold launch has hung')
 args=parser.parse_args()
 root=args.root.resolve()
 profile=root/'mod-organizer'/'profiles'/'Default'
@@ -41,7 +42,8 @@ print('Observer profile: automatic Whiterun start; local saves and INIs; 1280x72
 
 plugins=profile/'plugins.txt'
 lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []
-for name in ('WhiterunSociety.esp','WhiterunAgents.esp','WhiterunRouter.esp'):
+for name in ('WhiterunSociety.esp','WhiterunAgents.esp','WhiterunRouter.esp','WhiterunRest.esp'):
+    if name=='WhiterunRest.esp' and not args.experimental_rest:continue
     if name!='WhiterunSociety.esp' and not (root/'game/Data'/name).exists():continue
     # Enable in place. Reordering existing plugins would change saved form IDs.
     matches=[i for i,line in enumerate(lines) if line.lstrip('*').lower()==name.lower()]

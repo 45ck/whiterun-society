@@ -7,6 +7,7 @@ import copy
 import math
 from routing import route_available
 from labour import work_opportunities
+from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -46,10 +47,11 @@ class DailyLife:
             if day < last_day - 1e-7:
                 raise ValueError('Resident needs belong to a later game time')
             hours = max(0, day - last_day) * 24
-            rates = {'hunger': HUNGER_PER_GAME_HOUR, 'fatigue': .025,
+            rates = {'hunger': HUNGER_PER_GAME_HOUR, 'fatigue': FATIGUE_PER_GAME_HOUR,
                      'social_contact': .018 + .025 * person['profile']['big_five']['extraversion']}
             for need, rate in rates.items():
-                elapsed = max(0, day-max(last_day, person.get('hunger_clock',last_day))) * 24 if need=='hunger' else hours
+                recovery_clock={'hunger':'hunger_clock','fatigue':'fatigue_clock'}.get(need)
+                elapsed = max(0, day-max(last_day,person.get(recovery_clock,last_day))) * 24 if recovery_clock else hours
                 person['needs'][need] = round(min(1, person['needs'][need] + rate * elapsed), 6)
             person['needs_clock'] = day
             actor = actors.get(key)
@@ -94,7 +96,13 @@ class DailyLife:
                 added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
             elif person['needs']['fatigue'] >= .8:
-                agency.update(state='unmet_rest_need', reason='A verified sleep/rest executor is not implemented')
+                if rest_opportunities(state,observation,int(key)):
+                    event={'id':f"daily-{daily['sequence']}-{key}",'actor':int(key),'kind':'need_review','status':'pending',
+                        'created_day':day,'priority':person['needs']['fatigue'],'reason':'Fatigue is high and an observed bench is available',
+                        'observed_inventory':copy.deepcopy(inventory)}
+                    daily['queue'].append(event);added.append(event['id'])
+                    agency.update(state='decision_pending',reason=event['reason'],event_id=event['id'])
+                else:agency.update(state='unmet_rest_need',reason='No qualified available bench or an existing commitment prevents a break')
             elif (any(b['custodian']==int(key) and 'retail_food' in b['capabilities'] for b in town['businesses'].values())
                   and (person.get('food_policy',{}).get('reviewed_day') is None
                        or day-person['food_policy']['reviewed_day'] >= 4/24-1e-7

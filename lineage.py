@@ -18,11 +18,12 @@ from conversation import Conversation
 from population import Population
 from daily_life import DailyLife
 from endowments import Endowments
+from rest import Rest
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -106,6 +107,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return
         if pending['command']['kind'] == 'inventory_consume':
             self.observe_consumption(observation)
+            return
+        if pending['command']['kind'] == 'rest_at_bench':
+            self.observe_rest(observation)
             return
         if pending['command']['kind'] == 'inventory_endowment':
             self.observe_endowment(observation)
@@ -213,6 +217,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
+                'rests': self.active.get('rests', []) if self.active else [],
                 'imports': self.active.get('imports', []) if self.active else [],
                 'resource_delivery': self.active['pending'] if self.active and self.active['pending'] and self.active['pending']['command']['kind']=='inventory_endowment' else None,
                 'market_day': self.scenario_status(), 'conversation': self.conversation_status(),

@@ -4,11 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
+  .replace('__OBSERVER_CAMERA_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/observer-camera.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
   .replace('__ENDOWMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/endowments.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PRODUCTION_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/production.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PAPYRUS_ROUTER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/papyrus-router.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__REST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/rest.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ROUTINE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/agent-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
@@ -110,16 +112,22 @@ test('a command resolves a new native handle on its application frame',async()=>
   h.handlers.get('update')();assert.equal(h.looks.length,1);
 });
 
-test('camera messages are allowlisted and resolved only on the game update',()=>{
+test('camera messages use managed loaded residents and resolve on the update',async()=>{
   const h=harness();const positions=[],rotations=[];
   h.sp.setFreeCameraPosition=p=>positions.push(p);h.sp.setFreeCameraRotation=r=>rotations.push(r);
-  h.actor.getAngleZ=()=>0;h.sp.Game.getFormEx=id=>id===108186?h.actor:null;
-  h.handlers.get('update')();positions.length=0;
-  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:108186}]});
+  h.actor.getAngleZ=()=>0;h.actor.hasKeyword=()=>true;h.sp.Keyword={from:x=>x};
+  h.sp.Game.getFormEx=id=>id===123?h.actor:id===0x13794?{}:null;
+  h.setPresentation({society:{town:{residents:{'123':{}}}}});
+  h.handlers.get('update')();await settle();positions.length=0;
+  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:123,yaw:0,distance:200,elevation:100}]});
   assert.equal(positions.length,0);
-  h.handlers.get('update')();assert.deepEqual(Array.from(positions[0]),[1,142,118]);
+  h.handlers.get('update')();assert.deepEqual(Array.from(positions[0]),[1,202,183]);
   h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:999}]});
-  h.handlers.get('update')();assert.deepEqual(Array.from(positions[1]),[1,142,118]);
+  h.handlers.get('update')();assert.deepEqual(Array.from(positions[1]),[1,202,183]);
+  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'market',automatic:true}]});
+  h.handlers.get('update')();assert.deepEqual(Array.from(positions[2]),[1,202,183]);
+  h.handlers.get('browserMessage')({arguments:[{type:'society-camera-release'}]});
+  h.handlers.get('update')();assert.notDeepEqual(Array.from(positions[3]),[1,202,183]);
   assert.ok(rotations.flat().every(Number.isFinite));
 });
 

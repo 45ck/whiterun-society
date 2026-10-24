@@ -1,8 +1,8 @@
 // Only scalar IDs cross updates. Papyrus owns alias handles and acknowledges
 // both forced references before the bridge accepts package ownership.
-function createPapyrusRouterController(platform,now=Date.now){
+function createPapyrusRouterController(platform,now=Date.now,options={}){
  let active=null;
- const file='WhiterunRouter.esp';
+ const file=options.file||'WhiterunRouter.esp';
  function records(){
   const sp=platform(),get=id=>sp.Game.getFormFromFile(id,file);
   return {sp,quest:sp.Quest?.from(get(0x800)),pkg:get(0x801),
@@ -21,7 +21,7 @@ function createPapyrusRouterController(platform,now=Date.now){
   observeRelease(owned){if(active){active.phase=owned?'held':'released';active.ownedPackage=owned;}},
   step(command){
    const r=records(),sp=r.sp;
-   const actor=sp.Actor.from(sp.Game.getFormEx(command.actor)),target=sp.Actor.from(sp.Game.getFormEx(command.target));
+   const actor=sp.Actor.from(sp.Game.getFormEx(command.actor)),target=options.furniture?sp.ObjectReference?.from(sp.Game.getFormEx(command.target)):sp.Actor.from(sp.Game.getFormEx(command.target));
    const fail=error=>{this.release();if(active){active.phase='held';active.error=error;}
     return {done:true,ack:{id:command.id,status:'held',error,movement:this.status()}};};
    if(!r.quest||!r.pkg||!r.resident||!r.destination||!r.request||!r.ack||!r.status)return fail('Papyrus router plugin unavailable');
@@ -81,7 +81,8 @@ function createPapyrusRouterController(platform,now=Date.now){
     if(!mailboxMatches()||r.request.getValue()!==active.serial||r.ack.getValue()!==active.serial||r.status.getValue()!==1||!r.quest.isRunning())
      return releaseAs('held','Router lease or mailbox changed during travel');
     if(active.hasOwnedPackage&&!active.ownedPackage)return releaseAs('held','Task interrupted by the engine; replanning required');
-    if(active.hasOwnedPackage&&active.distance<=250){
+    const seated=!options.furniture||(typeof actor.getSitState==='function'&&actor.getSitState()===3);
+    if(active.hasOwnedPackage&&active.distance<=250&&seated){
      if(command.retain){active.phase='arrived';return {done:true,ack:{id:command.id,status:'applied',movement:this.status()}};}
      return releaseAs('applied');
     }

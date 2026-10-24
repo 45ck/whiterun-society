@@ -19,6 +19,7 @@ def snapshot(state):
             'world': state['world'],
             'consumptions': state['society'].get('consumptions', []),
             'production': state['society'].get('production', []),
+            'rests': state['society'].get('rests', []),
             'imports': state['society'].get('imports', []),
             'market_day': state['society'].get('market_day'),
             'conversation': state['society'].get('conversation'),

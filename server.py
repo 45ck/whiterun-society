@@ -12,6 +12,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from society import Society
 from lineage import TimelineEconomy
+from observer import observer_state, camera_request
 
 
 class LocalServer(HTTPServer):
@@ -32,6 +33,7 @@ def main():
     args=parser.parse_args()
     args.runtime.mkdir(parents=True, exist_ok=True)
     token=secrets.token_hex(32)
+    observer_token=secrets.token_hex(24)
     config_path=args.runtime/'bridge-config.json'
     sim=Society(args.runtime/'society.sqlite')
     sim.seed()
@@ -50,7 +52,15 @@ def main():
             self.wfile.write(encoded)
 
         def do_GET(self):
-            if self.path=='/health':
+            if self.path.startswith('/observer'):
+                if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
+                if self.path=='/observer/state':return self.reply(200,observer_state(bridge,world.status()))
+                if self.path not in ('/observer','/observer/'):return self.reply(404,{'error':'not found'})
+                page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token).encode()
+                self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')
+                self.send_header('Cache-Control','no-store');self.send_header('X-Frame-Options','DENY')
+                self.send_header('Content-Length',str(len(page)));self.end_headers();self.wfile.write(page)
+            elif self.path=='/health':
                 connected=bridge['last_seen'] is not None and time.time()-bridge['last_seen']<10
                 observation=bridge['observation'] or {}
                 self.reply(200,{'service':'whiterun-society','protocol':1,'status':'running',
@@ -61,6 +71,20 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
+            if self.path=='/observer/camera':
+                origin=f'http://127.0.0.1:{args.port}'
+                if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
+                    return self.reply(403,{'error':'Same-origin observer control required'})
+                try:
+                    length=int(self.headers.get('Content-Length','0'))
+                    if not 0<length<=2048:raise ValueError('Invalid observer request size')
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    data=json.loads(self.rfile.read(length))
+                    if not isinstance(data,dict):raise ValueError('Expected camera object')
+                    request=camera_request(data,bridge['observation'],world.status())
+                    request['request_id']=secrets.token_hex(8);bridge['observer_camera']=request
+                    return self.reply(202,request)
+                except (ValueError,TypeError,KeyError) as error:return self.reply(400,{'error':str(error)})
             if self.headers.get('Authorization')!='Bearer '+token:
                 return self.reply(401,{'error':'unauthorized'})
             try:
@@ -73,12 +97,15 @@ def main():
                     if not isinstance(session,str) or len(session)>128: raise ValueError('invalid session')
                     if bridge['session']!=session:
                         bridge['command']=None  # Never replay actions across a game load.
+                        bridge['observer_camera']=None
                     ack=data.get('ack')
                     if ack is not None and not isinstance(ack,dict): raise ValueError('invalid acknowledgement')
                     if not isinstance(data.get('residents',[]),list): raise ValueError('invalid residents')
                     assets=data.get('inventory_observations',[])
                     if not isinstance(assets,list) or len(assets)>128:raise ValueError('invalid bounded inventory observations')
                     bridge.update(last_seen=time.time(),observation=data,session=session)
+                    if bridge.get('observer_camera') and (data.get('camera') or {}).get('request_id')==bridge['observer_camera']['request_id']:
+                        bridge['observer_camera']=None
                     world.observe(data)
                     if ack:
                         bridge['last_ack']=ack
@@ -98,7 +125,7 @@ def main():
                                 for item in proposals.get('results',[])]
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
-                    self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation})
+                    self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera')})
                 elif self.path=='/world/bootstrap':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')

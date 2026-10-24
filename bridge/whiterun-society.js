@@ -12,10 +12,15 @@ const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __PAPYRUS_ROUTER_FACTORY__
+__REST_FACTORY__
+const rest=createRestController(()=>sp);
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
 __SPEECH_FACTORY__
 const speech=createSpeechController(()=>sp);
+__OBSERVER_CAMERA_FACTORY__
+const observerCamera=createObserverCamera();
+let remoteCamera=null;
 let movementSource=null;
 let routineRecoveryNeeded=true;
 const config = __BRIDGE_CONFIG__;
@@ -53,6 +58,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  observerCamera.reset();remoteCamera=null;
   endowments.reset();
   speech.reset();
   session = Date.now() + '-' + Math.random();
@@ -60,7 +66,7 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
-  production.reset();
+  production.reset();rest.reset();
   movement.reset();
   routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
@@ -79,10 +85,16 @@ function checkpointValue() {
 }
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
+  if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='market';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
-  if (!['market','trade','street','focus'].includes(message.mode)) return;
-  if (message.mode==='focus' && ![108149,108186,108156].includes(message.id)) return;
+  if(message.automatic===true){
+    if(observerCamera.status().manual)return;
+    if(!['market','trade','street','focus'].includes(message.mode))return;
+    if(message.mode==='focus'&&!residents.some(r=>r.id===message.id&&r.isPerson===true))return;
+    cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;return;
+  }
+  if(!observerCamera.accept(message,residents,presentation.society?.town?.residents||{}))return;
   cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;
 });
 on('buttonEvent',event=>{
@@ -104,6 +116,12 @@ function updateCamera(player) {
     target=[actor.getPositionX(),actor.getPositionY(),actor.getPositionZ()+80];
     const heading=actor.getAngleZ()*Math.PI/180;
     offset=[Math.sin(heading)*140,Math.cos(heading)*140,35];
+  }
+  const control=observerCamera.status();
+  if(control.manual){
+    if(cameraMode==='free')target=[control.panX,control.panY,-3320];
+    const yaw=control.yaw*Math.PI/180;
+    offset=[Math.sin(yaw)*control.distance,Math.cos(yaw)*control.distance,control.elevation];
   }
   const desired=target.map((v,i)=>v+offset[i]);
   const rotation=[Math.atan2(offset[2],Math.hypot(offset[0],offset[1])),Math.atan2(-offset[0],-offset[1]),0];
@@ -142,7 +160,7 @@ on('update', () => {
     if (typeof sp.Game.getFormEx!=='function') {refreshBindings=true;return;}
     bindingsReady=true;
   }
-  if(routineRecoveryNeeded){routines.release();routineRecoveryNeeded=false;}
+  if(routineRecoveryNeeded){routines.release();rest.release();routineRecoveryNeeded=false;}
   if (!announced) {
     if (sp.browser) {
       sp.browser.loadUrl('file:///Data/Platform/UI/index.html?rev='+Date.now());
@@ -151,6 +169,12 @@ on('update', () => {
     // The overlay presents connection status without overlapping native notifications.
     announced = true;
   }
+  if(remoteCamera){
+    if(observerCamera.accept(remoteCamera,residents,presentation.society?.town?.residents||{}))cameraDirty=true;
+    remoteCamera=null;
+  }
+  const view=observerCamera.status();
+  if(view.manual){cameraMode=view.mode;cameraActor=view.id;}
   if(observerReady) updateCamera(player);
   if(observerReady&&sp.Input&&typeof sp.Input.isKeyPressed==='function'){
     for(const code of [2,3,4,64]){const down=sp.Input.isKeyPressed(code);if(down&&!observerPressed[code])observerKey=code;observerPressed[code]=down;}
@@ -159,7 +183,7 @@ on('update', () => {
     sp.browser.executeJavaScript('window.whiterunInspectKey && window.whiterunInspectKey('+key+');');}
   if(observerReady&&sp.browser&&typeof sp.worldPointToScreenPoint==='function'&&Date.now()-lastProjection>100){
     lastProjection=Date.now();projectionSample=[];
-    for(const id of [108149,108186,108156]){
+    for(const id of residents.filter(r=>r.isPerson===true).map(r=>r.id)){
       const resident=sp.Actor.from(sp.Game.getFormEx(id));if(!resident||!resident.is3DLoaded())continue;
       try{const x=resident.getPositionX(),y=resident.getPositionY(),z=resident.getPositionZ();
         const points=sp.worldPointToScreenPoint([x,y,z+125],[x,y,z+5]);
@@ -185,9 +209,15 @@ on('update', () => {
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
+        else if(command.kind==='rest_at_bench'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Rest checkpoint mismatch');
+          if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
+          const result=rest.step(command);
+          if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
+        }
         else if(command.kind==='speak'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Speech checkpoint mismatch');
-          speech.start(command);cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
+          speech.start(command);if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
           completed.add(command.id);
         }
         else if(command.kind==='inventory_endowment'){
@@ -198,7 +228,7 @@ on('update', () => {
         }
         else if (command.kind === 'walk_to') {
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
-          cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
+          if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
           movementSource=command.method==='package'?routines:movement;
           const result=movementSource.step(command);
           if(!result.done)pending=command;
@@ -237,7 +267,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
@@ -350,8 +380,9 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
+    camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };
@@ -365,6 +396,7 @@ on('update', () => {
       if (session===currentSession && response.status===200) {
         const result=JSON.parse(response.body);pending=result.command;
         if(result.presentation) presentation=result.presentation;
+        if(result.observer_camera&&result.observer_camera.request_id!==observerCamera.status().request_id)remoteCamera=result.observer_camera;
       }
     }).catch(error => sp.writeLogs('whiterun-society',String(error))).finally(()=>{busy=false;});
 });

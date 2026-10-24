@@ -26,10 +26,13 @@ movement=(Path(__file__).resolve().parents[1]/'bridge'/'movement.js').read_text(
 source=source.replace('__MOVEMENT_FACTORY__',movement)
 router=(Path(__file__).resolve().parents[1]/'bridge'/'papyrus-router.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__PAPYRUS_ROUTER_FACTORY__',router)
+rest=(Path(__file__).resolve().parents[1]/'bridge'/'rest.js').read_text().split('\nif(typeof module')[0]
+source=source.replace('__REST_FACTORY__',rest)
 routines=(Path(__file__).resolve().parents[1]/'bridge'/'agent-routines.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__ROUTINE_FACTORY__',routines)
 speech=(Path(__file__).resolve().parents[1]/'bridge'/'speech.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__SPEECH_FACTORY__',speech)
+source=source.replace('__OBSERVER_CAMERA_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'observer-camera.js').read_text().split('\nif(typeof module')[0])
 target=game/'Data'/'Platform'/'PluginsDev'/'whiterun-society.js'
 target.parent.mkdir(parents=True,exist_ok=True)
 ui_source=''.join((Path(__file__).resolve().parents[1]/'ui'/name).read_text(encoding='utf-8') for name in ('index.html','speech.js','encounter.js'))

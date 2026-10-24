@@ -41,6 +41,20 @@ class ServiceLifecycleTests(unittest.TestCase):
 
             try:
                 first_port=free_port();first=start(first_port);ready(first_port)
+                origin=f'http://127.0.0.1:{first_port}'
+                with urllib.request.urlopen(origin+'/observer') as response:
+                    page=response.read().decode()
+                    self.assertIn('Society control room',page)
+                    self.assertEqual(response.headers['X-Frame-Options'],'DENY')
+                import re
+                observer_token=re.search("const token='([^']+)'",page).group(1)
+                with urllib.request.urlopen(origin+'/observer/state') as response:
+                    self.assertFalse(json.load(response)['connected'])
+                for headers in ({},{'Origin':'https://unrelated.example','X-Observer-Token':observer_token},
+                                {'Origin':origin,'X-Observer-Token':'wrong'}):
+                    req=urllib.request.Request(origin+'/observer/camera',data=b'{"mode":"market"}',headers=headers)
+                    with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(req)
+                    self.assertEqual(error.exception.code,403)
                 authority=config.read_text()
                 collision=start(first_port)
                 self.assertNotEqual(collision.wait(timeout=20),0)

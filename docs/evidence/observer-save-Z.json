@@ -1,0 +1,25 @@
+{
+  "save": "WS-Observer-20261024-Z",
+  "checkpoint": 469,
+  "native_accounts": 29,
+  "restores": [
+    {
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      }
+    }
+  ]
+}

@@ -33,6 +33,7 @@ window.drawEncounter=()=>{
  const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&camera==='focus'?focusId:null);
  const panel=document.getElementById('resident-inspector');panel.hidden=!displayResident;
  if(!displayResident)return;
+ document.getElementById('focus-card').hidden=true;
  document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
@@ -44,7 +45,13 @@ window.drawEncounter=()=>{
  if(current?.selected){const title=inspectorText(panel,'Character intention · generated','label');title.style.marginTop='14px';inspectorText(panel,current.selected.intention);inspectorText(panel,'Tone: '+current.selected.tone);}
  const memories=inspectorText(panel,'Recent memories','label');memories.style.marginTop='14px';
  for(const m of person.memories.slice(-2)){const item=inspectorText(panel,m.quote?'“'+m.quote+'”':m.kind.replaceAll('_',' '));item.style.marginTop='9px';if(m.quote)inspectorText(panel,'Remembered claim · truth unverified');}
- inspectorText(panel,'Guided inspection · manual inputs being qualified').style.marginTop='14px';
+ for(const [need,value] of Object.entries(person.needs)){if(need==='hunger')continue;inspectorText(panel,need.replaceAll('_',' ')+' · '+Math.round(value*100)+'%');const bar=document.createElement('progress');bar.max=1;bar.value=value;bar.style.width='100%';panel.append(bar);}
+ inspectorText(panel,'Resident state · '+(person.agency?.state||'unknown').replaceAll('_',' '));
+ inspectorText(panel,person.agency?.reason||'No current reason recorded');
+ inspectorText(panel,'Relationships','label');
+ const relations=Object.entries(person.relationships||{});if(!relations.length)inspectorText(panel,'No relationship history recorded yet.');
+ for(const [id,value] of relations)inspectorText(panel,(names[id]||id)+' · '+JSON.stringify(value));
+ inspectorText(panel,'Traits are authored gameplay tendencies, not psychological measurements.').style.marginTop='14px';
 };
 setInterval(()=>{const c=state?.society?.conversation;if(c&&!['complete','held'].includes(c.phase)){
  const seconds=Math.floor((Date.now()-phaseBegan)/1000);document.getElementById('phase-clock').textContent=seconds+'s in this stage';

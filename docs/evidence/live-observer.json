@@ -1,0 +1,126 @@
+{
+  "census": 29,
+  "live_browser_controls_verified": [
+    "roster selection",
+    "follow Amren",
+    "zoom",
+    "orbit",
+    "height",
+    "character tab",
+    "relationships tab"
+  ],
+  "camera_first_follow": {
+    "mode": "focus",
+    "id": 108138,
+    "distance": 650,
+    "yaw": 225,
+    "elevation": 300,
+    "panX": 24500,
+    "panY": -7100,
+    "manual": true,
+    "request_id": "d5b8baeaf58ee0d1",
+    "position": [
+      23363.810546875,
+      -4725.759765625,
+      -2622.705810546875
+    ]
+  },
+  "camera_during_cycle": {
+    "mode": "focus",
+    "id": 108138,
+    "distance": 490,
+    "yaw": -360,
+    "elevation": 40,
+    "panX": 24500,
+    "panY": -7100,
+    "manual": false,
+    "request_id": null,
+    "position": [
+      19486.939453125,
+      -7458.109375,
+      -3402.4765625
+    ]
+  },
+  "events": [
+    {
+      "id": "daily-10-108164",
+      "actor": 108164,
+      "name": "Fralia Gray-Mane",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 5.5566e-05
+    },
+    {
+      "id": "daily-10-108197",
+      "actor": 108197,
+      "name": "Ahlam",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 5.2374e-05
+    },
+    {
+      "id": "daily-10-108140",
+      "actor": 108140,
+      "name": "Saffir",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 5.5734e-05
+    },
+    {
+      "id": "daily-10-108168",
+      "actor": 108168,
+      "name": "Bergritte Battle-Born",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 5.2794e-05
+    },
+    {
+      "id": "daily-10-108149",
+      "actor": 108149,
+      "name": "Carlotta Valentia",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 8.1228e-05
+    },
+    {
+      "id": "daily-10-108169",
+      "actor": 108169,
+      "name": "Idolaf Battle-Born",
+      "outcome": "ate_bread",
+      "calls": 1,
+      "cost_usd": 5.8212e-05
+    }
+  ],
+  "before_stock": {
+    "gold": 964,
+    "bread": 34,
+    "grain": 21
+  },
+  "after_stock": {
+    "gold": 964,
+    "bread": 28,
+    "grain": 21
+  },
+  "model_calls": 6,
+  "reported_cost_usd": 0.000355908,
+  "checkpoint_before": 432,
+  "checkpoint_after": 469,
+  "rest_experiment": {
+    "unit_tests": "passed",
+    "plugin_readback": "passed",
+    "cold_launch": "hung during loading; root cause not established",
+    "active_lab_plugin": false,
+    "native_recovery_verified": false
+  },
+  "test_counts": {
+    "python": 124,
+    "javascript": 78
+  },
+  "limitations": [
+    "No camera collision avoidance",
+    "Native CEF mouse delivery separately unqualified",
+    "No autonomous social selector or relationship levels",
+    "One resident plan at a time",
+    "Native audio disabled"
+  ]
+}

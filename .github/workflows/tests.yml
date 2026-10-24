@@ -17,13 +17,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs
+      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs tests/rest.test.cjs tests/observer-camera.test.cjs
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
       - run: dotnet restore tools/AgentPluginBuilder/AgentPluginBuilder.csproj --locked-mode
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunAgents.esp
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunRouter.esp
+      - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunRest.esp
       - name: Compile original Papyrus router on Windows
         if: runner.os == 'Windows'
         shell: pwsh
