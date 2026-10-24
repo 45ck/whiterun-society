@@ -26,6 +26,14 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 ## Examples from the running prototype
 
+### Watch a running society and measure its limits
+
+The control room now has **Start society**, **Stop after encounter**, and **Follow activity**. A bounded session alternates eligible economic and social events, offers nearby conversations when urgent-needs queues would otherwise crowd them out, and lets residents accept or decline. The in-game overlay identifies whether the director is running or idle. Both consenting speakers now receive temporary attendance packages; release must be verified for both.
+
+The **Society quality lab** reports encounter failures, duration, reply gaps, body-facing error, physical economic outcomes and relationship counts. Unknown gaze/raycast accuracy, lip sync and human realism remain unscored. The initial live baseline was **4/6 accepted chats completed**, **zero sales in the current save**, **two production events** and **39 meals**; the ledger includes staged experiments. There is still only one sale good and one production recipe. These are shortcomings to fix, not a high realism score. [Metrics definitions, baseline and acceptance targets](docs/quality-metrics.md)
+
+[Hear Anoriath and Brenuin's generated voices](docs/media/anoriath-brenuin.wav) · [Playback receipts and retained failure](docs/evidence/visible-conversation.json). This sample concatenates the two generated voice assets from an engine-confirmed encounter; it is **not a recording of the game or proof of physical audio output**.
+
 ### Change the town's businesses
 
 The visual observer now creates and edits enterprises for current residents: custodian, wage, shift duration, stock target, and open or closed status. A census no longer creates businesses for a fixed named cast. Residents compare current jobs and independently accept or refuse the offered terms; native inventory backs wages and production. The live four-gold employment trial produced an employer refusal, which is preserved as a real model outcome. [Enterprise controls, execution loop and test evidence](docs/enterprises.md)

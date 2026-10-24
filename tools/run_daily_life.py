@@ -12,15 +12,32 @@ import subprocess
 import sys
 import time
 import urllib.request
+import uuid
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from social import social_candidates
 from parallel_routines import select_routine_events
 
 
+def fair_pending(events, social_first=True):
+    """Keep hunger backlogs from starving social life, without inventing events."""
+    ordered = sorted(events, key=lambda e: (-e['priority'], e.get('created_day', 0), e['id']))
+    social = [e for e in ordered if e['kind'] == 'social_review']
+    economic = [e for e in ordered if e['kind'] != 'social_review']
+    result = []
+    while social or economic:
+        lane = social if social_first else economic
+        if not lane: lane = economic if social_first else social
+        result.append(lane.pop(0))
+        social_first = not social_first
+    return result
+
+
 def event_available(state,event):
     """Recheck queued work after every previous resident's consequences."""
     society=state['society'];observation=state['bridge']['observation']
+    if event['kind']=='social_opportunity':
+        return any(social_candidates(society,observation,int(key)) for key in society['town']['residents'])
     current=next((e for e in society['town']['daily']['queue'] if e['id']==event['id']),None)
     if not current or current['status']!='pending':return False
     if not any(r['id']==event['actor'] and r.get('isPerson') is True for r in observation['residents']):return False
@@ -50,10 +67,14 @@ def main():
     parser.add_argument('--model-config',type=Path)
     parser.add_argument('--language-config',type=Path,help='Enables scheduled social encounters with at most eight model calls each')
     parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
+    parser.add_argument('--receipt',type=Path)
+    parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
+    parser.add_argument('--social-opportunities',action='store_true',help='Offer nearby encounters between economic events; participation remains a resident choice')
     args=parser.parse_args()
     if not 0<=args.max_events<=24 or not 0<=args.watch_seconds<=600:
         raise ValueError('Use 0–24 resident events and 0–600 seconds of observation')
     if args.max_events and not args.model_config:raise ValueError('An explicit decision model configuration is required')
+    if args.social_opportunities and not args.language_config:raise ValueError('Social opportunities require a language configuration')
     runtime=args.root/'runtime'
     config=json.loads((runtime/'bridge-config.json').read_text())
     def request(route,data=None):
@@ -72,11 +93,13 @@ def main():
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],
               'maximum_model_calls':(8 if args.language_config else 5)*args.max_events,'status':'running'}
-    output=runtime/('daily-life-'+str(time.time_ns())+'.json')
+    output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
+    def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     record();deadline=time.monotonic()+args.watch_seconds;first=True
     try:
         while first or time.monotonic()<deadline:
+            if stopping():break
             first=False;state=fresh()
             if state['bridge']['session']!=session:raise ValueError('Save/session changed; director stopped')
             if state['society']['transition'] or state['bridge']['command']:
@@ -92,9 +115,13 @@ def main():
                 time.sleep(.4)
             loaded={a['id'] for a in state['bridge']['observation']['residents'] if a.get('isPerson') is True}
             queue=(state['society']['town'].get('daily') or {}).get('queue',[])
-            pending=sorted((e for e in queue if e['status']=='pending' and e['actor'] in loaded
+            pending=fair_pending((e for e in queue if e['status']=='pending' and e['actor'] in loaded
                             and (e['kind']!='social_review' or args.language_config)),
-                           key=lambda e:(-e['priority'],e.get('created_day',0),e['id']))
+                           social_first=len(evidence['events'])%2==0)
+            if args.social_opportunities and len(evidence['events'])%2==0 and not any(e['kind']=='social_review' and event_available(state,e) for e in pending):
+                opportunity={'id':'encounter-'+uuid.uuid4().hex[:20],'kind':'social_opportunity','actor':None,
+                             'source':'director nearby opportunity; not a claimed urgent need'}
+                if event_available(state,opportunity):pending.insert(0,opportunity)
             if args.parallel_journeys:
                 selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(8,args.max_events-len(evidence['events'])))
                 if len(selected)>=2:
@@ -110,22 +137,31 @@ def main():
                     record()
                     if batch['phase']=='held':raise ValueError('Independent journey held; no automatic repeat')
             for event in pending:
-                if len(evidence['events'])>=args.max_events:break
+                if stopping() or len(evidence['events'])>=args.max_events:break
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed before resident decision')
                 if not event_available(current,event):continue
                 evidence['events'].append({'id':event['id'],'actor':event['actor'],'status':'started'});record()
-                if event['kind']=='social_review':
+                social=event['kind'] in ('social_review','social_opportunity')
+                if social:
                     command=[sys.executable,str(Path(__file__).with_name('run_conversation.py')),'--root',str(args.root),
-                        '--id',event['id'],'--actor',str(event['actor']),'--decision-config',str(args.model_config),'--language-config',str(args.language_config)]
+                        '--id',event['id'],'--decision-config',str(args.model_config),'--language-config',str(args.language_config)]
+                    if event['actor'] is not None:command+=['--actor',str(event['actor'])]
                 else:command=[sys.executable,str(Path(__file__).with_name('run_resident_event.py')),
                     '--runtime',str(runtime),'--event-id',event['id'],'--actor',str(event['actor']),
                     '--kind',event['kind'],'--model-config',str(args.model_config)]
                 result=subprocess.run(command,check=False)
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')
-                plan=current['society']['conversation'] if event['kind']=='social_review' else current['society']['plan']
-                if event['kind']!='social_review' and plan and plan.get('effect_free_hold'):
+                # A worker's hold/finish response can precede the engine's
+                # checkpoint acknowledgement. Inspect the committed plan only.
+                settle_until=time.monotonic()+30
+                while current['society']['transition'] and time.monotonic()<settle_until:
+                    time.sleep(.4);current=fresh()
+                    if current['bridge']['session']!=session:raise ValueError('Session changed while settling worker checkpoint')
+                if current['society']['transition']:raise TimeoutError('Resident worker checkpoint did not settle')
+                plan=current['society']['conversation'] if social else current['society']['plan']
+                if not social and plan and plan.get('effect_free_hold'):
                     settle_until=time.monotonic()+30
                     while not isolated_before_action(current,event) and time.monotonic()<settle_until:
                         time.sleep(.5);current=fresh()
@@ -137,14 +173,20 @@ def main():
                         evidence['events'][-1].update(status='held',outcome='interrupted_before_action',
                             model_calls=worker['model_calls'],continued_other_residents=True)
                         record();continue
-                if result.returncode or not plan or plan['id']!=event['id']:raise ValueError('Scheduled resident event did not finish cleanly')
-                calls=(len(plan.get('social_decisions',[]))+2*len(plan.get('turns',[]))) if event['kind']=='social_review' else len(plan['decisions'])
+                if result.returncode or not plan or plan['id']!=event['id']:
+                    evidence['events'][-1].update(status='held',error=(plan or {}).get('error','Resident worker did not finish cleanly'))
+                    record();raise ValueError(evidence['events'][-1]['error'])
+                calls=(len(plan.get('social_decisions',[]))+2*len(plan.get('turns',[]))) if social else len(plan['decisions'])
+                if social:evidence['events'][-1]['actor']=plan.get('initiator')
                 evidence['events'][-1].update(status=plan['phase'],outcome=plan.get('outcome'),model_calls=calls)
                 record()
                 if plan['phase']=='held':raise ValueError('Scheduled resident event held; no automatic retry')
+                # Re-observe the town after each event. This also gives the
+                # director a chance to offer the next social opportunity.
+                if args.social_opportunities:break
             if args.max_events and len(evidence['events'])>=args.max_events:break
             if time.monotonic()<deadline:time.sleep(min(2,max(.01,deadline-time.monotonic())))
-        evidence.update(status='complete',after=fresh());record()
+        evidence.update(status='stopped' if stopping() else 'complete',after=fresh());record()
         print(json.dumps({'status':'complete','reviews':len(evidence['reviews']),'events':evidence['events'],'evidence':str(output)}))
     except Exception as error:
         evidence.update(status='held',error=str(error));record();raise

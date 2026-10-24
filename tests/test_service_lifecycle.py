@@ -50,7 +50,7 @@ class ServiceLifecycleTests(unittest.TestCase):
                 observer_token=re.search("const token='([^']+)'",page).group(1)
                 with urllib.request.urlopen(origin+'/observer/state') as response:
                     self.assertFalse(json.load(response)['connected'])
-                for route in ('/observer/camera','/observer/enterprise'):
+                for route in ('/observer/camera','/observer/enterprise','/observer/director'):
                     for headers in ({},{'Origin':'https://unrelated.example','X-Observer-Token':observer_token},
                                     {'Origin':origin,'X-Observer-Token':'wrong'}):
                         req=urllib.request.Request(origin+route,data=b'{"mode":"market"}',headers=headers)
@@ -68,6 +68,10 @@ class ServiceLifecycleTests(unittest.TestCase):
                 specification={'id':'new-bakery','expected_revision':0,'name':'New bakery','custodian':7,
                     'active':True,'capabilities':['bread_recipe','retail_food'],'production_policy':{'wage_gold':4}}
                 observer_headers={'Origin':origin,'X-Observer-Token':observer_token,'Content-Type':'application/json'}
+                self.assertEqual(post('/observer/director',{'action':'stop'},observer_headers)['status'],'idle')
+                with self.assertRaises(urllib.error.HTTPError) as missing_config:
+                    post('/observer/director',{'action':'start','max_events':2},observer_headers)
+                self.assertEqual(missing_config.exception.code,400)
                 result=post('/observer/enterprise',{'id':'charter','enterprise':specification},observer_headers)
                 observation['checkpoint']=result['checkpoint'];post('/heartbeat',observation)
                 with urllib.request.urlopen(origin+'/observer/state') as response:projection=json.load(response)

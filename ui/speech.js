@@ -16,6 +16,8 @@ window.whiterunSpeak=command=>{
 window.drawConversation=()=>{
  const c=state?.society?.conversation,card=document.getElementById('conversation-card');card.hidden=!c;
  if(!c)return;
+ const activePlan=state?.society?.plan&&!['complete','held'].includes(state.society.plan.phase);
+ if(['complete','held'].includes(c.phase)&&activePlan){card.hidden=true;document.getElementById('speech-caption').hidden=true;return;}
  document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const speaking=c.phase==='speaking';
  if(speaking&&!state.camera?.manual){camera='focus';focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}

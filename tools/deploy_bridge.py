@@ -32,6 +32,7 @@ source=source.replace('__REST_FACTORY__',rest)
 routines=(Path(__file__).resolve().parents[1]/'bridge'/'agent-routines.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__ROUTINE_FACTORY__',routines)
 source=source.replace('__PARALLEL_ROUTINES_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'parallel-routines.js').read_text().split('\nif(typeof module')[0])
+source=source.replace('__CONVERSATION_ATTENDANCE_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'conversation-attendance.js').read_text().split('\nif(typeof module')[0])
 speech=(Path(__file__).resolve().parents[1]/'bridge'/'speech.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__SPEECH_FACTORY__',speech)
 source=source.replace('__OBSERVER_CAMERA_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'observer-camera.js').read_text().split('\nif(typeof module')[0])

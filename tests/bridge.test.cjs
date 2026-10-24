@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
+  .replace('__CONVERSATION_ATTENDANCE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/conversation-attendance.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__OBSERVER_CAMERA_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/observer-camera.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
   .replace('__ENDOWMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/endowments.js'),'utf8').split('\nif(typeof module')[0])

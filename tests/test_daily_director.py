@@ -1,7 +1,25 @@
 import unittest
-from tools.run_daily_life import event_available,isolated_before_action
+from unittest.mock import patch
+from tools.run_daily_life import event_available,isolated_before_action,fair_pending
 
 class DirectorTests(unittest.TestCase):
+    def test_nearby_opportunity_requires_a_current_qualified_partner(self):
+        state={'society':{'town':{'residents':{'7':{}}}},'bridge':{'observation':{}}}
+        event={'kind':'social_opportunity','actor':None}
+        with patch('tools.run_daily_life.social_candidates',return_value=[]):
+            self.assertFalse(event_available(state,event))
+        with patch('tools.run_daily_life.social_candidates',return_value=[{'id':8}]):
+            self.assertTrue(event_available(state,event))
+
+    def test_social_life_cannot_be_starved_by_higher_priority_hunger_queue(self):
+        food=[{'id':str(i),'kind':'need_review','priority':1} for i in range(20)]
+        social=[{'id':'s'+str(i),'kind':'social_review','priority':.45} for i in range(3)]
+        result=fair_pending(food+social)
+        self.assertEqual([e['kind'] for e in result[:6]],['social_review','need_review']*3)
+        self.assertEqual(len(result),23)
+        self.assertEqual(len({e['id'] for e in result}),23)
+        self.assertEqual(fair_pending(food+social,False)[0]['kind'],'need_review')
+
     def test_only_verified_effect_free_failure_allows_other_residents_to_continue(self):
         event={'id':'need-1','kind':'need_review'}
         plan={'id':'need-1','phase':'held','effect_free_hold':True,'remembered':True,'decisions':[]}

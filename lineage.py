@@ -20,6 +20,7 @@ from daily_life import DailyLife
 from endowments import Endowments
 from rest import Rest
 from parallel_routines import ParallelRoutines
+from metrics import simulation_metrics
 from enterprises import Enterprises
 
 MAX_MARKER = 2**24 - 1
@@ -219,6 +220,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                'metrics':simulation_metrics(self.active),
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
                 'routine_batch': self.routine_batch(),
                 'consumptions': self.active.get('consumptions', []) if self.active else [],

@@ -10,7 +10,11 @@
 <section><div class="panel"><div class="row"><div class="eyebrow">Live native positions · schematic map</div><h2 id="view-title">The city at a glance</h2></div><div id="metrics" class="stats"></div><div class="map-wrap"><svg id="map" viewBox="0 0 650 360" aria-label="Select a resident on the live town map"></svg></div><div class="muted">Dots are observed positions. Gold squares are known public places; dashed lines show intentions, not walking paths. Unloaded residents remain in the ledger. Select a dot to inspect; Follow moves the Skyrim spectator camera.</div>
 <div class="controls"><button id="follow">Follow selected</button><button data-mode="market">Market</button><button data-mode="street">Street</button><button data-mode="free">Free overlook</button></div>
 <div class="sliders"><label>Zoom distance <input id="distance" type="range" min="100" max="4000" value="650"></label><label>Orbit <input id="yaw" type="range" min="-360" max="360" value="225"></label><label>Camera height <input id="elevation" type="range" min="40" max="2500" value="300"></label><label>Map east / west <input id="panX" type="range" min="17000" max="30000" value="24500"></label><label>Map north / south <input id="panY" type="range" min="-15000" max="1000" value="-7100"></label></div><div id="camera-status" class="muted" role="status">Camera changes do not change NPC goals or inventories.</div></div>
+<div class="panel section"><div class="eyebrow">Voiced encounters · work · food · relationships</div><h2>Run the society</h2>
+<div class="controls"><label>Resident events <select id="director-budget"><option value="6">6</option><option value="12">12</option><option value="2">2</option></select></label><button id="director-start">Start society</button><button id="director-stop">Stop after encounter</button><button data-mode="story">Follow activity</button></div>
+<p id="director-status" role="status" class="muted">Checking society director…</p><p class="muted">Runs pending needs and social opportunities with generated voices. Residents may decline. Maximum eight model calls per event; stops after the event budget or a fault. Stop lets the current encounter or transaction settle.</p></div>
 <div class="panel section"><div class="eyebrow">Intent → execution → consequence</div><h2>What is happening</h2><div id="activity"></div><div id="timeline"></div></div>
+<div class="panel section"><div class="eyebrow">Measurements, limits & missing evidence</div><h2>Society quality lab</h2><div id="quality-metrics"></div></div>
 <div class="panel section"><div class="eyebrow">Supply, labour & exchange</div><h2>Town enterprises</h2>
 <p class="muted">Set the opportunities. Residents still choose whether to work, buy or sell. Charters use existing inventory; they create no money or supplies.</p>
 <button id="new-enterprise">Create enterprise</button><div id="enterprise-status" role="status" class="muted"></div>
@@ -30,10 +34,17 @@
 </main><footer id="limits"></footer>
 <script>
 const token='__OBSERVER_TOKEN__',el=id=>document.getElementById(id);let state=null,selected=null,tab='needs',mode='market',pendingRequest=null,lastSuccess=0,busy=false;
-let enterpriseEdit=null,enterprisePending=null;
+let enterpriseEdit=null,enterprisePending=null,directorBusy=false;
 function add(parent,tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;parent.append(e);return e;}
 const pretty=s=>String(s??'unknown').replaceAll('_',' '),personName=id=>state?.residents.find(r=>r.id===Number(id))?.name||state?.places?.find(p=>p.id===Number(id))?.name||String(id);
 function select(id){selected=id;render();}
+async function controlDirector(action){
+ directorBusy=true;el('director-start').disabled=true;el('director-stop').disabled=true;
+ try{const response=await fetch('/observer/director',{method:'POST',headers:{'Content-Type':'application/json','X-Observer-Token':token},body:JSON.stringify({action,max_events:Number(el('director-budget').value)})});const result=await response.json();if(!response.ok)throw Error(result.error);state.director=result;if(action==='start')await camera('story');render();}
+ catch(error){el('director-status').textContent=error.message;}
+ finally{directorBusy=false;}
+}
+el('director-start').onclick=()=>controlDirector('start');el('director-stop').onclick=()=>controlDirector('stop');
 function bar(parent,name,value){const row=add(parent,'div',undefined,'need');add(row,'span',pretty(name));const p=add(row,'progress');p.max=1;p.value=value;p.setAttribute('aria-label',pretty(name));add(row,'span',Math.round(value*100)+'%');}
 function activityLabel(r){const member=state.routine_batch?.members.find(m=>m.actor===r.id);if(member&&['thinking','travelling'].includes(state.routine_batch.phase)){const native=state.parallel_routines?.activities.find(a=>a.actor===r.id);return 'independent journey: '+pretty(native?.phase||native?.status||member.phase);}if(state.rest?.actor===r.id&&state.rest.id==='rest-'+state.plan?.id)return 'seated break: '+pretty(state.rest.phase);if(state.plan?.actor===r.id&&!['complete','held'].includes(state.plan.phase))return pretty(state.plan.phase);return pretty(r.person.agency?.state);}
 function render(){if(!state)return;const rows=state.residents,chosen=rows.find(r=>r.id===selected),query=el('search').value.toLowerCase(),filter=el('filter').value;
@@ -68,6 +79,27 @@ function render(){if(!state)return;const rows=state.residents,chosen=rows.find(r
  const businesses=el('businesses');businesses.replaceChildren();for(const b of state.businesses){const box=add(businesses,'div',undefined,'event');add(box,'strong',b.name);add(box,'p',`${b.active?'Open':'Closed'} · revision ${b.revision} · custodian: ${personName(b.custodian)}`,'muted');const p=b.production_policy;if(b.capabilities.includes('bread_recipe'))add(box,'p',`${p.wage_gold} gold / ${p.work_minutes} game minutes · stock target ${p.target_bread} loaves`);const stock=b.observed_inventory;add(box,'p',stock?`${stock.gold} gold · ${stock.grain} grain · ${stock.bread} bread in custodian inventory`:'Current inventory unavailable');add(box,'p',b.account_scope,'muted');add(box,'p',`${b.contracts?.filter(c=>c.status==='completed').length||0} completed contracts`,'muted');for(const c of (b.contracts||[]).slice(-3))add(box,'p',`${personName(c.worker)} · ${c.status} · ${c.terms?.wage_gold??'—'} gold`);if(b.capabilities.every(c=>['retail_food','bread_recipe'].includes(c))){const edit=add(box,'button','Edit '+b.name);edit.disabled=!state.connected||!!state.transition||!!enterprisePending;edit.onclick=()=>editEnterprise(b);}}
  el('new-enterprise').disabled=!state.connected||!!state.transition||!!enterprisePending;
  if(enterprisePending&&state.checkpoint>=enterprisePending.checkpoint&&!state.transition){const observed=state.businesses.find(b=>b.id===enterprisePending.id);if(observed?.revision===enterprisePending.revision){el('enterprise-status').textContent=`Enterprise revision ${observed.revision} observed in Skyrim checkpoint ${state.checkpoint}. No resources created or transferred.`;enterprisePending=null;}}
+ const director=state.director||{status:'idle',running:false};el('director-start').disabled=directorBusy||!state.connected||director.running;el('director-stop').disabled=directorBusy||!director.running;
+ el('director-status').textContent=`Society ${pretty(director.status)}${director.max_events?' · '+(director.events_completed||0)+' / '+director.max_events+' events settled':''}${director.error?' · '+director.error:''}${director.status==='idle'?' · Start society to generate new activity; the bridge alone does not run decisions.':''}`;
+ const quality=el('quality-metrics');quality.replaceChildren();const m=state.metrics;
+ if(m){const e=m.encounters,b=m.embodiment,ec=m.economy,s=m.social_complexity;
+  const ratio=r=>r.n?`${r.percent}% (${r.success}/${r.n})`:'Unknown · no samples';
+  const timing=d=>d.n?`${d.median}s median / ${d.p95}s p95 · n=${d.n}`:'Unknown · no timed samples yet';
+  for(const [label,value] of [
+   ['Accepted chats completed',ratio(e.accepted_chat_completion)],['Encounter failures',`${e.failed} / ${e.completed+e.failed} terminal attempts · ${JSON.stringify(e.failures_by_category)}`],
+   ['Encounter duration',timing(e.duration_seconds)],['Reply dispatch gap',timing(e.reply_dispatch_gap_seconds)],
+   ['Delivered turns',`${e.delivered_turns} · accepted-chat mean ${e.turns_per_accepted_chat.mean??'unknown'}`],
+   ['Audio completion',ratio(b.playback_completion)],['Body orientation error',b.body_orientation.samples?`${b.body_orientation.mean_error_degrees}° mean / ${b.body_orientation.maximum_error_degrees.toFixed(1)}° max · ${b.body_orientation.samples} actor-frame samples`:'Unknown · no body-yaw samples yet'],
+   ['Eye / head gaze, raycasts, lip sync','Unmeasured · no accuracy score'],
+   ['Resident plan failures',`${m.resident_plans.held} / ${m.resident_plans.terminal} terminal plans · ${JSON.stringify(m.resident_plans.failures_by_category)}`],
+   ['Feasible options per decision',`${m.resident_plans.feasible_options_per_decision.mean??'unknown'} mean · n=${m.resident_plans.feasible_options_per_decision.n} · includes staged fixtures`],
+   ['Sales / production / meals',`${ec.committed_sales} / ${ec.committed_production} / ${ec.committed_meals}`],
+   ['Gold conservation',ratio(ec.gold_conservation)],['Economic breadth',`${ec.supported_sale_goods} sale good · ${ec.supported_production_recipes} recipe · ${ec.supported_supply_chain_transforms} transformation step`],
+   ['Sales variety',`${ec.distinct_observed_sale_prices} observed prices · authored quotes`],
+   ['Relationship state',`${s.positive_affinity_edges} positive / ${s.negative_affinity_edges} negative directed edges`],
+   ['Drama mechanisms',s.implemented_drama_mechanism],['Human realism ratings','Unrated · no calibrated human evaluation']]){const row=add(quality,'div',undefined,'event');add(row,'strong',label);add(row,'div',value);}
+  add(quality,'p',m.scope+' '+ec.scope+' Small samples and actor-frame samples do not establish human realism.','muted');
+ }else add(quality,'p','Metrics unavailable from this service.','muted');
  el('limits').textContent=state.limits.join(' ');
  if(pendingRequest&&state.camera?.request_id===pendingRequest){el('camera-status').textContent='Camera request applied by the game bridge · '+pretty(state.camera.mode);pendingRequest=null;}
 }

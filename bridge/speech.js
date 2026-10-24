@@ -9,12 +9,26 @@ function createSpeechController(getSp, now=()=>Date.now()) {
     if(!a||!b||!a.is3DLoaded()||!b.is3DLoaded()||a.isDead()||b.isDead())return false;
     return Math.hypot(a.getPositionX()-b.getPositionX(),a.getPositionY()-b.getPositionY(),a.getPositionZ()-b.getPositionZ())<=500;}
   function fail(error){report={...report,status:'failed',error:String(error).slice(0,180)};stop();}
+  function sampleOrientation(){
+    if(!active)return;
+    const sp=getSp(),a=sp.Actor.from(sp.Game.getFormEx(active.actor)),b=sp.Actor.from(sp.Game.getFormEx(active.target));
+    for(const [first,second] of [[a,b],[b,a]]){
+      try{
+        if(!first?.is3DLoaded()||!second?.is3DLoaded()||typeof first.getAngleZ!=='function')continue;
+        const dx=second.getPositionX()-first.getPositionX(),dy=second.getPositionY()-first.getPositionY(),yaw=first.getAngleZ();
+        if(!Number.isFinite(yaw)||!Number.isFinite(dx)||!Number.isFinite(dy)||Math.hypot(dx,dy)<1)continue;
+        const bearing=Math.atan2(dx,dy)*180/Math.PI,error=Math.abs(((yaw-bearing)%360+540)%360-180);
+        const o=report.orientation;o.samples++;o.sum_error_degrees+=error;o.max_error_degrees=Math.max(o.max_error_degrees,error);
+      }catch(_){} // Missing geometry is unknown, never perfect accuracy.
+    }
+  }
   return {
     start(c){
       if(report?.id===c.id)return; // Retransmitted command is never a replay.
       if(active)throw new Error('Another voice is active');
       if(!/^speech-[a-f0-9]{24}$/.test(c.id)||!/^([a-f0-9]{64})\.wav$/.test(c.audio?.file)||c.audio.file!==c.audio.sha256+'.wav')throw new Error('Invalid audio identity');
-      const sp=getSp();report={id:c.id,status:'starting',nearbyThroughout:nearby(c),playedSeconds:0};
+      const sp=getSp();report={id:c.id,status:'starting',nearbyThroughout:nearby(c),playedSeconds:0,
+        orientation:{samples:0,sum_error_degrees:0,max_error_degrees:0,measurement:'body yaw towards partner, not head/eye gaze or raycast'}};
       if(!report.nearbyThroughout||!sp.browser)return fail('No nearby listener or overlay');
       active=c;started=now();
       const a=sp.Actor.from(sp.Game.getFormEx(c.actor)),b=sp.Actor.from(sp.Game.getFormEx(c.target));
@@ -41,7 +55,7 @@ function createSpeechController(getSp, now=()=>Date.now()) {
       if(report.muted||m.volume!==1)return fail('Playback was muted or attenuated');
       stop();
     },
-    tick(){if(pendingMessage){const m=pendingMessage;pendingMessage=null;this.applyMessage(m);}if(!active)return;if(!nearby(active)){report.nearbyThroughout=false;return fail('Listener left hearing range');}
+    tick(){sampleOrientation();if(pendingMessage){const m=pendingMessage;pendingMessage=null;this.applyMessage(m);}if(!active)return;if(!nearby(active)){report.nearbyThroughout=false;return fail('Listener left hearing range');}
       if(now()-started>(active.audio.seconds+15)*1000)fail('Overlay playback timed out');},
     reset(){stop();report=null;pendingMessage=null;}, status(){return report?{...report}:null;},
     actor(){return active?.actor||null;}

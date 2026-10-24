@@ -6,6 +6,14 @@ from social import social_candidates
 
 
 class SocialTests(unittest.TestCase):
+    def test_lost_partner_package_during_thinking_holds_before_further_speech(self):
+        self.begin();self.meet();self.decide('chat')
+        self.obs['conversationAttendance']['participants'][1]['ownedPackage']=False
+        self.world.observe(self.obs);self.sync()
+        self.assertEqual(self.world.conversation_status()['phase'],'releasing')
+        self.assertIn('attendance ownership',self.world.conversation_status()['error'])
+        self.assertEqual(self.world.pending(self.obs['session'])['participants'],[99,108149])
+
     tearDown=test_daily_life.DailyLifeTests.tearDown
     sync=test_daily_life.DailyLifeTests.sync
     census=test_daily_life.DailyLifeTests.census
@@ -28,6 +36,13 @@ class SocialTests(unittest.TestCase):
         claim=self.world.claim_conversation(self.event['id'],self.obs)['claim'];self.sync()
         self.world.finish_conversation_inference(self.event['id'],claim['id'],{'model':'test-jev','decision':{
             'action_id':action,'reason':'Authored test choice','emotion':'calm'}},self.obs);self.sync()
+        if action=='chat':
+            self.assertEqual(self.world.conversation_status()['phase'],'attending')
+            participants=self.world.pending(self.obs['session'])['participants']
+            self.obs['conversationAttendance']={'id':'attend-'+self.event['id'],'phase':'attending',
+                'participants':[{'actor':actor,'loaded':True,'ownedPackage':True} for actor in participants]}
+            self.obs['ack']={'id':'attend-'+self.event['id'],'status':'applied','attendance':self.obs['conversationAttendance']}
+            self.world.observe(self.obs);self.sync()
         return claim['context']
 
     def meet(self):

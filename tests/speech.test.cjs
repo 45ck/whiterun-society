@@ -19,4 +19,12 @@ test('body turns are requested only for standing actors; head looks include both
  const h=harness(),speech=createSpeechController(()=>sp);speech.start(h.c);assert.deepEqual(turns,[{id:'1',z:90}]);assert.equal(looks.length,2);
  assert.deepEqual(speech.status().facing.map(x=>x.bodyTurnRequested),[true,false]);
 });
+test('body yaw is measured separately from an unmeasured head or eye request',()=>{
+ const actors={1:{getPositionX:()=>0,getAngleZ:()=>180},2:{getPositionX:()=>100,getAngleZ:()=>270}};
+ for(const a of Object.values(actors))Object.assign(a,{is3DLoaded:()=>true,isDead:()=>false,getPositionY:()=>0,getPositionZ:()=>0,setLookAt(){}});
+ const sp={Game:{getFormEx:id=>actors[id]},Actor:{from:a=>a},browser:{executeJavaScript(){}}};
+ const speech=createSpeechController(()=>sp),h=harness();speech.start(h.c);speech.tick();
+ assert.deepEqual(speech.status().orientation,{samples:2,sum_error_degrees:90,max_error_degrees:90,measurement:'body yaw towards partner, not head/eye gaze or raycast'});
+ assert.equal(speech.status().eyeAccuracy,undefined);
+});
 

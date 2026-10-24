@@ -1,0 +1,193 @@
+{
+  "event": "visible-social-20261025-c",
+  "status": "complete",
+  "elapsed_seconds": 56.889,
+  "calls": {
+    "propose": 2,
+    "select": 2,
+    "social": 4
+  },
+  "synthesis_timings": [
+    {
+      "turn": 0,
+      "seconds": 6.704
+    },
+    {
+      "turn": 1,
+      "seconds": 6.234
+    }
+  ],
+  "turns": [
+    {
+      "speaker": 108160,
+      "listener": 182543,
+      "line": "The pleasant weather is kind. I have eaten my last bread. Might you know where I could find more food to get by?",
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "469353cb4da9f32a58146e4b96ab0fda1d625bf52d9dc49e1b2c602557023359.wav",
+        "seconds": 6.7406,
+        "sha256": "469353cb4da9f32a58146e4b96ab0fda1d625bf52d9dc49e1b2c602557023359",
+        "voice": "bm_lewis"
+      },
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 6.88,
+        "facing": [
+          {
+            "actor": 108160,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 182543,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-dddb94a1e6f852a30bf8bc68",
+        "muted": false,
+        "nearbyThroughout": true,
+        "playedSeconds": 6.740625,
+        "status": "ended",
+        "volume": 1
+      },
+      "language": {
+        "model": "inception/mercury-2.5",
+        "usage": {
+          "completion_tokens": 342,
+          "completion_tokens_details": {
+            "audio_tokens": 0,
+            "image_tokens": 0,
+            "reasoning_tokens": 169
+          },
+          "cost": 9.702e-05,
+          "cost_details": {
+            "upstream_inference_completions_cost": 5.13e-05,
+            "upstream_inference_cost": 9.702e-05,
+            "upstream_inference_prompt_cost": 4.572e-05
+          },
+          "is_byok": false,
+          "prompt_tokens": 1143,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "video_tokens": 0
+          },
+          "total_tokens": 1485
+        },
+        "elapsed_seconds": 1.391,
+        "requested_max_output_tokens": 2048
+      }
+    },
+    {
+      "speaker": 182543,
+      "listener": 108160,
+      "line": "I'm Brenuin. I've eaten my last loaf too. Have you heard of any places selling grain or bread around here?",
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "51b2db6f184e1483150fc0cbc3e95cfc0811bd40505fbad4342883ad8bc79e1b.wav",
+        "seconds": 7.0067,
+        "sha256": "51b2db6f184e1483150fc0cbc3e95cfc0811bd40505fbad4342883ad8bc79e1b",
+        "voice": "bm_george"
+      },
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 7.133,
+        "facing": [
+          {
+            "actor": 182543,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108160,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-9a2ab30aad575a2c68ce1894",
+        "muted": false,
+        "nearbyThroughout": true,
+        "playedSeconds": 7.006667,
+        "status": "ended",
+        "volume": 1
+      },
+      "language": {
+        "model": "inception/mercury-2.5",
+        "usage": {
+          "completion_tokens": 201,
+          "completion_tokens_details": {
+            "audio_tokens": 0,
+            "image_tokens": 0,
+            "reasoning_tokens": 43
+          },
+          "cost": 8.139e-05,
+          "cost_details": {
+            "upstream_inference_completions_cost": 3.015e-05,
+            "upstream_inference_cost": 8.139e-05,
+            "upstream_inference_prompt_cost": 5.124e-05
+          },
+          "is_byok": false,
+          "prompt_tokens": 1281,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "video_tokens": 0
+          },
+          "total_tokens": 1482
+        },
+        "elapsed_seconds": 1.109,
+        "requested_max_output_tokens": 2048
+      }
+    }
+  ],
+  "appraisals": [
+    {
+      "actor": 108160,
+      "stage": "choose_partner",
+      "choice": "approach_182543"
+    },
+    {
+      "actor": 182543,
+      "stage": "respond",
+      "choice": "chat"
+    },
+    {
+      "actor": 108160,
+      "stage": "reflect_first",
+      "choice": "felt_supported"
+    },
+    {
+      "actor": 182543,
+      "stage": "reflect_second",
+      "choice": "neutral"
+    }
+  ],
+  "limits": [
+    "Engine overlay reported full unmuted nearby playback; no physical speaker-output capture.",
+    "Head/body facing was requested, not visually captured in this run.",
+    "Dialogue creates heard claims and subjective affinity, not inventory transfers.",
+    "Two turns only; longer conversations and spoken business negotiations remain required."
+  ],
+  "earlier_failure": {
+    "event": "visible-social-20261025-b",
+    "status": "held",
+    "error": "LanguageOutputError: Incomplete language output",
+    "rejected_language": {
+      "model": "inception/mercury-2.5",
+      "elapsed_seconds": 2.297,
+      "usage": {
+        "prompt_tokens": 1135,
+        "completion_tokens": 983,
+        "total_tokens": 2118,
+        "cost": 0.00019285,
+        "completion_tokens_details": {
+          "reasoning_tokens": 983
+        }
+      },
+      "finish_reason": "length"
+    }
+  }
+}

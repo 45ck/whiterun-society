@@ -7,6 +7,7 @@ import copy
 import math
 import re
 import secrets
+import time
 from agency import distance
 from decisions import validate_decision
 from routing import dynamic_route
@@ -81,7 +82,7 @@ class Conversation:
                 'reason':'Operator offered a nearby social opportunity; residents may decline',
                 'source':'operator opportunity, not a claimed autonomous need'})
         if old: state.setdefault('conversation_history', []).append(old)
-        state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0,
+        state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0, 'started_at':time.time(),
             'speakers': [108186,108149], 'turns': [], 'claim': None,
             'source': 'Authored two-person encounter; generated intentions and speech',
             'max_llm_calls': 2, 'max_jev_calls': 2}
@@ -170,6 +171,7 @@ class Conversation:
                     state['people'][str(c['initiator'])]['agency'].update(state='approaching_resident',reason='Chose to approach '+person_view(state,c['initiator'],partner)['name'])
             elif stage=='respond':
                 c['response']=decision['action_id'];c['phase']='propose'
+                if c['response']=='chat':c.update(phase='attending',paired_attendance=True)
                 for resident in (c['initiator'],c['partner']):state['people'][str(resident)]['agency'].update(state='social_encounter',reason='Partner chose '+c['response'])
                 if c['response']=='decline':c['speakers']=[c['partner'],c['initiator']];c['max_turns']=1
             else:
@@ -177,7 +179,8 @@ class Conversation:
                 c['phase']='reflect_second' if stage=='reflect_first' else 'complete'
                 if c['phase']=='complete':c['outcome']='spoke_brief_refusal' if c['response']=='decline' else 'social_exchange_completed'
             c['claim']=None
-            if c['phase']=='complete':settle_social(state,c,self._social_day(observation))
+            if c['phase']=='complete':
+                c['finished_at']=time.time();settle_social(state,c,self._social_day(observation))
             state['conversation']=c
             return {'checkpoint':self._write(state,'resident social '+stage+' decision accepted')}
         if claim['stage']=='propose':
@@ -206,19 +209,25 @@ class Conversation:
             raise ValueError('Unknown stock voice')
         if distance(observation,c['current']['speaker'],c['current']['listener'])>500:
             raise ValueError('Listener left before delivery')
-        c['current'].update(audio=audio,delivery_id='speech-'+secrets.token_hex(12),delivery_session=self.session)
+        if c.get('paired_attendance') and not self._paired_present(c,observation):
+            raise ValueError('Conversation attendance ownership lost before delivery')
+        c['current'].update(audio=audio,delivery_id='speech-'+secrets.token_hex(12),delivery_session=self.session,prepared_at=time.time())
         c['phase']='speaking'
         state=copy.deepcopy(self.active);state['conversation']=c
         return {'checkpoint':self._write(state,'speech delivery persisted before playback')}
 
     def speech_command(self, session):
         c=self.conversation_status()
+        if c and c['phase']=='attending':
+            return {'id':'attend-'+c['id'],'kind':'conversation_attend','participants':[c['initiator'],c['partner']],
+                'session':session,'checkpoint':self.marker}
         if c and c['phase']=='meeting':
             actor=c.get('initiator',108186);target=c.get('partner',108149)
             return {'id':'meet-'+c['id'],'kind':'walk_to','actor':actor,'target':target,'dynamic':dynamic_route(actor,target),
                 'method':'package','retain':True,'origin':'resident_decision' if c.get('mode') else 'authored_encounter','session':session,'checkpoint':self.marker}
         if c and c['phase']=='releasing':
             return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':c.get('initiator',108186),
+                **({'participants':[c['initiator'],c['partner']]} if c.get('paired_attendance') else {}),
                 'session':session,'checkpoint':self.marker}
         if not c or c['phase']!='speaking' or c['current']['delivery_session']!=session: return None
         t=c['current']
@@ -226,10 +235,26 @@ class Conversation:
             'actor':t['speaker'],'target':t['listener'],'line':t['selected']['line'],
             'tone':t['selected']['tone'],'audio':t['audio']}
 
+    @staticmethod
+    def _paired_present(c,observation):
+        attendance=observation.get('conversationAttendance') or {}
+        members=attendance.get('participants',[])
+        return (attendance.get('id')=='attend-'+c['id'] and attendance.get('phase')=='attending'
+                and len(members)==2 and {r.get('actor') for r in members}=={c['initiator'],c['partner']}
+                and all(r.get('ownedPackage') is True and r.get('loaded') is True for r in members))
+
     def observe_conversation(self, observation):
         c=self.conversation_status()
         if not c:return
         ack=observation.get('ack') or {}
+        if c['phase']=='attending' and ack.get('id')=='attend-'+c['id']:
+            if ack.get('status')!='applied' or not self._paired_present(c,observation) or distance(observation,c['initiator'],c['partner'])>500:
+                return self.hold_conversation(c['id'],'Both conversation attendance leases were not observed',observation)
+            c.update(phase='propose',attendance_evidence=ack)
+            state=copy.deepcopy(self.active);state['conversation']=c
+            self._write(state,'both consenting participants own nearby attendance packages');return
+        if c.get('attendance_evidence') and c['phase'] not in ('releasing','reflect_first','thinking_reflect_first','reflect_second','thinking_reflect_second','complete','held') and not self._paired_present(c,observation):
+            return self.hold_conversation(c['id'],'Conversation attendance ownership interrupted',observation)
         if c['phase']=='meeting' and ack.get('id')=='meet-'+c['id']:
             if ack.get('status')!='applied':return self.hold_conversation(c['id'],'Meeting route failed',observation)
             if c.get('mode')=='autonomous_social':
@@ -247,6 +272,7 @@ class Conversation:
             state=copy.deepcopy(self.active);state['conversation']=c
             if c.get('mode')=='autonomous_social' and c['phase']=='complete':c['phase']='reflect_first'
             if c.get('mode')=='autonomous_social' and c['phase']=='held':settle_social(state,c,self._social_day(observation))
+            if c['phase'] in ('complete','held'):c['finished_at']=time.time()
             self._write(state,'conversation travel task release observed');return
         if c['phase']!='speaking': return
         t=c['current'];report=observation.get('speech') or {}
@@ -260,7 +286,7 @@ class Conversation:
         if type(elapsed) not in (int,float) or not math.isfinite(elapsed) or elapsed<t['audio']['seconds']-.3 or report.get('nearbyThroughout') is not True:
             return self.hold_conversation(c['id'],'Incomplete playback or listener left hearing range',observation)
         state=copy.deepcopy(self.active)
-        t.update(delivered=True,playback=report)
+        t.update(delivered=True,playback=report,ended_at=time.time())
         record_heard_identity(state,t)
         for actor,kind in [(t['speaker'],'said'),(t['listener'],'heard_speech')]:
             p=state['people'][str(actor)]
@@ -280,6 +306,7 @@ class Conversation:
         if c['phase'] in ('complete','held'): return {'duplicate':True}
         no_route=c['phase'] in ('choose_partner','thinking_choose_partner','reflect_first','thinking_reflect_first','reflect_second','thinking_reflect_second')
         c.update(phase='held' if no_route else 'releasing',final_phase='held',error=str(reason)[:200])
+        if no_route:c['finished_at']=time.time()
         state=copy.deepcopy(self.active);state['conversation']=c
         if c.get('mode')=='autonomous_social' and no_route:settle_social(state,c,self._social_day(observation))
         return {'checkpoint':self._write(state,'conversation held without retry')}

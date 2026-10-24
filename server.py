@@ -13,6 +13,7 @@ from pathlib import Path
 from society import Society
 from lineage import TimelineEconomy
 from observer import observer_state, camera_request
+from director_control import DirectorControl
 
 
 class LocalServer(HTTPServer):
@@ -39,6 +40,7 @@ def main():
     sim.seed()
     world=TimelineEconomy(args.runtime/'timeline.sqlite')
     bridge={'last_seen':None,'observation':None,'session':None,'command':None,'last_ack':None}
+    director=DirectorControl(args.runtime)
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args): pass
@@ -52,10 +54,10 @@ def main():
             self.wfile.write(encoded)
 
         def do_GET(self):
-            if self.path.startswith('/observer'):
+            if self.path=='/' or self.path.startswith('/observer'):
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
-                if self.path=='/observer/state':return self.reply(200,observer_state(bridge,world.status()))
-                if self.path not in ('/observer','/observer/'):return self.reply(404,{'error':'not found'})
+                if self.path=='/observer/state':return self.reply(200,{**observer_state(bridge,world.status()),'director':director.status()})
+                if self.path not in ('/','/observer','/observer/'):return self.reply(404,{'error':'not found'})
                 page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token).encode()
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')
                 self.send_header('Cache-Control','no-store');self.send_header('X-Frame-Options','DENY')
@@ -71,16 +73,20 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
-            if self.path in ('/observer/camera', '/observer/enterprise'):
+            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director'):
                 origin=f'http://127.0.0.1:{args.port}'
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
                     return self.reply(403,{'error':'Same-origin observer control required'})
                 try:
                     length=int(self.headers.get('Content-Length','0'))
                     if not 0<length<=2048:raise ValueError('Invalid observer request size')
-                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     data=json.loads(self.rfile.read(length))
                     if not isinstance(data,dict):raise ValueError('Expected control object')
+                    if self.path=='/observer/director':
+                        if data.get('action')=='stop':return self.reply(202,director.stop())
+                        if data.get('action')!='start':raise ValueError('Unknown society control')
+                        return self.reply(202,director.start(data,bridge,world.status()))
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     if self.path=='/observer/enterprise':
                         if bridge['command']:raise ValueError('Another command is pending')
                         return self.reply(202,world.configure_enterprise(data['id'],data['enterprise'],bridge['observation']))
@@ -119,7 +125,7 @@ def main():
                     journal=world.state()
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
-                        'society':world.status()}
+                        'society':world.status(),'director':director.status()}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):
@@ -256,6 +262,7 @@ def main():
                 print('Development service superseded; exiting this instance',flush=True)
                 break
     finally:
+        director.stop()
         http.server_close()
         sim.db.close()
         world.db.close()
