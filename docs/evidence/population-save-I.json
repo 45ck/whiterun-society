@@ -1,0 +1,2564 @@
+{
+  "name": "WS-Population-20261024-I",
+  "scope": "Settled plan, people, inventory and journal; not long-term stability",
+  "expected": {
+    "checkpoint": 173,
+    "plan": {
+      "actor": 108149,
+      "claim": null,
+      "decisions": [
+        {
+          "actor_id": 108149,
+          "claim_id": "64764f8ff2c186973d20e809",
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "after-voices004-stock",
+              "information": "Review how to use your currently carried bread, balancing your household and livelihood. This allocates existing goods only; no unobserved food at home is invented.",
+              "kind": "stock_review"
+            },
+            "memories": [
+              {
+                "event_id": "market-20261024-001-stock",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "market-20261024-001-stock"
+                },
+                "source": "own allocation decision; no inventory change"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "consume-market-20261024-001-seller_meal",
+                "hunger_after": 0.15,
+                "hunger_before": 0.75,
+                "kind": "consumed_bread",
+                "source": "native food-use command and observed inventory; animation not verified"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1673cd53662d9160c432f60e",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-5b5c2ef0e255816887fc6277",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-0c9c5320883f943196c2306c",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              }
+            ],
+            "observed_inventory": {
+              "bread": 4,
+              "gold": 6,
+              "grain": 1
+            },
+            "options": [
+              {
+                "effect": "Keep all carried bread for your household. None is offered for sale until you review this policy again.",
+                "id": "reserve_all"
+              },
+              {
+                "effect": "Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.",
+                "id": "reserve_one"
+              },
+              {
+                "effect": "Keep up to two carried loaves for your household; earmark any surplus for sale. You may still refuse individual offers.",
+                "id": "reserve_two"
+              }
+            ],
+            "own_food_allocation": {
+              "allocated": true,
+              "for_sale": 0,
+              "household": 4,
+              "policy": {
+                "mode": "household_all",
+                "reserve_target": 0,
+                "source": "resident selected among authored allocation policies",
+                "source_event": "market-20261024-001-stock"
+              },
+              "source": "allocation of observed carried bread; not additional stock"
+            },
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 0.15
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792822629713-0.10575067303101826",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "reserve_all",
+            "emotion": "unspecified",
+            "reason": "Selected action: Keep all carried bread for your household. None is offered for sale until you review this policy again."
+          },
+          "elapsed_seconds": 0.781,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "reserve_all": 0.97,
+            "reserve_one": 0.01,
+            "reserve_two": 0.02
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 8.5428e-05,
+            "input_tokens": 2034,
+            "output_tokens": 42
+          }
+        }
+      ],
+      "food_actions": true,
+      "id": "after-voices004-stock",
+      "kind": "stock_review",
+      "outcome": "allocated_stock",
+      "phase": "complete",
+      "refusals_recorded": 0,
+      "remembered": true,
+      "trade_id": "meal-after-voices004-stock",
+      "travel": null,
+      "unit_price": 3
+    },
+    "people": {
+      "108149": {
+        "food_policy": {
+          "mode": "household_all",
+          "reserve_target": 0,
+          "source": "resident selected among authored allocation policies",
+          "source_event": "after-voices004-stock"
+        },
+        "memories": [
+          {
+            "bread_made": 2,
+            "event_id": "produce-market-20261024-001-work",
+            "gold": 2,
+            "grain_used": 1,
+            "kind": "paid_work",
+            "other": 108186,
+            "role": "employer",
+            "source": "observed native inventory conversion and wage; work animation unverified"
+          },
+          {
+            "event_id": "market-20261024-001-stock",
+            "kind": "allocated_food",
+            "policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "market-20261024-001-stock"
+            },
+            "source": "own allocation decision; no inventory change"
+          },
+          {
+            "bread": 1,
+            "event_id": "market-20261024-001-buyer_meal",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "market-20261024-001-buyer_meal",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "consume-market-20261024-001-seller_meal",
+            "hunger_after": 0.15,
+            "hunger_before": 0.75,
+            "kind": "consumed_bread",
+            "source": "native food-use command and observed inventory; animation not verified"
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-1673cd53662d9160c432f60e",
+            "kind": "heard_speech",
+            "listener": 108149,
+            "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-5b5c2ef0e255816887fc6277",
+            "kind": "said",
+            "listener": 108186,
+            "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-1ff3fbddd98203b01a0235f7",
+            "kind": "heard_speech",
+            "listener": 108149,
+            "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-0c9c5320883f943196c2306c",
+            "kind": "said",
+            "listener": 108186,
+            "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "event_id": "after-voices004-stock",
+            "kind": "allocated_food",
+            "policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "after-voices004-stock"
+            },
+            "source": "own allocation decision; no inventory change"
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-a45d1fac167195a81cd38429",
+            "kind": "heard_speech",
+            "listener": 108149,
+            "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-27613d476a676275bb9151ea",
+            "kind": "said",
+            "listener": 108186,
+            "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          }
+        ],
+        "needs": {
+          "hunger": 0.15
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {}
+      },
+      "108156": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "sticks to an established routine even when news changes",
+          "big_five": {
+            "agreeableness": 0.5,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "neuroticism": 0.25,
+            "openness": 0.4
+          },
+          "name": "Adrianne Avenicci",
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "role": "blacksmith"
+        },
+        "trust": {}
+      },
+      "108186": {
+        "memories": [
+          {
+            "bread_made": 2,
+            "event_id": "produce-market-20261024-001-work",
+            "gold": 2,
+            "grain_used": 1,
+            "kind": "paid_work",
+            "other": 108149,
+            "role": "worker",
+            "source": "observed native inventory conversion and wage; work animation unverified"
+          },
+          {
+            "bread": 1,
+            "event_id": "market-20261024-001-buyer_meal",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "market-20261024-001-buyer_meal",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-1673cd53662d9160c432f60e",
+            "kind": "said",
+            "listener": 108149,
+            "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-5b5c2ef0e255816887fc6277",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-1ff3fbddd98203b01a0235f7",
+            "kind": "said",
+            "listener": 108149,
+            "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-0c9c5320883f943196c2306c",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-a45d1fac167195a81cd38429",
+            "kind": "said",
+            "listener": 108149,
+            "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108186
+          },
+          {
+            "epistemic_status": "claim, not verified fact",
+            "event_id": "speech-27613d476a676275bb9151ea",
+            "kind": "heard_speech",
+            "listener": 108186,
+            "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+            "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+            "speaker": 108149
+          }
+        ],
+        "needs": {
+          "hunger": 0.75
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {}
+      }
+    },
+    "world": [],
+    "consumptions": [
+      {
+        "command": {
+          "actor": 108149,
+          "after": {
+            "bread": 4,
+            "gold": 6
+          },
+          "before": {
+            "bread": 5,
+            "gold": 6
+          },
+          "id": "consume-market-20261024-001-seller_meal",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-market-20261024-001-seller_meal",
+            "inventory": {
+              "bread": 4,
+              "gold": 6
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 4,
+            "gold": 6
+          },
+          "session": "1792821356738-0.010349186152633694"
+        },
+        "id": "consume-market-20261024-001-seller_meal",
+        "status": "committed"
+      }
+    ],
+    "production": [
+      {
+        "command": {
+          "after": {
+            "employer": {
+              "bread": 5,
+              "gold": 6,
+              "grain": 1
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 8,
+              "grain": 0
+            }
+          },
+          "before": {
+            "employer": {
+              "bread": 3,
+              "gold": 8,
+              "grain": 2
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 6,
+              "grain": 0
+            }
+          },
+          "employer": 108149,
+          "expected_package": 100665345,
+          "id": "produce-market-20261024-001-work",
+          "kind": "inventory_produce",
+          "work_minutes": 30,
+          "worker": 108186
+        },
+        "evidence": {
+          "ack": {
+            "animation_verified": false,
+            "id": "produce-market-20261024-001-work",
+            "inventory": {
+              "employer": {
+                "bread": 5,
+                "gold": 6,
+                "grain": 1
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 8,
+                "grain": 0
+              }
+            },
+            "mechanism": "native_recipe_and_wage",
+            "status": "applied",
+            "work": {
+              "id": "produce-market-20261024-001-work",
+              "phase": "paying_wage",
+              "requiredMinutes": 30,
+              "workedMinutes": 30
+            }
+          },
+          "actual": {
+            "employer": {
+              "bread": 5,
+              "gold": 6,
+              "grain": 1
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 8,
+              "grain": 0
+            }
+          },
+          "session": "1792821356738-0.010349186152633694"
+        },
+        "id": "produce-market-20261024-001-work",
+        "status": "committed"
+      }
+    ],
+    "imports": [
+      {
+        "command": {
+          "after": {
+            "employer": {
+              "bread": 3,
+              "gold": 8,
+              "grain": 2
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 6,
+              "grain": 0
+            }
+          },
+          "before": {
+            "employer": {
+              "bread": 3,
+              "gold": 8,
+              "grain": 0
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 6,
+              "grain": 0
+            }
+          },
+          "employer": 108149,
+          "id": "demo-grain-import-v1",
+          "kind": "inventory_supply",
+          "worker": 108186
+        },
+        "evidence": {
+          "ack": {
+            "animation_verified": false,
+            "id": "demo-grain-import-v1",
+            "inventory": {
+              "employer": {
+                "bread": 3,
+                "gold": 8,
+                "grain": 2
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 6,
+                "grain": 0
+              }
+            },
+            "mechanism": "explicit_demo_import",
+            "status": "applied",
+            "work": {
+              "id": "demo-grain-import-v1",
+              "phase": "importing",
+              "requiredMinutes": 30,
+              "workedMinutes": 0
+            }
+          },
+          "actual": {
+            "employer": {
+              "bread": 3,
+              "gold": 8,
+              "grain": 2
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 6,
+              "grain": 0
+            }
+          },
+          "session": "1792821356738-0.010349186152633694"
+        },
+        "id": "demo-grain-import-v1",
+        "source": "Explicit demo import: two grain, no gold; not resident production",
+        "status": "committed"
+      }
+    ],
+    "market_day": {
+      "baseline": {
+        "108149": {
+          "bread": 3,
+          "gold": 8,
+          "grain": 2
+        },
+        "108186": {
+          "bread": 0,
+          "gold": 6,
+          "grain": 0
+        }
+      },
+      "calls_observed": 8,
+      "cursor": 4,
+      "final_inventory": {
+        "108149": {
+          "bread": 4,
+          "gold": 6,
+          "grain": 1
+        },
+        "108186": {
+          "bread": 0,
+          "gold": 8,
+          "grain": 0
+        }
+      },
+      "id": "market-20261024-001",
+      "initial_counts": {
+        "consumptions": 0,
+        "production": 0,
+        "trades": 0
+      },
+      "max_calls": 9,
+      "metrics": {
+        "consumptions": 1,
+        "gold_after": 14,
+        "gold_before": 14,
+        "hunger": {
+          "108149": 0.15,
+          "108186": 0.75
+        },
+        "production": 1,
+        "trades": 0
+      },
+      "results": [
+        {
+          "actor": 108186,
+          "checkpoint": 82,
+          "id": "market-20261024-001-work",
+          "kind": "work_shift",
+          "model_calls_observed": 2,
+          "outcome": "paid_work_completed",
+          "status": "complete"
+        },
+        {
+          "actor": 108149,
+          "checkpoint": 87,
+          "id": "market-20261024-001-stock",
+          "kind": "stock_review",
+          "model_calls_observed": 1,
+          "outcome": "allocated_stock",
+          "status": "complete"
+        },
+        {
+          "actor": 108186,
+          "checkpoint": 100,
+          "id": "market-20261024-001-buyer_meal",
+          "kind": "meal_time",
+          "model_calls_observed": 4,
+          "outcome": "seller_declined",
+          "status": "complete"
+        },
+        {
+          "actor": 108149,
+          "checkpoint": 107,
+          "id": "market-20261024-001-seller_meal",
+          "kind": "meal_time",
+          "model_calls_observed": 1,
+          "outcome": "ate_bread",
+          "status": "complete"
+        }
+      ],
+      "source": "Authored finite sequence of opportunities; residents choose outcomes",
+      "status": "complete",
+      "next_event": null
+    },
+    "conversation": {
+      "claim": null,
+      "id": "voices-20261024-005",
+      "max_jev_calls": 2,
+      "max_llm_calls": 2,
+      "meeting_evidence": {
+        "id": "meet-voices-20261024-005",
+        "movement": {
+          "actor": 108186,
+          "at": 1792822697446,
+          "distance": 219.02992102543232,
+          "enginePackage": 100665345,
+          "expectedPackage": 100665345,
+          "hasOwnedPackage": true,
+          "id": "meet-voices-20261024-005",
+          "method": "package",
+          "origin": "authored_encounter",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "startComplete": true,
+          "startDistance": 219.02991917943746,
+          "startRequestedAt": 1792822697463,
+          "startResult": true,
+          "target": 108149
+        },
+        "status": "applied"
+      },
+      "phase": "complete",
+      "release_evidence": {
+        "id": "release-chat-voices-20261024-005",
+        "released": true,
+        "status": "applied"
+      },
+      "source": "Authored two-person encounter; generated intentions and speech",
+      "speakers": [
+        108186,
+        108149
+      ],
+      "turn": 2,
+      "turns": [
+        {
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b.wav",
+            "seconds": 7.57,
+            "sha256": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b",
+            "voice": "bf_emma"
+          },
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "maintain positive business relationship",
+              "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "express frustration and caution",
+              "line": "I understand your worries, but refusing every offer leaves me uncertain if we'll ever build the trade ties I hoped for between us.",
+              "tone": "frustrated"
+            }
+          ],
+          "context": {
+            "actor_id": 108186,
+            "event": {
+              "id": "voices-20261024-005",
+              "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+              "kind": "nearby_conversation"
+            },
+            "heard_in_this_conversation": [],
+            "known_facts_in_first_person": [
+              "I worked for Carlotta Valentia, making their bread using their grain. They paid me 2 gold. The bread belonged to them, not me.",
+              "I offered Carlotta Valentia 3 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller.",
+              "I offered Carlotta Valentia 5 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller."
+            ],
+            "listener": {
+              "id": 108149,
+              "name": "Carlotta Valentia"
+            },
+            "memories": [
+              {
+                "bread_made": 2,
+                "event_id": "produce-market-20261024-001-work",
+                "gold": 2,
+                "grain_used": 1,
+                "kind": "paid_work",
+                "other": 108149,
+                "role": "worker",
+                "source": "observed native inventory conversion and wage; work animation unverified"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1673cd53662d9160c432f60e",
+                "kind": "said",
+                "listener": 108149,
+                "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-5b5c2ef0e255816887fc6277",
+                "kind": "heard_speech",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                "kind": "said",
+                "listener": 108149,
+                "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-0c9c5320883f943196c2306c",
+                "kind": "heard_speech",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              }
+            ],
+            "needs": {
+              "hunger": 0.75
+            },
+            "own_food_policy": null,
+            "own_inventory": {
+              "bread": 0,
+              "gold": 8,
+              "grain": 0
+            },
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "trust": {}
+          },
+          "decision": {
+            "decision": {
+              "action_id": "option_1",
+              "emotion": "unspecified",
+              "reason": "Selected action: maintain positive business relationship Say: Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon. Tone: hopeful"
+            },
+            "elapsed_seconds": 0.515,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "option_1": 0.98,
+              "option_2": 0.02
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "status": "proposal_only",
+            "usage": {
+              "cost": 7.7784e-05,
+              "input_tokens": 1852,
+              "output_tokens": 37
+            }
+          },
+          "delivered": true,
+          "delivery_id": "speech-a45d1fac167195a81cd38429",
+          "delivery_session": "1792822670996-0.9439138534111433",
+          "language": {
+            "elapsed_seconds": 2.125,
+            "model": "openai/gpt-4.1-mini",
+            "proposal": {
+              "candidates": [
+                {
+                  "id": "option_1",
+                  "intention": "maintain positive business relationship",
+                  "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                  "tone": "hopeful"
+                },
+                {
+                  "id": "option_2",
+                  "intention": "express frustration and caution",
+                  "line": "I understand your worries, but refusing every offer leaves me uncertain if we'll ever build the trade ties I hoped for between us.",
+                  "tone": "frustrated"
+                }
+              ]
+            },
+            "usage": {
+              "completion_tokens": 106,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "cost": 0.0007024,
+              "cost_details": {
+                "upstream_inference_completions_cost": 0.0001696,
+                "upstream_inference_cost": 0.0007024,
+                "upstream_inference_prompt_cost": 0.0005328
+              },
+              "is_byok": false,
+              "prompt_tokens": 1332,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 1438
+            }
+          },
+          "listener": 108149,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 7.691,
+            "facing": [
+              {
+                "actor": 108186,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108149,
+                "bodyTurnRequested": false,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-a45d1fac167195a81cd38429",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 7.57,
+            "status": "ended",
+            "volume": 1
+          },
+          "selected": {
+            "id": "option_1",
+            "intention": "maintain positive business relationship",
+            "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+            "tone": "hopeful"
+          },
+          "speaker": 108186
+        },
+        {
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df.wav",
+            "seconds": 8.2153,
+            "sha256": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df",
+            "voice": "bf_alice"
+          },
+          "candidates": [
+            {
+              "id": "option_1",
+              "intention": "express cautious optimism about future cooperation",
+              "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+              "tone": "hopeful"
+            },
+            {
+              "id": "option_2",
+              "intention": "restate firm resolve to protect family food supply",
+              "line": "I know you mean well, but I must be firm, Ysolda. My family\u2019s safety comes before any partnership right now, no exceptions.",
+              "tone": "frustrated"
+            }
+          ],
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "voices-20261024-005",
+              "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+              "kind": "nearby_conversation"
+            },
+            "heard_in_this_conversation": [
+              {
+                "epistemic_status": "heard claim, not verified fact",
+                "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                "speaker": 108186
+              }
+            ],
+            "known_facts_in_first_person": [
+              "Ysolda offered ME 5 gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.",
+              "I ate one of my carried loaves."
+            ],
+            "listener": {
+              "id": 108186,
+              "name": "Ysolda"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "consume-market-20261024-001-seller_meal",
+                "hunger_after": 0.15,
+                "hunger_before": 0.75,
+                "kind": "consumed_bread",
+                "source": "native food-use command and observed inventory; animation not verified"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1673cd53662d9160c432f60e",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-5b5c2ef0e255816887fc6277",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-0c9c5320883f943196c2306c",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "event_id": "after-voices004-stock",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "after-voices004-stock"
+                },
+                "source": "own allocation decision; no inventory change"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-a45d1fac167195a81cd38429",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              }
+            ],
+            "needs": {
+              "hunger": 0.15
+            },
+            "own_food_policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "after-voices004-stock"
+            },
+            "own_inventory": {
+              "bread": 4,
+              "gold": 6,
+              "grain": 1
+            },
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "trust": {}
+          },
+          "decision": {
+            "decision": {
+              "action_id": "option_1",
+              "emotion": "unspecified",
+              "reason": "Selected action: express cautious optimism about future cooperation Say: Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better. Tone: hopeful"
+            },
+            "elapsed_seconds": 0.547,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "option_1": 0.7,
+              "option_2": 0.3
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "status": "proposal_only",
+            "usage": {
+              "cost": 8.5848e-05,
+              "input_tokens": 2044,
+              "output_tokens": 37
+            }
+          },
+          "delivered": true,
+          "delivery_id": "speech-27613d476a676275bb9151ea",
+          "delivery_session": "1792822670996-0.9439138534111433",
+          "language": {
+            "elapsed_seconds": 1.422,
+            "model": "openai/gpt-4.1-mini",
+            "proposal": {
+              "candidates": [
+                {
+                  "id": "option_1",
+                  "intention": "express cautious optimism about future cooperation",
+                  "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                  "tone": "hopeful"
+                },
+                {
+                  "id": "option_2",
+                  "intention": "restate firm resolve to protect family food supply",
+                  "line": "I know you mean well, but I must be firm, Ysolda. My family\u2019s safety comes before any partnership right now, no exceptions.",
+                  "tone": "frustrated"
+                }
+              ]
+            },
+            "usage": {
+              "completion_tokens": 118,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "cost": 0.0007724,
+              "cost_details": {
+                "upstream_inference_completions_cost": 0.0001888,
+                "upstream_inference_cost": 0.0007724,
+                "upstream_inference_prompt_cost": 0.0005836
+              },
+              "is_byok": false,
+              "prompt_tokens": 1459,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 1577
+            }
+          },
+          "listener": 108186,
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 8.326,
+            "facing": [
+              {
+                "actor": 108149,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 108186,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-27613d476a676275bb9151ea",
+            "muted": false,
+            "nearbyThroughout": true,
+            "playedSeconds": 8.215333,
+            "status": "ended",
+            "volume": 1
+          },
+          "selected": {
+            "id": "option_1",
+            "intention": "express cautious optimism about future cooperation",
+            "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+            "tone": "hopeful"
+          },
+          "speaker": 108149
+        }
+      ]
+    },
+    "town": null,
+    "inventory": {
+      "108156": {
+        "gold": 7,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 6,
+        "bread": 4,
+        "grain": 1
+      }
+    }
+  },
+  "recorded_at": 1792823261.2172163,
+  "files": {
+    "WS-Population-20261024-I.ess": {
+      "bytes": 2574372,
+      "sha256": "fcc5a0b48ce8e257f0d9ac9d628923023ca19e07d594611cdf971f29d3a0067f"
+    },
+    "WS-Population-20261024-I.skse": {
+      "bytes": 418,
+      "sha256": "fd35644dcd40bcd5d0206783a2dbe459ac7ba0a0073c71d3ae4f01e893102c9b"
+    }
+  },
+  "restores": [
+    {
+      "at": 1792823286.5971322,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "town": true,
+        "inventory": true
+      },
+      "actual": {
+        "checkpoint": 173,
+        "plan": {
+          "actor": 108149,
+          "claim": null,
+          "decisions": [
+            {
+              "actor_id": 108149,
+              "claim_id": "64764f8ff2c186973d20e809",
+              "context": {
+                "actor_id": 108149,
+                "event": {
+                  "id": "after-voices004-stock",
+                  "information": "Review how to use your currently carried bread, balancing your household and livelihood. This allocates existing goods only; no unobserved food at home is invented.",
+                  "kind": "stock_review"
+                },
+                "memories": [
+                  {
+                    "event_id": "market-20261024-001-stock",
+                    "kind": "allocated_food",
+                    "policy": {
+                      "mode": "household_all",
+                      "reserve_target": 0,
+                      "source": "resident selected among authored allocation policies",
+                      "source_event": "market-20261024-001-stock"
+                    },
+                    "source": "own allocation decision; no inventory change"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "market-20261024-001-buyer_meal",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "market-20261024-001-buyer_meal",
+                    "gold": 5,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "consume-market-20261024-001-seller_meal",
+                    "hunger_after": 0.15,
+                    "hunger_before": 0.75,
+                    "kind": "consumed_bread",
+                    "source": "native food-use command and observed inventory; animation not verified"
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1673cd53662d9160c432f60e",
+                    "kind": "heard_speech",
+                    "listener": 108149,
+                    "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-5b5c2ef0e255816887fc6277",
+                    "kind": "said",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                    "kind": "heard_speech",
+                    "listener": 108149,
+                    "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-0c9c5320883f943196c2306c",
+                    "kind": "said",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  }
+                ],
+                "observed_inventory": {
+                  "bread": 4,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "options": [
+                  {
+                    "effect": "Keep all carried bread for your household. None is offered for sale until you review this policy again.",
+                    "id": "reserve_all"
+                  },
+                  {
+                    "effect": "Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.",
+                    "id": "reserve_one"
+                  },
+                  {
+                    "effect": "Keep up to two carried loaves for your household; earmark any surplus for sale. You may still refuse individual offers.",
+                    "id": "reserve_two"
+                  }
+                ],
+                "own_food_allocation": {
+                  "allocated": true,
+                  "for_sale": 0,
+                  "household": 4,
+                  "policy": {
+                    "mode": "household_all",
+                    "reserve_target": 0,
+                    "source": "resident selected among authored allocation policies",
+                    "source_event": "market-20261024-001-stock"
+                  },
+                  "source": "allocation of observed carried bread; not additional stock"
+                },
+                "perception": {
+                  "available": false,
+                  "information": "Vision is unavailable; this does not mean nobody is nearby."
+                },
+                "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+                "profile": {
+                  "bias": "a recent scare makes shortages feel more likely",
+                  "big_five": {
+                    "agreeableness": 0.65,
+                    "conscientiousness": 0.85,
+                    "extraversion": 0.55,
+                    "neuroticism": 0.55,
+                    "openness": 0.35
+                  },
+                  "name": "Carlotta Valentia",
+                  "priorities": [
+                    "keep food for family",
+                    "earn a stable living"
+                  ],
+                  "role": "produce merchant and parent"
+                },
+                "scenario_state": {
+                  "needs": {
+                    "hunger": 0.15
+                  },
+                  "source": "authored society simulation, not Skyrim hunger"
+                },
+                "session": "1792822629713-0.10575067303101826",
+                "trust": {}
+              },
+              "decision": {
+                "action_id": "reserve_all",
+                "emotion": "unspecified",
+                "reason": "Selected action: Keep all carried bread for your household. None is offered for sale until you review this policy again."
+              },
+              "elapsed_seconds": 0.781,
+              "model": "typesafe/jev-1.14-20261014",
+              "probabilities": {
+                "reserve_all": 0.97,
+                "reserve_one": 0.01,
+                "reserve_two": 0.02
+              },
+              "rationale_kind": "authored_action_label_not_dialogue",
+              "usage": {
+                "cost": 8.5428e-05,
+                "input_tokens": 2034,
+                "output_tokens": 42
+              }
+            }
+          ],
+          "food_actions": true,
+          "id": "after-voices004-stock",
+          "kind": "stock_review",
+          "outcome": "allocated_stock",
+          "phase": "complete",
+          "refusals_recorded": 0,
+          "remembered": true,
+          "trade_id": "meal-after-voices004-stock",
+          "travel": null,
+          "unit_price": 3
+        },
+        "people": {
+          "108149": {
+            "food_policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "after-voices004-stock"
+            },
+            "memories": [
+              {
+                "bread_made": 2,
+                "event_id": "produce-market-20261024-001-work",
+                "gold": 2,
+                "grain_used": 1,
+                "kind": "paid_work",
+                "other": 108186,
+                "role": "employer",
+                "source": "observed native inventory conversion and wage; work animation unverified"
+              },
+              {
+                "event_id": "market-20261024-001-stock",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "market-20261024-001-stock"
+                },
+                "source": "own allocation decision; no inventory change"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "consume-market-20261024-001-seller_meal",
+                "hunger_after": 0.15,
+                "hunger_before": 0.75,
+                "kind": "consumed_bread",
+                "source": "native food-use command and observed inventory; animation not verified"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1673cd53662d9160c432f60e",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-5b5c2ef0e255816887fc6277",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-0c9c5320883f943196c2306c",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "event_id": "after-voices004-stock",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "after-voices004-stock"
+                },
+                "source": "own allocation decision; no inventory change"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-a45d1fac167195a81cd38429",
+                "kind": "heard_speech",
+                "listener": 108149,
+                "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-27613d476a676275bb9151ea",
+                "kind": "said",
+                "listener": 108186,
+                "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              }
+            ],
+            "needs": {
+              "hunger": 0.15
+            },
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "trust": {}
+          },
+          "108156": {
+            "memories": [],
+            "needs": {
+              "hunger": 0.4
+            },
+            "profile": {
+              "bias": "sticks to an established routine even when news changes",
+              "big_five": {
+                "agreeableness": 0.5,
+                "conscientiousness": 0.9,
+                "extraversion": 0.45,
+                "neuroticism": 0.25,
+                "openness": 0.4
+              },
+              "name": "Adrianne Avenicci",
+              "priorities": [
+                "finish promised work",
+                "maintain a reliable household"
+              ],
+              "role": "blacksmith"
+            },
+            "trust": {}
+          },
+          "108186": {
+            "memories": [
+              {
+                "bread_made": 2,
+                "event_id": "produce-market-20261024-001-work",
+                "gold": 2,
+                "grain_used": 1,
+                "kind": "paid_work",
+                "other": 108149,
+                "role": "worker",
+                "source": "observed native inventory conversion and wage; work animation unverified"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "market-20261024-001-buyer_meal",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1673cd53662d9160c432f60e",
+                "kind": "said",
+                "listener": 108149,
+                "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-5b5c2ef0e255816887fc6277",
+                "kind": "heard_speech",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                "kind": "said",
+                "listener": 108149,
+                "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-0c9c5320883f943196c2306c",
+                "kind": "heard_speech",
+                "listener": 108186,
+                "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-a45d1fac167195a81cd38429",
+                "kind": "said",
+                "listener": 108149,
+                "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108186
+              },
+              {
+                "epistemic_status": "claim, not verified fact",
+                "event_id": "speech-27613d476a676275bb9151ea",
+                "kind": "heard_speech",
+                "listener": 108186,
+                "quote": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                "speaker": 108149
+              }
+            ],
+            "needs": {
+              "hunger": 0.75
+            },
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "trust": {}
+          }
+        },
+        "world": [],
+        "consumptions": [
+          {
+            "command": {
+              "actor": 108149,
+              "after": {
+                "bread": 4,
+                "gold": 6
+              },
+              "before": {
+                "bread": 5,
+                "gold": 6
+              },
+              "id": "consume-market-20261024-001-seller_meal",
+              "kind": "inventory_consume"
+            },
+            "evidence": {
+              "ack": {
+                "id": "consume-market-20261024-001-seller_meal",
+                "inventory": {
+                  "bread": 4,
+                  "gold": 6
+                },
+                "mechanism": "native_equip_food",
+                "status": "applied"
+              },
+              "actual": {
+                "bread": 4,
+                "gold": 6
+              },
+              "session": "1792821356738-0.010349186152633694"
+            },
+            "id": "consume-market-20261024-001-seller_meal",
+            "status": "committed"
+          }
+        ],
+        "production": [
+          {
+            "command": {
+              "after": {
+                "employer": {
+                  "bread": 5,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 8,
+                  "grain": 0
+                }
+              },
+              "before": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "employer": 108149,
+              "expected_package": 100665345,
+              "id": "produce-market-20261024-001-work",
+              "kind": "inventory_produce",
+              "work_minutes": 30,
+              "worker": 108186
+            },
+            "evidence": {
+              "ack": {
+                "animation_verified": false,
+                "id": "produce-market-20261024-001-work",
+                "inventory": {
+                  "employer": {
+                    "bread": 5,
+                    "gold": 6,
+                    "grain": 1
+                  },
+                  "worker": {
+                    "bread": 0,
+                    "gold": 8,
+                    "grain": 0
+                  }
+                },
+                "mechanism": "native_recipe_and_wage",
+                "status": "applied",
+                "work": {
+                  "id": "produce-market-20261024-001-work",
+                  "phase": "paying_wage",
+                  "requiredMinutes": 30,
+                  "workedMinutes": 30
+                }
+              },
+              "actual": {
+                "employer": {
+                  "bread": 5,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 8,
+                  "grain": 0
+                }
+              },
+              "session": "1792821356738-0.010349186152633694"
+            },
+            "id": "produce-market-20261024-001-work",
+            "status": "committed"
+          }
+        ],
+        "imports": [
+          {
+            "command": {
+              "after": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "before": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 0
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "employer": 108149,
+              "id": "demo-grain-import-v1",
+              "kind": "inventory_supply",
+              "worker": 108186
+            },
+            "evidence": {
+              "ack": {
+                "animation_verified": false,
+                "id": "demo-grain-import-v1",
+                "inventory": {
+                  "employer": {
+                    "bread": 3,
+                    "gold": 8,
+                    "grain": 2
+                  },
+                  "worker": {
+                    "bread": 0,
+                    "gold": 6,
+                    "grain": 0
+                  }
+                },
+                "mechanism": "explicit_demo_import",
+                "status": "applied",
+                "work": {
+                  "id": "demo-grain-import-v1",
+                  "phase": "importing",
+                  "requiredMinutes": 30,
+                  "workedMinutes": 0
+                }
+              },
+              "actual": {
+                "employer": {
+                  "bread": 3,
+                  "gold": 8,
+                  "grain": 2
+                },
+                "worker": {
+                  "bread": 0,
+                  "gold": 6,
+                  "grain": 0
+                }
+              },
+              "session": "1792821356738-0.010349186152633694"
+            },
+            "id": "demo-grain-import-v1",
+            "source": "Explicit demo import: two grain, no gold; not resident production",
+            "status": "committed"
+          }
+        ],
+        "market_day": {
+          "baseline": {
+            "108149": {
+              "bread": 3,
+              "gold": 8,
+              "grain": 2
+            },
+            "108186": {
+              "bread": 0,
+              "gold": 6,
+              "grain": 0
+            }
+          },
+          "calls_observed": 8,
+          "cursor": 4,
+          "final_inventory": {
+            "108149": {
+              "bread": 4,
+              "gold": 6,
+              "grain": 1
+            },
+            "108186": {
+              "bread": 0,
+              "gold": 8,
+              "grain": 0
+            }
+          },
+          "id": "market-20261024-001",
+          "initial_counts": {
+            "consumptions": 0,
+            "production": 0,
+            "trades": 0
+          },
+          "max_calls": 9,
+          "metrics": {
+            "consumptions": 1,
+            "gold_after": 14,
+            "gold_before": 14,
+            "hunger": {
+              "108149": 0.15,
+              "108186": 0.75
+            },
+            "production": 1,
+            "trades": 0
+          },
+          "results": [
+            {
+              "actor": 108186,
+              "checkpoint": 82,
+              "id": "market-20261024-001-work",
+              "kind": "work_shift",
+              "model_calls_observed": 2,
+              "outcome": "paid_work_completed",
+              "status": "complete"
+            },
+            {
+              "actor": 108149,
+              "checkpoint": 87,
+              "id": "market-20261024-001-stock",
+              "kind": "stock_review",
+              "model_calls_observed": 1,
+              "outcome": "allocated_stock",
+              "status": "complete"
+            },
+            {
+              "actor": 108186,
+              "checkpoint": 100,
+              "id": "market-20261024-001-buyer_meal",
+              "kind": "meal_time",
+              "model_calls_observed": 4,
+              "outcome": "seller_declined",
+              "status": "complete"
+            },
+            {
+              "actor": 108149,
+              "checkpoint": 107,
+              "id": "market-20261024-001-seller_meal",
+              "kind": "meal_time",
+              "model_calls_observed": 1,
+              "outcome": "ate_bread",
+              "status": "complete"
+            }
+          ],
+          "source": "Authored finite sequence of opportunities; residents choose outcomes",
+          "status": "complete",
+          "next_event": null
+        },
+        "conversation": {
+          "claim": null,
+          "id": "voices-20261024-005",
+          "max_jev_calls": 2,
+          "max_llm_calls": 2,
+          "meeting_evidence": {
+            "id": "meet-voices-20261024-005",
+            "movement": {
+              "actor": 108186,
+              "at": 1792822697446,
+              "distance": 219.02992102543232,
+              "enginePackage": 100665345,
+              "expectedPackage": 100665345,
+              "hasOwnedPackage": true,
+              "id": "meet-voices-20261024-005",
+              "method": "package",
+              "origin": "authored_encounter",
+              "ownedPackage": true,
+              "phase": "arrived",
+              "startComplete": true,
+              "startDistance": 219.02991917943746,
+              "startRequestedAt": 1792822697463,
+              "startResult": true,
+              "target": 108149
+            },
+            "status": "applied"
+          },
+          "phase": "complete",
+          "release_evidence": {
+            "id": "release-chat-voices-20261024-005",
+            "released": true,
+            "status": "applied"
+          },
+          "source": "Authored two-person encounter; generated intentions and speech",
+          "speakers": [
+            108186,
+            108149
+          ],
+          "turn": 2,
+          "turns": [
+            {
+              "audio": {
+                "engine": "kokoro-onnx-0.6.1",
+                "file": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b.wav",
+                "seconds": 7.57,
+                "sha256": "fad4a6a225f9ab607fc84112756ffcabca10c79c3a3cc3c5c0f95f08fbeac68b",
+                "voice": "bf_emma"
+              },
+              "candidates": [
+                {
+                  "id": "option_1",
+                  "intention": "maintain positive business relationship",
+                  "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                  "tone": "hopeful"
+                },
+                {
+                  "id": "option_2",
+                  "intention": "express frustration and caution",
+                  "line": "I understand your worries, but refusing every offer leaves me uncertain if we'll ever build the trade ties I hoped for between us.",
+                  "tone": "frustrated"
+                }
+              ],
+              "context": {
+                "actor_id": 108186,
+                "event": {
+                  "id": "voices-20261024-005",
+                  "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+                  "kind": "nearby_conversation"
+                },
+                "heard_in_this_conversation": [],
+                "known_facts_in_first_person": [
+                  "I worked for Carlotta Valentia, making their bread using their grain. They paid me 2 gold. The bread belonged to them, not me.",
+                  "I offered Carlotta Valentia 3 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller.",
+                  "I offered Carlotta Valentia 5 gold to BUY one loaf FROM them. Carlotta Valentia REFUSED TO SELL me bread. I was the BUYER, not the seller."
+                ],
+                "listener": {
+                  "id": 108149,
+                  "name": "Carlotta Valentia"
+                },
+                "memories": [
+                  {
+                    "bread_made": 2,
+                    "event_id": "produce-market-20261024-001-work",
+                    "gold": 2,
+                    "grain_used": 1,
+                    "kind": "paid_work",
+                    "other": 108149,
+                    "role": "worker",
+                    "source": "observed native inventory conversion and wage; work animation unverified"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "market-20261024-001-buyer_meal",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108149,
+                    "role": "buyer",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "market-20261024-001-buyer_meal",
+                    "gold": 5,
+                    "kind": "trade_offer_declined",
+                    "other": 108149,
+                    "role": "buyer",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1673cd53662d9160c432f60e",
+                    "kind": "said",
+                    "listener": 108149,
+                    "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-5b5c2ef0e255816887fc6277",
+                    "kind": "heard_speech",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                    "kind": "said",
+                    "listener": 108149,
+                    "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-0c9c5320883f943196c2306c",
+                    "kind": "heard_speech",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  }
+                ],
+                "needs": {
+                  "hunger": 0.75
+                },
+                "own_food_policy": null,
+                "own_inventory": {
+                  "bread": 0,
+                  "gold": 8,
+                  "grain": 0
+                },
+                "profile": {
+                  "bias": "optimistic about making up a small loss later",
+                  "big_five": {
+                    "agreeableness": 0.55,
+                    "conscientiousness": 0.6,
+                    "extraversion": 0.8,
+                    "neuroticism": 0.3,
+                    "openness": 0.8
+                  },
+                  "name": "Ysolda",
+                  "priorities": [
+                    "build trade relationships",
+                    "preserve money for future business"
+                  ],
+                  "role": "aspiring merchant"
+                },
+                "trust": {}
+              },
+              "decision": {
+                "decision": {
+                  "action_id": "option_1",
+                  "emotion": "unspecified",
+                  "reason": "Selected action: maintain positive business relationship Say: Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon. Tone: hopeful"
+                },
+                "elapsed_seconds": 0.515,
+                "model": "typesafe/jev-1.14-20261014",
+                "probabilities": {
+                  "option_1": 0.98,
+                  "option_2": 0.02
+                },
+                "rationale_kind": "authored_action_label_not_dialogue",
+                "status": "proposal_only",
+                "usage": {
+                  "cost": 7.7784e-05,
+                  "input_tokens": 1852,
+                  "output_tokens": 37
+                }
+              },
+              "delivered": true,
+              "delivery_id": "speech-a45d1fac167195a81cd38429",
+              "delivery_session": "1792822670996-0.9439138534111433",
+              "language": {
+                "elapsed_seconds": 2.125,
+                "model": "openai/gpt-4.1-mini",
+                "proposal": {
+                  "candidates": [
+                    {
+                      "id": "option_1",
+                      "intention": "maintain positive business relationship",
+                      "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                      "tone": "hopeful"
+                    },
+                    {
+                      "id": "option_2",
+                      "intention": "express frustration and caution",
+                      "line": "I understand your worries, but refusing every offer leaves me uncertain if we'll ever build the trade ties I hoped for between us.",
+                      "tone": "frustrated"
+                    }
+                  ]
+                },
+                "usage": {
+                  "completion_tokens": 106,
+                  "completion_tokens_details": {
+                    "audio_tokens": 0,
+                    "image_tokens": 0,
+                    "reasoning_tokens": 0
+                  },
+                  "cost": 0.0007024,
+                  "cost_details": {
+                    "upstream_inference_completions_cost": 0.0001696,
+                    "upstream_inference_cost": 0.0007024,
+                    "upstream_inference_prompt_cost": 0.0005328
+                  },
+                  "is_byok": false,
+                  "prompt_tokens": 1332,
+                  "prompt_tokens_details": {
+                    "audio_tokens": 0,
+                    "cache_write_tokens": 0,
+                    "cached_tokens": 0,
+                    "video_tokens": 0
+                  },
+                  "total_tokens": 1438
+                }
+              },
+              "listener": 108149,
+              "playback": {
+                "channel": "CEF overlay audio",
+                "elapsedSeconds": 7.691,
+                "facing": [
+                  {
+                    "actor": 108186,
+                    "bodyTurnRequested": true,
+                    "headLookRequested": true
+                  },
+                  {
+                    "actor": 108149,
+                    "bodyTurnRequested": false,
+                    "headLookRequested": true
+                  }
+                ],
+                "id": "speech-a45d1fac167195a81cd38429",
+                "muted": false,
+                "nearbyThroughout": true,
+                "playedSeconds": 7.57,
+                "status": "ended",
+                "volume": 1
+              },
+              "selected": {
+                "id": "option_1",
+                "intention": "maintain positive business relationship",
+                "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                "tone": "hopeful"
+              },
+              "speaker": 108186
+            },
+            {
+              "audio": {
+                "engine": "kokoro-onnx-0.6.1",
+                "file": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df.wav",
+                "seconds": 8.2153,
+                "sha256": "12d277da00c93ef4d04d500cb1547a24ac044cf62cb663b03de448ef740e59df",
+                "voice": "bf_alice"
+              },
+              "candidates": [
+                {
+                  "id": "option_1",
+                  "intention": "express cautious optimism about future cooperation",
+                  "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                  "tone": "hopeful"
+                },
+                {
+                  "id": "option_2",
+                  "intention": "restate firm resolve to protect family food supply",
+                  "line": "I know you mean well, but I must be firm, Ysolda. My family\u2019s safety comes before any partnership right now, no exceptions.",
+                  "tone": "frustrated"
+                }
+              ],
+              "context": {
+                "actor_id": 108149,
+                "event": {
+                  "id": "voices-20261024-005",
+                  "information": "You meet this resident after your recent economic events. Respond naturally using your own experiences. The other person's private motives, needs and inventory are unknown. Speech cannot itself complete a trade or change a policy.",
+                  "kind": "nearby_conversation"
+                },
+                "heard_in_this_conversation": [
+                  {
+                    "epistemic_status": "heard claim, not verified fact",
+                    "line": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                    "speaker": 108186
+                  }
+                ],
+                "known_facts_in_first_person": [
+                  "Ysolda offered ME 5 gold to BUY one loaf FROM ME. I REFUSED TO SELL them bread. I was the SELLER.",
+                  "I ate one of my carried loaves."
+                ],
+                "listener": {
+                  "id": 108186,
+                  "name": "Ysolda"
+                },
+                "memories": [
+                  {
+                    "bread": 1,
+                    "event_id": "market-20261024-001-buyer_meal",
+                    "gold": 5,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "consume-market-20261024-001-seller_meal",
+                    "hunger_after": 0.15,
+                    "hunger_before": 0.75,
+                    "kind": "consumed_bread",
+                    "source": "native food-use command and observed inventory; animation not verified"
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1673cd53662d9160c432f60e",
+                    "kind": "heard_speech",
+                    "listener": 108149,
+                    "quote": "Carlotta, I understand you won't sell your bread to me now, but perhaps we can find a way to work together later for mutual benefit.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-5b5c2ef0e255816887fc6277",
+                    "kind": "said",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now. We've had scares before, and I need to keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-1ff3fbddd98203b01a0235f7",
+                    "kind": "heard_speech",
+                    "listener": 108149,
+                    "quote": "Carlotta, I respect your caution. Maybe next time we can discuss a partnership that benefits us both without risking your family\u2019s needs.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-0c9c5320883f943196c2306c",
+                    "kind": "said",
+                    "listener": 108186,
+                    "quote": "I can't risk selling any bread right now, Ysolda. With the scares we've had, I must keep what I have for my family\u2019s survival.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108149
+                  },
+                  {
+                    "event_id": "after-voices004-stock",
+                    "kind": "allocated_food",
+                    "policy": {
+                      "mode": "household_all",
+                      "reserve_target": 0,
+                      "source": "resident selected among authored allocation policies",
+                      "source_event": "after-voices004-stock"
+                    },
+                    "source": "own allocation decision; no inventory change"
+                  },
+                  {
+                    "epistemic_status": "claim, not verified fact",
+                    "event_id": "speech-a45d1fac167195a81cd38429",
+                    "kind": "heard_speech",
+                    "listener": 108149,
+                    "quote": "Carlotta, I truly respect your need to keep your bread safe for your family. Let's keep an eye out for better chances to work together soon.",
+                    "source": "completed overlay audio playback with nearby listener; not semantic truth or lip-sync proof",
+                    "speaker": 108186
+                  }
+                ],
+                "needs": {
+                  "hunger": 0.15
+                },
+                "own_food_policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "after-voices004-stock"
+                },
+                "own_inventory": {
+                  "bread": 4,
+                  "gold": 6,
+                  "grain": 1
+                },
+                "profile": {
+                  "bias": "a recent scare makes shortages feel more likely",
+                  "big_five": {
+                    "agreeableness": 0.65,
+                    "conscientiousness": 0.85,
+                    "extraversion": 0.55,
+                    "neuroticism": 0.55,
+                    "openness": 0.35
+                  },
+                  "name": "Carlotta Valentia",
+                  "priorities": [
+                    "keep food for family",
+                    "earn a stable living"
+                  ],
+                  "role": "produce merchant and parent"
+                },
+                "trust": {}
+              },
+              "decision": {
+                "decision": {
+                  "action_id": "option_1",
+                  "emotion": "unspecified",
+                  "reason": "Selected action: express cautious optimism about future cooperation Say: Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better. Tone: hopeful"
+                },
+                "elapsed_seconds": 0.547,
+                "model": "typesafe/jev-1.14-20261014",
+                "probabilities": {
+                  "option_1": 0.7,
+                  "option_2": 0.3
+                },
+                "rationale_kind": "authored_action_label_not_dialogue",
+                "status": "proposal_only",
+                "usage": {
+                  "cost": 8.5848e-05,
+                  "input_tokens": 2044,
+                  "output_tokens": 37
+                }
+              },
+              "delivered": true,
+              "delivery_id": "speech-27613d476a676275bb9151ea",
+              "delivery_session": "1792822670996-0.9439138534111433",
+              "language": {
+                "elapsed_seconds": 1.422,
+                "model": "openai/gpt-4.1-mini",
+                "proposal": {
+                  "candidates": [
+                    {
+                      "id": "option_1",
+                      "intention": "express cautious optimism about future cooperation",
+                      "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                      "tone": "hopeful"
+                    },
+                    {
+                      "id": "option_2",
+                      "intention": "restate firm resolve to protect family food supply",
+                      "line": "I know you mean well, but I must be firm, Ysolda. My family\u2019s safety comes before any partnership right now, no exceptions.",
+                      "tone": "frustrated"
+                    }
+                  ]
+                },
+                "usage": {
+                  "completion_tokens": 118,
+                  "completion_tokens_details": {
+                    "audio_tokens": 0,
+                    "image_tokens": 0,
+                    "reasoning_tokens": 0
+                  },
+                  "cost": 0.0007724,
+                  "cost_details": {
+                    "upstream_inference_completions_cost": 0.0001888,
+                    "upstream_inference_cost": 0.0007724,
+                    "upstream_inference_prompt_cost": 0.0005836
+                  },
+                  "is_byok": false,
+                  "prompt_tokens": 1459,
+                  "prompt_tokens_details": {
+                    "audio_tokens": 0,
+                    "cache_write_tokens": 0,
+                    "cached_tokens": 0,
+                    "video_tokens": 0
+                  },
+                  "total_tokens": 1577
+                }
+              },
+              "listener": 108186,
+              "playback": {
+                "channel": "CEF overlay audio",
+                "elapsedSeconds": 8.326,
+                "facing": [
+                  {
+                    "actor": 108149,
+                    "bodyTurnRequested": true,
+                    "headLookRequested": true
+                  },
+                  {
+                    "actor": 108186,
+                    "bodyTurnRequested": true,
+                    "headLookRequested": true
+                  }
+                ],
+                "id": "speech-27613d476a676275bb9151ea",
+                "muted": false,
+                "nearbyThroughout": true,
+                "playedSeconds": 8.215333,
+                "status": "ended",
+                "volume": 1
+              },
+              "selected": {
+                "id": "option_1",
+                "intention": "express cautious optimism about future cooperation",
+                "line": "Thank you, Ysolda. I appreciate your understanding. When times are steadier, I\u2019d like to explore how we might support each other better.",
+                "tone": "hopeful"
+              },
+              "speaker": 108149
+            }
+          ]
+        },
+        "town": null,
+        "inventory": {
+          "108156": {
+            "gold": 7,
+            "bread": 0,
+            "grain": 0
+          },
+          "108149": {
+            "gold": 6,
+            "bread": 4,
+            "grain": 1
+          }
+        }
+      }
+    }
+  ]
+}

@@ -113,6 +113,11 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
+                elif self.path=='/town/initialize':
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    if bridge['command']:raise ValueError('another command is pending')
+                    self.reply(202,world.initialize_population(data['id'],data['seed'],bridge['observation']))
                 elif self.path.startswith('/conversation/'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')

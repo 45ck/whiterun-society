@@ -244,7 +244,15 @@ on('update', () => {
       if (typeof resident.getItemCount==='function') {
         for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
       }
-      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
+      let isPerson=null,isGuard=null,outdoors=null;
+      try{if(sp.Keyword&&typeof resident.hasKeyword==='function'){
+        const keyword=sp.Keyword.from(sp.Game.getFormEx(0x13794));if(keyword)isPerson=resident.hasKeyword(keyword);
+      }}catch(_){}
+      try{if(typeof resident.isGuard==='function')isGuard=resident.isGuard();}catch(_){}
+      try{const ownCell=resident.getParentCell();if(ownCell&&typeof ownCell.isInterior==='function')outdoors=!ownCell.isInterior();}catch(_){}
+      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,
+        classificationSource:isPerson===null?'unavailable':'native ActorTypeNPC keyword; child/dead filters applied',
+        x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
     }
   }
   // Only numeric IDs cross frame boundaries: native object handles are pooled
@@ -306,10 +314,18 @@ on('update', () => {
   if (hud!==null) sp.setTextString(hud,'WHITERUN SOCIETY | Observer | '+residents.length+' actors loaded');
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
   let audioEnabled=null;
+  let gameDays=null,weather=null;
+  try{if(sp.Utility&&typeof sp.Utility.getCurrentGameTime==='function')gameDays=sp.Utility.getCurrentGameTime();}catch(_){}
+  try{if(sp.Weather&&typeof sp.Weather.getCurrentWeather==='function'){
+    const current=sp.Weather.getCurrentWeather();if(current){const classification=current.getClassification();
+      weather={id:current.getFormID(),classification,label:({0:'pleasant',1:'cloudy',2:'rainy',3:'snow'})[classification]||'unknown',
+        source:'native current-weather classification; not a forecast'};
+    }
+  }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,perception,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,perception,gameDays,weather,productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };
