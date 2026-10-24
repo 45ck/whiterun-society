@@ -12,6 +12,7 @@ Initial demonstration: a farm, a bakery, three households, finite gold and food,
 | Resilience | Retry never charges twice; partial failure rolls back | Standalone tests pass |
 | Scarcity | Harvest failure causes measurable unmet food demand | Standalone scenario test passes |
 | Visible action | One observed NPC moves or responds to our command | Not demonstrated |
+| Unattended launch | Start directly in Whiterun without playing the opening | Clean launch reached observer readiness in 27.56 seconds; 26 actors detected |
 | World consistency | Inventory and ledger agree after trades and reloads | Not implemented |
 | Save lineage | Loading an older save restores its matching society state | Not implemented |
 | Conversation | NPC answers reflect witnessed events and personal interests | Rule-based opinion example only |
@@ -46,3 +47,11 @@ The initial implementation uses Python's standard library and JavaScript, avoidi
 - [Mod Organizer releases](https://github.com/ModOrganizer2/modorganizer/releases)
 
 The development installation currently targets Skyrim 1.6.1170 and SKSE 2.2.6. Do not automatically replace them with a newer version without checking compatibility.
+
+## Live evidence, 24 October 2026
+
+The isolated game launched from the helper without character setup or manual play. Its new bridge session reported WhiterunOrigin (0x1a27f), a loaded player and 26 loaded actors after 27.56 seconds. Counts include guards and animals; they are not a count of fully simulated citizens. Live names included Ysolda, Nazeem, Carlotta Valentia and Adrianne Avenicci.
+
+The custom bridge received and acknowledged a look-at command. That proves execution of the native call, not yet a close visual measurement of head movement. The observer screenshot and structured evidence are retained locally. Existing game assets and screenshots are not distributed with this source repository.
+
+Cold-start testing exposed an incomplete SKSE script library in the initial isolated copy. Installing all 62 compiled scripts from the official matching 2.2.6 package fixed the cold startup. Native NPC handles expire between callbacks in this runtime; the bridge now keeps only IDs and resolves fresh handles before actions. These failures are covered separately from the standalone economy tests.

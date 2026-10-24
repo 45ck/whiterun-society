@@ -33,7 +33,11 @@ def main():
 
         def do_GET(self):
             if self.path=='/health':
-                self.reply(200,{'status':'running','bridge_connected':bridge['last_seen'] is not None and time.time()-bridge['last_seen']<10})
+                connected=bridge['last_seen'] is not None and time.time()-bridge['last_seen']<10
+                observation=bridge['observation'] or {}
+                self.reply(200,{'service':'whiterun-society','protocol':1,'status':'running',
+                    'bridge_connected':connected,'observer_ready':connected and observation.get('ready') is True,
+                    'residents_loaded':len(observation.get('residents',[])) if connected else 0})
             elif self.path=='/state' and self.headers.get('Authorization')=='Bearer '+token:
                 self.reply(200,{'bridge':bridge,'simulation':sim.state()})
             else: self.reply(404,{'error':'not found'})
@@ -51,8 +55,10 @@ def main():
                     if not isinstance(session,str) or len(session)>128: raise ValueError('invalid session')
                     if bridge['session']!=session:
                         bridge['command']=None  # Never replay actions across a game load.
-                    bridge.update(last_seen=time.time(),observation=data,session=session)
                     ack=data.get('ack')
+                    if ack is not None and not isinstance(ack,dict): raise ValueError('invalid acknowledgement')
+                    if not isinstance(data.get('residents',[]),list): raise ValueError('invalid residents')
+                    bridge.update(last_seen=time.time(),observation=data,session=session)
                     if ack:
                         bridge['last_ack']=ack
                         if bridge['command'] and ack.get('id')==bridge['command']['id']:
