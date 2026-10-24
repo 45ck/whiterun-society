@@ -17,4 +17,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs
+      - run: node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs

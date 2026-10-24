@@ -1,0 +1,172 @@
+"""Immutable society checkpoints selected by a save-persistent Skyrim global.
+
+Persist intent before asking the game to bind its marker. Inventory mutations
+only run after the prepared marker is observed. Thus an intermediate game save
+retains enough information to reconcile either transfer leg after loading.
+"""
+import copy
+import hashlib
+import json
+import sqlite3
+from decisions import PROFILES
+from world_economy import snapshot
+
+MAX_MARKER = 2**24 - 1
+
+
+class TimelineEconomy:
+    def __init__(self, path):
+        self.db = sqlite3.connect(path)
+        self.db.row_factory = sqlite3.Row
+        self.db.execute('''CREATE TABLE IF NOT EXISTS checkpoints(
+            id INTEGER PRIMARY KEY AUTOINCREMENT, parent INTEGER,
+            reason TEXT NOT NULL, payload TEXT NOT NULL, sha256 TEXT NOT NULL)''')
+        self.db.commit()
+        self.session = None
+        self.marker = None
+        self.active = None
+        self.transition = None
+        self.error = 'Waiting for game checkpoint'
+
+    def _write(self, state, reason):
+        encoded = json.dumps(state, sort_keys=True, separators=(',', ':'), allow_nan=False)
+        with self.db:
+            cursor = self.db.execute('INSERT INTO checkpoints(parent,reason,payload,sha256) VALUES (?,?,?,?)',
+                (self.marker, reason, encoded, hashlib.sha256(encoded.encode()).hexdigest()))
+            if cursor.lastrowid > MAX_MARKER:
+                raise ValueError('Save marker range exhausted')
+        self.transition = {'expected': self.marker, 'next': cursor.lastrowid}
+        return cursor.lastrowid
+
+    def _read(self, marker):
+        row = self.db.execute('SELECT * FROM checkpoints WHERE id=?', (marker,)).fetchone()
+        if not row or hashlib.sha256(row['payload'].encode()).hexdigest() != row['sha256']:
+            raise ValueError('Unknown or corrupt save checkpoint; refusing to adopt latest state')
+        return json.loads(row['payload'])
+
+    def bootstrap(self, observation):
+        if not observation.get('ready') or observation.get('checkpoint') != 0 or self.marker != 0:
+            raise ValueError('Bootstrap requires a freshly observed zero-marker world')
+        if observation.get('session') != self.session or self.transition:
+            raise ValueError('Session changed or checkpoint transition pending')
+        state = {'trades': [], 'pending': None, 'starting_inventory': observation.get('residents', []), 'people': {
+            str(actor): {'profile': profile, 'memories': [], 'trust': {}, 'needs': {'hunger': .4}}
+            for actor, profile in PROFILES.items()}}
+        self.error = None
+        return {'checkpoint': self._write(state, 'explicit new-world bootstrap')}
+
+    def observe(self, observation):
+        session, marker = observation.get('session'), observation.get('checkpoint')
+        if not isinstance(session, str) or not session or type(marker) is not int or not 0 <= marker <= MAX_MARKER:
+            self.error = 'Missing or invalid game checkpoint'
+            return
+        changed = session != self.session or marker != self.marker
+        if session != self.session:
+            self.transition = None
+        if changed:
+            expected_transition = self.transition and marker == self.transition['next']
+            # Loading another save always follows its marker, never an in-flight newer one.
+            if self.transition and not expected_transition:
+                self.transition = None
+            self.session, self.marker = session, marker
+            self.active = None
+            try:
+                if marker == 0:
+                    raise ValueError('New world: initialize society or load a managed save')
+                self.active = self._read(marker)
+                self.error = None
+            except ValueError as error:
+                self.error = str(error)
+            if expected_transition:
+                self.transition = None
+        if self.transition:
+            ack = observation.get('ack') or {}
+            if ack.get('id') == 'checkpoint-' + str(self.transition['next']) and ack.get('status') != 'applied':
+                self.error = 'Game could not bind the prepared checkpoint'
+            return
+        if self.error or not self.active or not self.active['pending']:
+            return
+        pending = self.active['pending']
+        if pending['status'] != 'pending':
+            return
+        ack = observation.get('ack') or {}
+        if ack.get('id') != pending['id']:
+            return
+        command = pending['command']
+        try:
+            actual = snapshot(observation, command['buyer'], command['seller'])
+        except ValueError:
+            return
+        state = copy.deepcopy(self.active)
+        if ack.get('status') == 'applied' and actual == command['after']:
+            record = state['pending']
+            record['status'] = 'committed'
+            record['evidence'] = {'actual': actual, 'ack': ack, 'session': session}
+            state['trades'].append(record)
+            state['pending'] = None
+            for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
+                                        (command['seller'], command['buyer'], 'sold')]:
+                person = state['people'].get(str(actor))
+                if person is not None:
+                    person['memories'].append({'event_id': record['id'], 'kind': 'completed_trade',
+                        'role': role, 'other': other, 'bread': command['quantity'], 'gold': command['cost']})
+                    person['memories'] = person['memories'][-32:]
+                    person['trust'][str(other)] = min(10, person['trust'].get(str(other), 0) + 1)
+            self._write(state, 'trade observed; memories and trust updated')
+        else:
+            state['pending']['status'] = 'held'
+            state['pending']['evidence'] = {'actual': actual, 'ack': ack}
+            self._write(state, 'trade requires reconciliation')
+
+    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3):
+        if self.error or not self.active or self.transition:
+            raise ValueError('Society checkpoint is not synchronized')
+        if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
+            raise ValueError('Observation belongs to a different checkpoint')
+        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 128 or event_id.startswith('checkpoint-'):
+            raise ValueError('Invalid trade event ID')
+        if any(type(v) is not int or v <= 0 for v in (buyer, seller, quantity, unit_price)):
+            raise ValueError('Positive integer trade values required')
+        if buyer == seller or quantity > 10 or unit_price > 100:
+            raise ValueError('Invalid or oversized trade')
+        request = dict(buyer=buyer, seller=seller, quantity=quantity, unit_price=unit_price)
+        for old in self.active['trades'] + ([self.active['pending']] if self.active['pending'] else []):
+            if old['id'] == event_id:
+                if old['request'] != request:
+                    raise ValueError('Event ID reused with different trade')
+                return old
+        if self.active['pending']:
+            raise ValueError('An unsettled trade must be reconciled first')
+        before = snapshot(observation, buyer, seller)
+        cost = quantity * unit_price
+        if before['buyer']['gold'] < cost or before['seller']['bread'] < quantity:
+            raise ValueError('Insufficient observed funds or bread')
+        after = {'buyer': {'gold': before['buyer']['gold']-cost, 'bread': before['buyer']['bread']+quantity},
+                 'seller': {'gold': before['seller']['gold']+cost, 'bread': before['seller']['bread']-quantity}}
+        command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
+                       quantity=quantity, cost=cost, before=before, after=after)
+        record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
+        state = copy.deepcopy(self.active)
+        state['pending'] = record
+        checkpoint = self._write(state, 'trade intent persisted before physical action')
+        return {**record, 'prepared_checkpoint': checkpoint}
+
+    def pending(self, session):
+        if session != self.session or self.error:
+            return None
+        if self.transition:
+            return {'id': 'checkpoint-' + str(self.transition['next']), 'kind': 'bind_checkpoint',
+                    'session': session, **self.transition}
+        if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
+            return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
+        return None
+
+    def state(self):
+        if not self.active:
+            return []
+        records = self.active['trades'] + ([self.active['pending']] if self.active['pending'] else [])
+        return [{**r, 'command': json.dumps(r['command'])} for r in records]
+
+    def status(self):
+        return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                'people': self.active['people'] if self.active else {}}

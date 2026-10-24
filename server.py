@@ -2,11 +2,12 @@
 import argparse
 import json
 import secrets
+import re
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from society import Society
-from world_economy import WorldEconomy
+from lineage import TimelineEconomy
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     (args.runtime/'bridge-config.json').write_text(json.dumps({'port':args.port,'token':token}))
     sim=Society(args.runtime/'society.sqlite')
     sim.seed()
-    world=WorldEconomy(args.runtime/'world.sqlite')
+    world=TimelineEconomy(args.runtime/'timeline.sqlite')
     bridge={'last_seen':None,'observation':None,'session':None,'command':None,'last_ack':None}
 
     class Handler(BaseHTTPRequestHandler):
@@ -41,7 +42,7 @@ def main():
                     'bridge_connected':connected,'observer_ready':connected and observation.get('ready') is True,
                     'residents_loaded':len(observation.get('residents',[])) if connected else 0})
             elif self.path=='/state' and self.headers.get('Authorization')=='Bearer '+token:
-                self.reply(200,{'bridge':bridge,'simulation':sim.state(),'world':world.state()})
+                self.reply(200,{'bridge':bridge,'simulation':sim.state(),'world':world.state(),'society':world.status()})
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
@@ -70,7 +71,8 @@ def main():
                         log.write(json.dumps({'at':time.time(),'observation':data})+'\n')
                     journal=world.state()
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
-                        'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]]}
+                        'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
+                        'society':world.status()}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):
@@ -80,6 +82,10 @@ def main():
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
                     self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation})
+                elif self.path=='/world/bootstrap':
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
+                        raise ValueError('game bridge unavailable')
+                    self.reply(202,world.bootstrap(bridge['observation']))
                 elif self.path=='/world/trade':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
@@ -91,8 +97,24 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
-                    if data.get('kind') not in ('notify','look_at_player'): raise ValueError('unknown command')
+                    if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
+                    if data['kind']=='walk_to':
+                        if data.get('method','path') not in ('path','offset'): raise ValueError('Unsupported movement method')
+                        if data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:
+                            raise ValueError('Choose two different demo residents')
+                    if data['kind']=='prepare_market' and bridge['observation'].get('checkpoint')!=0:
+                        raise ValueError('Demo stock is only added before a new-world bootstrap')
+                    if data['kind'] in ('save_game','load_game'):
+                        name=data.get('name','')
+                        if not isinstance(name,str) or not re.fullmatch(r'WS-[A-Za-z0-9_-]{1,48}',name):
+                            raise ValueError('Use an isolated WS- save name')
+                        path=args.runtime.parent/'mod-organizer/profiles/Default/saves'/ (name+'.ess')
+                        if data['kind']=='save_game' and (path.exists() or world.status()['error'] or world.transition):
+                            raise ValueError('Save already exists or society is not synchronized')
+                        if data['kind']=='load_game' and not path.is_file(): raise ValueError('Isolated save not found')
                     command={'id':secrets.token_hex(8),'kind':data['kind'],'session':bridge['session']}
+                    if data['kind'] in ('save_game','load_game'): command['name']=data['name']
+                    if data['kind']=='walk_to': command.update(actor=data['actor'],target=data['target'],method=data.get('method','path'))
                     bridge['command']=command
                     self.reply(202,command)
                 elif self.path=='/scenario/shortage':

@@ -38,9 +38,13 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  const shown=decisions.find(d=>d.actor_id===focusId)||decisions[tourStep%Math.max(decisions.length,1)];
  if(shown){const row=document.createElement('div');row.style.marginBottom='7px';const name=document.createElement('strong');name.textContent=shown.name+' · '+shown.decision.emotion;const action=document.createElement('div');action.textContent=shown.decision.action_id.replaceAll('_',' ');action.style.color='var(--gold)';const reason=document.createElement('div');reason.textContent=shown.decision.reason;row.append(name,action,reason);thoughts.append(row);}
  if(decisions.length){const note=document.createElement('div');note.textContent='Rumour response · proposals only; actions not executed.';note.style.color='var(--gold)';thoughts.append(note);}
+ const society=state.society;
+ if(society){const person=society.people?.[String(focusId||108186)];const note=document.createElement('div');note.style.color='var(--gold)';note.style.marginTop='8px';note.textContent=society.error?'Society paused: '+society.error:`Save checkpoint ${society.checkpoint}${society.transition?' · synchronizing':''} · ${person?.memories?.length||0} remembered trades`;thoughts.append(note);}
  text('count',actors.length);text('trade-count',state.committedCount||committed.length);text('connection','Connected to Skyrim · inventories observed live');
  text('tour',tour?'Pause tour':'Start tour');text('notice',tour?'Guided tour · camera changes every 12 seconds':'Manual camera · hover over a view or resident');
  text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='trade'?'Carlotta & Ysolda':camera==='street'?'Whiterun approach':'Market overview');
+ if(state.movement?.phase==='walking')text('notice',`${names[state.movement.actor]} → ${names[state.movement.target]} · destination requested`);
+ if(state.movement?.phase==='held')text('notice','Route not completed · destination control needs work');
  document.querySelectorAll('[data-camera]').forEach(b=>b.classList.toggle('active',b.dataset.camera===camera));
  const people=document.getElementById('people');people.replaceChildren();
  for(const id of [108149,108186,108156]){const a=actors.find(a=>a.id===id);const b=document.createElement('button');b.className='person'+(focusId===id?' active':'');b.disabled=!a;

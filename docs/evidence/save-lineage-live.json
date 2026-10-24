@@ -1,0 +1,648 @@
+{
+  "run_id": "Timeline-20261024-01",
+  "steps": [
+    {
+      "label": "before",
+      "checkpoint": 1,
+      "inventory": {
+        "108149": {
+          "gold": 13,
+          "bread": 3,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      "world": [],
+      "people": {
+        "108149": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "at": 1792816952.9326887
+    },
+    {
+      "label": "after",
+      "checkpoint": 3,
+      "inventory": {
+        "108149": {
+          "gold": 16,
+          "bread": 2,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 15,
+          "bread": 1,
+          "grain": 0
+        }
+      },
+      "world": [
+        {
+          "command": "{\"after\": {\"buyer\": {\"bread\": 1, \"gold\": 15}, \"seller\": {\"bread\": 2, \"gold\": 16}}, \"before\": {\"buyer\": {\"bread\": 0, \"gold\": 18}, \"seller\": {\"bread\": 3, \"gold\": 13}}, \"buyer\": 108186, \"cost\": 3, \"id\": \"Timeline-20261024-01-trade\", \"kind\": \"inventory_trade\", \"quantity\": 1, \"seller\": 108149}",
+          "evidence": {
+            "ack": {
+              "id": "Timeline-20261024-01-trade",
+              "inventory": {
+                "buyer": {
+                  "bread": 1,
+                  "gold": 15
+                },
+                "seller": {
+                  "bread": 2,
+                  "gold": 16
+                }
+              },
+              "status": "applied"
+            },
+            "actual": {
+              "buyer": {
+                "bread": 1,
+                "gold": 15
+              },
+              "seller": {
+                "bread": 2,
+                "gold": 16
+              }
+            },
+            "session": "1792816918142-0.058316669581089275"
+          },
+          "id": "Timeline-20261024-01-trade",
+          "request": {
+            "buyer": 108186,
+            "quantity": 1,
+            "seller": 108149,
+            "unit_price": 3
+          },
+          "status": "committed"
+        }
+      ],
+      "people": {
+        "108149": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108186,
+              "role": "sold"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {
+            "108186": 1
+          }
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108149,
+              "role": "bought"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {
+            "108149": 1
+          }
+        }
+      },
+      "at": 1792816989.2191808
+    },
+    {
+      "label": "duplicate",
+      "checkpoint": 3,
+      "inventory": {
+        "108149": {
+          "gold": 16,
+          "bread": 2,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 15,
+          "bread": 1,
+          "grain": 0
+        }
+      },
+      "world": [
+        {
+          "command": "{\"after\": {\"buyer\": {\"bread\": 1, \"gold\": 15}, \"seller\": {\"bread\": 2, \"gold\": 16}}, \"before\": {\"buyer\": {\"bread\": 0, \"gold\": 18}, \"seller\": {\"bread\": 3, \"gold\": 13}}, \"buyer\": 108186, \"cost\": 3, \"id\": \"Timeline-20261024-01-trade\", \"kind\": \"inventory_trade\", \"quantity\": 1, \"seller\": 108149}",
+          "evidence": {
+            "ack": {
+              "id": "Timeline-20261024-01-trade",
+              "inventory": {
+                "buyer": {
+                  "bread": 1,
+                  "gold": 15
+                },
+                "seller": {
+                  "bread": 2,
+                  "gold": 16
+                }
+              },
+              "status": "applied"
+            },
+            "actual": {
+              "buyer": {
+                "bread": 1,
+                "gold": 15
+              },
+              "seller": {
+                "bread": 2,
+                "gold": 16
+              }
+            },
+            "session": "1792816918142-0.058316669581089275"
+          },
+          "id": "Timeline-20261024-01-trade",
+          "request": {
+            "buyer": 108186,
+            "quantity": 1,
+            "seller": 108149,
+            "unit_price": 3
+          },
+          "status": "committed"
+        }
+      ],
+      "people": {
+        "108149": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108186,
+              "role": "sold"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {
+            "108186": 1
+          }
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108149,
+              "role": "bought"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {
+            "108149": 1
+          }
+        }
+      },
+      "at": 1792816989.2326696
+    },
+    {
+      "label": "restored-A",
+      "checkpoint": 1,
+      "inventory": {
+        "108149": {
+          "gold": 13,
+          "bread": 3,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      "world": [],
+      "people": {
+        "108149": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "at": 1792817126.7679057
+    },
+    {
+      "label": "restored-B",
+      "checkpoint": 3,
+      "inventory": {
+        "108149": {
+          "gold": 16,
+          "bread": 2,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 15,
+          "bread": 1,
+          "grain": 0
+        }
+      },
+      "world": [
+        {
+          "command": "{\"after\": {\"buyer\": {\"bread\": 1, \"gold\": 15}, \"seller\": {\"bread\": 2, \"gold\": 16}}, \"before\": {\"buyer\": {\"bread\": 0, \"gold\": 18}, \"seller\": {\"bread\": 3, \"gold\": 13}}, \"buyer\": 108186, \"cost\": 3, \"id\": \"Timeline-20261024-01-trade\", \"kind\": \"inventory_trade\", \"quantity\": 1, \"seller\": 108149}",
+          "evidence": {
+            "ack": {
+              "id": "Timeline-20261024-01-trade",
+              "inventory": {
+                "buyer": {
+                  "bread": 1,
+                  "gold": 15
+                },
+                "seller": {
+                  "bread": 2,
+                  "gold": 16
+                }
+              },
+              "status": "applied"
+            },
+            "actual": {
+              "buyer": {
+                "bread": 1,
+                "gold": 15
+              },
+              "seller": {
+                "bread": 2,
+                "gold": 16
+              }
+            },
+            "session": "1792816918142-0.058316669581089275"
+          },
+          "id": "Timeline-20261024-01-trade",
+          "request": {
+            "buyer": 108186,
+            "quantity": 1,
+            "seller": 108149,
+            "unit_price": 3
+          },
+          "status": "committed"
+        }
+      ],
+      "people": {
+        "108149": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108186,
+              "role": "sold"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {
+            "108186": 1
+          }
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "Timeline-20261024-01-trade",
+              "gold": 3,
+              "kind": "completed_trade",
+              "other": 108149,
+              "role": "bought"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {
+            "108149": 1
+          }
+        }
+      },
+      "at": 1792817130.797588
+    }
+  ],
+  "passed": true,
+  "fixture": "Explicitly provision Carlotta to three carried loaves before checkpoint bootstrap; no gold minted.",
+  "saves": [
+    {
+      "name": "WS-Timeline-20261024-01-A",
+      "bytes": 2599614,
+      "sha256": "92d180bdaff3b9958d34834718857ecb137d7afd8d5021fe4db5535c08907ab3"
+    },
+    {
+      "name": "WS-Timeline-20261024-01-B",
+      "bytes": 2582465,
+      "sha256": "a84eef16b32aa5f93c0033cf304b55f25206999e8aa73388533000685fc9bd48"
+    }
+  ],
+  "recovery": "Restore verification rerun after correcting loadGame/preLoadGame event ordering to the SKSE pre/post pair."
+}

@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
+  .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
 function harness(nativeGlobal=false) {
@@ -62,7 +63,7 @@ test('empty town reports waiting instead of observer ready',()=>{
 });
 test('hot reload unsubscribes the previous controller',()=>{
   const h=harness();const old=h.handlers.get('update');
-  h.reload();assert.notEqual(h.handlers.get('update'),old);assert.equal(h.handlers.size,7);
+  h.reload();assert.notEqual(h.handlers.get('update'),old);assert.equal(h.handlers.size,8);
 });
 
 test('loaded IDs discover actors beyond the player cell',()=>{
@@ -100,4 +101,19 @@ test('camera messages are allowlisted and resolved only on the game update',()=>
   h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'focus',id:999}]});
   h.handlers.get('update')();assert.deepEqual(Array.from(positions[1]),[1,142,118]);
   assert.ok(rotations.flat().every(Number.isFinite));
+});
+
+test('checkpoint binding compares the actual marker before writing',async()=>{
+  const h=harness();let marker=3,writes=0;
+  h.sp.Game.getFormFromFile=()=>({});
+  h.sp.GlobalVariable={from:()=>({getValue:()=>marker,setValue:v=>{writes++;marker=v;}})};
+  h.setResponse(body=>({id:'checkpoint-4',kind:'bind_checkpoint',session:body.session,expected:3,next:4}));
+  h.handlers.get('update')();await settle();assert.equal(writes,0);
+  marker=2;h.handlers.get('update')();assert.equal(writes,0);assert.equal(marker,2);
+});
+
+test('loading blocks native observations until load completion',()=>{
+  const h=harness();h.handlers.get('preLoadGame')();h.handlers.get('update')();
+  assert.equal(h.requests.length,0);
+  h.handlers.get('postLoadGame')();h.handlers.get('update')();assert.equal(h.requests.length,1);
 });

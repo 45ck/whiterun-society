@@ -5,6 +5,8 @@
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
 __TRANSFER_FACTORY__
 const transfers=createInventoryTransfers(()=>sp);
+__MOVEMENT_FACTORY__
+const movement=createMovementController(()=>sp);
 const config = __BRIDGE_CONFIG__;
 const economyForms={gold:0xf,bread:0x65c97,grain:0x4b0ba};
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
@@ -16,6 +18,7 @@ let busy = false;
 let lastSent = 0;
 let announced = false;
 let observerReady = false;
+let loading = false;
 let bindingsReady = false;
 let refreshBindings = false;
 let lastBindingAttempt = 0;
@@ -41,9 +44,21 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
+  movement.reset();
 }
-on('preLoadGame', reset);
-on('newGame', reset);
+on('preLoadGame', () => {reset();loading=true;sp.printConsole('[Society] preLoadGame');});
+// The engine loadGame event can arrive before SKSE preLoadGame. Pair the
+// SKSE lifecycle events instead, so an early engine event cannot leave us paused.
+on('postLoadGame', () => {loading=false;sp.printConsole('[Society] postLoadGame complete');});
+on('newGame', () => {reset();loading=false;});
+function checkpointGlobal() {
+  if (!sp.GlobalVariable || typeof sp.Game.getFormFromFile!=='function') return null;
+  return sp.GlobalVariable.from(sp.Game.getFormFromFile(0x800,'WhiterunSociety.esp'));
+}
+function checkpointValue() {
+  const global=checkpointGlobal();
+  return global ? global.getValue() : null;
+}
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
   if (!message || message.type!=='society-camera') return;
@@ -96,6 +111,7 @@ on('tick',()=>{
   }
 });
 on('update', () => {
+  if (loading) return;
   const player = sp.Game.getPlayer();
   if (!player || !player.is3DLoaded()) return;
   const cell = player.getParentCell();
@@ -120,17 +136,45 @@ on('update', () => {
     if (command.session === session && !completed.has(command.id)) {
       try {
         if (command.kind === 'inventory_trade') {
+          if (!Number.isInteger(command.checkpoint) || checkpointValue()!==command.checkpoint) throw new Error('Trade checkpoint mismatch');
           const result=transfers.step(command);
           if (!result.done) pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
+        else if (command.kind === 'walk_to') {
+          cameraMode='focus';cameraActor=command.actor;cameraDirty=true;
+          const result=movement.step(command);
+          if(!result.done)pending=command;
+          else {ack=result.ack;completed.add(command.id);}
+        }
+        else if (command.kind === 'bind_checkpoint') {
+          if (!Number.isInteger(command.next)||command.next<1||command.next>16777215) throw new Error('Invalid checkpoint');
+          const global=checkpointGlobal();
+          if (!global || global.getValue()!==command.expected) throw new Error('Checkpoint changed before binding');
+          global.setValue(command.next);
+          if (global.getValue()!==command.next) throw new Error('Checkpoint write not observed');
+        }
         else if (command.kind === 'notify') sp.Debug.notification('Whiterun Society: command received from local service');
+        else if (command.kind === 'prepare_market') {
+          if (checkpointValue()!==0) throw new Error('Demo setup requires a new-world marker');
+          const seller=sp.Actor.from(sp.Game.getFormEx(108149)),bread=sp.Game.getFormEx(0x65c97);
+          if (!seller||!seller.is3DLoaded()||!bread) throw new Error('Demo seller is unavailable');
+          const missing=Math.max(0,3-seller.getItemCount(bread));
+          if (missing) seller.addItem(bread,missing,true);
+        }
+        else if (command.kind === 'save_game' || command.kind === 'load_game') {
+          if (!/^WS-[A-Za-z0-9_-]{1,48}$/.test(command.name)) throw new Error('Invalid lab save name');
+          if (command.kind==='save_game') {
+            sp.Game.setInChargen(false,false,false);
+            sp.Game.saveGame(command.name);
+          } else sp.Game.loadGame(command.name);
+        }
         else if (command.kind === 'look_at_player') {
           const actor = sp.Actor.from(sp.Game.getFormEx(selected));
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (command.kind!=='inventory_trade') {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['inventory_trade','walk_to'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
@@ -180,7 +224,7 @@ on('update', () => {
   if (hud!==null) sp.setTextString(hud,'WHITERUN SOCIETY | Observer | '+residents.length+' actors loaded');
   const actor = selected ? sp.Actor.from(sp.Game.getFormEx(selected)) : null;
   const observation = {
-    session, platform:sp.getPlatformVersion(),
+    session, checkpoint:checkpointValue(), movement:movement.status(), platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack

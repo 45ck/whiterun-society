@@ -85,3 +85,19 @@ The marker test was followed by an XAudio2_7.dll access violation on the audio t
 Three actual local model requests used observed Skyrim inventories and authored Big Five profiles. The resulting proposals appeared in the live observer overlay. The second run took 4.641–5.672 seconds per resident; replaying its event ID made zero additional model calls. This is a bounded event runner, not an always-running agent loop. See [decision design and measured limitations](npc-decisions.md).
 
 All three residents selected the same proposal, and one explanation contradicted its action. A third run with an explicit consistency instruction removed that particular contradiction but produced overly analytical, sometimes cut-off explanations (5.797–8.172 seconds). Neither run establishes believable personality effects. No proposal has been executed as an autonomous game action, and no memories or relationships were changed.
+
+## Save-linked trade and memory: subsequent experiment
+
+Timeline-20261024-01 explicitly provisioned Carlotta with three starting loaves, without minting gold. Save A bound checkpoint 1: Carlotta 13 gold / 3 bread; Ysolda 18 gold / 0 bread; no trade memories. An externally requested purchase bound prepared checkpoint 2 before touching inventory. The verified exchange then bound checkpoint 3: Carlotta 16 gold / 2 bread; Ysolda 15 gold / 1 bread. Both residents acquired a factual trade memory and one trust point under an authored rule. This is not a validated psychological model.
+
+Loading A restored checkpoint 1, its exact inventories, empty trade history and empty memories/trust. Loading B restored checkpoint 3, its exact inventories, committed history and memories/trust. A duplicate trade request changed none of those. The structured evidence and save hashes are in [save-lineage-live.json](evidence/save-lineage-live.json).
+
+The first restore attempt exposed event ordering: the engine loadGame callback arrived before SKSE preLoadGame. Pairing SKSE preLoadGame with postLoadGame fixed the stuck observation barrier; both subsequent restores passed without hot reload between them. The distinct events are declared in the [upstream API definitions](https://github.com/skyrim-multiplayer/skymp/blob/main/skyrim-platform/src/platform_se/codegen/convert-files/Definitions.txt).
+
+The game subsequently crashed again in XAudio2_7.dll on the audio thread. Therefore state restoration is demonstrated, but sustained runtime/save-load stability is still not accepted. The lab was relaunched into a fresh zero-marker world; the two tested saves and their immutable checkpoints remain retained. The latest world is not represented as the restored trade world.
+
+The timeline database is now authoritative for managed commerce and social state. The older world.sqlite journal remains historical and is not automatically imported. Unknown/corrupt markers block commerce; a new zero-marker world requires explicit bootstrap. Prepared saves retain the original before/after trade intent so existing transfer logic can reconcile partial effects. Mid-trade restore is covered by tests but has not yet been demonstrated with an actual Skyrim save. Keep the timeline database together with the game saves; external backup/deletion recovery remains to be qualified.
+
+## Agent ownership of routines
+
+Location and routine decisions must come from the society planner. The current movement probes do not yet meet that requirement. See [agent control acceptance](agent-control.md) for the measured failures and next implementation step.

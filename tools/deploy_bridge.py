@@ -16,6 +16,8 @@ config=json.loads((root/'runtime'/'bridge-config.json').read_text())
 source=(Path(__file__).resolve().parents[1]/'bridge'/'whiterun-society.js').read_text()
 factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
 source=source.replace('__TRANSFER_FACTORY__',factory)
+movement=(Path(__file__).resolve().parents[1]/'bridge'/'movement.js').read_text().split('\nif(typeof module')[0]
+source=source.replace('__MOVEMENT_FACTORY__',movement)
 target=game/'Data'/'Platform'/'PluginsDev'/'whiterun-society.js'
 target.parent.mkdir(parents=True,exist_ok=True)
 ui_source=(Path(__file__).resolve().parents[1]/'ui'/'index.html').read_text(encoding='utf-8')

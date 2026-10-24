@@ -10,7 +10,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 ![Local AI proposals in the actual Skyrim observer overlay](docs/images/local-ai-in-game.jpg)
 
-An original save-marker plugin also passed a 101 → 202 → load → 101 round trip. External economy/memory restoration remains unimplemented, and a subsequent audio-thread crash means save/load stability remains open. [Evidence and limitations](docs/acceptance.md).
+Save-linked trade history, factual memories and trust have now restored correctly from actual before/after Skyrim saves. A recurring audio-thread crash still prevents accepting save/load stability. Agents do not yet own residents' routines; initial movement probes were insufficient. [Evidence and limitations](docs/acceptance.md) - [Required agent control](docs/agent-control.md).
 
 ## Run the tests
 
@@ -19,7 +19,7 @@ Python 3.12+, no third-party Python dependencies:
 ```sh
 python -m unittest discover -s tests -v
 python town.py --days 30
-node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs
+node --test tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs
 ```
 
 The tests exercise conservation of currency and stock, insufficient resources, duplicate delivery, persistence and separate simulation checkpoints. A passing unit test is not proof that an NPC acted inside Skyrim.
@@ -55,9 +55,9 @@ Observer mode protects the player from combat and uses a raised free camera. The
 
 ## Physical trade journal
 
-The authenticated local `/world/trade` endpoint accepts an event ID, buyer and seller reference IDs, quantity and unit price. It quotes against currently observed bread and gold, persists the intended before/after state in `world.sqlite`, and asks the bridge to transfer existing goods followed by payment. Each native operation is issued once and checked on subsequent frames. The journal commits only when the acknowledgement and independent observation match the expected result. Retries with the same ID return the original record.
+The authenticated local /world/trade endpoint quotes against observed bread and gold. It writes an immutable prepared checkpoint in timeline.sqlite, asks Skyrim to bind that checkpoint, and only then transfers goods and payment. The next committed checkpoint includes the confirmed trade, factual memories and trust changes. Loading a save selects its checkpoint rather than the latest database state. Retries with the same event ID return the original record.
 
-A changed save/session, unexpected inventory or incomplete operation places the command on hold. Further physical trades stop until it is reconciled. This is deliberate preservation of uncertain effects, not completed save synchronization. The older `/scenario/trade` endpoint and `society.sqlite` remain standalone test simulation; their balances are not game inventory.
+A changed save/session, unexpected inventory or incomplete operation places the command on hold. Further physical trades stop until it is reconciled. Before/after save restoration now passes for inventories, trade history, memories and trust; recurring audio crashes and in-game mid-trade restore still require qualification. The older `/scenario/trade` endpoint and `society.sqlite` remain standalone test simulation; their balances are not game inventory.
 
 ## First playable acceptance criteria
 
