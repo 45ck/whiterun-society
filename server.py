@@ -4,10 +4,23 @@ import json
 import secrets
 import re
 import time
+import os
+import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from society import Society
 from lineage import TimelineEconomy
+
+
+class LocalServer(HTTPServer):
+    # Windows SO_REUSEADDR can admit a second listener on the same endpoint.
+    # Claim the socket exclusively before publishing runtime credentials.
+    allow_reuse_address = os.name != 'nt'
+
+    def server_bind(self):
+        if os.name == 'nt':
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 def main():
@@ -17,7 +30,7 @@ def main():
     args=parser.parse_args()
     args.runtime.mkdir(parents=True, exist_ok=True)
     token=secrets.token_hex(32)
-    (args.runtime/'bridge-config.json').write_text(json.dumps({'port':args.port,'token':token}))
+    config_path=args.runtime/'bridge-config.json'
     sim=Society(args.runtime/'society.sqlite')
     sim.seed()
     world=TimelineEconomy(args.runtime/'timeline.sqlite')
@@ -98,7 +111,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation)
+                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'))
                     elif self.path=='/agency/claim': result=world.claim_plan_decision(data['id'],observation)
                     elif self.path=='/agency/decision': result=world.finish_plan_decision(data['id'],data['claim_id'],data['result'],observation)
                     else: result=world.hold_plan(data['id'],data['reason'],observation)
@@ -138,9 +151,23 @@ def main():
             except (ValueError,KeyError,TypeError) as error:
                 self.reply(400,{'error':str(error)})
 
+    # Publish authority only after binding succeeds. A new development instance
+    # atomically takes over the config; this instance then exits itself cleanly.
+    http=LocalServer(('127.0.0.1',args.port),Handler)
+    config_tmp=args.runtime/f'bridge-config-{args.port}.tmp'
+    config_tmp.write_text(json.dumps({'port':args.port,'token':token}))
+    config_tmp.replace(config_path)
+    http.timeout=1
     print(json.dumps({'listening':f'http://127.0.0.1:{args.port}','runtime':str(args.runtime)}),flush=True)
-    try: HTTPServer(('127.0.0.1',args.port),Handler).serve_forever()
+    try:
+        while True:
+            http.handle_request()
+            current=json.loads(config_path.read_text())
+            if current.get('port')!=args.port or current.get('token')!=token:
+                print('Development service superseded; exiting this instance',flush=True)
+                break
     finally:
+        http.server_close()
         sim.db.close()
         world.db.close()
 

@@ -1,0 +1,1335 @@
+{
+  "scope": "Food history absent after actual pre-food save restore",
+  "expected_prior_snapshot": {
+    "checkpoint": 45,
+    "plan": {
+      "actor": 108186,
+      "claim": null,
+      "decisions": [
+        {
+          "actor_id": 108186,
+          "claim_id": "bc8bd41f18628d3ac37675ed",
+          "context": {
+            "actor_id": 108186,
+            "event": {
+              "id": "meal-20261024-005",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 0,
+              "gold": 12,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              },
+              {
+                "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+                "id": "seek_bread"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 1
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "seek_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse."
+          },
+          "elapsed_seconds": 0.484,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.33,
+            "seek_bread": 0.55,
+            "visit_adrianne": 0.12
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 5.04e-05,
+            "input_tokens": 1200,
+            "output_tokens": 46
+          }
+        },
+        {
+          "actor_id": 108149,
+          "claim_id": "27b5283fa6e852334dd275d2",
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "meal-20261024-005",
+              "information": "Ysolda is nearby and offers 3 gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 3,
+              "gold": 5,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Decline the request; keep your goods.",
+                "id": "decline"
+              },
+              {
+                "effect": "Agree to sell one carried loaf for 3 gold to the nearby buyer.",
+                "id": "sell_bread"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 0.4
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "decline",
+            "emotion": "unspecified",
+            "reason": "Selected action: Decline the request; keep your goods."
+          },
+          "elapsed_seconds": 0.469,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "decline": 0.85,
+            "sell_bread": 0.15
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 4.7544e-05,
+            "input_tokens": 1132,
+            "output_tokens": 35
+          }
+        },
+        {
+          "actor_id": 108186,
+          "claim_id": "13ff7d6e972d178611277d4e",
+          "context": {
+            "actor_id": 108186,
+            "event": {
+              "id": "meal-20261024-005",
+              "information": "Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 0,
+              "gold": 12,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "End this negotiation without buying food; preserve your money and leave the seller alone.",
+                "id": "leave_without_food"
+              },
+              {
+                "effect": "End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              },
+              {
+                "effect": "Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.",
+                "id": "raise_offer"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 1
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "raise_offer",
+            "emotion": "unspecified",
+            "reason": "Selected action: Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again."
+          },
+          "elapsed_seconds": 0.531,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "leave_without_food": 0.24,
+            "raise_offer": 0.68,
+            "visit_adrianne": 0.08
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 5.5944e-05,
+            "input_tokens": 1332,
+            "output_tokens": 45
+          }
+        },
+        {
+          "actor_id": 108149,
+          "claim_id": "c73f511037c348f8d818ed6d",
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "meal-20261024-005",
+              "information": "Ysolda is nearby and offers 5 gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 3,
+              "gold": 5,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Decline the request; keep your goods.",
+                "id": "decline"
+              },
+              {
+                "effect": "Agree to sell one carried loaf for 5 gold to the nearby buyer.",
+                "id": "sell_bread"
+              }
+            ],
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 0.4
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792819557694-0.2750043501695403",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "decline",
+            "emotion": "unspecified",
+            "reason": "Selected action: Decline the request; keep your goods."
+          },
+          "elapsed_seconds": 0.531,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "decline": 0.81,
+            "sell_bread": 0.19
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 5.0904e-05,
+            "input_tokens": 1212,
+            "output_tokens": 35
+          }
+        }
+      ],
+      "id": "meal-20261024-005",
+      "intent": "seek_bread",
+      "kind": "meal_time",
+      "outcome": "seller_declined",
+      "phase": "complete",
+      "refusals_recorded": 2,
+      "release_required": false,
+      "remembered": true,
+      "target": 108149,
+      "trade_id": "meal-meal-20261024-005",
+      "travel": {
+        "id": "travel-meal-20261024-005",
+        "movement": {
+          "actor": 108186,
+          "at": 1792819664965,
+          "distance": 249.7928201905029,
+          "enginePackage": 100665345,
+          "expectedPackage": 100665345,
+          "hasOwnedPackage": true,
+          "id": "travel-meal-20261024-005",
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "startComplete": true,
+          "startDistance": 1697.9613458092347,
+          "startRequestedAt": 1792819664982,
+          "startResult": true,
+          "target": 108149
+        },
+        "status": "applied"
+      },
+      "travel_id": "travel-meal-20261024-005",
+      "unit_price": 5
+    },
+    "people": {
+      "108149": {
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          }
+        ],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {}
+      },
+      "108156": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "sticks to an established routine even when news changes",
+          "big_five": {
+            "agreeableness": 0.5,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "neuroticism": 0.25,
+            "openness": 0.4
+          },
+          "name": "Adrianne Avenicci",
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "role": "blacksmith"
+        },
+        "trust": {}
+      },
+      "108186": {
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          }
+        ],
+        "needs": {
+          "hunger": 1
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {}
+      }
+    },
+    "world": [],
+    "inventory": {
+      "108156": {
+        "gold": 18,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 5,
+        "bread": 3,
+        "grain": 0
+      },
+      "108186": {
+        "gold": 12,
+        "bread": 0,
+        "grain": 0
+      }
+    }
+  },
+  "restore": {
+    "at": 1792820221.2447143,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "inventory": true
+    },
+    "actual": {
+      "checkpoint": 45,
+      "plan": {
+        "actor": 108186,
+        "claim": null,
+        "decisions": [
+          {
+            "actor_id": 108186,
+            "claim_id": "bc8bd41f18628d3ac37675ed",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "meal-20261024-005",
+                "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-002",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-003",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-004",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 12,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Postpone this errand; no travel or purchase.",
+                  "id": "defer"
+                },
+                {
+                  "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                },
+                {
+                  "effect": "Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.",
+                  "id": "seek_bread"
+                }
+              ],
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 1
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792819557694-0.2750043501695403",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "seek_bread",
+              "emotion": "unspecified",
+              "reason": "Selected action: Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse."
+            },
+            "elapsed_seconds": 0.484,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "defer": 0.33,
+              "seek_bread": 0.55,
+              "visit_adrianne": 0.12
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 5.04e-05,
+              "input_tokens": 1200,
+              "output_tokens": 46
+            }
+          },
+          {
+            "actor_id": 108149,
+            "claim_id": "27b5283fa6e852334dd275d2",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "meal-20261024-005",
+                "information": "Ysolda is nearby and offers 3 gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-002",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-003",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-004",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the request; keep your goods.",
+                  "id": "decline"
+                },
+                {
+                  "effect": "Agree to sell one carried loaf for 3 gold to the nearby buyer.",
+                  "id": "sell_bread"
+                }
+              ],
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792819557694-0.2750043501695403",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "decline",
+              "emotion": "unspecified",
+              "reason": "Selected action: Decline the request; keep your goods."
+            },
+            "elapsed_seconds": 0.469,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline": 0.85,
+              "sell_bread": 0.15
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 4.7544e-05,
+              "input_tokens": 1132,
+              "output_tokens": 35
+            }
+          },
+          {
+            "actor_id": 108186,
+            "claim_id": "13ff7d6e972d178611277d4e",
+            "context": {
+              "actor_id": 108186,
+              "event": {
+                "id": "meal-20261024-005",
+                "information": "Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-002",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-003",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-004",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-005",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108149,
+                  "role": "buyer",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 0,
+                "gold": 12,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "End this negotiation without buying food; preserve your money and leave the seller alone.",
+                  "id": "leave_without_food"
+                },
+                {
+                  "effect": "End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.",
+                  "id": "visit_adrianne"
+                },
+                {
+                  "effect": "Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.",
+                  "id": "raise_offer"
+                }
+              ],
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "optimistic about making up a small loss later",
+                "big_five": {
+                  "agreeableness": 0.55,
+                  "conscientiousness": 0.6,
+                  "extraversion": 0.8,
+                  "neuroticism": 0.3,
+                  "openness": 0.8
+                },
+                "name": "Ysolda",
+                "priorities": [
+                  "build trade relationships",
+                  "preserve money for future business"
+                ],
+                "role": "aspiring merchant"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 1
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792819557694-0.2750043501695403",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "raise_offer",
+              "emotion": "unspecified",
+              "reason": "Selected action: Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again."
+            },
+            "elapsed_seconds": 0.531,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "leave_without_food": 0.24,
+              "raise_offer": 0.68,
+              "visit_adrianne": 0.08
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 5.5944e-05,
+              "input_tokens": 1332,
+              "output_tokens": 45
+            }
+          },
+          {
+            "actor_id": 108149,
+            "claim_id": "c73f511037c348f8d818ed6d",
+            "context": {
+              "actor_id": 108149,
+              "event": {
+                "id": "meal-20261024-005",
+                "information": "Ysolda is nearby and offers 5 gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.",
+                "kind": "meal_time"
+              },
+              "memories": [
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-002",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-003",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-004",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                },
+                {
+                  "bread": 1,
+                  "event_id": "meal-20261024-005",
+                  "gold": 3,
+                  "kind": "trade_offer_declined",
+                  "other": 108186,
+                  "role": "seller",
+                  "source": "agent consent decision, not spoken dialogue"
+                }
+              ],
+              "observed_inventory": {
+                "bread": 3,
+                "gold": 5,
+                "grain": 0
+              },
+              "options": [
+                {
+                  "effect": "Decline the request; keep your goods.",
+                  "id": "decline"
+                },
+                {
+                  "effect": "Agree to sell one carried loaf for 5 gold to the nearby buyer.",
+                  "id": "sell_bread"
+                }
+              ],
+              "perception": {
+                "available": false,
+                "information": "Vision is unavailable; this does not mean nobody is nearby."
+              },
+              "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+              "profile": {
+                "bias": "a recent scare makes shortages feel more likely",
+                "big_five": {
+                  "agreeableness": 0.65,
+                  "conscientiousness": 0.85,
+                  "extraversion": 0.55,
+                  "neuroticism": 0.55,
+                  "openness": 0.35
+                },
+                "name": "Carlotta Valentia",
+                "priorities": [
+                  "keep food for family",
+                  "earn a stable living"
+                ],
+                "role": "produce merchant and parent"
+              },
+              "scenario_state": {
+                "needs": {
+                  "hunger": 0.4
+                },
+                "source": "authored society simulation, not Skyrim hunger"
+              },
+              "session": "1792819557694-0.2750043501695403",
+              "trust": {}
+            },
+            "decision": {
+              "action_id": "decline",
+              "emotion": "unspecified",
+              "reason": "Selected action: Decline the request; keep your goods."
+            },
+            "elapsed_seconds": 0.531,
+            "model": "typesafe/jev-1.14-20261014",
+            "probabilities": {
+              "decline": 0.81,
+              "sell_bread": 0.19
+            },
+            "rationale_kind": "authored_action_label_not_dialogue",
+            "usage": {
+              "cost": 5.0904e-05,
+              "input_tokens": 1212,
+              "output_tokens": 35
+            }
+          }
+        ],
+        "id": "meal-20261024-005",
+        "intent": "seek_bread",
+        "kind": "meal_time",
+        "outcome": "seller_declined",
+        "phase": "complete",
+        "refusals_recorded": 2,
+        "release_required": false,
+        "remembered": true,
+        "target": 108149,
+        "trade_id": "meal-meal-20261024-005",
+        "travel": {
+          "id": "travel-meal-20261024-005",
+          "movement": {
+            "actor": 108186,
+            "at": 1792819664965,
+            "distance": 249.7928201905029,
+            "enginePackage": 100665345,
+            "expectedPackage": 100665345,
+            "hasOwnedPackage": true,
+            "id": "travel-meal-20261024-005",
+            "method": "package",
+            "origin": "resident_decision",
+            "ownedPackage": true,
+            "phase": "arrived",
+            "startComplete": true,
+            "startDistance": 1697.9613458092347,
+            "startRequestedAt": 1792819664982,
+            "startResult": true,
+            "target": 108149
+          },
+          "status": "applied"
+        },
+        "travel_id": "travel-meal-20261024-005",
+        "unit_price": 5
+      },
+      "people": {
+        "108149": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-002",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-003",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-004",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-005",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-005",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108186,
+              "role": "seller",
+              "source": "agent consent decision, not spoken dialogue"
+            }
+          ],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "a recent scare makes shortages feel more likely",
+            "big_five": {
+              "agreeableness": 0.65,
+              "conscientiousness": 0.85,
+              "extraversion": 0.55,
+              "neuroticism": 0.55,
+              "openness": 0.35
+            },
+            "name": "Carlotta Valentia",
+            "priorities": [
+              "keep food for family",
+              "earn a stable living"
+            ],
+            "role": "produce merchant and parent"
+          },
+          "trust": {}
+        },
+        "108156": {
+          "memories": [],
+          "needs": {
+            "hunger": 0.4
+          },
+          "profile": {
+            "bias": "sticks to an established routine even when news changes",
+            "big_five": {
+              "agreeableness": 0.5,
+              "conscientiousness": 0.9,
+              "extraversion": 0.45,
+              "neuroticism": 0.25,
+              "openness": 0.4
+            },
+            "name": "Adrianne Avenicci",
+            "priorities": [
+              "finish promised work",
+              "maintain a reliable household"
+            ],
+            "role": "blacksmith"
+          },
+          "trust": {}
+        },
+        "108186": {
+          "memories": [
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-002",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-003",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-004",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-005",
+              "gold": 3,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            },
+            {
+              "bread": 1,
+              "event_id": "meal-20261024-005",
+              "gold": 5,
+              "kind": "trade_offer_declined",
+              "other": 108149,
+              "role": "buyer",
+              "source": "agent consent decision, not spoken dialogue"
+            }
+          ],
+          "needs": {
+            "hunger": 1
+          },
+          "profile": {
+            "bias": "optimistic about making up a small loss later",
+            "big_five": {
+              "agreeableness": 0.55,
+              "conscientiousness": 0.6,
+              "extraversion": 0.8,
+              "neuroticism": 0.3,
+              "openness": 0.8
+            },
+            "name": "Ysolda",
+            "priorities": [
+              "build trade relationships",
+              "preserve money for future business"
+            ],
+            "role": "aspiring merchant"
+          },
+          "trust": {}
+        }
+      },
+      "world": [],
+      "consumptions": [],
+      "inventory": {
+        "108156": {
+          "gold": 18,
+          "bread": 0,
+          "grain": 0
+        },
+        "108149": {
+          "gold": 5,
+          "bread": 3,
+          "grain": 0
+        },
+        "108186": {
+          "gold": 12,
+          "bread": 0,
+          "grain": 0
+        }
+      }
+    }
+  }
+}

@@ -124,7 +124,9 @@ with four cases, not a statistical validation or evidence of consciousness.
 
 The current loop is intentionally limited: one event and one traveller at a time,
 bounded action choices, authored 3/5-gold offers, no unrestricted bargaining, no real
-speech, no consumption and no full work/sleep schedule. Those remain requirements;
+speech and no full work/sleep schedule. Native bread consumption and resident-owned
+reserves are now demonstrated in a bounded event ([evidence](food-economy.md)).
+Continuous metabolism and a full productive economy remain requirements;
 they are not replaced by a passing shopping or refusal demonstration.
 
 ## Reconsidering a failed plan

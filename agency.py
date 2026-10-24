@@ -7,6 +7,7 @@ import copy
 import math
 import secrets
 from decisions import validate_decision
+from food import allocation
 
 TERMINAL = ('complete', 'held')
 
@@ -38,24 +39,29 @@ class Agency:
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
             raise ValueError('Observation belongs to another save checkpoint')
 
-    def begin_plan(self, event_id, observation, actor=108186):
+    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time'):
         self._agency_guard(observation)
-        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64 or actor != 108186:
-            raise ValueError('The first meal-time experiment supports Ysolda and a bounded event ID')
+        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
+            raise ValueError('A bounded event ID is required')
+        if kind not in ('meal_time','stock_review') or type(actor) is not int or str(actor) not in self.active['people']:
+            raise ValueError('Unsupported resident or event kind')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
+                if plan['actor'] != actor or plan['kind'] != kind:
+                    raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
         if self.agency_busy():
             raise ValueError('Another resident plan is active')
         state = copy.deepcopy(self.active)
         person = state['people'][str(actor)]
         # Authored meal-time simulation event, explicitly not a Skyrim hunger reading.
-        person['needs']['hunger'] = min(1, person['needs']['hunger'] + .35)
-        plan = {'id': event_id, 'kind': 'meal_time', 'actor': actor, 'phase': 'choose',
+        if kind=='meal_time':
+            person['needs']['hunger'] = min(1, person['needs']['hunger'] + .35)
+        plan = {'id': event_id, 'kind': kind, 'actor': actor, 'phase': 'allocate' if kind=='stock_review' else 'choose',
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
-                'unit_price': 3, 'refusals_recorded': 0}
+                'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
         state.setdefault('plans', []).append(plan)
-        return {'checkpoint': self._write(state, 'meal time triggered resident planning'), 'plan': plan}
+        return {'checkpoint': self._write(state, kind+' triggered resident planning'), 'plan': plan}
 
     def _plan_context(self, observation, plan):
         seller_turn = plan['phase'] == 'consent'
@@ -69,28 +75,45 @@ class Agency:
         inventory = actors[actor]['inventory']
         if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ('gold', 'bread')):
             raise ValueError('Invalid observed inventory')
-        if seller_turn:
+        stock = allocation(person, inventory)
+        if plan['phase']=='allocate':
+            options = [{'id':'reserve_all','effect':'Keep all carried bread for your household. None is offered for sale until you review this policy again.'},
+                       {'id':'reserve_one','effect':'Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.'},
+                       {'id':'reserve_two','effect':'Keep up to two carried loaves for your household; earmark any surplus for sale. You may still refuse individual offers.'}]
+            information = 'Review how to use your currently carried bread, balancing your household and livelihood. This allocates existing goods only; no unobserved food at home is invented.'
+        elif plan['phase']=='after_purchase':
+            options = [{'id':'keep_food','effect':'Keep the purchased loaf for later; hunger does not improve just by owning food.'}]
+            if inventory['bread']>0:
+                options.append({'id':'eat_bread','effect':'Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.'})
+            information = 'Your purchase was verified. Decide whether to eat now or save the food for later.'
+        elif seller_turn:
             if distance(observation, actor, plan['actor']) > 300:
                 raise ValueError('Buyer is no longer within interaction range')
             options = [{'id': 'decline', 'effect': 'Decline the request; keep your goods.'}]
-            if inventory['bread'] > 0:
+            if inventory['bread'] > 0 and (not stock['allocated'] or stock['for_sale']>0):
                 options.append({'id': 'sell_bread', 'effect': f'Agree to sell one carried loaf for {price} gold to the nearby buyer.'})
-            information = f'Ysolda is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
+            buyer_name=self.active['people'][str(plan['actor'])]['profile']['name']
+            information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
         elif reconsidering:
-            options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'},
-                       {'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'}]
+            options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
+            if actor!=108156:
+                options.append({'id': 'visit_adrianne', 'effect': 'End this negotiation and visit Adrianne instead; travel only, no purchase or conversation yet.'})
             if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
                 options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
             information = 'Carlotta just declined your 3-gold offer. Her reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.'
         else:
             options = [{'id': 'defer', 'effect': 'Postpone this errand; no travel or purchase.'}]
-            options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
-            if inventory['gold'] >= 3 and inventory['bread'] == 0:
+            if inventory['bread'] > 0:
+                options.append({'id':'eat_bread','effect':'Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.'})
+            if actor!=108156:
+                options.append({'id': 'visit_adrianne', 'effect': 'Visit Adrianne instead; travel only, no purchase or conversation yet.'})
+            if actor!=108149 and inventory['gold'] >= 3 and inventory['bread'] == 0:
                 options.append({'id': 'seek_bread', 'effect': 'Walk to Carlotta and ask to buy one loaf for 3 gold. She may refuse.'})
             information = 'Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
                 'observed_inventory': copy.deepcopy(inventory),
+                'own_food_allocation': stock,
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
                 'prior_knowledge': 'Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents\' private inventories are not known.',
@@ -106,7 +129,7 @@ class Agency:
     def claim_plan_decision(self, event_id, observation):
         self._agency_guard(observation)
         plan = self.agency_plan()
-        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent', 'reconsider'):
+        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase'):
             raise ValueError('No unclaimed decision is ready')
         context = self._plan_context(observation, plan)
         state = copy.deepcopy(self.active)
@@ -157,6 +180,16 @@ class Agency:
                 updated.update(phase='complete', outcome='seller_declined')
         elif action == 'leave_without_food':
             updated.update(phase='complete', outcome='left_without_food')
+        elif action in ('reserve_all','reserve_one','reserve_two'):
+            state['people'][str(plan['actor'])]['food_policy'] = {
+                'mode':'household_all' if action=='reserve_all' else 'fixed_reserve',
+                'reserve_target':{'reserve_all':0,'reserve_one':1,'reserve_two':2}[action],
+                'source_event':event_id, 'source':'resident selected among authored allocation policies'}
+            updated.update(phase='complete',outcome='allocated_stock')
+        elif action == 'eat_bread':
+            updated['phase']='ready_to_eat'
+        elif action == 'keep_food':
+            updated.update(phase='complete',outcome='bought_bread')
         else:
             updated.update(phase='complete', outcome='deferred')
         return {'checkpoint': self._write(state, 'resident decision accepted'), 'plan': updated}
@@ -200,6 +233,11 @@ class Agency:
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
                     'other':plan.get('target'),'source':'observed arrival, not conversation' if plan['outcome']=='visited_only' else 'own decision'})
                 person['memories']=person['memories'][-32:]
+            elif plan.get('outcome')=='allocated_stock':
+                person=state['people'][str(plan['actor'])]
+                person['memories'].append({'event_id':plan['id'],'kind':'allocated_food',
+                    'policy':copy.deepcopy(person['food_policy']),'source':'own allocation decision; no inventory change'})
+                person['memories']=person['memories'][-32:]
             updated['remembered']=True
             self._write(state,'resident remembers the observed plan outcome')
             return
@@ -232,6 +270,11 @@ class Agency:
                     raise ValueError('Participants separated before exchange')
                 self.plan_trade(plan['trade_id'], observation, plan['actor'], plan['target'],
                                 unit_price=plan.get('unit_price', 3), agency_plan=plan['id'])
+            except ValueError as error:
+                self.hold_plan(plan['id'], str(error), observation)
+        elif plan['phase'] == 'ready_to_eat':
+            try:
+                self.plan_consumption('consume-'+plan['id'], observation, plan['actor'], plan['id'])
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
 

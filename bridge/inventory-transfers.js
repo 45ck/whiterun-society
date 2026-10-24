@@ -8,6 +8,27 @@ function createInventoryTransfers(platform, now=Date.now) {
   }
   return {
     reset(){issued.clear();},
+    consume(command) {
+      const sp=platform(),fail=error=>({done:true,ack:{id:command.id,status:'held',error}});
+      const before=command.before,after=command.after;
+      if(!before||!after||!['gold','bread'].every(k=>Number.isInteger(before[k])&&before[k]>=0&&Number.isInteger(after[k])&&after[k]>=0)||
+         before.bread<1||after.bread!==before.bread-1||after.gold!==before.gold)return fail('Invalid food-use contract');
+      const actor=sp.Actor.from(sp.Game.getFormEx(command.actor));
+      if(!actor||!actor.is3DLoaded()||actor.isDead()||actor.isChild()||typeof actor.equipItem!=='function')return fail('Food-use actor unavailable');
+      const bread=sp.Game.getFormEx(0x65c97),gold=sp.Game.getFormEx(0xf);
+      if(!bread||!gold)return fail('Food-use forms unavailable');
+      const actual={gold:actor.getItemCount(gold),bread:actor.getItemCount(bread)};
+      const matches=expected=>actual.gold===expected.gold&&actual.bread===expected.bread;
+      if(matches(after)){
+        issued.delete(command.id);
+        return {done:true,ack:{id:command.id,status:'applied',inventory:actual,mechanism:'native_equip_food'}};
+      }
+      if(!matches(before))return fail('Unexpected inventory during consumption');
+      const sent=issued.get(command.id);
+      if(sent&&now()-sent.at>5000)return fail('Native food use timed out; no repeated attempt');
+      if(!sent){issued.set(command.id,{leg:'consume',at:now()});actor.equipItem(bread,false,true);}
+      return {done:false};
+    },
     step(command) {
       const sp=platform();
       const fail=error=>({done:true,ack:{id:command.id,status:'held',error}});

@@ -1,0 +1,79 @@
+"""Resident-owned reserves and save-bound, inventory-verified food use."""
+import copy
+
+
+def allocation(person, inventory):
+    count = inventory['bread']
+    policy = person.get('food_policy')
+    if not policy:
+        return {'allocated': False, 'unallocated': count}
+    reserve = count if policy['mode'] == 'household_all' else min(count, policy['reserve_target'])
+    return {'allocated': True, 'household': reserve, 'for_sale': count-reserve,
+            'policy': copy.deepcopy(policy), 'source': 'allocation of observed carried bread; not additional stock'}
+
+
+def own_inventory(observation, actor):
+    resident = next((a for a in observation.get('residents', []) if a.get('id') == actor), None)
+    if not resident:
+        raise ValueError('Resident is not observed')
+    inventory = resident.get('inventory', {})
+    if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ('gold', 'bread')):
+        raise ValueError('Complete observed inventory required')
+    return {k: inventory[k] for k in ('gold', 'bread')}
+
+
+class FoodEconomy:
+    def plan_consumption(self, event_id, observation, actor, agency_plan):
+        self._agency_guard(observation)
+        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 128:
+            raise ValueError('Invalid consumption event ID')
+        for old in self.active.get('consumptions', []):
+            if old['id'] == event_id:
+                if old['command']['actor'] != actor:
+                    raise ValueError('Consumption ID reused for another resident')
+                return old
+        plan = self.agency_plan()
+        if not plan or plan['id'] != agency_plan or plan['actor'] != actor or plan['phase'] != 'ready_to_eat':
+            raise ValueError('Consumption needs a current resident decision')
+        before = own_inventory(observation, actor)
+        if before['bread'] < 1:
+            raise ValueError('No carried loaf to consume')
+        command = {'id': event_id, 'kind': 'inventory_consume', 'actor': actor,
+                   'before': before, 'after': {**before, 'bread': before['bread']-1}}
+        record = {'id': event_id, 'command': command, 'status': 'pending', 'evidence': None}
+        state = copy.deepcopy(self.active)
+        state['pending'] = record
+        state['plans'][-1]['phase'] = 'consuming'
+        return {'checkpoint': self._write(state, 'food-use intent persisted before native consumption')}
+
+    def observe_consumption(self, observation):
+        pending = self.active['pending']
+        ack = observation.get('ack') or {}
+        if ack.get('id') != pending['id']:
+            return
+        command = pending['command']
+        try:
+            actual = own_inventory(observation, command['actor'])
+        except ValueError:
+            return
+        state = copy.deepcopy(self.active)
+        state['pending']['evidence'] = {'actual': actual, 'ack': ack, 'session': self.session}
+        if ack.get('status') == 'applied' and actual == command['after']:
+            record = state['pending']
+            record['status'] = 'committed'
+            state.setdefault('consumptions', []).append(record)
+            state['pending'] = None
+            person = state['people'][str(command['actor'])]
+            # Authored nutrition parameter, not vanilla Skyrim hunger physiology.
+            before_hunger = person['needs']['hunger']
+            person['needs']['hunger'] = round(max(0, before_hunger-.6), 6)
+            person['memories'].append({'event_id': pending['id'], 'kind': 'consumed_bread',
+                'bread': 1, 'hunger_before': before_hunger, 'hunger_after': person['needs']['hunger'],
+                'source': 'native food-use command and observed inventory; animation not verified'})
+            person['memories'] = person['memories'][-32:]
+            state['plans'][-1].update(phase='complete', outcome='ate_bread')
+            self._write(state, 'native food use observed; hunger and memory updated')
+        else:
+            state['pending']['status'] = 'held'
+            state['plans'][-1].update(phase='held', error='Consumption requires reconciliation')
+            self._write(state, 'unexpected food-use effect held for reconciliation')

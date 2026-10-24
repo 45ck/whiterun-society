@@ -21,6 +21,8 @@ def main():
     parser.add_argument('--runtime', type=Path, required=True)
     parser.add_argument('--event-id', required=True)
     parser.add_argument('--model-config', type=Path)
+    parser.add_argument('--actor', type=int, default=108186)
+    parser.add_argument('--kind', choices=('meal_time','stock_review'), default='meal_time')
     args = parser.parse_args()
     config = json.loads((args.runtime/'bridge-config.json').read_text())
     model = json.loads((args.model_config or args.runtime/'model-config.json').read_text())
@@ -47,7 +49,7 @@ def main():
         path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
         print(json.dumps({'phase': stage, 'model_calls': evidence['model_calls']}), flush=True)
 
-    started = request('/agency/event', {'id': args.event_id})
+    started = request('/agency/event', {'id': args.event_id, 'actor':args.actor, 'kind':args.kind})
     if started.get('duplicate'):
         print(json.dumps({'duplicate': True, 'model_calls': 0, 'phase': started['plan']['phase']}), flush=True)
         return
@@ -76,9 +78,9 @@ def main():
                 path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
                 print(json.dumps({'status': phase, 'outcome': plan.get('outcome'), 'evidence': str(path)}), flush=True)
                 return
-            if phase in ('choose', 'consent', 'reconsider'):
-                if evidence['model_calls'] >= 4:
-                    raise ValueError('Resident event exhausted its four-call decision budget')
+            if phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase'):
+                if evidence['model_calls'] >= 5:
+                    raise ValueError('Resident event exhausted its five-call decision budget')
                 claim = request('/agency/claim', {'id': args.event_id})['claim']
                 # Wait for the persisted claim's game marker before making the call.
                 while request('/state')['society']['transition']:

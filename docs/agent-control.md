@@ -206,3 +206,15 @@ with no connected bridge; no worker or model loop is running there.
 
 ![Revised offer in the actual game](images/negotiation-reconsideration.jpg)
 ![Later plan restored from an actual save](images/negotiation-restored.jpg)
+
+## Food decisions and release correction
+
+Managed residents can now review carried food allocations and choose to consume
+a loaf. The worker accepts `--actor` and `--kind stock_review`; a meal has a maximum
+of five model calls including an optional post-purchase food choice. See
+[actual consumption, save restoration and development lifecycle evidence](food-economy.md).
+
+The generic bridge acknowledgement previously could overwrite a pending
+`release_routine` result. It now waits for confirmed removal of the owned package,
+with a regression test. Earlier acknowledgements alone should not be treated as
+release proof. A new live qualification of the corrected release is still open.

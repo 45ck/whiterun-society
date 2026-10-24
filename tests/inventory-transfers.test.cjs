@@ -10,6 +10,8 @@ function setup() {
     const born=frame;
     return {id,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
       getItemCount:item=>{assert.equal(born,frame);return balances[id][item];},
+      equipItem:(item,prevent,silent)=>{assert.equal(born,frame);assert.equal(prevent,false);assert.equal(silent,true);calls.push({id,item,consume:1});
+        const apply=()=>{balances[id][item]--;};if(defer)queued.push(apply);else apply();},
       removeItem:(item,n,silent,other)=>{assert.equal(born,frame);calls.push({id,item,n,to:other.id});
         const apply=()=>{balances[id][item]-=n;balances[other.id][item]+=n;};if (defer) queued.push(apply);else apply();}};
   };
@@ -49,4 +51,28 @@ test('wire key ordering does not change inventory equality',()=>{
   }
   h.engine.step(h.command);h.next();h.engine.step(h.command);h.next();
   assert.equal(h.engine.step(h.command).ack.status,'applied');
+});
+
+test('food use consumes one loaf with no gold change and does not repeat',()=>{
+ const h=setup(),c={id:'eat',actor:200,before:{gold:10,bread:1},after:{gold:10,bread:0}};
+ assert.equal(h.engine.consume(c).done,false);h.next();
+ assert.equal(h.engine.consume(c).ack.status,'applied');h.engine.consume(c);
+ assert.deepEqual(h.balances[200],{gold:10,bread:0});assert.equal(h.calls.length,1);
+});
+
+test('deferred food use waits once and holds uncertain effects',()=>{
+ const h=setup(),c={id:'eat',actor:200,before:{gold:10,bread:1},after:{gold:10,bread:0}};
+ h.defer();h.engine.consume(c);h.next();h.engine.consume(c);assert.equal(h.calls.length,1);
+ h.expire();assert.equal(h.engine.consume(c).ack.status,'held');assert.equal(h.calls.length,1);
+});
+
+test('loading an already-consumed state does not eat another loaf',()=>{
+ const h=setup(),c={id:'eat',actor:200,before:{gold:10,bread:2},after:{gold:10,bread:1}};
+ h.engine.reset();assert.equal(h.engine.consume(c).ack.status,'applied');assert.equal(h.calls.length,0);
+});
+
+test('consumption rejects inventory drift and malformed effects before mutation',()=>{
+ const h=setup(),c={id:'eat',actor:200,before:{gold:10,bread:1},after:{gold:9,bread:0}};
+ assert.equal(h.engine.consume(c).ack.status,'held');c.after.gold=10;h.balances[200].gold=11;
+ assert.equal(h.engine.consume(c).ack.status,'held');assert.equal(h.calls.length,0);
 });

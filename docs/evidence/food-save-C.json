@@ -1,0 +1,845 @@
+{
+  "name": "WS-Food-20261024-C",
+  "scope": "Settled plan, people, inventory and journal; not long-term stability",
+  "expected": {
+    "checkpoint": 55,
+    "plan": {
+      "actor": 108149,
+      "claim": null,
+      "decisions": [
+        {
+          "actor_id": 108149,
+          "claim_id": "2c7abd9ac24cff274cee3fc2",
+          "context": {
+            "actor_id": 108149,
+            "event": {
+              "id": "meal-carlotta-20261024-001",
+              "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+              "kind": "meal_time"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "event_id": "stock-20261024-001",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "stock-20261024-001"
+                },
+                "source": "own allocation decision; no inventory change"
+              }
+            ],
+            "observed_inventory": {
+              "bread": 3,
+              "gold": 5,
+              "grain": 0
+            },
+            "options": [
+              {
+                "effect": "Postpone this errand; no travel or purchase.",
+                "id": "defer"
+              },
+              {
+                "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                "id": "eat_bread"
+              },
+              {
+                "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                "id": "visit_adrianne"
+              }
+            ],
+            "own_food_allocation": {
+              "allocated": true,
+              "for_sale": 0,
+              "household": 3,
+              "policy": {
+                "mode": "household_all",
+                "reserve_target": 0,
+                "source": "resident selected among authored allocation policies",
+                "source_event": "stock-20261024-001"
+              },
+              "source": "allocation of observed carried bread; not additional stock"
+            },
+            "perception": {
+              "available": false,
+              "information": "Vision is unavailable; this does not mean nobody is nearby."
+            },
+            "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "scenario_state": {
+              "needs": {
+                "hunger": 0.75
+              },
+              "source": "authored society simulation, not Skyrim hunger"
+            },
+            "session": "1792820180136-0.9543416380756331",
+            "trust": {}
+          },
+          "decision": {
+            "action_id": "eat_bread",
+            "emotion": "unspecified",
+            "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+          },
+          "elapsed_seconds": 0.766,
+          "model": "typesafe/jev-1.14-20261014",
+          "probabilities": {
+            "defer": 0.1,
+            "eat_bread": 0.81,
+            "visit_adrianne": 0.09
+          },
+          "rationale_kind": "authored_action_label_not_dialogue",
+          "usage": {
+            "cost": 6.6066e-05,
+            "input_tokens": 1573,
+            "output_tokens": 46
+          }
+        }
+      ],
+      "food_actions": true,
+      "id": "meal-carlotta-20261024-001",
+      "kind": "meal_time",
+      "outcome": "ate_bread",
+      "phase": "complete",
+      "refusals_recorded": 0,
+      "remembered": true,
+      "trade_id": "meal-meal-carlotta-20261024-001",
+      "travel": null,
+      "unit_price": 3
+    },
+    "people": {
+      "108149": {
+        "food_policy": {
+          "mode": "household_all",
+          "reserve_target": 0,
+          "source": "resident selected among authored allocation policies",
+          "source_event": "stock-20261024-001"
+        },
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108186,
+            "role": "seller",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "event_id": "stock-20261024-001",
+            "kind": "allocated_food",
+            "policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "stock-20261024-001"
+            },
+            "source": "own allocation decision; no inventory change"
+          },
+          {
+            "bread": 1,
+            "event_id": "consume-meal-carlotta-20261024-001",
+            "hunger_after": 0.15,
+            "hunger_before": 0.75,
+            "kind": "consumed_bread",
+            "source": "native food-use command and observed inventory; animation not verified"
+          }
+        ],
+        "needs": {
+          "hunger": 0.15
+        },
+        "profile": {
+          "bias": "a recent scare makes shortages feel more likely",
+          "big_five": {
+            "agreeableness": 0.65,
+            "conscientiousness": 0.85,
+            "extraversion": 0.55,
+            "neuroticism": 0.55,
+            "openness": 0.35
+          },
+          "name": "Carlotta Valentia",
+          "priorities": [
+            "keep food for family",
+            "earn a stable living"
+          ],
+          "role": "produce merchant and parent"
+        },
+        "trust": {}
+      },
+      "108156": {
+        "memories": [],
+        "needs": {
+          "hunger": 0.4
+        },
+        "profile": {
+          "bias": "sticks to an established routine even when news changes",
+          "big_five": {
+            "agreeableness": 0.5,
+            "conscientiousness": 0.9,
+            "extraversion": 0.45,
+            "neuroticism": 0.25,
+            "openness": 0.4
+          },
+          "name": "Adrianne Avenicci",
+          "priorities": [
+            "finish promised work",
+            "maintain a reliable household"
+          ],
+          "role": "blacksmith"
+        },
+        "trust": {}
+      },
+      "108186": {
+        "memories": [
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-002",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-003",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-004",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 3,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          },
+          {
+            "bread": 1,
+            "event_id": "meal-20261024-005",
+            "gold": 5,
+            "kind": "trade_offer_declined",
+            "other": 108149,
+            "role": "buyer",
+            "source": "agent consent decision, not spoken dialogue"
+          }
+        ],
+        "needs": {
+          "hunger": 1
+        },
+        "profile": {
+          "bias": "optimistic about making up a small loss later",
+          "big_five": {
+            "agreeableness": 0.55,
+            "conscientiousness": 0.6,
+            "extraversion": 0.8,
+            "neuroticism": 0.3,
+            "openness": 0.8
+          },
+          "name": "Ysolda",
+          "priorities": [
+            "build trade relationships",
+            "preserve money for future business"
+          ],
+          "role": "aspiring merchant"
+        },
+        "trust": {}
+      }
+    },
+    "world": [],
+    "consumptions": [
+      {
+        "command": {
+          "actor": 108149,
+          "after": {
+            "bread": 2,
+            "gold": 5
+          },
+          "before": {
+            "bread": 3,
+            "gold": 5
+          },
+          "id": "consume-meal-carlotta-20261024-001",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-meal-carlotta-20261024-001",
+            "inventory": {
+              "bread": 2,
+              "gold": 5
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 2,
+            "gold": 5
+          },
+          "session": "1792820180136-0.9543416380756331"
+        },
+        "id": "consume-meal-carlotta-20261024-001",
+        "status": "committed"
+      }
+    ],
+    "inventory": {
+      "108156": {
+        "gold": 18,
+        "bread": 0,
+        "grain": 0
+      },
+      "108186": {
+        "gold": 12,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 5,
+        "bread": 2,
+        "grain": 0
+      }
+    }
+  },
+  "recorded_at": 1792820217.9593616,
+  "files": {
+    "WS-Food-20261024-C.ess": {
+      "bytes": 2543157,
+      "sha256": "f457b52cf2f0b926cfacc3763d1bf7c3ee005f895c27f43692f80994fedb100f"
+    },
+    "WS-Food-20261024-C.skse": {
+      "bytes": 418,
+      "sha256": "fd35644dcd40bcd5d0206783a2dbe459ac7ba0a0073c71d3ae4f01e893102c9b"
+    }
+  },
+  "restores": [
+    {
+      "at": 1792820224.9935448,
+      "fresh_session": true,
+      "matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "inventory": true
+      },
+      "actual": {
+        "checkpoint": 55,
+        "plan": {
+          "actor": 108149,
+          "claim": null,
+          "decisions": [
+            {
+              "actor_id": 108149,
+              "claim_id": "2c7abd9ac24cff274cee3fc2",
+              "context": {
+                "actor_id": 108149,
+                "event": {
+                  "id": "meal-carlotta-20261024-001",
+                  "information": "Meal time: consider your hunger, carried food, money, priorities and past experiences. This does not prove what food you have at home.",
+                  "kind": "meal_time"
+                },
+                "memories": [
+                  {
+                    "bread": 1,
+                    "event_id": "meal-20261024-002",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "meal-20261024-003",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "meal-20261024-004",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "meal-20261024-005",
+                    "gold": 3,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "bread": 1,
+                    "event_id": "meal-20261024-005",
+                    "gold": 5,
+                    "kind": "trade_offer_declined",
+                    "other": 108186,
+                    "role": "seller",
+                    "source": "agent consent decision, not spoken dialogue"
+                  },
+                  {
+                    "event_id": "stock-20261024-001",
+                    "kind": "allocated_food",
+                    "policy": {
+                      "mode": "household_all",
+                      "reserve_target": 0,
+                      "source": "resident selected among authored allocation policies",
+                      "source_event": "stock-20261024-001"
+                    },
+                    "source": "own allocation decision; no inventory change"
+                  }
+                ],
+                "observed_inventory": {
+                  "bread": 3,
+                  "gold": 5,
+                  "grain": 0
+                },
+                "options": [
+                  {
+                    "effect": "Postpone this errand; no travel or purchase.",
+                    "id": "defer"
+                  },
+                  {
+                    "effect": "Consume one carried loaf now; it leaves inventory and reduces your simulated hunger.",
+                    "id": "eat_bread"
+                  },
+                  {
+                    "effect": "Visit Adrianne instead; travel only, no purchase or conversation yet.",
+                    "id": "visit_adrianne"
+                  }
+                ],
+                "own_food_allocation": {
+                  "allocated": true,
+                  "for_sale": 0,
+                  "household": 3,
+                  "policy": {
+                    "mode": "household_all",
+                    "reserve_target": 0,
+                    "source": "resident selected among authored allocation policies",
+                    "source_event": "stock-20261024-001"
+                  },
+                  "source": "allocation of observed carried bread; not additional stock"
+                },
+                "perception": {
+                  "available": false,
+                  "information": "Vision is unavailable; this does not mean nobody is nearby."
+                },
+                "prior_knowledge": "Authored starting knowledge: Carlotta is a produce merchant; Adrianne is a blacksmith. The 3-gold initial offer and 5-gold final offer are demo assumptions, not discovered market prices. Other residents' private inventories are not known.",
+                "profile": {
+                  "bias": "a recent scare makes shortages feel more likely",
+                  "big_five": {
+                    "agreeableness": 0.65,
+                    "conscientiousness": 0.85,
+                    "extraversion": 0.55,
+                    "neuroticism": 0.55,
+                    "openness": 0.35
+                  },
+                  "name": "Carlotta Valentia",
+                  "priorities": [
+                    "keep food for family",
+                    "earn a stable living"
+                  ],
+                  "role": "produce merchant and parent"
+                },
+                "scenario_state": {
+                  "needs": {
+                    "hunger": 0.75
+                  },
+                  "source": "authored society simulation, not Skyrim hunger"
+                },
+                "session": "1792820180136-0.9543416380756331",
+                "trust": {}
+              },
+              "decision": {
+                "action_id": "eat_bread",
+                "emotion": "unspecified",
+                "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+              },
+              "elapsed_seconds": 0.766,
+              "model": "typesafe/jev-1.14-20261014",
+              "probabilities": {
+                "defer": 0.1,
+                "eat_bread": 0.81,
+                "visit_adrianne": 0.09
+              },
+              "rationale_kind": "authored_action_label_not_dialogue",
+              "usage": {
+                "cost": 6.6066e-05,
+                "input_tokens": 1573,
+                "output_tokens": 46
+              }
+            }
+          ],
+          "food_actions": true,
+          "id": "meal-carlotta-20261024-001",
+          "kind": "meal_time",
+          "outcome": "ate_bread",
+          "phase": "complete",
+          "refusals_recorded": 0,
+          "remembered": true,
+          "trade_id": "meal-meal-carlotta-20261024-001",
+          "travel": null,
+          "unit_price": 3
+        },
+        "people": {
+          "108149": {
+            "food_policy": {
+              "mode": "household_all",
+              "reserve_target": 0,
+              "source": "resident selected among authored allocation policies",
+              "source_event": "stock-20261024-001"
+            },
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108186,
+                "role": "seller",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "event_id": "stock-20261024-001",
+                "kind": "allocated_food",
+                "policy": {
+                  "mode": "household_all",
+                  "reserve_target": 0,
+                  "source": "resident selected among authored allocation policies",
+                  "source_event": "stock-20261024-001"
+                },
+                "source": "own allocation decision; no inventory change"
+              },
+              {
+                "bread": 1,
+                "event_id": "consume-meal-carlotta-20261024-001",
+                "hunger_after": 0.15,
+                "hunger_before": 0.75,
+                "kind": "consumed_bread",
+                "source": "native food-use command and observed inventory; animation not verified"
+              }
+            ],
+            "needs": {
+              "hunger": 0.15
+            },
+            "profile": {
+              "bias": "a recent scare makes shortages feel more likely",
+              "big_five": {
+                "agreeableness": 0.65,
+                "conscientiousness": 0.85,
+                "extraversion": 0.55,
+                "neuroticism": 0.55,
+                "openness": 0.35
+              },
+              "name": "Carlotta Valentia",
+              "priorities": [
+                "keep food for family",
+                "earn a stable living"
+              ],
+              "role": "produce merchant and parent"
+            },
+            "trust": {}
+          },
+          "108156": {
+            "memories": [],
+            "needs": {
+              "hunger": 0.4
+            },
+            "profile": {
+              "bias": "sticks to an established routine even when news changes",
+              "big_five": {
+                "agreeableness": 0.5,
+                "conscientiousness": 0.9,
+                "extraversion": 0.45,
+                "neuroticism": 0.25,
+                "openness": 0.4
+              },
+              "name": "Adrianne Avenicci",
+              "priorities": [
+                "finish promised work",
+                "maintain a reliable household"
+              ],
+              "role": "blacksmith"
+            },
+            "trust": {}
+          },
+          "108186": {
+            "memories": [
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-002",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-003",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-004",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 3,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              },
+              {
+                "bread": 1,
+                "event_id": "meal-20261024-005",
+                "gold": 5,
+                "kind": "trade_offer_declined",
+                "other": 108149,
+                "role": "buyer",
+                "source": "agent consent decision, not spoken dialogue"
+              }
+            ],
+            "needs": {
+              "hunger": 1
+            },
+            "profile": {
+              "bias": "optimistic about making up a small loss later",
+              "big_five": {
+                "agreeableness": 0.55,
+                "conscientiousness": 0.6,
+                "extraversion": 0.8,
+                "neuroticism": 0.3,
+                "openness": 0.8
+              },
+              "name": "Ysolda",
+              "priorities": [
+                "build trade relationships",
+                "preserve money for future business"
+              ],
+              "role": "aspiring merchant"
+            },
+            "trust": {}
+          }
+        },
+        "world": [],
+        "consumptions": [
+          {
+            "command": {
+              "actor": 108149,
+              "after": {
+                "bread": 2,
+                "gold": 5
+              },
+              "before": {
+                "bread": 3,
+                "gold": 5
+              },
+              "id": "consume-meal-carlotta-20261024-001",
+              "kind": "inventory_consume"
+            },
+            "evidence": {
+              "ack": {
+                "id": "consume-meal-carlotta-20261024-001",
+                "inventory": {
+                  "bread": 2,
+                  "gold": 5
+                },
+                "mechanism": "native_equip_food",
+                "status": "applied"
+              },
+              "actual": {
+                "bread": 2,
+                "gold": 5
+              },
+              "session": "1792820180136-0.9543416380756331"
+            },
+            "id": "consume-meal-carlotta-20261024-001",
+            "status": "committed"
+          }
+        ],
+        "inventory": {
+          "108156": {
+            "gold": 18,
+            "bread": 0,
+            "grain": 0
+          },
+          "108186": {
+            "gold": 12,
+            "bread": 0,
+            "grain": 0
+          },
+          "108149": {
+            "gold": 5,
+            "bread": 2,
+            "grain": 0
+          }
+        }
+      }
+    }
+  ]
+}

@@ -11,7 +11,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
 
 function harness(nativeGlobal=false) {
   const handlers = new Map(), notifications=[], requests=[], looks=[];
-  let respond=()=>null;
+  let respond=()=>null,clock=10000;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
     getPositionX:()=>1,getPositionY:()=>2,getPositionZ:()=>3,setLookAt:(...args)=>looks.push(args)};
   const cell={getName:()=> 'Test cell',getFormID:()=>107135,getNumRefs:filter=>{assert.equal(filter,43);return 1;},getNthRef:()=>actor};
@@ -21,9 +21,9 @@ function harness(nativeGlobal=false) {
     enableFreeCamera:()=>{},setFreeCameraPosition:()=>{},
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body)})}); } }};
-  const context=vm.createContext(nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp});
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock}});
   vm.runInContext(source,context);
-  return {handlers,notifications,requests,looks,player,actor,sp,cell,setResponse:fn=>{respond=fn;},reload:()=>vm.runInContext(source,context)};
+  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:()=>{clock+=2100;},setResponse:fn=>{respond=fn;},reload:()=>vm.runInContext(source,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 
@@ -117,4 +117,19 @@ test('loading blocks native observations until load completion',()=>{
   const h=harness();h.handlers.get('preLoadGame')();h.handlers.get('update')();
   assert.equal(h.requests.length,0);
   h.handlers.get('postLoadGame')();h.handlers.get('update')();assert.equal(h.requests.length,1);
+});
+
+test('release acknowledgements wait for the owned package to actually disappear',async()=>{
+ const h=harness();let current={getFormID:()=>99};
+ h.sp.Game.getFormFromFile=()=>({getFormID:()=>99});
+ h.sp.GlobalVariable={from:()=>({getValue:()=>3})};
+ h.sp.Quest={from:()=>({isRunning:()=>false})};
+ h.actor.getCurrentPackage=()=>current;
+ h.setResponse(body=>({id:'release-one',kind:'release_routine',actor:123,checkpoint:3,session:body.session}));
+ h.handlers.get('update')();await settle();h.handlers.get('update')();
+ h.advance();h.handlers.get('update')();await settle();
+ assert.equal(h.requests.at(-1).ack,null);
+ current=null;h.advance();h.handlers.get('update')();await settle();
+ assert.equal(h.requests.at(-1).ack.status,'applied');
+ assert.equal(h.requests.at(-1).ack.released,true);
 });

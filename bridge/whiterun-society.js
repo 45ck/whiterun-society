@@ -141,9 +141,9 @@ on('update', () => {
     const command = pending; pending = null;
     if (command.session === session && !completed.has(command.id)) {
       try {
-        if (command.kind === 'inventory_trade') {
+        if (command.kind === 'inventory_trade' || command.kind === 'inventory_consume') {
           if (!Number.isInteger(command.checkpoint) || checkpointValue()!==command.checkpoint) throw new Error('Trade checkpoint mismatch');
-          const result=transfers.step(command);
+          const result=command.kind==='inventory_consume'?transfers.consume(command):transfers.step(command);
           if (!result.done) pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
@@ -188,7 +188,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['inventory_trade','walk_to'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['inventory_trade','inventory_consume','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }

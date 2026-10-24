@@ -149,3 +149,21 @@ UI script syntax checked, actual observer rendering inspected, and fresh bridge
 reattachment observed in 1.2 seconds. Human believability, continuous daily life,
 consumption, production integration, voice/lips and player participation remain
 requirements, not implied by these checks.
+
+## Resident reserves and physical consumption
+
+Carlotta selected a household reserve policy and then native food use. Observed
+bread decreased 3 to 2, gold stayed 5, and simulated hunger decreased only after
+inventory confirmation. The current food save and the preceding negotiation save
+restored their corresponding plans, people, inventory and journals. A repeated
+meal made zero model calls; a request to buy reserved stock was rejected unchanged.
+[Evidence and detailed limits](food-economy.md).
+
+Current local validation: **54 Python and 36 JavaScript tests passed**. The UI was
+inspected in Skyrim. Hosted CI remains unverified. Native consumption animation,
+interrupted consumption recovery in-game and continuous metabolism remain open.
+
+Correction to earlier release evidence: a generic bridge acknowledgement could
+precede actual package removal. This path is fixed and regression-tested, but the
+fix still needs a new live release qualification. Earlier walking and arrival
+observations are unaffected; release acknowledgements alone were insufficient.

@@ -1,0 +1,33 @@
+{
+  "scope": "Externally requested trade must not spend agent-reserved household bread",
+  "rejection": {
+    "error": "This trade would spend the resident's household reserve"
+  },
+  "before_inventory": {
+    "108149": {
+      "gold": 5,
+      "bread": 2,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 12,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "after_inventory": {
+    "108149": {
+      "gold": 5,
+      "bread": 2,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 12,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "checkpoint": 55,
+  "society_unchanged": true,
+  "at": 1792820319.7500849
+}

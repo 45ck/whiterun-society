@@ -65,6 +65,8 @@ class AgencyTests(unittest.TestCase):
         self.obs['ack'] = {'id': 'meal-meal-1', 'status': 'applied'}
         self.world.observe(self.obs)
         self.sync()
+        self.assertEqual(self.world.agency_plan()['phase'],'after_purchase')
+        self.decide('keep_food')
         self.assertEqual(self.world.agency_plan()['outcome'], 'bought_bread')
         self.assertEqual(len(self.world.status()['people']['108186']['memories']), 1)
         self.assertEqual(self.world.pending('a')['kind'], 'release_routine')

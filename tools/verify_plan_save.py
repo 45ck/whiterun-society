@@ -17,6 +17,7 @@ def snapshot(state):
     return {'checkpoint': state['society']['checkpoint'],
             'plan': state['society']['plan'], 'people': state['society']['people'],
             'world': state['world'],
+            'consumptions': state['society'].get('consumptions', []),
             'inventory': {str(a['id']): a['inventory']
                 for a in state['bridge']['observation']['residents']
                 if str(a['id']) in state['society']['people']}}

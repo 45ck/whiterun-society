@@ -11,11 +11,12 @@ import sqlite3
 from decisions import PROFILES
 from world_economy import snapshot
 from agency import Agency
+from food import FoodEconomy, allocation
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency):
+class TimelineEconomy(Agency, FoodEconomy):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -92,6 +93,10 @@ class TimelineEconomy(Agency):
             return
         pending = self.active['pending']
         if pending['status'] != 'pending':
+            self._agency_observe(observation)
+            return
+        if pending['command']['kind'] == 'inventory_consume':
+            self.observe_consumption(observation)
             return
         ack = observation.get('ack') or {}
         if ack.get('id') != pending['id']:
@@ -109,7 +114,10 @@ class TimelineEconomy(Agency):
             state['trades'].append(record)
             state['pending'] = None
             if state.get('plans') and state['plans'][-1]['trade_id'] == record['id']:
-                state['plans'][-1].update(phase='complete', outcome='bought_bread')
+                if state['plans'][-1].get('food_actions'):
+                    state['plans'][-1].update(phase='after_purchase', purchase_completed=True)
+                else:
+                    state['plans'][-1].update(phase='complete', outcome='bought_bread')
             for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
                                         (command['seller'], command['buyer'], 'sold')]:
                 person = state['people'].get(str(actor))
@@ -149,6 +157,9 @@ class TimelineEconomy(Agency):
         cost = quantity * unit_price
         if before['buyer']['gold'] < cost or before['seller']['bread'] < quantity:
             raise ValueError('Insufficient observed funds or bread')
+        stock = allocation(self.active['people'].get(str(seller), {}), before['seller'])
+        if stock['allocated'] and stock['for_sale'] < quantity:
+            raise ValueError('This trade would spend the resident\'s household reserve')
         after = {'buyer': {'gold': before['buyer']['gold']-cost, 'bread': before['buyer']['bread']+quantity},
                  'seller': {'gold': before['seller']['gold']+cost, 'bread': before['seller']['bread']-quantity}}
         command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
@@ -176,9 +187,11 @@ class TimelineEconomy(Agency):
     def state(self):
         if not self.active:
             return []
-        records = self.active['trades'] + ([self.active['pending']] if self.active['pending'] else [])
+        pending = self.active['pending']
+        records = self.active['trades'] + ([pending] if pending and pending['command']['kind']=='inventory_trade' else [])
         return [{**r, 'command': json.dumps(r['command'])} for r in records]
 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
-                'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan()}
+                'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
+                'consumptions': self.active.get('consumptions', []) if self.active else []}

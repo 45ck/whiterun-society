@@ -6,9 +6,9 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers and save-linked trade memories have been demonstrated. The autonomous farm–bakery–household model still runs separately; full daily routines, generated dialogue, lip sync and stable save/load remain under development.
 
-**Latest experiment:** Ysolda chose to seek bread, travelled to Carlotta, received a refusal and chose to raise her offer from 3 to 5 gold. Carlotta refused again; the negotiation ended with no inventory changes. Both remembered each refusal. Actual Skyrim saves restored the earlier and later plans, memories and inventories exactly. This is bounded negotiation, not accepted human believability. [Live evidence](docs/agent-control.md#revised-offer-and-actual-plan-restoration) · [Human behaviour design and research](docs/human-behaviour.md).
+**Latest experiment:** Carlotta chose to reserve her bread for her household, then chose to eat one loaf. Skyrim's inventory changed from 3 to 2 bread with gold unchanged; verified consumption reduced simulated hunger and created a memory. Actual earlier/later saves restored the corresponding food policies, plans, inventories and consumption history. Repeating the event made zero model calls. [Food economy and live evidence](docs/food-economy.md) · [Earlier negotiation](docs/agent-control.md#revised-offer-and-actual-plan-restoration) · [Human behaviour design and research](docs/human-behaviour.md).
 
-![Restored negotiation choices and memories in the actual Skyrim observer overlay](docs/images/negotiation-restored.jpg)
+![Restored food decision in the actual Skyrim observer overlay](docs/images/food-consumption-restored.jpg)
 
 Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
