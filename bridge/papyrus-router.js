@@ -4,7 +4,7 @@ function createPapyrusRouterController(platform,now=Date.now,options={}){
  let active=null;
  const file=options.file||'WhiterunRouter.esp';
  function records(){
-  const sp=platform(),get=id=>sp.Game.getFormFromFile(id,file);
+  const sp=platform(),get=id=>sp.Game.getFormFromFile(id+(options.offset||0),file);
   return {sp,quest:sp.Quest?.from(get(0x800)),pkg:get(0x801),
    resident:sp.FormList?.from(get(0x802)),destination:sp.FormList?.from(get(0x803)),
    request:sp.GlobalVariable?.from(get(0x804)),ack:sp.GlobalVariable?.from(get(0x805)),status:sp.GlobalVariable?.from(get(0x806))};

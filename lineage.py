@@ -19,11 +19,12 @@ from population import Population
 from daily_life import DailyLife
 from endowments import Endowments
 from rest import Rest
+from parallel_routines import ParallelRoutines
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -95,6 +96,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return
         if self.error or not self.active:
             return
+        if self.observe_routines(observation):
+            return
         if self.conversation_busy():
             self.observe_conversation(observation)
             return
@@ -154,6 +157,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             self._write(state, 'trade requires reconciliation')
 
     def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None):
+        if self.routines_busy():raise ValueError('Independent journeys are still executing')
         if self.conversation_busy():
             raise ValueError('A conversation owns the participants')
         if self.error or not self.active or self.transition:
@@ -215,6 +219,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
+                'routine_batch': self.routine_batch(),
                 'consumptions': self.active.get('consumptions', []) if self.active else [],
                 'production': self.active.get('production', []) if self.active else [],
                 'rests': self.active.get('rests', []) if self.active else [],

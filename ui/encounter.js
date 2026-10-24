@@ -8,7 +8,8 @@ window.whiterunInspectKey=code=>{
 document.addEventListener('keydown',event=>{const code={'1':2,'2':3,'3':4,'F6':64}[event.key];if(code){event.preventDefault();window.whiterunInspectKey(code);}});
 window.whiterunProject=points=>{
  const c=state?.society?.conversation,active=c&&!['complete','held'].includes(c.phase);
- const ids=inspectedResident?[inspectedResident]:active?c.speakers:focusId?[focusId]:[];
+ const cohort=state?.society?.routine_batch,cohortIds=cohort?.phase==='travelling'?cohort.members.filter(m=>m.phase==='travelling').map(m=>m.actor):[];
+ const ids=cohortIds.length?cohortIds:inspectedResident?[inspectedResident]:active?c.speakers:focusId?[focusId]:[];
  for(const node of markerNodes.values())node.hidden=true;
  for(const point of points){if(!ids.includes(point.id))continue;
   const [x,y,z]=point.head,[fx,fy]=point.foot;
@@ -30,6 +31,7 @@ window.drawEncounter=()=>{
  const timing=document.getElementById('encounter-timing');
  if(c){const t=c.current||c.turns?.at(-1),language=t?.language?.elapsed_seconds,decision=t?.decision?.elapsed_seconds;
   timing.textContent=[language!==undefined?'Language '+language.toFixed(2)+'s':null,decision!==undefined?'Decision '+decision.toFixed(2)+'s':null,t?.audio?'Voice '+t.audio.seconds.toFixed(1)+'s':null].filter(Boolean).join(' · ');}
+ if(state?.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' simultaneous journeys observed');
  const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&camera==='focus'?focusId:null);
  const panel=document.getElementById('resident-inspector');panel.hidden=!displayResident;
  if(!displayResident)return;
@@ -37,6 +39,8 @@ window.drawEncounter=()=>{
  document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
+ const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
+ if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
  if(plan?.actor===displayResident&&plan.destination){
   text('notice',plan.phase==='travelling'?'Resident-chosen journey · '+plan.destination.name:'Market visit · '+(plan.outcome||plan.phase).replaceAll('_',' '));

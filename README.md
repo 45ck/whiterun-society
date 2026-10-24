@@ -10,7 +10,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 ![Generated speech and speaker close-up in the actual Skyrim observer overlay](docs/images/conversation-closeup.jpg)
 
-Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. The current planner owns one errand at a time; ordinary Skyrim routines resume after it releases the task. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
+Save-linked trade history, factual memories, trust and settled decision plans restored correctly from actual before/after Skyrim saves. Earlier audio-thread crashes still prevent accepting sustained save/load stability; active-plan recovery needs live qualification. Economic events still settle one at a time. The independent-journey pool now runs separate native travel tasks concurrently; ordinary Skyrim routines resume after release. [Evidence and limitations](docs/acceptance.md) · [Agent control](docs/agent-control.md).
 
 **Population milestone:** 26 loaded adult NPCs now have persistent starting needs, traits and household records, with two business charters referencing real inventories. Actual before/after Skyrim saves restored the population correctly. This does not yet extend native routine ownership to all of them. [Population state, visual overview and evidence](docs/population.md).
 
@@ -29,6 +29,8 @@ Save-linked trade history, factual memories, trust and settled decision plans re
 **Rest milestone:** Idolaf chose a bench, walked there, completed 30 observed game minutes seated and recovered simulated fatigue only after verified release. Save/load preserved the result. The plugin remains experimental; a successful retry does not explain the earlier hang. [Native rest, save diagnostics and limits](docs/seated-rest.md).
 
 **Known destinations:** Idolaf chose to check the public market while Carlotta was unloaded, completed the native walk and remembered that no seller was nearby. All 29 native inventories stayed unchanged, and the result survived saving and loading. The observer now displays public destinations and travel intentions. [Evidence and limits](docs/known-destinations.md).
+
+**Concurrent journeys:** Amren and Adrianne independently chose the market and walked there simultaneously under separate native packages. Both arrivals and releases were verified, and their outcomes survived save/load. Eight slots are built; two are qualified live. [Architecture, evidence and bounded director](docs/parallel-routines.md).
 
 ## Run the tests
 

@@ -11,6 +11,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PAPYRUS_ROUTER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/papyrus-router.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PLACE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/places.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__PARALLEL_ROUTINES_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/parallel-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__REST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/rest.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ROUTINE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/agent-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])

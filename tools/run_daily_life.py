@@ -5,6 +5,7 @@ to persisted-claim workers: at most five calls per economic event, eight per
 social encounter when an explicit language configuration is supplied.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -14,6 +15,7 @@ import urllib.request
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from social import social_candidates
+from parallel_routines import select_routine_events
 
 
 def event_available(state,event):
@@ -32,6 +34,7 @@ def main():
     parser.add_argument('--watch-seconds',type=int,default=0)
     parser.add_argument('--model-config',type=Path)
     parser.add_argument('--language-config',type=Path,help='Enables scheduled social encounters with at most eight model calls each')
+    parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
     args=parser.parse_args()
     if not 0<=args.max_events<=24 or not 0<=args.watch_seconds<=600:
         raise ValueError('Use 0–24 resident events and 0–600 seconds of observation')
@@ -76,6 +79,20 @@ def main():
             queue=(state['society']['town'].get('daily') or {}).get('queue',[])
             pending=sorted((e for e in queue if e['status']=='pending' and e['actor'] in loaded
                             and (e['kind']!='social_review' or args.language_config)),key=lambda e:(-e['priority'],e['id']))
+            if args.parallel_journeys:
+                selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(8,args.max_events-len(evidence['events'])))
+                if len(selected)>=2:
+                    ids=[e['id'] for e in selected];batch_id='daily-routes-'+hashlib.sha256('|'.join(ids).encode()).hexdigest()[:16]
+                    result=subprocess.run([sys.executable,str(Path(__file__).with_name('run_parallel_routines.py')),
+                        '--root',str(args.root),'--id',batch_id,'--events',*ids,'--model-config',str(args.model_config)],check=False)
+                    current=fresh();batch=current['society'].get('routine_batch')
+                    if current['bridge']['session']!=session or result.returncode or not batch or batch['id']!=batch_id:
+                        raise ValueError('Independent-journey cohort did not finish cleanly')
+                    for member in batch['members']:
+                        evidence['events'].append({'id':member['event_id'],'actor':member['actor'],'status':member['phase'],
+                            'outcome':member.get('outcome'),'model_calls':int(bool(member.get('result'))),'cohort':batch_id})
+                    record()
+                    if batch['phase']=='held':raise ValueError('Independent journey held; no automatic repeat')
             for event in pending:
                 if len(evidence['events'])>=args.max_events:break
                 current=fresh()

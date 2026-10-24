@@ -18,7 +18,7 @@ def plugin_manifest(root):
     profile=root/'mod-organizer/profiles/Default/plugins.txt'
     if not profile.is_file():raise ValueError('Managed plugin list is unavailable')
     result=[]
-    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp'}
+    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp','whiterunlanes.esp'}
     for line in profile.read_text(encoding='utf-8-sig').splitlines():
         if not line.startswith('*'):continue
         name=line[1:]
@@ -31,6 +31,12 @@ def plugin_manifest(root):
     return result
 
 
+def plugins_compatible(expected, actual, addition=None):
+    if expected==actual:return True
+    return (addition=='WhiterunLanes.esp' and len(actual)==len(expected)+1 and actual[:-1]==expected
+            and actual[-1].get('name')==addition and bool(actual[-1].get('sha256')))
+
+
 def snapshot(state, inventory_ids=None):
     result={'checkpoint': state['society']['checkpoint'],
             'plan': state['society']['plan'], 'people': state['society']['people'],
@@ -41,6 +47,7 @@ def snapshot(state, inventory_ids=None):
             'imports': state['society'].get('imports', []),
             'market_day': state['society'].get('market_day'),
             'conversation': state['society'].get('conversation'),
+            'routine_batch': state['society'].get('routine_batch'),
             'town':state['society'].get('town'),
             'inventory': {str(a['id']): a['inventory']
                 for a in state['bridge']['observation']['residents']
@@ -61,6 +68,7 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--name', required=True)
     parser.add_argument('--restore', action='store_true')
+    parser.add_argument('--allow-added-plugin',choices=('WhiterunLanes.esp',))
     args = parser.parse_args()
     if not re.fullmatch(r'WS-[A-Za-z0-9_-]{1,48}', args.name):
         raise ValueError('Use an isolated WS- save name')
@@ -98,7 +106,8 @@ def main():
     before = wait(lambda s: True,allow_uninitialized=args.restore)
     if args.restore:
         evidence = json.loads(evidence_path.read_text())
-        if 'plugins' in evidence and plugin_manifest(args.root)!=evidence['plugins']:
+        current_plugins=plugin_manifest(args.root)
+        if 'plugins' in evidence and not plugins_compatible(evidence['plugins'],current_plugins,args.allow_added_plugin):
             raise ValueError('Enabled plugin order or generated plugin bytes differ from the recorded save')
         for file in files:
             if hashlib.sha256(file.read_bytes()).hexdigest() != evidence['files'][file.name]['sha256']:
@@ -108,7 +117,7 @@ def main():
                         and s['society']['checkpoint'] == evidence['expected']['checkpoint'])
         actual = snapshot(restored,evidence['expected']['inventory'])
         comparison = {key: actual[key] == value for key, value in evidence['expected'].items()}
-        evidence.setdefault('restores', []).append({'at': time.time(),
+        evidence.setdefault('restores', []).append({'at': time.time(),'plugins':current_plugins,'allowed_addition':args.allow_added_plugin,
             'fresh_session': True, 'matches': comparison, 'actual': actual})
         evidence_path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
         print(json.dumps({'restored': args.name, 'matches': comparison}), flush=True)
@@ -120,6 +129,9 @@ def main():
         raise ValueError('Refusing to overwrite an existing save or proof')
     plan = before['society']['plan']
     conversation=before['society'].get('conversation')
+    batch=before['society'].get('routine_batch')
+    if batch and (batch['phase'] not in ('complete','held') or batch.get('release_verified') is False):
+        raise ValueError('This probe requires a settled cohort and verified native releases')
     if conversation and conversation['phase'] not in ('complete','held'):
         raise ValueError('This probe records settled conversations only')
     if before['society'].get('resource_delivery'):

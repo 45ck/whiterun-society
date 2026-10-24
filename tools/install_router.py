@@ -12,6 +12,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--stage',type=Path,required=True)
+    parser.add_argument('--lanes',action='store_true',help='Install the additive eight-slot plugin instead of replacing the original router')
     args=parser.parse_args()
     root=args.root.resolve();stage=args.stage.resolve()
     manifest=json.loads((root/'runtime-manifest.json').read_text())
@@ -19,7 +20,8 @@ def main():
     if game!=root/'game' or game==original or root in original.parents or original in root.parents:
         raise ValueError('Runtime isolation check failed')
     if game_paths():raise ValueError('Close Skyrim before installing native plugins')
-    files={'WhiterunRouter.esp':game/'Data/WhiterunRouter.esp',
+    plugin='WhiterunLanes.esp' if args.lanes else 'WhiterunRouter.esp'
+    files={plugin:game/'Data'/plugin,
            'WSSocietyRouter.pex':game/'Data/Scripts/WSSocietyRouter.pex'}
     for name in files:
         data=(stage/name).read_bytes()

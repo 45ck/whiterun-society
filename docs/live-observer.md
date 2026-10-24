@@ -32,6 +32,8 @@ The original `WhiterunRest.esp` builder passed binary readback, and deterministi
 
 ## Scope remaining
 
-The current director executes one resident plan at a time in bounded runs. Whole-town concurrent action ownership, households with dependants, more production chains, prices responding to demand, politics and player interventions remain development work. Native audio is still disabled for crash diagnosis; previous generated voices use CEF playback, with lip sync unfinished.
+The director executes bounded runs. Its optional independent-journey mode now groups up to eight food searches; two simultaneous native journeys have been qualified. Economic settlement and speech remain serialized. Whole-town concurrent action ownership, households with dependants, more production chains, prices responding to demand, politics and player interventions remain development work. Native audio is still disabled for crash diagnosis; previous generated voices use CEF playback, with lip sync unfinished.
 
 Update: [resident-chosen social encounters](resident-social.md) now demonstrate partner choice, acceptance, nearby voiced speech and private appraisals in two live pairs. Concurrent independent economic work still needs actor-level ownership and is not claimed.
+
+Update: [independent native journeys](parallel-routines.md) now have separate per-resident routing slots, live observer progress and save/load evidence. This does not qualify concurrent trade, work or conversation.

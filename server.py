@@ -178,6 +178,14 @@ def main():
                     if self.path=='/market-day/start':result=world.start_market_day(data['id'],bridge['observation'])
                     else:result=world.advance_market_day(data['id'],data['event_id'],bridge['observation'])
                     self.reply(202,result)
+                elif self.path in ('/routines/start','/routines/decisions','/routines/hold'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('game bridge unavailable')
+                    if bridge['command']:raise ValueError('another command is pending')
+                    observation=bridge['observation']
+                    if self.path=='/routines/start':result=world.begin_routines(data['id'],data['event_ids'],observation)
+                    elif self.path=='/routines/decisions':result=world.finish_routines(data['id'],data['claim_id'],data['results'],observation)
+                    else:result=world.hold_routines(data['id'],data['reason'],observation)
+                    self.reply(202,result)
                 elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
@@ -193,7 +201,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
                     if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
-                    if (world.agency_busy() or world.conversation_busy()) and data['kind'] in ('prepare_market','walk_to'):
+                    if (world.agency_busy() or world.conversation_busy() or world.routines_busy()) and data['kind'] in ('prepare_market','walk_to'):
                         raise ValueError('A resident currently owns the task')
                     if data['kind']=='walk_to':
                         if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')

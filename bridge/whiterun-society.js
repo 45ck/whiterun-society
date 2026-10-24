@@ -17,6 +17,8 @@ __REST_FACTORY__
 const rest=createRestController(()=>sp);
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
+__PARALLEL_ROUTINES_FACTORY__
+const parallelRoutines=createParallelRoutineController(()=>sp);
 __SPEECH_FACTORY__
 const speech=createSpeechController(()=>sp);
 __OBSERVER_CAMERA_FACTORY__
@@ -67,7 +69,7 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
-  production.reset();rest.reset();
+  production.reset();rest.reset();parallelRoutines.reset();
   movement.reset();
   routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
@@ -161,7 +163,7 @@ on('update', () => {
     if (typeof sp.Game.getFormEx!=='function') {refreshBindings=true;return;}
     bindingsReady=true;
   }
-  if(routineRecoveryNeeded){routines.release();rest.release();routineRecoveryNeeded=false;}
+  if(routineRecoveryNeeded){routines.release();rest.release();parallelRoutines.release();routineRecoveryNeeded=false;}
   if (!announced) {
     if (sp.browser) {
       sp.browser.loadUrl('file:///Data/Platform/UI/index.html?rev='+Date.now());
@@ -227,6 +229,11 @@ on('update', () => {
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
+        else if(command.kind==='parallel_routines'){
+          if(checkpointValue()!==command.checkpoint||command.origin_session!==session)throw new Error('Independent routine checkpoint or session mismatch');
+          const result=parallelRoutines.step(command);
+          if(!result.done)pending=command;else{ack=result.ack;completed.add(command.id);}
+        }
         else if (command.kind === 'walk_to') {
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
           if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
@@ -268,7 +275,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['speak','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
@@ -383,7 +390,7 @@ on('update', () => {
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   const observation = {
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
-    session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),platform:sp.getPlatformVersion(),
+    session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack

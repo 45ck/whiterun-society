@@ -39,7 +39,9 @@ class Agency:
         plan = self.agency_plan()
         return bool(plan and (plan['phase'] not in TERMINAL or plan.get('release_required')))
 
-    def _agency_guard(self, observation):
+    def _agency_guard(self, observation, allow_routines=False):
+        if not allow_routines and self.routines_busy():
+            raise ValueError('An independent routine cohort owns these daily opportunities')
         if self.error or not self.active or self.transition or self.active['pending']:
             raise ValueError('Society must be synchronized without an unsettled trade')
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:

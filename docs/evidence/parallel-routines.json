@@ -1,0 +1,510 @@
+{
+  "id": "parallel-food-20261024-A",
+  "phase": "complete",
+  "model_calls": 2,
+  "wall_seconds": 74.61689901351929,
+  "reported_cost_usd": 0.00013889399999999997,
+  "concurrency": {
+    "overlap_samples": 3538,
+    "peak_owned": 2
+  },
+  "release_verified": true,
+  "members": [
+    {
+      "actor": 108138,
+      "command": {
+        "actor": 108138,
+        "dynamic": true,
+        "id": "lane-daily-16-108138",
+        "origin": "resident_decision",
+        "retain": false,
+        "slot": 0,
+        "target": 179739,
+        "target_kind": "place"
+      },
+      "event_id": "daily-16-108138",
+      "outcome": "market_seller_not_observed",
+      "phase": "complete",
+      "receipt": {
+        "finished_at": 1792833270424,
+        "id": "lane-daily-16-108138",
+        "movement": {
+          "actor": 108138,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792833210573,
+          "distance": 247.40551115474742,
+          "dynamic": true,
+          "enginePackage": 647351,
+          "expectedPackage": 150996993,
+          "hasOwnedPackage": true,
+          "id": "lane-daily-16-108138",
+          "mailboxAt": 1792833210586,
+          "method": "package",
+          "origin": "resident_decision",
+          "outcome": "applied",
+          "ownedPackage": false,
+          "phase": "applied",
+          "releaseAt": 1792833270406,
+          "serial": 1,
+          "startAt": 1792833210603,
+          "startComplete": true,
+          "startDistance": 3374.424036499631,
+          "startResult": true,
+          "target": 179739,
+          "target_kind": "place"
+        },
+        "release_verified": true,
+        "seller_nearby": false,
+        "slot": 0,
+        "status": "applied"
+      },
+      "result": {
+        "decision": {
+          "action_id": "check_market",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to the public market and observe whether Carlotta is nearby. No purchase or hunger relief happens automatically."
+        },
+        "elapsed_seconds": 0.812,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "check_market": 0.74,
+          "defer": 0.26
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "status": "proposal_only",
+        "usage": {
+          "cost": 6.9048e-05,
+          "input_tokens": 1644,
+          "output_tokens": 34
+        }
+      },
+      "slot": 0
+    },
+    {
+      "actor": 108156,
+      "command": {
+        "actor": 108156,
+        "dynamic": true,
+        "id": "lane-daily-16-108156",
+        "origin": "resident_decision",
+        "retain": false,
+        "slot": 1,
+        "target": 179739,
+        "target_kind": "place"
+      },
+      "event_id": "daily-16-108156",
+      "outcome": "market_seller_not_observed",
+      "phase": "complete",
+      "receipt": {
+        "finished_at": 1792833274632,
+        "id": "lane-daily-16-108156",
+        "movement": {
+          "actor": 108156,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792833210574,
+          "distance": 247.61170192948373,
+          "dynamic": true,
+          "enginePackage": 837715,
+          "expectedPackage": 150997009,
+          "hasOwnedPackage": true,
+          "id": "lane-daily-16-108156",
+          "mailboxAt": 1792833210587,
+          "method": "package",
+          "origin": "resident_decision",
+          "outcome": "applied",
+          "ownedPackage": false,
+          "phase": "applied",
+          "releaseAt": 1792833274617,
+          "serial": 1,
+          "startAt": 1792833210604,
+          "startComplete": true,
+          "startDistance": 4178.591141786408,
+          "startResult": true,
+          "target": 179739,
+          "target_kind": "place"
+        },
+        "release_verified": true,
+        "seller_nearby": false,
+        "slot": 1,
+        "status": "applied"
+      },
+      "result": {
+        "decision": {
+          "action_id": "check_market",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to the public market and observe whether Carlotta is nearby. No purchase or hunger relief happens automatically."
+        },
+        "elapsed_seconds": 0.812,
+        "model": "typesafe/jev-1.14-20261014",
+        "probabilities": {
+          "check_market": 0.52,
+          "defer": 0.48
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "status": "proposal_only",
+        "usage": {
+          "cost": 6.9846e-05,
+          "input_tokens": 1663,
+          "output_tokens": 34
+        }
+      },
+      "slot": 1
+    }
+  ],
+  "all_native_accounts_unchanged": true,
+  "native_account_count": 29,
+  "inventory_before": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "inventory_after": {
+    "108138": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108140": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "108149": {
+      "gold": 106,
+      "bread": 4,
+      "grain": 21
+    },
+    "108156": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108160": {
+      "gold": 27,
+      "bread": 0,
+      "grain": 0
+    },
+    "108162": {
+      "gold": 56,
+      "bread": 1,
+      "grain": 0
+    },
+    "108164": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    },
+    "108165": {
+      "gold": 33,
+      "bread": 1,
+      "grain": 0
+    },
+    "108167": {
+      "gold": 26,
+      "bread": 1,
+      "grain": 0
+    },
+    "108168": {
+      "gold": 35,
+      "bread": 1,
+      "grain": 0
+    },
+    "108169": {
+      "gold": 29,
+      "bread": 0,
+      "grain": 0
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 1,
+      "grain": 0
+    },
+    "108183": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "108185": {
+      "gold": 29,
+      "bread": 1,
+      "grain": 0
+    },
+    "108186": {
+      "gold": 28,
+      "bread": 1,
+      "grain": 0
+    },
+    "108196": {
+      "gold": 54,
+      "bread": 1,
+      "grain": 0
+    },
+    "108197": {
+      "gold": 38,
+      "bread": 1,
+      "grain": 0
+    },
+    "108248": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "182543": {
+      "gold": 24,
+      "bread": 0,
+      "grain": 0
+    },
+    "225366": {
+      "gold": 28,
+      "bread": 2,
+      "grain": 0
+    },
+    "225368": {
+      "gold": 24,
+      "bread": 1,
+      "grain": 0
+    },
+    "225386": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "225390": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 0
+    },
+    "225392": {
+      "gold": 27,
+      "bread": 1,
+      "grain": 0
+    },
+    "225408": {
+      "gold": 25,
+      "bread": 1,
+      "grain": 0
+    },
+    "225409": {
+      "gold": 20,
+      "bread": 1,
+      "grain": 0
+    },
+    "843123": {
+      "gold": 30,
+      "bread": 1,
+      "grain": 0
+    },
+    "1048823": {
+      "gold": 28,
+      "bread": 0,
+      "grain": 0
+    },
+    "1106614": {
+      "gold": 60,
+      "bread": 1,
+      "grain": 0
+    }
+  },
+  "needs_before": {
+    "108138": {
+      "comfort": 0.317,
+      "fatigue": 1,
+      "hunger": 1,
+      "safety": 0.468,
+      "social_contact": 1
+    },
+    "108156": {
+      "comfort": 0.278,
+      "fatigue": 1,
+      "hunger": 1,
+      "safety": 0.614,
+      "social_contact": 1
+    }
+  },
+  "needs_after": {
+    "108138": {
+      "comfort": 0.317,
+      "fatigue": 1,
+      "hunger": 1,
+      "safety": 0.468,
+      "social_contact": 1
+    },
+    "108156": {
+      "comfort": 0.278,
+      "fatigue": 1,
+      "hunger": 1,
+      "safety": 0.614,
+      "social_contact": 1
+    }
+  },
+  "save": {
+    "name": "WS-Parallel-20261024-AI",
+    "checkpoint": 540,
+    "restored_matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "limits": [
+    "Two simultaneous journeys qualified; eight slots built, not an eight-person native test.",
+    "Developer selected pending participants; each model independently chose the action.",
+    "Only check_market/defer are supported by this cohort; trades and speech remain serialized.",
+    "No seller within 300 units at completion; no trade or need relief."
+  ]
+}
