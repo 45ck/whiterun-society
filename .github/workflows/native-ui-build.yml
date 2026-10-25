@@ -1,0 +1,35 @@
+name: Native UI baseline build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-ui-baseline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    env:
+      NATIVE_UI_ROOT: ${{ runner.temp }}/whiterun-native-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify preparation helpers
+        run: python -m unittest discover -s tools/native-ui -p test_prepare.py -v
+      - name: Build unchanged pinned upstream with the hosted compiler
+        shell: pwsh
+        run: ./tools/native-ui/build.ps1 -OutputRoot $env:NATIVE_UI_ROOT
+      - name: Retain build evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: native-ui-upstream-unqualified-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.NATIVE_UI_ROOT }}/evidence/
+          if-no-files-found: warn
+          retention-days: 14

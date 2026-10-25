@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "variant": "upstream-unchanged",
+  "reviewed_patches": [],
+  "qualification": "Build candidate; no native input correction or runtime acceptance.",
+  "upstream": {
+    "repository": "https://github.com/kkEngine/NirnLabUIPlatform",
+    "commit": "c9514ac16434e2edc2bbfb348be2fcdc47e1d6e2",
+    "archive_url": "https://codeload.github.com/kkEngine/NirnLabUIPlatform/zip/c9514ac16434e2edc2bbfb348be2fcdc47e1d6e2",
+    "archive_sha256": "8edbf90e6e42265e57242e986b880b17e8cc54fb1036fe94562f6168fc0e159d",
+    "archive_root": "NirnLabUIPlatform-c9514ac16434e2edc2bbfb348be2fcdc47e1d6e2",
+    "license": "MIT",
+    "files_manifest_sha256": "93697328b77267193334258737dc1dc43db82cf292b850504fc07cbaad377d33",
+    "files_manifest_hash_encoding": "UTF-8 bytes with LF line endings"
+  },
+  "vcpkg": {
+    "repository": "https://github.com/microsoft/vcpkg",
+    "commit": "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50",
+    "tag_evidence": "2023.10.19",
+    "archive_url": "https://codeload.github.com/microsoft/vcpkg/zip/8eb57355a4ffb410a2e94c07b4dca2dffbee8e50",
+    "archive_sha256": "029cca70c19063086f5ed735f78a1e2adeaf745519a01113b8c4b24476dcad4a",
+    "archive_root": "vcpkg-8eb57355a4ffb410a2e94c07b4dca2dffbee8e50",
+    "tool_release": "2023-10-18",
+    "tool_url": "https://github.com/microsoft/vcpkg-tool/releases/download/2023-10-18/vcpkg.exe",
+    "tool_sha256": "ff4f02ba2ceede4b413ee6fa618441b39fe76b81369d334a602d5410c03988ee",
+    "triplet": "x64-windows-static",
+    "registry_policy": "Exact archive ports and scripts; no floating checkout, updates, or binary cache.",
+    "tool_bytes": 8108992,
+    "tool_provenance": "Exact microsoft/vcpkg-tool release asset read and hashed; never executed locally. Release matches pinned scripts/vcpkg-tool-metadata.txt."
+  },
+  "overlays": {
+    "commonlibsse-ng": {
+      "commit": "9b7c386d0355e756b4153416a76b0532f755f8de",
+      "sha512": "6c9e4861a985eda04074ee157996a5f5294d3e2ce5c79ff481c4b11c86caf5a49847d31d9b5509fc1ae786c01438364f98de6ed3dc28b84dc408bde23dbfa057",
+      "declared_license": "MIT"
+    },
+    "cef-prebuilt": {
+      "version": "141.0.11+g7e73ac4+chromium-141.0.7390.123",
+      "archive_url": "https://cef-builds.spotifycdn.com/cef_binary_141.0.11+g7e73ac4+chromium-141.0.7390.123_windows64.tar.bz2",
+      "sha512": "f6e6a658b8dc41b0be3f0c5f9287cab408a9e54bdf141b8497391cf0154f070ff49776b6e11e7aa4a5774930c50380008615c5f30f2a8a5a8bceca94cc367b80"
+    }
+  },
+  "toolchain": {
+    "runner": "windows-2022",
+    "generator": "Visual Studio 17 2022",
+    "architecture": "x64",
+    "cmake_minimum": "3.23",
+    "compiler_policy": "Use existing hosted VS2022 compiler. Record actual image, MSVC and SDK; no installer."
+  },
+  "reproducibility_limits": [
+    "Hosted runner/compiler/SDK servicing is recorded, not immutable.",
+    "Compiler and transitive dependency compatibility await first hosted build.",
+    "No byte-identical build claim; no deployment or runtime qualification."
+  ]
+}
