@@ -48,6 +48,7 @@ venue_source='const WHITERUN_VENUE_CATALOG='+json.dumps(venue_catalog)+';\n'
 source=source.replace('__PLACE_FACTORY__',venue_source+(Path(__file__).resolve().parents[1]/'bridge'/'places.js').read_text().split('\nif(typeof module')[0])
 rest=(Path(__file__).resolve().parents[1]/'bridge'/'rest.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__REST_FACTORY__',rest)
+source=source.replace('__ACTIVITY_JOBS_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'activity-jobs.js').read_text(encoding='utf-8').split('\nif(typeof module')[0])
 routines=(Path(__file__).resolve().parents[1]/'bridge'/'agent-routines.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__ROUTINE_FACTORY__',routines)
 source=source.replace('__PARALLEL_ROUTINES_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'parallel-routines.js').read_text().split('\nif(typeof module')[0])

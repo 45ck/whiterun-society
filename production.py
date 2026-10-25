@@ -3,6 +3,7 @@ import copy
 from entrepreneurship import learn_bread_recipe
 from labour import settle_contract
 from enterprises import plan_work_policy, current_work_terms
+from activity_leases import activity_conflict
 
 ITEMS = ('gold', 'bread', 'grain')
 
@@ -25,6 +26,8 @@ class Production:
             raise ValueError('Finish the resident plan before scenario setup')
         if self.active.get('imports'):
             return {'duplicate': True, 'import': self.active['imports'][0]}
+        if activity_conflict(self.active,actors=(108186,108149),observation=observation):
+            raise ValueError('An independent activity owns a scenario supply participant')
         before = work_inventory(observation, 108186, 108149)
         after = copy.deepcopy(before)
         after['employer']['grain'] += 2
@@ -39,6 +42,8 @@ class Production:
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase'] != 'ready_to_work':
             raise ValueError('Work requires a current agreed plan and arrival')
+        if activity_conflict(self.active,actors=(plan['actor'],plan['target']),observation=observation):
+            raise ValueError('An independent activity owns a production participant')
         current_work_terms(self.active, plan)
         terms = plan_work_policy(plan)
         wage = terms['wage_gold']

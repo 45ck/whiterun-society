@@ -12,6 +12,7 @@ from places import market_opportunity, market_opportunities
 from routing import route_available
 from opportunities import food_sellers
 from social import capture_social_notice
+from activity_leases import reserved_activity_actors,reserved_activity_targets,activity_conflict
 
 
 def select_routine_events(state, observation, events, limit=8):
@@ -25,13 +26,13 @@ def select_routine_events(state, observation, events, limit=8):
         if event.get('kind')!='need_review' or event.get('status')!='pending':continue
         actor=event['actor'];native=actors.get(actor);person=state.get('people',{}).get(str(actor),{})
         if len(selected)>=limit:break
-        if actor in seen or not native:continue
+        if actor in seen or not native or actor in reserved_activity_actors(state,observation):continue
         # Keep the richer negotiation/work/rest choices when the merchant can
         # already be reached. A travel-only cohort must not erase those options.
         if food_sellers(state, observation, actor):continue
         inventory=native.get('inventory',{})
         if (inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3
-                or person.get('needs',{}).get('hunger',0)<.6 or not market_opportunity(state,observation,actor)):continue
+                or person.get('needs',{}).get('hunger',0)<.6 or not any(s['id'] not in reserved_activity_targets(state,observation) for s in market_opportunities(state,observation,actor))):continue
         selected.append(event);seen.add(actor)
     return selected
 
@@ -64,7 +65,8 @@ class ParallelRoutines:
             event=next((e for e in queue if e['id']==event_id),None)
             if not event or event['status']!='pending' or event['kind']!='need_review':raise ValueError('A pending daily need opportunity is required')
             actor=event['actor'];person=state['people'][str(actor)];native=actors.get(actor)
-            sites=market_opportunities(state,observation,actor)
+            if activity_conflict(state,actors=(actor,),observation=observation):raise ValueError('An independent activity owns this resident')
+            sites=[s for s in market_opportunities(state,observation,actor) if s['id'] not in reserved_activity_targets(state,observation)]
             if actor in [m['actor'] for m in members] or not native or not sites:raise ValueError('Resident has no executable public-market journey')
             inventory=native.get('inventory',{})
             if inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3 or person['needs']['hunger']<.6:
@@ -102,12 +104,12 @@ class ParallelRoutines:
             if decision['action_id']=='defer':member.update(phase='complete',outcome='deferred');continue
             actor=member['actor'];native=actors.get(actor)
             chosen=member['context'].get('destinations',{}).get(decision['action_id'])
-            if not chosen or not market_opportunity(state,observation,actor,chosen['id']) or not native or native.get('inventory')!=member['context']['observed_inventory']:
+            if not chosen or activity_conflict(state,actors=(actor,),targets=(chosen['id'],),observation=observation) or not market_opportunity(state,observation,actor,chosen['id']) or not native or native.get('inventory')!=member['context']['observed_inventory']:
                 member.update(phase='held',outcome='changed_before_departure');continue
             job={'id':'lane-'+member['event_id'],'actor':actor,'target':chosen['id'],'target_kind':'place',
                  'slot':member['slot'],'origin':'resident_decision','retain':False,'dynamic':True,
                  'public_seller_ids':sorted({b['custodian'] for b in state['town'].get('businesses',{}).values()
-                    if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor})}
+                    if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor and b['custodian'] not in reserved_activity_actors(state,observation)})}
             jobs.append(job);member.update(phase='travelling',command=job)
             state['people'][str(actor)]['agency'].update(state='travelling',reason='Chosen public-market journey in an independent native slot')
         updated['phase']='travelling' if jobs else ('held' if any(m['phase']=='held' for m in updated['members']) else 'complete')

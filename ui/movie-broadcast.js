@@ -22,7 +22,7 @@ function dispatchStatus(director){
 function movieBroadcastFrames(data){
  const society=data?.society||{},metrics=society.metrics||{},economy=metrics.economy||{};
  const population=Object.keys(society.town?.residents||{}).length;
- const active=x=>x&&!['complete','held'].includes(x.phase);
+ const active=x=>x&&!['complete','held','delegated'].includes(x.phase);
  const plan=society.plan,chat=society.conversation,queue=society.town?.daily?.queue||[];
  const name=id=>society.people?.[String(id)]?.profile?.name||'Resident';
  const count=value=>Number.isFinite(value)?String(value):'—';
@@ -43,6 +43,12 @@ function movieBroadcastFrames(data){
   value:`${motionMeasured?count(motion.observed_moving):'—'} moving · ${count(spatial.current?.travel_intentions)} intending to travel`,
   detail:spatial.fresh?`${count(spatial.coverage?.usable_percent)}% usable position coverage · ${count(spatial.samples)} samples · standing can be work, talk or rest`:'Telemetry stale · no present activity inferred'});
  const network=data.dashboard?.economic_network;
+ const activities=data.dashboard?.activity_jobs;
+ if(activities){const phases=activities.states||{};
+  frames.push({title:activities.fresh?'Concurrent activities':'Concurrent activities · telemetry unavailable',
+   value:`${count(activities.background_active)} observed background active · ${count(phases.unmeasured)} unmeasured · ${count(activities.foreground_active)} foreground assignments`,
+   detail:`${activities.fresh?count(phases.travelling):'—'} travelling · ${activities.fresh?count(phases.resting):'—'} resting · ${activities.fresh?count(phases.releasing):'—'} releasing · ${count(activities.verified_completions)} verified rests in retained history; admission is not completion`});
+ }
  if(network)frames.push({title:'Recorded trade network',value:`${count(network.distinct_participants)} people · ${count(network.directed_trade_links)} trading links`,
   detail:`${count(network.distinct_goods)} labelled goods · ${count(network.known_turnover_septims)} septims turnover · includes controlled trials; not profit`});
  return frames;

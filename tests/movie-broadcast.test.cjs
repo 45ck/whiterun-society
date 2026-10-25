@@ -12,6 +12,23 @@ test('dispatch exposes queue starvation with game-time units and preserves unkno
  assert.doesNotMatch(frame.detail,/thinking|productive/);
  assert.match(dispatchStatus({dispatch:{pending_count:-1,overdue_count:null,maximum_wait_game_minutes:NaN}}),/— pending · — overdue · longest wait — game min/);
 });
+
+test('movie separates delegated background work from foreground and retained verified completion',()=>{
+ const data={society:{plan:{id:'delegated',actor:7,phase:'delegated'}},dashboard:{activity_jobs:{fresh:true,background_active:2,foreground_active:0,states:{travelling:1,resting:1,releasing:0},verified_completions:0}}};
+ let frames=movieBroadcastFrames(data),frame=frames.find(f=>f.title==='Concurrent activities');
+ assert.equal(frames[2].value,'Between encounters');
+ assert.match(frame.value,/2 observed background active · — unmeasured · 0 foreground assignments/);assert.match(frame.detail,/1 travelling · 1 resting · 0 releasing · 0 verified rests/);
+ assert.match(frame.detail,/admission is not completion/);
+ data.dashboard.activity_jobs.fresh=false;data.dashboard.activity_jobs.background_active=null;
+ frame=movieBroadcastFrames(data).find(f=>f.title.includes('telemetry unavailable'));
+ assert.match(frame.value,/— observed background active/);assert.match(frame.detail,/— travelling · — resting · — releasing/);
+});
+
+test('movie explicitly identifies unmeasured leases when only part of background activity is observed',()=>{
+ const frame=movieBroadcastFrames({dashboard:{activity_jobs:{fresh:true,leased_jobs:2,native_matched_jobs:1,background_active:1,foreground_active:1,states:{travelling:0,resting:1,releasing:0,unmeasured:1},verified_completions:0}}}).find(f=>f.title==='Concurrent activities');
+ assert.equal(frame.value,'1 observed background active · 1 unmeasured · 1 foreground assignments');
+ assert.match(frame.detail,/1 resting/);
+});
 test('movie updates distinguish unknown economics, queued work and observed activity',()=>{
  const data={society:{town:{residents:{7:{},8:{}},daily:{queue:[{actor:7,status:'pending'},{actor:8,status:'complete',outcome:'ate_bread'}]}},people:{8:{profile:{name:'Resident B'}}}},parallel_routines:{activities:[{phase:'travelling'},{phase:'complete'}]}};
  const frames=movieBroadcastFrames(data);

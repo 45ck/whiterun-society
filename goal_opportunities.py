@@ -12,6 +12,7 @@ from places import market_opportunities
 from rest import rest_opportunities
 from routing import activity_blocker,route_available
 from social import social_candidates,same_social_space
+from activity_leases import reserved_activity_actors,reserved_activity_targets
 
 POLICY_PATH=Path(__file__).parent/'config/goal-opportunities.json'
 FOCUSES={'food','rest','work','social'}
@@ -33,14 +34,15 @@ def focus_opportunities(state,observation,actor):
     """Only own resources, public charters and current eligible observations."""
     own=next((r for r in observation.get('residents',[]) if r.get('id')==actor and r.get('isPerson') is True),None)
     empty={'food':False,'rest':False,'work':False,'social':False,'food_sellers':[],'public_work':[],'rest_sites':[],'nearby_people':[]}
-    if not own or str(actor) not in (state.get('town') or {}).get('residents',{}) or activity_blocker(own):return empty
+    if not own or str(actor) not in (state.get('town') or {}).get('residents',{}) or activity_blocker(own) or actor in reserved_activity_actors(state,observation):return empty
     stock=own.get('inventory') or {};town=state.get('town') or {}
     carried_food=type(stock.get('bread')) is int and stock['bread']>0
     can_bid=type(stock.get('gold')) is int and stock['gold']>=1
     rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     sellers=[s for s in food_sellers(state,observation,actor) if same_social_space(own,rows.get(s['id'],{}))] if can_bid else []
-    searches=market_opportunities(state,observation,actor)
-    benches=rest_opportunities(state,observation,actor)
+    reserved=reserved_activity_targets(state,observation)
+    searches=[s for s in market_opportunities(state,observation,actor) if s['id'] not in reserved]
+    benches=[s for s in rest_opportunities(state,observation,actor) if s['id'] not in reserved]
     neighbours=social_candidates(state,observation,actor)
     public_work=[]
     for business_id,business in sorted(town.get('businesses',{}).items()):
@@ -52,7 +54,7 @@ def focus_opportunities(state,observation,actor):
             # a paid job, available animation or completed productive labour.
             if type(stock.get('grain')) is not int or stock['grain']<1:continue
             public_work.append({'business_id':business_id,'kind':'own_enterprise','revision':business.get('revision',0)})
-        elif str(employer) in town.get('residents',{}) and route_available(observation,actor,employer) and same_social_space(own,rows.get(employer,{})):
+        elif str(employer) in town.get('residents',{}) and route_available(observation,actor,employer,state) and same_social_space(own,rows.get(employer,{})):
             public_work.append({'business_id':business_id,'kind':'public_employer','revision':business.get('revision',0),
                 'employer':person_view(state,actor,employer),
                 'source':'Public production charter only; employer resources, vacancy and consent are unknown'})

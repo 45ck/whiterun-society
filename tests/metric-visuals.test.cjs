@@ -1,6 +1,16 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {JSDOM}=require('jsdom');
-const {renderQualityGoals,renderTownCharts}=require('../ui/society-dashboard.js');
+const {renderQualityGoals,renderTownCharts,activityJobLabel}=require('../ui/society-dashboard.js');
+
+test('background activity labels never turn admission or a native terminal result into completed recovery',()=>{
+ assert.match(activityJobLabel({saved_phase:'prepared',native_observed:false}),/Awaiting native admission/);
+ assert.match(activityJobLabel({saved_phase:'running',native_observed:true,native_phase:'accepted'}),/attendance not yet observed/);
+ assert.match(activityJobLabel({saved_phase:'running',native_observed:true,native_phase:'applied'}),/settlement pending/);
+ assert.match(activityJobLabel({saved_phase:'held',native_phase:'releasing'}),/Held · native release in progress/);
+ assert.match(activityJobLabel({saved_phase:'complete',receipt_acknowledged:false}),/Rest completed · receipt acknowledgement pending/);
+ assert.match(activityJobLabel({saved_phase:'running',native_observed:false}),/unmeasured/);
+ assert.match(activityJobLabel({orphan:true,saved_phase:'held'}),/Quarantined orphan · release only; no recovery/);
+});
 
 test('OKR groups keep unknowns and sample gates visible without a fabricated score',()=>{
  const dom=new JSDOM('<main></main>');try{
@@ -27,6 +37,24 @@ test('missing target catalogue stays unavailable',()=>{
 });
 
 function dashboard(){return {control:{},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:null,accounts:0,population:0}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{known:0,high:0}])),economy:{}};}
+
+test('concurrent activity cards separate foreground, native phases, coverage and retained completion',()=>{
+ const dom=new JSDOM('<main></main>');try{
+  const root=dom.window.document.querySelector('main'),d=dashboard();
+  d.activity_jobs={fresh:true,background_active:2,foreground_active:1,leased_jobs:2,capacity:2,native_matched_jobs:2,states:{travelling:1,resting:1,releasing:0,held:0,unmeasured:0},recorded_admissions:3,verified_completions:1,retained_held:0,retained_jobs:3,admission_unknown:0,unmatched_native_jobs:0,jobs:[{actor:7,actor_name:'<img src=x>',saved_phase:'running',native_phase:'resting',native_observed:true,rested_minutes:10,rest_minutes:30,seated_samples:4}],scope:'Bounded history; admission is not completion'};
+  renderTownCharts(root,d);
+  assert.match(root.textContent,/2Observed background active1Foreground assignments2 \/ 2Reserved native slots/);
+  assert.match(root.textContent,/No free background slot. New admission waits for verified release and receipt acknowledgement/);
+  assert.match(root.textContent,/travelling: 1 · resting: 1 · releasing: 0 · held: 0/);
+  assert.match(root.textContent,/10 \/ 30 game min seated · 4 samples/);
+  assert.match(root.textContent,/3Recorded admission acknowledgements1Verified completed rests/);
+  assert.equal(root.querySelector('img'),null);
+  d.activity_jobs={...d.activity_jobs,fresh:false,background_active:null,native_matched_jobs:0,states:{unmeasured:2},jobs:[]};renderTownCharts(root,d);
+  assert.match(root.textContent,/—Observed background active/);assert.match(root.textContent,/travelling: — · resting: —/);
+  assert.match(root.textContent,/unavailable or stale/);assert.doesNotMatch(root.textContent,/10 \/ 30 game min seated/);
+  d.activity_jobs.capacity=null;renderTownCharts(root,d);assert.doesNotMatch(root.textContent,/No free background slot/);
+ }finally{dom.window.close();}
+});
 
 test('purse cash flow keeps grants separate and labels record and account coverage without profit',()=>{
  const dom=new JSDOM('<main></main>');try{

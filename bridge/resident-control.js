@@ -10,6 +10,11 @@ function createResidentControl(platform,now=Date.now){
  return {
   reset(){activities.clear();recover=true;active=false;lastTick=-Infinity;error=null;},
   release,
+  yieldActors(actors){
+   for(const actor of actors){const a=activities.get(actor);if(!a)continue;
+    const r=records(a.slot);if(r.quest?.isRunning())r.quest.stop();activities.delete(actor);
+   }
+  },
   // Checkpoint writes may overlap many arrivals. Keep existing leases alive
   // without rebinding actors to a policy that has not committed yet.
   renew(residents,fresh){

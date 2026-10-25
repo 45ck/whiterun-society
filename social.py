@@ -8,7 +8,7 @@ import time
 from routing import route_available
 from knowledge import person_view
 from dialogue_context import time_context
-from activity_leases import routine_actors
+from activity_leases import routine_actors,reserved_activity_actors
 from social_followthrough import FOLLOWUPS, followthrough_options, queue_followthrough
 from context_window import bounded_social_context
 
@@ -50,7 +50,7 @@ def social_candidates(state,observation,actor,notice=None):
     people=state.get('people',{});town=state.get('town') or {}
     rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     own=rows.get(actor);person=people.get(str(actor),{})
-    reserved=routine_actors(state)
+    reserved=routine_actors(state)|reserved_activity_actors(state,observation)
     if actor in reserved:return []
     if not own or str(actor) not in town.get('residents',{}):
         return []
@@ -60,7 +60,7 @@ def social_candidates(state,observation,actor,notice=None):
         if other in reserved:continue
         if str(other) not in town['residents'] or str(other) not in people or other==actor:
             continue
-        if not route_available(observation,actor,other):continue
+        if not route_available(observation,actor,other,state):continue
         if not same_social_space(own,row):continue
         try:gap=math.dist([own[k] for k in ('x','y','z')],[row[k] for k in ('x','y','z')])
         except (TypeError,ValueError,KeyError):continue

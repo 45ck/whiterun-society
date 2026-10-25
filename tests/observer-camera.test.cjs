@@ -26,17 +26,17 @@ test('movie pair remains stable across speaker changes and excludes finished enc
 test('movie composition frames both residents and keeps the same side when the speaker swaps',()=>{
  const a={id:7,x:0,y:0,z:0,heading:0},b={id:8,x:200,y:0,z:0,heading:180};
  const first=movieFrame([a,b],null,[100,-500,200]);
- assert.deepEqual(first.target,[100,0,80]);assert.deepEqual(first.position,[100,-250,230]);
+ assert.deepEqual(first.target,[100,0,80]);assert.deepEqual(first.position,[100,-150,600]);
  assert.deepEqual(movieFrame([b,a],first,[100,500,200]),first);
  assert.equal(first.collision,'unverified');
  const moved=movieFrame([{...a,x:100},{...b,x:300}],first);
- assert.deepEqual(moved.position,[200,-250,230]);
+ assert.deepEqual(moved.position,[200,-150,600]);
 });
 
 test('distant pairs follow the lead resident and invalid geometry cannot steer a camera',()=>{
  const a={id:7,x:0,y:0,z:0,heading:0},b={id:8,x:1000,y:0,z:0,heading:90};
  const shot=movieFrame([b,a]);assert.equal(shot.kind,'resident');assert.deepEqual(shot.ids,[8]);
- assert.equal(shot.position[0],1260);assert.equal(shot.position[2],200);
+ assert.equal(shot.position[0],1180);assert.equal(shot.position[2],610);
  assert.equal(movieFrame([]),null);assert.equal(movieFrame([{...a,z:NaN}]),null);
  assert.ok(movieFrame([a,{...b,x:650}]).offset.every(Number.isFinite));
  assert.equal(movieFrame([a,{...b,x:651}]).kind,'resident');
@@ -49,7 +49,26 @@ test('a resident turning in place does not orbit the movie camera',()=>{
  assert.deepEqual(turned.offset,first.offset);assert.deepEqual(turned.position,first.position);
  const moved=movieFrame([{...actor,x:200,heading:270}],turned);
  assert.deepEqual(moved.offset,first.offset);assert.equal(moved.position[0],first.position[0]+100);
- assert.equal(moved.collision,'unverified');assert.equal(moved.profile,'subject-relative-v2');
+ assert.equal(moved.collision,'unverified');assert.equal(moved.profile,'subject-relative-elevated-v3');
+});
+
+test('unqualified camera geometry uses a steep subject-relative fallback without claiming clearance',()=>{
+ const a={id:701,x:9000,y:8000,z:300,heading:45},b={id:702,x:9650,y:8000,z:300,heading:200};
+ for(const rows of [[a],[a,b]]){
+  const shot=movieFrame(rows);assert.ok(shot.offset[2]/Math.hypot(...shot.offset.slice(0,2))>1.4);
+  assert.equal(shot.collision,'unverified');assert.equal(shot.geometry_query,'unavailable');assert.equal(shot.occlusion_strategy,'elevated_fallback');
+  assert.deepEqual(shot.position,shot.target.map((v,i)=>v+shot.offset[i]));
+ }
+});
+
+test('upgrading an old close shot keeps its bearing while raising and shortening the camera offset',()=>{
+ const actor={id:7,x:100,y:200,z:0,heading:180};
+ const old={key:'7',kind:'resident',offset:[260,0,110],profile:'subject-relative-v2'};
+ const next=movieFrame([actor],old);assert.ok(Math.abs(next.offset[0]-180)<1e-8);assert.ok(Math.abs(next.offset[1])<1e-8);
+ assert.ok(next.offset[2]>old.offset[2]);
+ for(let i=0;i<100;i++){
+  const repeated=movieFrame([{...actor,heading:i*3}],next);assert.deepEqual(repeated.offset,next.offset);
+ }
 });
 
 test('new movie subjects recompose and invalid prior bearings cannot steer the camera',()=>{

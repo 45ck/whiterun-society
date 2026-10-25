@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - run: node --test tests/ui-dashboard.test.cjs tests/scene-handoffs.test.cjs tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs tests/rest.test.cjs tests/observer-camera.test.cjs tests/places.test.cjs tests/parallel-routines.test.cjs tests/rts-camera.test.cjs tests/conversation-attendance.test.cjs tests/resident-control.test.cjs tests/movie-broadcast.test.cjs tests/metric-visuals.test.cjs
+      - run: npm test
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
@@ -28,6 +28,11 @@ jobs:
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunRest.esp
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunLanes.esp
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunCitizens.esp
+      - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunActivities.esp
+      - name: Read back the generated activity plugin
+        env:
+          WHITERUN_ACTIVITIES_STAGE: work
+        run: python -m unittest discover -s tests -p test_activities_plugin.py -v
       - name: Compile original Papyrus router on Windows
         if: runner.os == 'Windows'
         shell: pwsh

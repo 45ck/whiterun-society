@@ -52,6 +52,13 @@ window.drawEncounter=()=>{
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
+ const backgroundJob=state.dashboard?.activity_jobs?.jobs?.find(job=>job.actor===displayResident);
+ if(backgroundJob){
+  inspectorText(panel,'Independent background activity','label');
+  inspectorText(panel,activityJobLabel(backgroundJob));
+  if(Number.isFinite(backgroundJob.rested_minutes))inspectorText(panel,backgroundJob.rested_minutes+' / '+(backgroundJob.rest_minutes??'—')+' game minutes seated · '+(backgroundJob.seated_samples??'—')+' samples');
+  inspectorText(panel,'Admission and travel do not grant recovery. Saved attendance and release must be verified.');
+ }
  const goal=person.standing_goal;
  if(goal){
   const native=state.resident_control?.activities?.find(a=>a.actor===displayResident);

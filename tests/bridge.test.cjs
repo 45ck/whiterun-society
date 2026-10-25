@@ -16,11 +16,12 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__PLACE_FACTORY__','const WHITERUN_VENUE_CATALOG='+JSON.stringify(require('../config/places.json'))+';\n'+fs.readFileSync(path.join(__dirname,'../bridge/places.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PARALLEL_ROUTINES_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/parallel-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__REST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/rest.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__ACTIVITY_JOBS_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/activity-jobs.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ROUTINE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/agent-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
-function harness(nativeGlobal=false) {
+function harness(nativeGlobal=false,activityRestFactory=null) {
   const handlers = new Map(), notifications=[], requests=[], looks=[];
   let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
@@ -32,11 +33,41 @@ function harness(nativeGlobal=false) {
     enableFreeCamera:()=>{},setFreeCameraPosition:()=>{},
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
-  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock}});
-  vm.runInContext(source,context);
-  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(source,context)};
+  const compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory});
+  vm.runInContext(compiled,context);
+  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
+
+test('accepted background rest jobs tick while a disjoint native meal uses the foreground command channel',async()=>{
+ const lanes=[];
+ const factory=()=>{let state=null;const lane={ticks:0,available:()=>true,released:()=>true,release(){},reset(){state=null;},cancel(){},status:()=>state,
+  step(command){lane.ticks++;state={actor:command.actor,target:command.target,phase:'resting',rested_minutes:lane.ticks/2};return {done:false};}};lanes.push(lane);return lane;};
+ const h=harness(false,factory);let bread=1,equipCalls=0,queue=null;
+ const food={getFormID:()=>0x65c97},gold={getFormID:()=>0xf};
+ const eater={getFormID:()=>200,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
+  getItemCount:form=>form===food?bread:10,equipItem:()=>{equipCalls++;bread=0;}};
+ h.sp.Game.getFormEx=id=>id===123?h.actor:id===200?eater:id===0x65c97?food:id===0xf?gold:null;
+ const checkpoint={getValue:()=>1};h.sp.GlobalVariable={from:f=>f};
+ h.sp.Game.getFormFromFile=(id,file)=>file==='WhiterunSociety.esp'&&id===0x800?checkpoint:null;
+ h.setResponse(body=>{
+  if(!queue){
+   const jobs=[{job_id:'parallel-a',actor:123,target:586075,slot:0,session:body.session,epoch:'epoch',rest_minutes:30},
+               {job_id:'parallel-b',actor:124,target:586076,slot:1,session:body.session,epoch:'epoch',rest_minutes:30}];
+   h.setPresentation({society:{checkpoint:1,activity_jobs:{epoch:'epoch',jobs}}});
+   queue=jobs.map(job=>({...job,id:'start-'+job.job_id,kind:'activity_start_rest',checkpoint:1}));
+   queue.push({id:'disjoint-meal',kind:'inventory_consume',actor:200,session:body.session,checkpoint:1,before:{bread:1,gold:10},after:{bread:0,gold:10}});
+  }
+  if(body.ack?.id===queue[0]?.id)queue.shift();
+  return queue[0]||null;
+ });
+ for(let i=0;i<8;i++){h.handlers.get('update')();await settle();h.advance();}
+ const observations=h.requests,meal=observations.find(r=>r.ack?.id==='disjoint-meal'&&r.ack.status==='applied');
+ assert.ok(meal,JSON.stringify(observations.map(r=>r.ack)));assert.equal(equipCalls,1);assert.equal(bread,0);
+ assert.equal(meal.activity_jobs.jobs.length,2);assert.ok(meal.activity_jobs.jobs.every(j=>j.phase==='resting'));
+ assert.ok(lanes.every(l=>l.ticks>2));assert.equal(meal.activity_jobs.receipts.length,0);
+});
 
 test('a repeated completed command redelivers its original acknowledgement without repeating its effect',async()=>{
  const h=harness();let next='first';
@@ -177,9 +208,9 @@ test('movie view holds an ended shot and manual RTS overrides automatic followin
  const present=phase=>({society:{town:{residents:{'123':{}}},plan:{phase,actor:123}}});
  h.setPresentation(present('travelling'));h.handlers.get('update')();await settle();
  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'story'}]});
- h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,262,203]);
+ h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,182,613]);
  h.setPresentation(present('complete'));h.advance();h.handlers.get('update')();await settle();
- h.actor.getPositionX=()=>900;h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,262,203]);
+ h.actor.getPositionX=()=>900;h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,182,613]);
  h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'free',panX:24000,panY:-7000,yaw:0,distance:1000,elevation:900}]});
  h.handlers.get('update')();assert.deepEqual(positions.at(-1),[24000,-6000,-2420]);
  h.setPresentation(present('travelling'));h.advance();h.handlers.get('update')();await settle();h.handlers.get('update')();

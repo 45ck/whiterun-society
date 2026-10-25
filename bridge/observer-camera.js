@@ -51,8 +51,9 @@ function movieSubjects(society,residents){
  const actor=storyActor(society,residents);return actor?[actor]:[];
 }
 function movieFrame(rows,previous=null,cameraPosition=null){
- // Subject-relative composition. These coordinates do not establish clear
- // geometry: the installed camera API provides no collision receipt here.
+ // Without a qualified native obstruction query, prefer a steep elevated
+ // composition over a blind shoulder-height close-up behind nearby walls.
+ // This is a fallback, not proof of clear geometry (roofs may still occlude).
  if(!rows.length||rows.some(r=>!['x','y','z','heading'].every(k=>Number.isFinite(r[k]))))return null;
  let actors=[...rows].sort((a,b)=>a.id-b.id),target,offset,side=1,kind='resident';
  const gap=actors.length===2?Math.hypot(actors[1].x-actors[0].x,actors[1].y-actors[0].y):0;
@@ -64,8 +65,8 @@ function movieFrame(rows,previous=null,cameraPosition=null){
   else if(Array.isArray(cameraPosition)&&cameraPosition.length===3&&cameraPosition.every(Number.isFinite)){
    side=(cameraPosition[0]-target[0])*perpendicular[0]+(cameraPosition[1]-target[1])*perpendicular[1]<0?-1:1;
   }
-  const distance=Math.max(250,Math.min(650,gap*1.25));
-  offset=[perpendicular[0]*side*distance,perpendicular[1]*side*distance,150];
+  const distance=Math.max(150,Math.min(350,gap*.6));
+  offset=[perpendicular[0]*side*distance,perpendicular[1]*side*distance,Math.max(520,gap*.9)];
  }else{
   // Before attendance, follow the selected resident rather than framing a
   // distant pair through multiple buildings. The caller orders that actor first.
@@ -76,9 +77,11 @@ function movieFrame(rows,previous=null,cameraPosition=null){
   const stable=previous?.kind==='resident'&&previous.key===String(a.id)&&
     Array.isArray(previous.offset)&&previous.offset.length===3&&previous.offset.every(Number.isFinite)&&
     Math.hypot(previous.offset[0],previous.offset[1])>0;
-  target=[a.x,a.y,a.z+90];offset=stable?[previous.offset[0],previous.offset[1],110]:[Math.sin(heading)*260,Math.cos(heading)*260,110];
+  const bearing=stable?Math.atan2(previous.offset[0],previous.offset[1]):heading;
+  target=[a.x,a.y,a.z+90];offset=[Math.sin(bearing)*180,Math.cos(bearing)*180,520];
  }
  return {key:actors.map(a=>a.id).join(':'),ids:actors.map(a=>a.id),kind,side,target,offset,
-  position:target.map((v,i)=>v+offset[i]),collision:'unverified',profile:'subject-relative-v2'};
+  position:target.map((v,i)=>v+offset[i]),collision:'unverified',geometry_query:'unavailable',
+  occlusion_strategy:'elevated_fallback',profile:'subject-relative-elevated-v3'};
 }
 if(typeof module!=='undefined')module.exports={createObserverCamera,storyActor,tradeCameraActors,movieSubjects,movieFrame};

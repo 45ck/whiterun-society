@@ -53,6 +53,18 @@ test('town review summary uses the recorded focus without claiming every model i
  }finally{dom.window.close();}
 });
 
+test('native inspector shows background attendance while a different resident has the foreground activity',()=>{
+ const {dom,w}=native();try{
+  const data={camera:{manual:true,mode:'focus',id:7},residents:[{id:7,name:'Resting resident',isPerson:true}],trades:[],director:{running:true},dashboard:{...dashboard(),activity_jobs:{fresh:true,jobs:[{actor:7,saved_phase:'running',native_observed:true,native_phase:'resting',rested_minutes:12,rest_minutes:30,seated_samples:5}]}},society:{people:{7:{profile:{name:'Resting resident',big_five:{}},needs:{hunger:.2},memories:[],relationships:{}}},town:{residents:{7:{name:'Resting resident'}}},plan:{id:'other-work',actor:8,kind:'need_review',phase:'travelling'}}};
+  w.whiterunRender(data);
+  const content=w.document.getElementById('resident-inspector').textContent;
+  assert.match(content,/Independent background activitySeated attendance in progress/);
+  assert.match(content,/12 \/ 30 game minutes seated · 5 samples/);
+  assert.match(content,/Admission and travel do not grant recovery/);
+  assert.match(w.document.getElementById('people').textContent,/Seated attendance in progress/);
+ }finally{dom.window.close();}
+});
+
 test('native RTS gestures use the reported camera and focused browser can release F8',()=>{
  const {dom,w,messages,intervals}=native();try{
  w.whiterunRender({residents:[],trades:[],camera:{mode:'free',manual:true,distance:1200,elevation:900,yaw:225,panX:24000,panY:-8000},director:{running:false},dashboard:dashboard()});

@@ -2,6 +2,7 @@
 import copy
 import math
 from daily_life import HUNGER_PER_GAME_HOUR
+from activity_leases import activity_conflict
 
 
 def allocation(person, inventory):
@@ -37,6 +38,8 @@ class FoodEconomy:
         plan = self.agency_plan()
         if not plan or plan['id'] != agency_plan or plan['actor'] != actor or plan['phase'] != 'ready_to_eat':
             raise ValueError('Consumption needs a current resident decision')
+        if activity_conflict(self.active,actors=(actor,),observation=observation):
+            raise ValueError('An independent activity owns the consuming resident')
         before = own_inventory(observation, actor)
         if before['bread'] < 1:
             raise ValueError('No carried loaf to consume')

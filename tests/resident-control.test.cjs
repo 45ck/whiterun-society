@@ -51,6 +51,15 @@ test('foreground interaction temporarily supersedes continuity without stopping 
  const f=fixture();f.hold();f.package(99);f.step(true,[7]);assert.equal(f.status().phase,'interaction_priority');assert.equal(f.status().ownedPackage,false);assert.equal(f.forms[0].isRunning(),true);
  f.package(9000);f.step();assert.equal(f.status().phase,'holding');
 });
+
+test('independent activity yields only its actor immediately and preserves the saved personal destination',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'personal-goal'};f.hold();
+ const saved=JSON.stringify(f.control);f.slots[1][0].start();f.controller.yieldActors([7]);
+ assert.equal(f.forms[0].isRunning(),false);assert.equal(f.slots[1][0].isRunning(),true);
+ assert.equal(f.controller.status().activities.length,0);assert.equal(JSON.stringify(f.control),saved);
+ f.controller.renew([{id:7,isPerson:true}],true);assert.equal(f.forms[0].isRunning(),false);
+ f.start();f.bind();f.step();f.package(9000);f.step();assert.equal(f.status().goal_id,'personal-goal');assert.equal(f.status().phase,'travelling');
+});
 test('stale service releases only our own plugin quests',()=>{
  const f=fixture();f.hold();f.step(false);assert.equal(f.forms[0].isRunning(),false);assert.equal(f.controller.status().enabled,false);assert.equal(f.controller.status().activities.length,0);
 });

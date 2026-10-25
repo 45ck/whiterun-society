@@ -18,7 +18,7 @@ def commodity_sellers(state, observation, buyer, commodity):
     own = actors.get(buyer, {})
     result = []
     for seller in ids:
-        if seller==buyer or str(seller) not in state.get('people', {}) or not route_available(observation, buyer, seller):
+        if seller==buyer or str(seller) not in state.get('people', {}) or not route_available(observation, buyer, seller,state):
             continue
         if town is not None and (str(seller) not in town.get('residents', {}) or
                 actors[seller].get('isPerson') is not True):

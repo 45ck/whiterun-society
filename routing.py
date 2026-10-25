@@ -1,4 +1,5 @@
 """Current executor capabilities, not a promise that every path is navigable."""
+from activity_leases import activity_conflict
 FIXED_RESIDENTS={108149,108186,108156}
 
 
@@ -20,7 +21,8 @@ def dynamic_route(first,second):
     return first not in FIXED_RESIDENTS or second not in FIXED_RESIDENTS
 
 
-def route_available(observation,first,second):
+def route_available(observation,first,second,state=None):
+    if activity_conflict(state,actors=(first,second),targets=(second,),observation=observation):return False
     actors={a['id']:a for a in observation.get('residents',[])}
     if first==second or first not in actors or second not in actors:return False
     if any(activity_blocker(actors[key]) for key in (first,second)):return False

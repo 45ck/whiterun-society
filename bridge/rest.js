@@ -1,11 +1,11 @@
 // Authored breaks at existing unowned benches inspected in Skyrim.esm.
 // No teleport, inventory mutation, forced animation, or sleep claim.
-function createRestController(platform,now=Date.now,catalog){
+function createRestController(platform,now=Date.now,catalog,options={}){
  const configure=typeof configuredVenueCatalog==='function'?configuredVenueCatalog:require('./places.js').configuredVenueCatalog;
  const observeSpace=typeof venueSpace==='function'?venueSpace:require('./places.js').venueSpace;
  const configured=configure(catalog),sites= configured.venues.filter(v=>v.kind==='rest_bench'),seats=sites.map(v=>v.id);
  const makeRouter=typeof createPapyrusRouterController==='function'?createPapyrusRouterController:require('./papyrus-router.js').createPapyrusRouterController;
- const router=makeRouter(platform,now,{file:'WhiterunRest.esp',furniture:true});
+ const router=makeRouter(platform,now,{file:options.router?.file||'WhiterunRest.esp',offset:options.router?.offset||0,furniture:true});
  let active=null;
  const position=a=>[a.getPositionX(),a.getPositionY(),a.getPositionZ()];
  const getSeat=id=>platform().ObjectReference?.from(platform().Game.getFormEx(id));
@@ -15,8 +15,23 @@ function createRestController(platform,now=Date.now,catalog){
   }catch(_){return 'unknown';}
  };
  return {
+  available(){return router.available();},
+  released(){
+   const sp=platform(),get=id=>sp.Game.getFormFromFile?.(id+(options.router?.offset||0),options.router?.file||'WhiterunRest.esp');
+   const quest=sp.Quest?.from(get(0x800)),pkg=get(0x801),list=sp.FormList?.from(get(0x802));
+   if(!quest||!pkg||!list||quest.isRunning())return false;
+   if(list.getSize()===0)return true;
+   if(list.getSize()!==1)return false;
+   const actor=sp.Actor.from(list.getAt(0));
+   return !!actor?.is3DLoaded()&&actor.getCurrentPackage()?.getFormID()!==pkg.getFormID();
+  },
   reset(){active=null;router.reset();},
   release(){if(typeof platform().Game.getFormFromFile==='function')router.release();},
+  cancel(command,error='Rest assignment cancelled'){
+   if(!active)active={id:command.id,actor:command.actor,target:command.target,rested_minutes:0,seated_samples:0};
+   active.outcome='held';active.error=error;active.phase='releasing';active.releaseAt=now();
+   this.release();
+  },
   status(){return active?{...active,route:router.status()}:null;},
   sense(residents){
    const sp=platform(),sites=[],sensors={};
@@ -39,22 +54,32 @@ function createRestController(platform,now=Date.now,catalog){
    return {available:router.available(),sites,sensors,activity:this.status()};
   },
   step(command){
-   if(active?.id===command.id&&['applied','held'].includes(active.phase))return {done:true,ack:{id:command.id,status:active.phase,error:active.error,rest:this.status()}};
+   if(active?.id===command.id&&['applied','held'].includes(active.phase)){
+    if(active.release_verified)return {done:true,ack:{id:command.id,status:active.phase,error:active.error,rest:this.status()}};
+    // A failed release remains a held job. Keep observing release so the slot
+    // can eventually be reclaimed without converting the failure into rest.
+    active.outcome='held';active.phase='releasing';this.release();
+   }
    const sp=platform(),actor=sp.Actor.from(sp.Game.getFormEx(command.actor)),seat=getSeat(command.target);
    const end=(outcome,error)=>{if(!active)active={id:command.id,actor:command.actor,target:command.target,rested_minutes:0,seated_samples:0};
     active.outcome=outcome;active.error=error;active.phase='releasing';active.releaseAt=now();router.release();return {done:false};};
    if(active?.phase==='releasing'){
     const packageId=actor?.getCurrentPackage()?.getFormID();
-    const expected=router.status()?.expectedPackage;
+    const expected=router.status()?.expectedPackage||sp.Game.getFormFromFile?.(0x801+(options.router?.offset||0),options.router?.file||'WhiterunRest.esp')?.getFormID();
     const owned=expected&&packageId===expected;
-    if(owned&&now()-active.releaseAt<10000)return {done:false};
-    active.release_verified=!!actor&&!owned;
+    const quest=sp.Quest?.from(sp.Game.getFormFromFile?.(0x800+(options.router?.offset||0),options.router?.file||'WhiterunRest.esp'));
+    const released=!!actor?.is3DLoaded()&&!!quest&&!quest.isRunning()&&!owned;
+    if(!released&&now()-active.releaseAt<10000)return {done:false};
+    active.release_verified=released;
     router.observeRelease(!!owned);
-    active.phase=owned?'held':active.outcome;
-    return {done:true,ack:{id:command.id,status:owned?'held':active.outcome,error:active.error,rest:this.status()}};
+    active.phase=released?active.outcome:'held';
+    if(!released)active.outcome='held';
+    return {done:true,ack:{id:command.id,status:active.phase,error:active.error,rest:this.status()}};
    }
    if(command.kind!=='rest_at_bench'||command.rest_minutes!==30||!seats.includes(command.target)||command.actor===command.target)
     return end('held','Invalid bounded rest contract');
+   if(command.actor_base_id!==undefined&&(actor?.getActorBase?.()||actor?.getBaseObject?.())?.getFormID()!==command.actor_base_id)
+    return end('held','Rest actor base identity changed');
    if(!actor||!seat||!actor.is3DLoaded()||!seat.is3DLoaded()||actor.isDead()||actor.isChild()||typeof actor.getSitState!=='function'||typeof actor.getFurnitureReference!=='function')
     return end('held','Loaded adult, bench and sitting sensor required');
    if(seat.getFormID()!==command.target||seat.isDisabled?.()===true||['owned','unknown'].includes(ownership(seat)))return end('held','Registered unowned bench required');

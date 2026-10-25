@@ -13,6 +13,7 @@ from inference_receipts import usage_receipt
 from dialogue_context import time_context
 from goal_opportunities import purposeful_options,pending_goal_review,queue_goal_review
 from context_window import bounded_goal_context,expanded_goal_actions
+from activity_leases import reserved_activity_actors,reserved_activity_targets,routine_actors
 
 ACTIVE=('complete','held')
 POLICY_PATH=Path(__file__).parent/'config/resident-goals.json'
@@ -73,8 +74,8 @@ def model_name(result):
 def provenance(model):
     return 'test_fixture' if model.startswith(('test','deterministic-integration-fixture')) else 'unrecorded' if model=='unrecorded' else 'model_decision'
 
-def occupied(state):
-    ids=set()
+def occupied(state,observation=None):
+    ids=reserved_activity_actors(state,observation)|routine_actors(state)
     plans=state.get('plans',[])
     for item in ([plans[-1]] if plans else [])+[state.get('conversation') or {}]:
         if item and (item.get('phase') not in ACTIVE or item.get('release_required')):
@@ -83,11 +84,11 @@ def occupied(state):
     if batch and batch.get('phase') not in ACTIVE:ids.update(m['actor'] for m in batch['members'])
     return ids
 
-def destinations(observation,actor,policy=None):
+def destinations(observation,actor,policy=None,state=None):
     policy=load_policy() if policy is None else policy
     rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     row=rows.get(actor)
-    if not row or activity_blocker(row):return []
+    if not row or activity_blocker(row) or actor in reserved_activity_actors(state,observation):return []
     sites=[]
     for site in observation.get('places',[]):
         if site.get('available') is True and actor in site.get('eligible_actors',[]):
@@ -97,7 +98,9 @@ def destinations(observation,actor,policy=None):
         if site.get('loaded') is True:
             sites.append({'id':site['id'],'name':site['name'],'position':site.get('position'),'space':site.get('space'),'kind':'bench_area'})
     result=[]
+    reserved=reserved_activity_targets(state,observation)
     for site in sites:
+        if site.get('id') in reserved:continue
         try:gap=math.dist([row[k] for k in ('x','y','z')],site['position'])
         except (TypeError,ValueError,KeyError):continue
         if same_space(row.get('space'),site.get('space')) is False:continue
@@ -118,7 +121,7 @@ def goal_context(state,observation,actor,policy=None,opportunity_policy=None,*,b
         'activity':{k:copy.deepcopy(row['activity'].get(k)) for k in ('package_id','scene_id','in_combat','sleep_state')} if isinstance(row.get('activity'),dict) else None,
         'outdoors':row.get('outdoors') if type(row.get('outdoors')) is bool else None,
         'source':'Current native observation of this resident only. Package IDs do not establish work, intentions or perceived events.'}
-    sites=destinations(observation,actor,policy)
+    sites=destinations(observation,actor,policy,state)
     options=[{'id':'quiet','effect':'Stay here for a quiet interval. No rest recovery, work, food or social benefit is implied.'}]
     options += [{'id':'visit_'+str(s['id']),'effect':f"Walk to {s['name']} ({s['distance']} game units), a public location. "+
                 ('Look for a place to take a break; sitting and recovery need a later decision.' if s['kind']=='bench_area' else 'Look for opportunities there; no supplier, purchase or conversation is guaranteed.')} for s in sites]
@@ -156,7 +159,7 @@ class ResidentGoals:
         if event_id in town.get('goal_claim_ids',[]):return {'duplicate':True,'retired':True}
         if any(w['phase']=='thinking' for w in waves):raise ValueError('A personal-goal wave is already claimed')
         day=native_day(observation);policy=load_policy()
-        busy=occupied(self.active);eligible=[]
+        busy=occupied(self.active,observation);eligible=[]
         for r in observation.get('residents',[]):
             key=str(r['id']);person=self.active['people'].get(key)
             if key not in control['assignments'] or not person or r.get('isPerson') is not True or r['id'] in busy or activity_blocker(r):continue
@@ -182,7 +185,7 @@ class ResidentGoals:
         if not isinstance(results,list) or not all(isinstance(r,dict) and type(r.get('actor')) is int for r in results) or len(results)!=len(wave['members']) or {r['actor'] for r in results}!={m['actor'] for m in wave['members']}:raise ValueError('Goal results must cover the claimed residents exactly')
         policy=validate_policy(wave['policy']);now=time.time()
         state=copy.deepcopy(self.active)
-        rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True};busy=occupied(state);day=native_day(observation)
+        rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True};busy=occupied(state,observation);day=native_day(observation)
         if day<wave['day']:raise ValueError('Native time moved backwards within the goal claim')
         receipts=[]
         for member in wave['members']:
@@ -245,7 +248,7 @@ class ResidentGoals:
         native={a['actor']:a for a in (observation.get('resident_control') or {}).get('activities',[])}
         rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
         sites={s['id']:s for s in observation.get('places',[])+(observation.get('rest') or {}).get('sites',[]) if s.get('available') is True or s.get('loaded') is True}
-        completed=[];busy=occupied(self.active);reviewed=[]
+        completed=[];busy=occupied(self.active,observation);reviewed=[]
         queue={e['id']:e for e in town.get('daily',{}).get('queue',[])}
         for key,person in self.active['people'].items():
             goal=person.get('standing_goal') or {};a=native.get(int(key)) or {}

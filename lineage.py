@@ -28,11 +28,13 @@ from resident_control import ResidentControl
 from trade_consent import reserved_sale_consent
 from owner_production import OwnerProduction
 from resident_goals import ResidentGoals
+from activity_jobs import ActivityJobs
+from activity_leases import activity_conflict
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -103,6 +105,11 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 self.error = 'Game could not bind the prepared checkpoint'
             return
         if self.error or not self.active:
+            return
+        # Long activities tick independently in the bridge. Persist their receipts
+        # only between foreground inventory effects; these remain serialized.
+        foreground_command = self.speech_command(self.session) or self.agency_command(self.session)
+        if not self.active['pending'] and not foreground_command and self.observe_activity_jobs(observation):
             return
         if self.observe_routines(observation):
             return
@@ -200,6 +207,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 return old
         if self.active['pending']:
             raise ValueError('An unsettled trade must be reconciled first')
+        if activity_conflict(self.active, actors=(buyer, seller), observation=observation):
+            raise ValueError('A trade participant owns an independent activity lease')
         before = snapshot(observation, buyer, seller,commodity)
         cost = quantity * unit_price
         if before['buyer']['gold'] < cost or before['seller'][commodity] < quantity:
@@ -233,7 +242,12 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
-        return self.speech_command(session) or self.agency_command(session)
+        foreground_command = self.speech_command(session) or self.agency_command(session)
+        if foreground_command:return foreground_command
+        activity_command = self.activity_pending_command()
+        if activity_command:
+            return {**activity_command, 'checkpoint': self.marker}
+        return None
 
     def state(self):
         if not self.active:
@@ -244,6 +258,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                'activity_jobs': self.activity_status(),
                 'scene_handoffs':self.active.get('scene_handoffs',[]) if self.active else [],
                 'metrics':simulation_metrics(self.active),
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),

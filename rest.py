@@ -2,11 +2,19 @@
 import copy
 import math
 from places import catalogued_site, venue_distance
+from activity_leases import activity_leases, reserved_activity_actors, reserved_activity_targets
 
 FATIGUE_PER_GAME_HOUR = .025
 
 
 def rest_opportunities(state, observation, actor):
+    if actor in reserved_activity_actors(state, observation):return []
+    capability = observation.get('activity_jobs') or {}
+    if capability.get('available') is True:
+        slots = {job.get('slot') for job in [*activity_leases(state), *capability.get('jobs', []), *capability.get('receipts', [])]
+                 if type(job.get('slot')) is int}
+        if len(slots) >= capability.get('capacity', 0):return []
+    reserved_targets = reserved_activity_targets(state, observation)
     sensor=(observation.get('rest') or {})
     senses=sensor.get('sensors',{}).get(str(actor),{})
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
@@ -14,6 +22,7 @@ def rest_opportunities(state, observation, actor):
         return []
     result=[]
     for site in sensor.get('sites',[]):
+        if site.get('id') in reserved_targets:continue
         venue=catalogued_site(site,'rest_bench')
         if venue is None or site.get('loaded') is not True or site.get('occupancy_known') is not True:
             continue
@@ -26,6 +35,8 @@ def rest_opportunities(state, observation, actor):
 
 class Rest:
     def plan_rest(self, observation, plan):
+        if (observation.get('activity_jobs') or {}).get('available') is True:
+            return self.delegate_rest(plan, observation)
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase']!='ready_to_rest':
             raise ValueError('Rest requires a current resident decision')

@@ -7,6 +7,14 @@ function directorLabel(director){
  return 'Paused';
 }
 // Operator charts. No chart value enters a resident's private decision context.
+function activityJobLabel(job){
+ const native=job.native_phase;
+ if(job.orphan)return 'Quarantined orphan · release only; no recovery';
+ if(job.saved_phase==='held')return 'Held'+(native==='releasing'?' · native release in progress':' · no recovery granted');
+ if(job.saved_phase==='complete')return 'Rest completed'+(job.receipt_acknowledged?'':' · receipt acknowledgement pending');
+ if(!job.native_observed)return job.saved_phase==='prepared'?'Awaiting native admission':'Native activity unmeasured';
+ return ({accepted:'Admitted · attendance not yet observed',travelling:'Travelling to selected seat',resting:'Seated attendance in progress',releasing:'Releasing native activity',applied:'Native result ready · settlement pending',held:'Native activity held · awaiting reconciliation'})[native]||'Native activity unmeasured';
+}
 function renderTownCharts(root,data){
  if(!root||!data)return;
  const signature=JSON.stringify(data);if(root.dataset.snapshot===signature)return;root.dataset.snapshot=signature;
@@ -48,6 +56,22 @@ function renderTownCharts(root,data){
   }
   add(sectionGoal,'p',`${a.claimed_decisions} decision requests claimed. Pending requests are not constant thinking.`,'town-chart-note');
   add(sectionGoal,'p',a.scope,'town-chart-note');
+ }
+ if(data.activity_jobs){const a=data.activity_jobs,panel=section('Concurrent activities'),phases=a.states||{};
+  metricTiles(panel,[[shown(a.background_active),'Observed background active'],[shown(a.foreground_active),'Foreground assignments'],[`${shown(a.leased_jobs)} / ${shown(a.capacity)}`,'Reserved native slots']]);
+  if(number(a.capacity)>0&&number(a.leased_jobs)>=a.capacity)add(panel,'p','No free background slot. New admission waits for verified release and receipt acknowledgement.','town-chart-note');
+  add(panel,'p',['travelling','resting','releasing','held'].map(phase=>`${phase}: ${a.fresh?shown(phases[phase]):'—'}`).join(' · '),'town-chart-note');
+  add(panel,'p',`${shown(a.native_matched_jobs)} / ${shown(a.leased_jobs)} leases matched to current native observations · ${shown(phases.unmeasured)} unmeasured.`,'town-chart-note');
+  if(!a.fresh)add(panel,'p','Native activity telemetry unavailable or stale; current motion and attendance are unknown.','town-chart-note');
+  for(const job of a.jobs||[]){const row=add(panel,'div',undefined,'town-need');
+   add(row,'strong',job.actor_name||`Resident ${job.actor}`);add(row,'div',activityJobLabel(job),'town-chart-note');
+   if(number(job.rested_minutes)!==null)add(row,'div',`${shown(job.rested_minutes)} / ${shown(job.rest_minutes)} game min seated · ${shown(job.seated_samples)} samples`,'town-chart-note');
+  }
+  const evidence=detail('Activity admission and completion evidence');
+  metricTiles(evidence,[[shown(a.recorded_admissions),'Recorded admission acknowledgements'],[shown(a.verified_completions),'Verified completed rests'],[shown(a.retained_held),'Retained held jobs']]);
+  add(evidence,'p',`${shown(a.retained_jobs)} retained jobs · ${shown(a.admission_unknown)} admission histories unknown · ${shown(a.unmatched_native_jobs)} unmatched native jobs.`,'town-chart-note');
+  if(number(a.retained_orphans)>0)add(evidence,'p',`${a.retained_orphans} orphan records quarantined for release only; excluded from admissions and recovered rests.`,'town-chart-note');
+  add(evidence,'p',a.scope,'town-chart-note');
  }
  if(data.spatial){const s=data.spatial,current=s.current||{},movement=s.movement||{},coverage=s.coverage||{},space=section('Movement over time');
   metricTiles(space,[[shown(current.observed_moving),s.fresh?'Observed moving':'Moving · last sample'],[shown(current.travel_intentions),'Travel intentions']]);
@@ -170,4 +194,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel};
+if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel};

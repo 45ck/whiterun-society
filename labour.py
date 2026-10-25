@@ -17,7 +17,7 @@ def work_opportunities(state, observation, worker):
     opportunities = []
     for business_id, business in sorted(town.get('businesses', {}).items()):
         employer = business['custodian']
-        if business.get('active', True) is not True or 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer):
+        if business.get('active', True) is not True or 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer,state):
             continue
         stock = actors.get(employer, {}).get('inventory', {})
         if any(type(stock.get(k)) is not int or stock[k] < 0 for k in ('gold', 'bread', 'grain')):

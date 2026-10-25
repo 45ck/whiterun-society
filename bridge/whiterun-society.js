@@ -19,6 +19,8 @@ const sceneHandoffs=createSceneHandoffController(()=>sp);
 __PLACE_FACTORY__
 __REST_FACTORY__
 const rest=createRestController(()=>sp);
+__ACTIVITY_JOBS_FACTORY__
+const activityJobs=createActivityJobsController(()=>sp);
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
 __PARALLEL_ROUTINES_FACTORY__
@@ -83,7 +85,7 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
-  production.reset();rest.reset();parallelRoutines.reset();
+  activityJobs.reset();production.reset();rest.reset();parallelRoutines.reset();
   movement.reset();
   routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
@@ -157,7 +159,7 @@ function updateCamera(player) {
     const rows=[];
     for(const id of ids){const a=sp.Actor.from(sp.Game.getFormEx(id));if(a&&a.is3DLoaded())rows.push({id,x:a.getPositionX(),y:a.getPositionY(),z:a.getPositionZ(),heading:a.getAngleZ()});}
     const shot=rows.length===ids.length?movieFrame(rows,movieShot,typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null):null;
-    if(shot){if(shot.key!==movieShot?.key)cameraDirty=true;movieShot=shot;}
+    if(shot){if(shot.key!==movieShot?.key||shot.profile!==movieShot?.profile)cameraDirty=true;movieShot=shot;}
     if(!movieShot){cameraFraming={status:'waiting_for_activity',collision:'unverified'};cameraMode='story';cameraActor=0;}
     // Freeze the last composition when the encounter ends; do not chase a
     // departed speaker or start an unsolicited tour while the director is idle.
@@ -165,7 +167,8 @@ function updateCamera(player) {
     cameraMode=movieShot.kind==='pair'?'trade':'focus';cameraActor=lead||movieShot.ids[0];
     cameraFraming={profile:movieShot.profile,kind:movieShot.kind,subjects:movieShot.ids,
       status:shot?'following_activity':'holding_last_shot',distance:Math.hypot(offset[0],offset[1]),
-      elevation:offset[2],target,collision:'unverified'};}
+      elevation:offset[2],target,collision:movieShot.collision,geometry_query:movieShot.geometry_query,
+      occlusion_strategy:movieShot.occlusion_strategy};}
   }
   if(cameraMode==='atlas'){target=[control.panX,control.panY,-3320];offset=[0,0,18000];}
   if(cameraMode==='portrait'){
@@ -256,13 +259,37 @@ on('update', () => {
     }else mapProjection=null;
   }
   speech.tick();
+  // Long furniture attendance progresses even while a disjoint voice, meal,
+  // model decision or checkpoint occupies the foreground command channel.
+  residentControl.yieldActors(activityJobs.reservedActors());
+  activityJobs.tick(presentation.society?.activity_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error);
   if (pending) {
     const command = pending; pending = null;
     // Repeat only the recorded receipt, never an already executed effect.
     if(command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
     if (command.session === session && !completed.has(command.id)) {
       try {
-        if (command.kind === 'inventory_trade' || command.kind === 'inventory_consume') {
+        if(!['activity_start_rest','activity_ack_receipt'].includes(command.kind)){
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor)];
+          if(actors.some(id=>activityJobs.ownsActor(id))||activityJobs.ownsTarget(command.target))throw new Error('Background activity owns a command participant or furniture');
+        }
+        if(command.kind==='activity_start_rest'||command.kind==='activity_ack_receipt'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Activity checkpoint mismatch');
+          const blocked=[];
+          if(command.kind==='activity_start_rest'){
+            const attendance=conversationAttendance.status(),foregroundRest=rest.status(),work=production.status(),travel=movementSource?.status();
+            for(const participant of attendance?.participants||[])if(!participant.released)blocked.push(participant.actor);
+            if(foregroundRest&&(!['applied','held'].includes(foregroundRest.phase)||!foregroundRest.release_verified))blocked.push(foregroundRest.actor);
+            if(work&&!['complete','held'].includes(work.phase))blocked.push(work.actor);
+            if(travel&&!['applied','held','released'].includes(travel.phase))blocked.push(travel.actor,travel.target);
+            if(['starting','playing'].includes(speech.status()?.status))for(const participant of speech.status()?.facing||[])blocked.push(participant.actor);
+            if(parallelRoutines.ownsActor(command.actor))blocked.push(command.actor);
+          }
+          const result=command.kind==='activity_start_rest'?activityJobs.start(command,blocked):activityJobs.acknowledge(command);
+          ack=result.ack;completed.set(command.id,JSON.parse(JSON.stringify(ack)));
+          residentControl.yieldActors(activityJobs.reservedActors());
+        }
+        else if (command.kind === 'inventory_trade' || command.kind === 'inventory_consume') {
           if (!Number.isInteger(command.checkpoint) || checkpointValue()!==command.checkpoint) throw new Error('Trade checkpoint mismatch');
           const result=command.kind==='inventory_consume'?transfers.consume(command):transfers.step(command);
           if (!result.done) pending=command;
@@ -352,7 +379,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
+        if (!['activity_start_rest','activity_ack_receipt','scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
     }
   }
@@ -489,11 +516,13 @@ on('update', () => {
   if(chat&&!['complete','held'].includes(chat.phase))for(const id of chat.speakers||[])foreground.add(id);
   if(batch&&!['complete','held'].includes(batch.phase))for(const m of batch.members||[])foreground.add(m.actor);
   const controlFresh=Date.now()-lastPresentationAt<10000&&!societyState?.error;
+  const activityReserved=activityJobs.reservedActors(),savedControl=societyState?.town?.resident_control;
+  const effectiveControl=savedControl?{...savedControl,assignments:Object.fromEntries(Object.entries(savedControl.assignments||{}).filter(([,row])=>!activityReserved.includes(row.actor)))}:savedControl;
   const publicPlaces=routines.places(residents),restObservation=rest.sense(residents);
   // A checkpoint transition pauses new bindings; it must not release every
   // standing task while a disjoint conversation commits a memory.
   if(!controlFresh||(!societyState?.transition&&societyState?.checkpoint===checkpointValue()))
-    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],plan);
+    residentControl.tick(effectiveControl,residents,controlFresh,[...foreground,...activityReserved],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],plan);
   else residentControl.renew(residents,controlFresh);
   const observation = {
     director_control:directorControl,
@@ -503,6 +532,7 @@ on('update', () => {
       activate:controlEnabled('isActivateControlsEnabled')},
     transport:{cadence_ms:cadence,previous_request_interval_ms:lastSent?Date.now()-lastSent:null},
     resident_control:residentControl.status(),
+    activity_jobs:activityJobs.status(),
     ui_health:uiHealth?{...uiHealth,native:{button_events:nativeButtonEvents,last_control_key:lastNativeControlKey,focus_ready:browserFocusReady===true,focus_requested:cursor,browser_wanted_focus:typeof sp.browser?.isFocused==='function'?sp.browser.isFocused():null}}:null,audio_output:audioOutput,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,framing:cameraFraming,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),

@@ -5,9 +5,11 @@ import time
 from enterprises import production_policy
 from routing import activity_blocker
 from entrepreneurship import learn_bread_recipe
+from activity_leases import activity_conflict
 
 
 def owner_work_opportunities(state, observation, actor, *, require_owned=True):
+    if activity_conflict(state,actors=(actor,),observation=observation):return []
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
     if not resident or activity_blocker(resident):return []
     inventory=resident.get('inventory',{})
@@ -35,6 +37,8 @@ class OwnerProduction:
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase']!='ready_to_self_work':
             raise ValueError('Owner production requires a current resident decision')
+        if activity_conflict(self.active,actors=(plan['actor'],),observation=observation):
+            raise ValueError('An independent activity owns the producing resident')
         terms=plan['own_work_terms']
         if terms not in owner_work_opportunities(self.active,observation,plan['actor'],require_owned=False):
             raise ValueError('Owner production opportunity changed')

@@ -1,10 +1,12 @@
 """Operator-wide town charts from observations, never resident knowledge."""
 import math
+from activity_metrics import activity_metrics
 
 
 def town_dashboard(society, observation, spatial=None):
     people=society.get('people',{});managed=(society.get('town') or {}).get('residents',{})
     loaded={str(r['id']):r for r in observation.get('residents',[]) if r.get('isPerson') is True}
+    activities=activity_metrics(society,observation)
     owned=set()
     def leases(value):
         if isinstance(value,dict):
@@ -15,6 +17,15 @@ def town_dashboard(society, observation, spatial=None):
         elif isinstance(value,list):
             for child in value:leases(child)
     for key in ('movement','parallel_routines','conversationAttendance','rest','productionWork'):leases(observation.get(key))
+    observed_jobs={(job['id'],job['actor'],job['target'],job['slot']) for job in activities['jobs'] if job['native_observed']}
+    for job in (observation.get('activity_jobs') or {}).get('jobs',[]):
+        identity=(job.get('job_id',job.get('id')),job.get('actor'),job.get('target'),job.get('slot'))
+        rest=job.get('rest') or {};route=rest.get('route') or {}
+        if (identity in observed_jobs and rest.get('id')==identity[0]
+                and type(rest.get('actor')) is int and rest['actor']==job.get('actor')
+                and type(rest.get('target')) is int and rest['target']==job.get('target')
+                and type(route.get('actor')) is int and route['actor']==job.get('actor')):
+            leases(route)
     standby=set()
     for a in (observation.get('resident_control') or {}).get('activities',[]):
         actor=str(a.get('actor'));row=loaded.get(actor);package=a.get('expectedPackage')
@@ -48,6 +59,7 @@ def town_dashboard(society, observation, spatial=None):
     metrics=society.get('metrics') or {}
     return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,'autonomy':autonomy,
         'spatial':spatial,'agency':metrics.get('agency'),'economic_network':metrics.get('economic_network'),
+        'activity_jobs':activities,
         'drama':metrics.get('drama'),'quality_goals':metrics.get('quality_goals'),
         'control_scope':'Current observed package ownership, not long-term autonomy or quest compatibility.',
         'stock':stock,'needs':needs,'needs_scope':'Authored simulation needs, not measured human psychology.',

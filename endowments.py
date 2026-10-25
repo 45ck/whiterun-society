@@ -5,6 +5,7 @@ capacity; only observed native delivery spends it. Loading follows the saved
 checkpoint, including unfinished delivery, rather than minting another grant.
 """
 import copy
+from activity_leases import activity_conflict
 
 ITEMS=('gold','bread','grain')
 SOURCE='founding-resources-v1'
@@ -31,6 +32,8 @@ class Endowments:
         program=town.get('resource_program')
         if program and str(actor) in program['grants']:
             return {'duplicate':True,'grant':program['grants'][str(actor)]}
+        if activity_conflict(self.active,actors=(actor,),observation=observation):
+            raise ValueError('An independent activity owns the resource recipient')
         before=inventory(observation,actor)
         # Authored, explicit scenario capital. Family size and wealth are not
         # inferred from appearance; business assets share their owner's purse.

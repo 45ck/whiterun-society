@@ -25,6 +25,7 @@ from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_
 from entrepreneurship import enterprise_choices, apply_resident_enterprise, knows_bread_recipe
 from context_window import bounded_economic_context
 from trade_memory import remember_refusal_decision
+from activity_leases import reserved_activity_actors
 
 TERMINAL = ('complete', 'held')
 
@@ -48,7 +49,7 @@ class Agency:
 
     def agency_busy(self):
         plan = self.agency_plan()
-        return bool(plan and (plan['phase'] not in TERMINAL or plan.get('release_required')))
+        return bool(plan and (plan['phase'] not in (*TERMINAL, 'delegated') or plan.get('release_required')))
 
     def _agency_guard(self, observation, allow_routines=False):
         if not allow_routines and self.routines_busy():
@@ -73,6 +74,8 @@ class Agency:
                 if plan['actor'] != actor or plan['kind'] != kind or plan.get('voiced_trade',False)!=voiced_trade or plan.get('natural_trade',False)!=natural_trade:
                     raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
+        if actor in reserved_activity_actors(self.active, observation):
+            raise ValueError('Resident owns an independent activity lease')
         native=next((r for r in observation.get('residents',[]) if r['id']==actor),None)
         if native and activity_blocker(native):raise ValueError('Resident currently occupied: '+activity_blocker(native))
         scenario=self.active.get('market_day')
@@ -150,7 +153,7 @@ class Agency:
         wage, minutes = policy['wage_gold'], policy['work_minutes']
         def visits():
             if self.active.get('town') is None:
-                rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156) else []
+                rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156,state=self.active) else []
             else:
                 rows=[{**r,'action':'visit_person_'+str(r['id'])} for r in social_candidates(self.active,observation,actor)]
             for row in rows:
@@ -446,7 +449,7 @@ class Agency:
     def hold_plan(self, event_id, reason, observation):
         self._agency_guard(observation)
         plan = self.agency_plan()
-        if not plan or plan['id'] != event_id or plan['phase'] in TERMINAL:
+        if not plan or plan['id'] != event_id or plan['phase'] in (*TERMINAL, 'delegated'):
             raise ValueError('No active matching plan')
         state = copy.deepcopy(self.active)
         state['plans'][-1].update(phase='held', error=str(reason)[:240])
@@ -501,7 +504,7 @@ class Agency:
                     person['agency']['next_review_day']=day+minutes/1440
             self._write(state,'resident remembers the observed plan outcome')
             return
-        if not plan or plan['phase'] in TERMINAL:
+        if not plan or plan['phase'] in (*TERMINAL, 'delegated'):
             return
         if self.observe_trade_speech(observation):return
         if plan['phase'] == 'thinking' and plan['claim']['context']['session'] != self.session:

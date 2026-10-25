@@ -5,6 +5,7 @@ ESS/cosave exist and the native save request has completed. Restoration requires
 both original file hashes and a fresh game session before comparing state.
 """
 import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -18,7 +19,7 @@ def plugin_manifest(root):
     profile=root/'mod-organizer/profiles/Default/plugins.txt'
     if not profile.is_file():raise ValueError('Managed plugin list is unavailable')
     result=[]
-    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp','whiterunlanes.esp','whiteruncitizens.esp'}
+    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp','whiterunlanes.esp','whiteruncitizens.esp','whiterunactivities.esp'}
     for line in profile.read_text(encoding='utf-8-sig').splitlines():
         if not line.startswith('*'):continue
         name=line[1:]
@@ -33,7 +34,8 @@ def plugin_manifest(root):
 
 def plugins_compatible(expected, actual, addition=None):
     if expected==actual:return True
-    return (addition in ('WhiterunLanes.esp','WhiterunCitizens.esp') and len(actual)==len(expected)+1 and actual[:-1]==expected
+    return (addition in ('WhiterunLanes.esp','WhiterunCitizens.esp','WhiterunActivities.esp') and len(actual)==len(expected)+1 and actual[:-1]==expected
+            and not any(row.get('name','').lower()==addition.lower() for row in expected)
             and actual[-1].get('name')==addition and bool(actual[-1].get('sha256')))
 
 
@@ -50,6 +52,7 @@ def snapshot(state, inventory_ids=None):
             'market_day': state['society'].get('market_day'),
             'conversation': state['society'].get('conversation'),
             'routine_batch': state['society'].get('routine_batch'),
+            'activity_jobs': copy.deepcopy(state['society'].get('activity_jobs')),
             'scene_handoffs': state['society'].get('scene_handoffs',[]),
             'town':state['society'].get('town'),
             'inventory': {str(a['id']): a['inventory']
@@ -66,12 +69,41 @@ def snapshot(state, inventory_ids=None):
     return result
 
 
+def compare_snapshot(expected, actual):
+    """Older proofs compare their recorded fields, never a fabricated new baseline."""
+    return {key: key in actual and actual[key] == value for key, value in expected.items()}
+
+
+def require_settled_activities(state):
+    """A terminal phase alone does not prove native lease release and receipt ack."""
+    projection = state['society'].get('activity_jobs')
+    native = state['bridge']['observation'].get('activity_jobs')
+    for value in (projection, native):
+        if value is None:
+            continue  # Pre-activity services/proofs have no independent activity capability.
+        if not isinstance(value, dict) or not isinstance(value.get('jobs', []), list):
+            raise ValueError('Independent activity lease projection is invalid')
+        if value.get('jobs'):
+            raise ValueError('This probe requires all independent activity leases to settle and be acknowledged')
+    if native is not None:
+        receipts = native.get('receipts', [])
+        if not isinstance(receipts, list) or receipts:
+            raise ValueError('This probe requires native activity receipts to be acknowledged and released')
+    if projection is not None:
+        history = projection.get('history', [])
+        if not isinstance(history, list) or any(not isinstance(job, dict) or
+                job.get('receipt_acknowledged') is not True or
+                (job.get('release_verified') is not True and job.get('no_effects_issued') is not True)
+                for job in history):
+            raise ValueError('Independent activity history lacks verified release or acknowledgement')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--name', required=True)
     parser.add_argument('--restore', action='store_true')
-    parser.add_argument('--allow-added-plugin',choices=('WhiterunLanes.esp','WhiterunCitizens.esp'))
+    parser.add_argument('--allow-added-plugin',choices=('WhiterunLanes.esp','WhiterunCitizens.esp','WhiterunActivities.esp'))
     args = parser.parse_args()
     if not re.fullmatch(r'WS-[A-Za-z0-9_-]{1,48}', args.name):
         raise ValueError('Use an isolated WS- save name')
@@ -107,6 +139,7 @@ def main():
         raise TimeoutError('Fresh stable game state did not match the expected save')
 
     before = wait(lambda s: True,allow_uninitialized=args.restore)
+    require_settled_activities(before)
     if args.restore:
         evidence = json.loads(evidence_path.read_text())
         current_plugins=plugin_manifest(args.root)
@@ -118,8 +151,9 @@ def main():
         request('/command', {'kind': 'load_game', 'name': args.name})
         restored = wait(lambda s: s['bridge']['session'] != before['bridge']['session']
                         and s['society']['checkpoint'] == evidence['expected']['checkpoint'])
+        require_settled_activities(restored)
         actual = snapshot(restored,evidence['expected']['inventory'])
-        comparison = {key: actual[key] == value for key, value in evidence['expected'].items()}
+        comparison = compare_snapshot(evidence['expected'], actual)
         evidence.setdefault('restores', []).append({'at': time.time(),'plugins':current_plugins,'allowed_addition':args.allow_added_plugin,
             'fresh_session': True, 'matches': comparison, 'actual': actual})
         evidence_path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
@@ -149,7 +183,9 @@ def main():
     time.sleep(1)
     if sizes != [file.stat().st_size for file in files]:
         raise ValueError('Save files are still changing; evidence not recorded')
-    observed_after_save=snapshot(wait(lambda s: True),expected['inventory'])
+    after_save=wait(lambda s: True)
+    require_settled_activities(after_save)
+    observed_after_save=snapshot(after_save,expected['inventory'])
     if plugin_manifest(args.root)!=plugins:
         raise ValueError('Enabled plugin configuration changed while saving; evidence not recorded')
     if observed_after_save != expected:
@@ -158,7 +194,8 @@ def main():
             'expected':expected,'observed_after_save':observed_after_save}
         (runtime/(args.name+'-save-rejected.json')).write_text(json.dumps(failure,indent=2),encoding='utf-8')
         raise ValueError('Society changed while saving; evidence not recorded')
-    evidence = {'name': args.name, 'scope': 'Settled plan, people, inventory and journal; not long-term stability',
+    evidence = {'name': args.name, 'schema_version': 2,
+        'scope': 'Settled plan, people, inventory, journal and independent activity epoch/history; not active-job recovery or long-term stability',
         'expected': expected, 'plugins':plugins, 'recorded_at': time.time(), 'files': {
             file.name: {'bytes': file.stat().st_size, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest()}
             for file in files}}

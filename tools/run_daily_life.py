@@ -27,13 +27,15 @@ from tools.checkpoint_http import CheckpointHTTP
 from tools.goal_scheduler import GoalScheduler
 from director_policy import load_run_policy, resolve_run_policy
 from dispatch_policy import fair_pending, can_insert_social, dispatch_metrics
+from tools.run_resident_event import delegated_activity_admission,activity_job_records
+from activity_leases import reserved_activity_actors
 
 
 def routine_dispatch_prefix(state,observation,events):
     """Batch only the consecutive journeys at the front of the fair queue."""
-    result=[]
+    result=[];leased=reserved_activity_actors(state,observation)
     for event in events:
-        if event.get('goal_followups') or not select_routine_events(state,observation,[event],1):break
+        if event.get('actor') in leased or event.get('goal_followups') or not select_routine_events(state,observation,[event],1):break
         result.append(event)
     return result
 
@@ -41,12 +43,35 @@ def routine_dispatch_prefix(state,observation,events):
 def event_available(state,event):
     """Recheck queued work after every previous resident's consequences."""
     society=state['society'];observation=state['bridge']['observation']
+    leased=reserved_activity_actors(society,observation)
     if event['kind']=='social_opportunity':
-        return any(social_candidates(society,observation,int(key)) for key in society['town']['residents'])
+        return any(any(candidate['id'] not in leased for candidate in social_candidates(society,observation,int(key)))
+                   for key in society['town']['residents'] if int(key) not in leased)
+    if event.get('actor') in leased:return False
     current=next((e for e in society['town']['daily']['queue'] if e['id']==event['id']),None)
     if not current or current['status']!='pending':return False
     if not any(r['id']==event['actor'] and r.get('isPerson') is True and not activity_blocker(r) for r in observation['residents']):return False
-    return event['kind']!='social_review' or bool(social_candidates(society,observation,event['actor']))
+    return event['kind']!='social_review' or any(candidate['id'] not in leased for candidate in social_candidates(society,observation,event['actor']))
+
+
+def observe_delegated_completions(evidence,state):
+    """Record later verified receipts without relabelling an admission as work."""
+    jobs=activity_job_records(state['society'])
+    session=state['bridge'].get('session')
+    for event in evidence.get('events',[]):
+        job=jobs.get(event.get('activity_job_id'))
+        if not job or job.get('source_plan')!=event['id'] or job.get('actor')!=event.get('actor') or job.get('session')!=session:continue
+        event['activity_observed_phase']=job.get('phase')
+        if job.get('phase')=='complete' and job.get('release_verified') is True and job.get('receipt_hash'):
+            event.update(completion_confirmed=True,activity_outcome=job.get('outcome'))
+
+
+def event_counts(events):
+    return {'attempted_events':len(events),
+            'independent_activity_admissions':sum(e.get('admission_verified') is True for e in events),
+            'confirmed_completions':sum(e.get('status')=='complete' or e.get('completion_confirmed') is True for e in events),
+            'admitted_activities_without_confirmed_completion':sum(e.get('admission_verified') is True and e.get('completion_confirmed') is not True for e in events),
+            'held_workers':sum(e.get('status')=='held' for e in events)}
 
 
 def isolated_before_action(state, event):
@@ -157,7 +182,9 @@ def main():
               'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events+(run_policy['goal_budget'] if args.resident_goals else 0),'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
-    def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+    def record():
+        evidence['event_counts']=event_counts(evidence['events'])
+        output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     record();deadline=time.monotonic()+args.watch_seconds;first=True
     goals=GoalScheduler(args.root,args.model_config,session,evidence,record,budget=run_policy['goal_budget'],
                         interval=run_policy['goal_review_seconds']) if args.resident_goals else None
@@ -279,7 +306,19 @@ def main():
                     time.sleep(.4);current=fresh()
                     if current['bridge']['session']!=session:raise ValueError('Session changed while settling worker checkpoint')
                 if current['society']['transition']:raise TimeoutError('Resident worker checkpoint did not settle')
+                observe_delegated_completions(evidence,current)
                 plan=current['society']['conversation'] if social else current['society']['plan']
+                if not social and plan and plan.get('id')==event['id'] and plan.get('activity_job') and plan.get('phase') in ('delegated','complete'):
+                    admission=delegated_activity_admission(current,event['id'],event['actor'],session)
+                    worker_file=runtime/('resident-event-'+hashlib.sha256(event['id'].encode()).hexdigest()[:12]+'.json')
+                    worker=json.loads(worker_file.read_text(encoding='utf-8'))
+                    if (result.returncode or not admission or worker.get('event_id')!=event['id'] or worker.get('status') not in ('delegated','complete')
+                            or worker.get('activity_job_id')!=admission['activity_job_id'] or worker.get('admission_verified') is not True
+                            or worker.get('before',{}).get('bridge',{}).get('session')!=session):
+                        raise ValueError('Independent activity admission was not verified by the resident worker')
+                    evidence['events'][-1].update(status=worker['status'],outcome='independent_activity_admitted' if worker['status']=='delegated' else plan.get('outcome'),
+                        model_calls=worker['model_calls'],continued_other_residents=True,**admission)
+                    record();continue
                 if not social and plan and plan.get('effect_free_hold'):
                     settle_until=time.monotonic()+30
                     while not isolated_before_action(current,event) and time.monotonic()<settle_until:
@@ -322,7 +361,8 @@ def main():
             if args.max_events and len(evidence['events'])>=args.max_events:break
             if time.monotonic()<deadline:time.sleep(min(2,max(.01,deadline-time.monotonic())))
         if goals:goals.drain()
-        evidence.update(status='stopped' if stopping() else 'complete',after=fresh());record()
+        after=fresh();observe_delegated_completions(evidence,after)
+        evidence.update(status='stopped' if stopping() else 'complete',after=after);record()
         print(json.dumps({'status':'complete','reviews':len(evidence['reviews']),'events':evidence['events'],'evidence':str(output)}))
     except Exception as error:
         evidence.update(status='held',error=str(error));record();raise

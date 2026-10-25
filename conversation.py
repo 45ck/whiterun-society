@@ -14,7 +14,7 @@ from routing import dynamic_route
 from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal,valid_social_notice
 from dialogue_context import dialogue_frame,validate_situated_candidates
-from activity_leases import background_social_ready,routine_actors
+from activity_leases import background_social_ready,routine_actors,activity_conflict
 from dialogue_policy import POLICIES,candidate_roles
 from inference_receipts import rejected_language_receipt
 from context_window import bounded_social_context
@@ -96,6 +96,8 @@ class Conversation:
                 raise ValueError('A pending scheduled social opportunity is required')
             if not social_candidates(self.active,observation,actor):raise ValueError('No qualified nearby social partner remains')
             self._social_day(observation)
+        if activity_conflict(self.active,actors=(actor,) if actor is not None else (108186,108149),observation=observation):
+            raise ValueError('An independent activity owns a conversation participant')
         state = copy.deepcopy(self.active)
         limit=max_turns if max_turns is not None else (6 if actor is not None else 2)
         if offered:
@@ -132,6 +134,8 @@ class Conversation:
         self._agency_guard(observation,allow_routines=background_social_ready(self.active,existing=True))
         c = self.conversation_status()
         if not c or c['id'] != event_id: raise ValueError('Conversation changed')
+        if activity_conflict(self.active,actors=[c.get('initiator'),c.get('partner'),*c.get('speakers',[])],observation=observation):
+            raise ValueError('An independent activity owns a conversation participant')
         if routine_actors(self.active).intersection(c.get('speakers',[])):raise ValueError('A journey owns a conversation participant')
         return c
 

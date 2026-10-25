@@ -22,7 +22,7 @@ def due_residents(snapshot):
     day=obs.get('gameDays')
     if type(day) not in (int,float) or not math.isfinite(day):return []
     busy=occupied({**society,'plans':[society['plan']] if society.get('plan') else [],
-                   'routine_batches':[society['routine_batch']] if society.get('routine_batch') else []})
+                   'routine_batches':[society['routine_batch']] if society.get('routine_batch') else []},obs)
     people=society.get('people',{});due=[]
     for row in obs.get('residents',[]):
         actor=row['id'];key=str(actor);person=people.get(key)

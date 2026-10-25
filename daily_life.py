@@ -15,6 +15,7 @@ from procurement import grain_procurement
 from resident_control import sync_resident_assignments
 from owner_production import owner_work_opportunities
 from entrepreneurship import enterprise_choices
+from activity_leases import reserved_activity_actors
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -49,6 +50,7 @@ class DailyLife:
                 event.update(status=plan['phase'], outcome=plan.get('outcome'), settled_day=day)
         outstanding = {str(e['actor']) for e in daily['queue'] if e['status'] in ('pending', 'started')}
         added = []
+        reserved=reserved_activity_actors(state,observation)
         for key, resident in town['residents'].items():
             person = state['people'][key]
             last_day = person.get('needs_clock', resident['observed_game_day'])
@@ -64,9 +66,10 @@ class DailyLife:
             person['needs_clock'] = day
             actor = actors.get(key)
             agency = person['agency']
-            supported=bool(actor) and (any(route_available(observation,int(key),int(other)) for other in actors if other!=key) or bool(market_opportunity(state,observation,int(key))))
+            supported=bool(actor) and int(key) not in reserved and (any(route_available(observation,int(key),int(other),state) for other in actors if other!=key) or bool(market_opportunity(state,observation,int(key))))
             resident['native_route_supported']=supported
             agency['native_route_supported']=supported
+            if int(key) in reserved:continue  # Age needs; retain the accepted job and saved invitations.
             # An unaccepted invitation is not an obligation. Reassess it after
             # aging needs, so old low-priority work cannot starve a resident's
             # queue. Never interrupt a started event or manufacture acceptance.
