@@ -18,6 +18,7 @@ GENERATED.add('generic-market-cycle.png')
 GENERATED.add('livelihood-startup.png')
 GENERATED.add('paid-employment-cycle.png')
 GENERATED.add('employer-concurrency.png')
+GENERATED.add('independent-followthrough.png')
 MEASURED={'personal-goals-movement-chart.png','owner-work-fixture-timeline.png'}
 
 def build():

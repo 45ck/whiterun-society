@@ -4,6 +4,12 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 **Independent follow-through, source implementation:** residents' rest/work intentions can now receive their own actionable decisions while an unrelated foreground encounter continues. Accepted decisions live in separate source-bound plans and delegate existing native rest/owner-work jobs without replacing the foreground plan. Quiet deferral and handback to a full review remain valid choices. One scheduler shares the existing model budget across goals and reviews; inventory settlement remains serialized. [Decision loop, metrics and limits](docs/independent-followthrough.md). This source is not installed or qualified in Skyrim.
 
+![From personal intention to independent rest and work with verified outcomes](docs/images/independent-followthrough.png)
+
+*Built-in-generated architecture illustration, not gameplay. [Generation and correction prompts](docs/images/independent-followthrough.prompt.md).*
+
+[Full follow-through validation](https://github.com/45ck/whiterun-society/actions/runs/40212669424) passed at `220e07d` on Windows and Ubuntu: **1,359 Python tests per platform (1,358 passed and one initial generated-file skip), 512 JavaScript tests and six generated-plugin readback checks**. The skipped check passed after generation; Windows compiled both Papyrus scripts. Four integration cases exercise actual service/controller flow with authored decisions and simulated native APIs. [Exact evidence and limitations](docs/evidence/independent-followthrough-validation.json).
+
 **Independent employers, source implementation:** a qualified paid job reserves the worker's physical attendance while allowing the employer to move and hold a non-economic conversation. Both inventories remain reserved, so walking away cannot spend the wage or sell contracted inputs. The inspector separates account restrictions, activity restrictions, observed behaviour and measured overlap. A bounded sampler requires paired identity-matched native attendance and employer observations; unknown evidence stays unknown. [Concurrency contract, metrics and limitations](docs/employment-concurrency.md). This change is not installed or qualified in Skyrim.
 
 ![Independent employer activity with reserved inventories and measured worker attendance](docs/images/employer-concurrency.png)
@@ -321,7 +327,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (77)</summary>
+<summary>Browse every finished project image (78)</summary>
 
 ### Concurrent resident lives
 
@@ -370,6 +376,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Grain market loop](docs/images/grain-market-loop.png)
+
+### Independent followthrough
+
+Generated system illustration — not gameplay
+
+![Independent followthrough](docs/images/independent-followthrough.png)
 
 ### Independent lives metrics
 

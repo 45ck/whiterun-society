@@ -1,8 +1,14 @@
 # Independent reviews and purposeful follow-through
 
+![Independent rest and owner-work choices alongside a preserved foreground encounter](images/independent-followthrough.png)
+
+Generated source architecture illustration, not gameplay. [Full prompts](images/independent-followthrough.prompt.md). Native outcomes require the separate evidence described below.
+
 A resident finishing a journey should be able to reconsider its own needs and begin feasible self-care or owner work while an unrelated foreground encounter continues. That requires an independent decision claim and plan lineage, not merely another destination or a larger model-call allowance.
 
-**This milestone is implemented in source; it is not installed or qualified in Skyrim. Hosted full-suite qualification is pending.** The slice covers independent reviews and delegation to existing rest/owner-work executors. Shared run budgets, per-actor reservations, native receipt checks and the single inventory writer remain authoritative. Focused source evidence is separate from final integrated/hosted qualification. It does not complete all-resident autonomy, parallel bargaining or the full economic/social programme.
+**This milestone is implemented in source; it is not installed or qualified in Skyrim. Hosted full-suite qualification passed at source revision 220e07d; native qualification remains pending.** The slice covers independent reviews and delegation to existing rest/owner-work executors. Shared run budgets, per-actor reservations, native receipt checks and the single inventory writer remain authoritative. Focused source evidence is separate from final integrated/hosted qualification. It does not complete all-resident autonomy, parallel bargaining or the full economic/social programme.
+
+[Hosted run 40212669424](https://github.com/45ck/whiterun-society/actions/runs/40212669424) passed on Windows and Ubuntu: 1,359 Python tests per platform (1,358 passed and one initial generated-file skip), 512 JavaScript tests and six generated-plugin readback checks. The skipped check passed after generation; Windows compiled both Papyrus scripts. Four actual-controller integration cases passed with simulated native APIs. [Exact evidence and limitations](evidence/independent-followthrough-validation.json).
 
 ## Review claims and saved plan authority
 

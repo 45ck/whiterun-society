@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T16:42:45.433991+00:00",
+  "run_id": 40212669424,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40212669424",
+  "revision": "220e07dacebc64bca9ffcf67a39dd34e990b082f",
+  "conclusion": "success",
+  "platforms": {
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T16:38:48Z",
+      "completed_at": "2026-10-25T16:39:56Z",
+      "python": {
+        "run": 1359,
+        "passed": 1358,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 512,
+        "passed": 512,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "targeted_suites": {
+        "test_independent_review_integration": [
+          "test_changed_identity_rejects_only_that_resident_without_foreground_mutation (test_independent_review_integration.IndependentReviewIntegrationTests.test_changed_identity_rejects_only_that_resident_without_foreground_mutation) ... ok",
+          "test_competing_seat_choices_cannot_create_two_native_seat_leases (test_independent_review_integration.IndependentReviewIntegrationTests.test_competing_seat_choices_cannot_create_two_native_seat_leases) ... ok",
+          "test_live_owner_attendance_reserves_inventory_against_competing_purchase (test_independent_review_integration.IndependentReviewIntegrationTests.test_live_owner_attendance_reserves_inventory_against_competing_purchase) ... ok",
+          "test_real_independent_rest_and_owner_work_preserve_foreground_and_serialize_effects (test_independent_review_integration.IndependentReviewIntegrationTests.test_real_independent_rest_and_owner_work_preserve_foreground_and_serialize_effects) ... ok"
+        ],
+        "test_independent_review_metrics": [
+          "test_different_owner_recipe_or_business_is_not_the_accepted_choice (test_independent_review_metrics.IndependentOwnerMetricsTests.test_different_owner_recipe_or_business_is_not_the_accepted_choice) ... ok",
+          "test_owner_committed_output_without_release_is_not_settled (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_committed_output_without_release_is_not_settled) ... ok",
+          "test_owner_phase_only_or_conflicting_ledger_cannot_credit (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_phase_only_or_conflicting_ledger_cannot_credit) ... ok",
+          "test_owner_projection_and_raw_state_are_equivalent (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_projection_and_raw_state_are_equivalent) ... ok",
+          "test_owner_work_exact_native_attendance_is_not_output (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_work_exact_native_attendance_is_not_output) ... ok",
+          "test_accepted_and_delegated_are_not_native_attendance (test_independent_review_metrics.IndependentReviewMetricsTests.test_accepted_and_delegated_are_not_native_attendance) ... ok",
+          "test_conflicting_or_transplanted_source_plan_claim_or_job_is_not_credit (test_independent_review_metrics.IndependentReviewMetricsTests.test_conflicting_or_transplanted_source_plan_claim_or_job_is_not_credit) ... ok",
+          "test_exact_native_rest_attendance_has_current_proof_only (test_independent_review_metrics.IndependentReviewMetricsTests.test_exact_native_rest_attendance_has_current_proof_only) ... ok",
+          "test_latencies_have_explicit_missing_samples_and_reject_nonfinite_or_reverse_clocks (test_independent_review_metrics.IndependentReviewMetricsTests.test_latencies_have_explicit_missing_samples_and_reject_nonfinite_or_reverse_clocks) ... ok",
+          "test_missing_history_is_unknown_and_invalid_records_are_counted (test_independent_review_metrics.IndependentReviewMetricsTests.test_missing_history_is_unknown_and_invalid_records_are_counted) ... ok",
+          "test_missing_schema_is_unmeasured_not_zero_activity (test_independent_review_metrics.IndependentReviewMetricsTests.test_missing_schema_is_unmeasured_not_zero_activity) ... ok",
+          "test_output_is_pure_and_never_exposes_private_decisions_or_capabilities (test_independent_review_metrics.IndependentReviewMetricsTests.test_output_is_pure_and_never_exposes_private_decisions_or_capabilities) ... ok",
+          "test_paused_error_transition_or_stale_observation_hides_current_native_proof (test_independent_review_metrics.IndependentReviewMetricsTests.test_paused_error_transition_or_stale_observation_hides_current_native_proof) ... ok",
+          "test_pending_is_waiting_not_a_claim_or_eligibility_count (test_independent_review_metrics.IndependentReviewMetricsTests.test_pending_is_waiting_not_a_claim_or_eligibility_count) ... ok",
+          "test_public_projection_and_identical_replay_preserve_single_count (test_independent_review_metrics.IndependentReviewMetricsTests.test_public_projection_and_identical_replay_preserve_single_count) ... ok",
+          "test_quiet_and_handoff_are_intentional_non_native_outcomes (test_independent_review_metrics.IndependentReviewMetricsTests.test_quiet_and_handoff_are_intentional_non_native_outcomes) ... ok",
+          "test_real_rest_settlement_requires_committed_receipt_not_phase (test_independent_review_metrics.IndependentReviewMetricsTests.test_real_rest_settlement_requires_committed_receipt_not_phase) ... ok",
+          "test_receipt_tampering_or_missing_base_cannot_claim_settlement (test_independent_review_metrics.IndependentReviewMetricsTests.test_receipt_tampering_or_missing_base_cannot_claim_settlement) ... ok",
+          "test_rejected_result_is_held_with_measured_result_clock (test_independent_review_metrics.IndependentReviewMetricsTests.test_rejected_result_is_held_with_measured_result_clock) ... ok",
+          "test_replaced_base_wrong_epoch_and_duplicate_native_rows_are_unknown (test_independent_review_metrics.IndependentReviewMetricsTests.test_replaced_base_wrong_epoch_and_duplicate_native_rows_are_unknown) ... ok",
+          "test_saved_claim_does_not_assert_a_running_model (test_independent_review_metrics.IndependentReviewMetricsTests.test_saved_claim_does_not_assert_a_running_model) ... ok"
+        ],
+        "test_independent_reviews": [
+          "test_accepted_actor_cannot_claim_second_source_and_tampering_cannot_delegate (test_independent_reviews.IndependentReviewTests.test_accepted_actor_cannot_claim_second_source_and_tampering_cannot_delegate) ... ok",
+          "test_accepted_timeout_is_snapshot_bound_and_grants_no_effect (test_independent_reviews.IndependentReviewTests.test_accepted_timeout_is_snapshot_bound_and_grants_no_effect) ... ok",
+          "test_changed_source_actor_rejected_at_choice_not_only_later_delegation (test_independent_reviews.IndependentReviewTests.test_changed_source_actor_rejected_at_choice_not_only_later_delegation) ... ok",
+          "test_choice_then_serial_delegation_keeps_foreground_and_no_recovery_before_native_receipt (test_independent_reviews.IndependentReviewTests.test_choice_then_serial_delegation_keeps_foreground_and_no_recovery_before_native_receipt) ... ok",
+          "test_competing_seat_is_revalidated_after_saved_choices (test_independent_reviews.IndependentReviewTests.test_competing_seat_is_revalidated_after_saved_choices) ... ok",
+          "test_context_offers_all_available_benches_and_only_own_private_state (test_independent_reviews.IndependentReviewTests.test_context_offers_all_available_benches_and_only_own_private_state) ... ok",
+          "test_deadline_and_session_hold_claim_without_retry (test_independent_reviews.IndependentReviewTests.test_deadline_and_session_hold_claim_without_retry) ... ok",
+          "test_foreground_actor_and_explicit_non_review_sources_are_not_claimed (test_independent_reviews.IndependentReviewTests.test_foreground_actor_and_explicit_non_review_sources_are_not_claimed) ... ok",
+          "test_foreground_encounter_continues_while_disjoint_claims_are_saved_without_leases (test_independent_reviews.IndependentReviewTests.test_foreground_encounter_continues_while_disjoint_claims_are_saved_without_leases) ... ok",
+          "test_foreground_handoff_is_once_and_defer_never_grants_rest (test_independent_reviews.IndependentReviewTests.test_foreground_handoff_is_once_and_defer_never_grants_rest) ... ok",
+          "test_generic_owner_recipe_enters_goal_review_and_independent_choice (test_independent_reviews.IndependentReviewTests.test_generic_owner_recipe_enters_goal_review_and_independent_choice) ... ok",
+          "test_invalid_result_actor_coverage_atomic_and_malformed_member_per_actor_held (test_independent_reviews.IndependentReviewTests.test_invalid_result_actor_coverage_atomic_and_malformed_member_per_actor_held) ... ok",
+          "test_missing_member_is_held_without_rejecting_unaffected_peer (test_independent_reviews.IndependentReviewTests.test_missing_member_is_held_without_rejecting_unaffected_peer) ... ok",
+          "test_no_state_and_bad_observations_are_inert (test_independent_reviews.IndependentReviewTests.test_no_state_and_bad_observations_are_inert) ... ok",
+          "test_owner_recipe_is_real_own_option_and_stock_change_invalidates_it (test_independent_reviews.IndependentReviewTests.test_owner_recipe_is_real_own_option_and_stock_change_invalidates_it) ... ok",
+          "test_replaced_identity_or_changed_available_seat_holds_choice_without_effect (test_independent_reviews.IndependentReviewTests.test_replaced_identity_or_changed_available_seat_holds_choice_without_effect) ... ok",
+          "test_shared_inference_wave_guard_and_duplicate_source_identity (test_independent_reviews.IndependentReviewTests.test_shared_inference_wave_guard_and_duplicate_source_identity) ... ok",
+          "test_terminal_native_source_outcome_is_not_overwritten_by_generic_review_status (test_independent_reviews.IndependentReviewTests.test_terminal_native_source_outcome_is_not_overwritten_by_generic_review_status) ... ok"
+        ],
+        "test_independent_review_worker": [
+          "test_actual_main_waits_for_binding_then_infers_once_and_submits_same_results (test_independent_review_worker.IndependentReviewWorkerTests.test_actual_main_waits_for_binding_then_infers_once_and_submits_same_results) ... ok",
+          "test_claim_change_after_binding_prevents_any_model_call (test_independent_review_worker.IndependentReviewWorkerTests.test_claim_change_after_binding_prevents_any_model_call) ... ok",
+          "test_duplicate_keeps_original_evidence_and_never_requires_provider_key (test_independent_review_worker.IndependentReviewWorkerTests.test_duplicate_keeps_original_evidence_and_never_requires_provider_key) ... ok",
+          "test_invalid_duplicate_actor_members_fail_before_inference (test_independent_review_worker.IndependentReviewWorkerTests.test_invalid_duplicate_actor_members_fail_before_inference) ... ok",
+          "test_session_change_during_transition_still_stops_worker (test_independent_review_worker.IndependentReviewWorkerTests.test_session_change_during_transition_still_stops_worker) ... ok",
+          "test_uncertain_result_submission_keeps_paid_result_without_reinference (test_independent_review_worker.IndependentReviewWorkerTests.test_uncertain_result_submission_keeps_paid_result_without_reinference) ... ok"
+        ],
+        "test_independent_review_scheduler": [
+          "test_both_due_lanes_alternate_one_subprocess_and_one_budget (test_independent_review_scheduler.SharedReviewSchedulerTests.test_both_due_lanes_alternate_one_subprocess_and_one_budget) ... ok",
+          "test_foreground_drain_never_orphans_started_review_or_starts_after_stop (test_independent_review_scheduler.SharedReviewSchedulerTests.test_foreground_drain_never_orphans_started_review_or_starts_after_stop) ... ok",
+          "test_pending_review_claim_blocks_both_lanes_before_launch (test_independent_review_scheduler.SharedReviewSchedulerTests.test_pending_review_claim_blocks_both_lanes_before_launch) ... ok",
+          "test_real_candidate_filter_uses_current_foreground_plan_from_public_snapshot (test_independent_review_scheduler.SharedReviewSchedulerTests.test_real_candidate_filter_uses_current_foreground_plan_from_public_snapshot) ... ok",
+          "test_reviews_alone_use_remaining_cap_and_unknown_cost_still_consumes_attempt (test_independent_review_scheduler.SharedReviewSchedulerTests.test_reviews_alone_use_remaining_cap_and_unknown_cost_still_consumes_attempt) ... ok",
+          "test_unknown_review_receipt_retains_full_reservation_and_is_not_replayed (test_independent_review_scheduler.SharedReviewSchedulerTests.test_unknown_review_receipt_retains_full_reservation_and_is_not_replayed) ... ok"
+        ],
+        "test_independent_review_http": [
+          "test_claim_and_result_dispatch_with_current_observation (test_independent_review_http.IndependentReviewHTTPTests.test_claim_and_result_dispatch_with_current_observation) ... ok",
+          "test_pending_effect_result_conflict_is_certified_before_dispatch (test_independent_review_http.IndependentReviewHTTPTests.test_pending_effect_result_conflict_is_certified_before_dispatch) ... ok",
+          "test_service_shutdown_does_not_abandon_a_live_review_claim (test_independent_review_http.IndependentReviewHTTPTests.test_service_shutdown_does_not_abandon_a_live_review_claim) ... ok",
+          "test_wrong_session_cannot_dispatch_model_result (test_independent_review_http.IndependentReviewHTTPTests.test_wrong_session_cannot_dispatch_model_result) ... ok"
+        ],
+        "test_independent_owner_admission": [
+          "test_attendance_can_progress_but_inventory_waits_for_foreground_then_settles_source (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_attendance_can_progress_but_inventory_waits_for_foreground_then_settles_source) ... ok",
+          "test_current_identity_catalog_stock_and_business_still_required (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_current_identity_catalog_stock_and_business_still_required) ... ok",
+          "test_foreground_conversation_or_routine_actor_overlap_rejects_before_write (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_foreground_conversation_or_routine_actor_overlap_rejects_before_write) ... ok",
+          "test_hold_updates_independent_source_without_overwriting_foreground (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_hold_updates_independent_source_without_overwriting_foreground) ... ok",
+          "test_independent_owner_delegates_beside_disjoint_foreground_and_routine (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_independent_owner_delegates_beside_disjoint_foreground_and_routine) ... ok",
+          "test_unaccepted_copied_or_changed_independent_decision_cannot_delegate (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_unaccepted_copied_or_changed_independent_decision_cannot_delegate) ... ok"
+        ],
+        "test_independent_rest_admission": [
+          "test_allowing_disjoint_routines_does_not_steal_a_routine_participant (test_independent_rest_admission.IndependentRestAdmissionTests.test_allowing_disjoint_routines_does_not_steal_a_routine_participant) ... ok",
+          "test_disjoint_accepted_sources_share_capacity_without_reusing_actor_or_slot (test_independent_rest_admission.IndependentRestAdmissionTests.test_disjoint_accepted_sources_share_capacity_without_reusing_actor_or_slot) ... ok",
+          "test_disjoint_foreground_plan_and_conversation_do_not_serialize_accepted_rest (test_independent_rest_admission.IndependentRestAdmissionTests.test_disjoint_foreground_plan_and_conversation_do_not_serialize_accepted_rest) ... ok",
+          "test_failed_receipt_holds_original_independent_source_without_recovery (test_independent_rest_admission.IndependentRestAdmissionTests.test_failed_receipt_holds_original_independent_source_without_recovery) ... ok",
+          "test_foreground_actor_target_and_conversation_participants_still_exclude_rest (test_independent_rest_admission.IndependentRestAdmissionTests.test_foreground_actor_target_and_conversation_participants_still_exclude_rest) ... ok",
+          "test_forged_copied_mutated_or_unaccepted_independent_sources_cannot_delegate (test_independent_rest_admission.IndependentRestAdmissionTests.test_forged_copied_mutated_or_unaccepted_independent_sources_cannot_delegate) ... ok",
+          "test_native_seat_and_slot_leases_remain_exclusive (test_independent_rest_admission.IndependentRestAdmissionTests.test_native_seat_and_slot_leases_remain_exclusive) ... ok",
+          "test_original_foreground_route_keeps_routine_guard (test_independent_rest_admission.IndependentRestAdmissionTests.test_original_foreground_route_keeps_routine_guard) ... ok",
+          "test_pending_global_effect_wrong_checkpoint_and_disabled_capability_remain_gates (test_independent_rest_admission.IndependentRestAdmissionTests.test_pending_global_effect_wrong_checkpoint_and_disabled_capability_remain_gates) ... ok",
+          "test_stale_session_or_base_review_is_not_rebound_to_current_actor (test_independent_rest_admission.IndependentRestAdmissionTests.test_stale_session_or_base_review_is_not_rebound_to_current_actor) ... ok",
+          "test_success_updates_only_independent_source_and_recovers_once (test_independent_rest_admission.IndependentRestAdmissionTests.test_success_updates_only_independent_source_and_recovers_once) ... ok"
+        ]
+      }
+    },
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T16:38:49Z",
+      "completed_at": "2026-10-25T16:42:12Z",
+      "python": {
+        "run": 1359,
+        "passed": 1358,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 512,
+        "passed": 512,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "targeted_suites": {
+        "test_independent_review_integration": [
+          "test_changed_identity_rejects_only_that_resident_without_foreground_mutation (test_independent_review_integration.IndependentReviewIntegrationTests.test_changed_identity_rejects_only_that_resident_without_foreground_mutation) ... ok",
+          "test_competing_seat_choices_cannot_create_two_native_seat_leases (test_independent_review_integration.IndependentReviewIntegrationTests.test_competing_seat_choices_cannot_create_two_native_seat_leases) ... ok",
+          "test_live_owner_attendance_reserves_inventory_against_competing_purchase (test_independent_review_integration.IndependentReviewIntegrationTests.test_live_owner_attendance_reserves_inventory_against_competing_purchase) ... ok",
+          "test_real_independent_rest_and_owner_work_preserve_foreground_and_serialize_effects (test_independent_review_integration.IndependentReviewIntegrationTests.test_real_independent_rest_and_owner_work_preserve_foreground_and_serialize_effects) ... ok"
+        ],
+        "test_independent_review_metrics": [
+          "test_different_owner_recipe_or_business_is_not_the_accepted_choice (test_independent_review_metrics.IndependentOwnerMetricsTests.test_different_owner_recipe_or_business_is_not_the_accepted_choice) ... ok",
+          "test_owner_committed_output_without_release_is_not_settled (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_committed_output_without_release_is_not_settled) ... ok",
+          "test_owner_phase_only_or_conflicting_ledger_cannot_credit (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_phase_only_or_conflicting_ledger_cannot_credit) ... ok",
+          "test_owner_projection_and_raw_state_are_equivalent (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_projection_and_raw_state_are_equivalent) ... ok",
+          "test_owner_work_exact_native_attendance_is_not_output (test_independent_review_metrics.IndependentOwnerMetricsTests.test_owner_work_exact_native_attendance_is_not_output) ... ok",
+          "test_accepted_and_delegated_are_not_native_attendance (test_independent_review_metrics.IndependentReviewMetricsTests.test_accepted_and_delegated_are_not_native_attendance) ... ok",
+          "test_conflicting_or_transplanted_source_plan_claim_or_job_is_not_credit (test_independent_review_metrics.IndependentReviewMetricsTests.test_conflicting_or_transplanted_source_plan_claim_or_job_is_not_credit) ... ok",
+          "test_exact_native_rest_attendance_has_current_proof_only (test_independent_review_metrics.IndependentReviewMetricsTests.test_exact_native_rest_attendance_has_current_proof_only) ... ok",
+          "test_latencies_have_explicit_missing_samples_and_reject_nonfinite_or_reverse_clocks (test_independent_review_metrics.IndependentReviewMetricsTests.test_latencies_have_explicit_missing_samples_and_reject_nonfinite_or_reverse_clocks) ... ok",
+          "test_missing_history_is_unknown_and_invalid_records_are_counted (test_independent_review_metrics.IndependentReviewMetricsTests.test_missing_history_is_unknown_and_invalid_records_are_counted) ... ok",
+          "test_missing_schema_is_unmeasured_not_zero_activity (test_independent_review_metrics.IndependentReviewMetricsTests.test_missing_schema_is_unmeasured_not_zero_activity) ... ok",
+          "test_output_is_pure_and_never_exposes_private_decisions_or_capabilities (test_independent_review_metrics.IndependentReviewMetricsTests.test_output_is_pure_and_never_exposes_private_decisions_or_capabilities) ... ok",
+          "test_paused_error_transition_or_stale_observation_hides_current_native_proof (test_independent_review_metrics.IndependentReviewMetricsTests.test_paused_error_transition_or_stale_observation_hides_current_native_proof) ... ok",
+          "test_pending_is_waiting_not_a_claim_or_eligibility_count (test_independent_review_metrics.IndependentReviewMetricsTests.test_pending_is_waiting_not_a_claim_or_eligibility_count) ... ok",
+          "test_public_projection_and_identical_replay_preserve_single_count (test_independent_review_metrics.IndependentReviewMetricsTests.test_public_projection_and_identical_replay_preserve_single_count) ... ok",
+          "test_quiet_and_handoff_are_intentional_non_native_outcomes (test_independent_review_metrics.IndependentReviewMetricsTests.test_quiet_and_handoff_are_intentional_non_native_outcomes) ... ok",
+          "test_real_rest_settlement_requires_committed_receipt_not_phase (test_independent_review_metrics.IndependentReviewMetricsTests.test_real_rest_settlement_requires_committed_receipt_not_phase) ... ok",
+          "test_receipt_tampering_or_missing_base_cannot_claim_settlement (test_independent_review_metrics.IndependentReviewMetricsTests.test_receipt_tampering_or_missing_base_cannot_claim_settlement) ... ok",
+          "test_rejected_result_is_held_with_measured_result_clock (test_independent_review_metrics.IndependentReviewMetricsTests.test_rejected_result_is_held_with_measured_result_clock) ... ok",
+          "test_replaced_base_wrong_epoch_and_duplicate_native_rows_are_unknown (test_independent_review_metrics.IndependentReviewMetricsTests.test_replaced_base_wrong_epoch_and_duplicate_native_rows_are_unknown) ... ok",
+          "test_saved_claim_does_not_assert_a_running_model (test_independent_review_metrics.IndependentReviewMetricsTests.test_saved_claim_does_not_assert_a_running_model) ... ok"
+        ],
+        "test_independent_reviews": [
+          "test_accepted_actor_cannot_claim_second_source_and_tampering_cannot_delegate (test_independent_reviews.IndependentReviewTests.test_accepted_actor_cannot_claim_second_source_and_tampering_cannot_delegate) ... ok",
+          "test_accepted_timeout_is_snapshot_bound_and_grants_no_effect (test_independent_reviews.IndependentReviewTests.test_accepted_timeout_is_snapshot_bound_and_grants_no_effect) ... ok",
+          "test_changed_source_actor_rejected_at_choice_not_only_later_delegation (test_independent_reviews.IndependentReviewTests.test_changed_source_actor_rejected_at_choice_not_only_later_delegation) ... ok",
+          "test_choice_then_serial_delegation_keeps_foreground_and_no_recovery_before_native_receipt (test_independent_reviews.IndependentReviewTests.test_choice_then_serial_delegation_keeps_foreground_and_no_recovery_before_native_receipt) ... ok",
+          "test_competing_seat_is_revalidated_after_saved_choices (test_independent_reviews.IndependentReviewTests.test_competing_seat_is_revalidated_after_saved_choices) ... ok",
+          "test_context_offers_all_available_benches_and_only_own_private_state (test_independent_reviews.IndependentReviewTests.test_context_offers_all_available_benches_and_only_own_private_state) ... ok",
+          "test_deadline_and_session_hold_claim_without_retry (test_independent_reviews.IndependentReviewTests.test_deadline_and_session_hold_claim_without_retry) ... ok",
+          "test_foreground_actor_and_explicit_non_review_sources_are_not_claimed (test_independent_reviews.IndependentReviewTests.test_foreground_actor_and_explicit_non_review_sources_are_not_claimed) ... ok",
+          "test_foreground_encounter_continues_while_disjoint_claims_are_saved_without_leases (test_independent_reviews.IndependentReviewTests.test_foreground_encounter_continues_while_disjoint_claims_are_saved_without_leases) ... ok",
+          "test_foreground_handoff_is_once_and_defer_never_grants_rest (test_independent_reviews.IndependentReviewTests.test_foreground_handoff_is_once_and_defer_never_grants_rest) ... ok",
+          "test_generic_owner_recipe_enters_goal_review_and_independent_choice (test_independent_reviews.IndependentReviewTests.test_generic_owner_recipe_enters_goal_review_and_independent_choice) ... ok",
+          "test_invalid_result_actor_coverage_atomic_and_malformed_member_per_actor_held (test_independent_reviews.IndependentReviewTests.test_invalid_result_actor_coverage_atomic_and_malformed_member_per_actor_held) ... ok",
+          "test_missing_member_is_held_without_rejecting_unaffected_peer (test_independent_reviews.IndependentReviewTests.test_missing_member_is_held_without_rejecting_unaffected_peer) ... ok",
+          "test_no_state_and_bad_observations_are_inert (test_independent_reviews.IndependentReviewTests.test_no_state_and_bad_observations_are_inert) ... ok",
+          "test_owner_recipe_is_real_own_option_and_stock_change_invalidates_it (test_independent_reviews.IndependentReviewTests.test_owner_recipe_is_real_own_option_and_stock_change_invalidates_it) ... ok",
+          "test_replaced_identity_or_changed_available_seat_holds_choice_without_effect (test_independent_reviews.IndependentReviewTests.test_replaced_identity_or_changed_available_seat_holds_choice_without_effect) ... ok",
+          "test_shared_inference_wave_guard_and_duplicate_source_identity (test_independent_reviews.IndependentReviewTests.test_shared_inference_wave_guard_and_duplicate_source_identity) ... ok",
+          "test_terminal_native_source_outcome_is_not_overwritten_by_generic_review_status (test_independent_reviews.IndependentReviewTests.test_terminal_native_source_outcome_is_not_overwritten_by_generic_review_status) ... ok"
+        ],
+        "test_independent_review_worker": [
+          "test_actual_main_waits_for_binding_then_infers_once_and_submits_same_results (test_independent_review_worker.IndependentReviewWorkerTests.test_actual_main_waits_for_binding_then_infers_once_and_submits_same_results) ... ok",
+          "test_claim_change_after_binding_prevents_any_model_call (test_independent_review_worker.IndependentReviewWorkerTests.test_claim_change_after_binding_prevents_any_model_call) ... ok",
+          "test_duplicate_keeps_original_evidence_and_never_requires_provider_key (test_independent_review_worker.IndependentReviewWorkerTests.test_duplicate_keeps_original_evidence_and_never_requires_provider_key) ... ok",
+          "test_invalid_duplicate_actor_members_fail_before_inference (test_independent_review_worker.IndependentReviewWorkerTests.test_invalid_duplicate_actor_members_fail_before_inference) ... ok",
+          "test_session_change_during_transition_still_stops_worker (test_independent_review_worker.IndependentReviewWorkerTests.test_session_change_during_transition_still_stops_worker) ... ok",
+          "test_uncertain_result_submission_keeps_paid_result_without_reinference (test_independent_review_worker.IndependentReviewWorkerTests.test_uncertain_result_submission_keeps_paid_result_without_reinference) ... ok"
+        ],
+        "test_independent_review_scheduler": [
+          "test_both_due_lanes_alternate_one_subprocess_and_one_budget (test_independent_review_scheduler.SharedReviewSchedulerTests.test_both_due_lanes_alternate_one_subprocess_and_one_budget) ... ok",
+          "test_foreground_drain_never_orphans_started_review_or_starts_after_stop (test_independent_review_scheduler.SharedReviewSchedulerTests.test_foreground_drain_never_orphans_started_review_or_starts_after_stop) ... ok",
+          "test_pending_review_claim_blocks_both_lanes_before_launch (test_independent_review_scheduler.SharedReviewSchedulerTests.test_pending_review_claim_blocks_both_lanes_before_launch) ... ok",
+          "test_real_candidate_filter_uses_current_foreground_plan_from_public_snapshot (test_independent_review_scheduler.SharedReviewSchedulerTests.test_real_candidate_filter_uses_current_foreground_plan_from_public_snapshot) ... ok",
+          "test_reviews_alone_use_remaining_cap_and_unknown_cost_still_consumes_attempt (test_independent_review_scheduler.SharedReviewSchedulerTests.test_reviews_alone_use_remaining_cap_and_unknown_cost_still_consumes_attempt) ... ok",
+          "test_unknown_review_receipt_retains_full_reservation_and_is_not_replayed (test_independent_review_scheduler.SharedReviewSchedulerTests.test_unknown_review_receipt_retains_full_reservation_and_is_not_replayed) ... ok"
+        ],
+        "test_independent_review_http": [
+          "test_claim_and_result_dispatch_with_current_observation (test_independent_review_http.IndependentReviewHTTPTests.test_claim_and_result_dispatch_with_current_observation) ... ok",
+          "test_pending_effect_result_conflict_is_certified_before_dispatch (test_independent_review_http.IndependentReviewHTTPTests.test_pending_effect_result_conflict_is_certified_before_dispatch) ... ok",
+          "test_service_shutdown_does_not_abandon_a_live_review_claim (test_independent_review_http.IndependentReviewHTTPTests.test_service_shutdown_does_not_abandon_a_live_review_claim) ... ok",
+          "test_wrong_session_cannot_dispatch_model_result (test_independent_review_http.IndependentReviewHTTPTests.test_wrong_session_cannot_dispatch_model_result) ... ok"
+        ],
+        "test_independent_owner_admission": [
+          "test_attendance_can_progress_but_inventory_waits_for_foreground_then_settles_source (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_attendance_can_progress_but_inventory_waits_for_foreground_then_settles_source) ... ok",
+          "test_current_identity_catalog_stock_and_business_still_required (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_current_identity_catalog_stock_and_business_still_required) ... ok",
+          "test_foreground_conversation_or_routine_actor_overlap_rejects_before_write (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_foreground_conversation_or_routine_actor_overlap_rejects_before_write) ... ok",
+          "test_hold_updates_independent_source_without_overwriting_foreground (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_hold_updates_independent_source_without_overwriting_foreground) ... ok",
+          "test_independent_owner_delegates_beside_disjoint_foreground_and_routine (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_independent_owner_delegates_beside_disjoint_foreground_and_routine) ... ok",
+          "test_unaccepted_copied_or_changed_independent_decision_cannot_delegate (test_independent_owner_admission.IndependentOwnerAdmissionTests.test_unaccepted_copied_or_changed_independent_decision_cannot_delegate) ... ok"
+        ],
+        "test_independent_rest_admission": [
+          "test_allowing_disjoint_routines_does_not_steal_a_routine_participant (test_independent_rest_admission.IndependentRestAdmissionTests.test_allowing_disjoint_routines_does_not_steal_a_routine_participant) ... ok",
+          "test_disjoint_accepted_sources_share_capacity_without_reusing_actor_or_slot (test_independent_rest_admission.IndependentRestAdmissionTests.test_disjoint_accepted_sources_share_capacity_without_reusing_actor_or_slot) ... ok",
+          "test_disjoint_foreground_plan_and_conversation_do_not_serialize_accepted_rest (test_independent_rest_admission.IndependentRestAdmissionTests.test_disjoint_foreground_plan_and_conversation_do_not_serialize_accepted_rest) ... ok",
+          "test_failed_receipt_holds_original_independent_source_without_recovery (test_independent_rest_admission.IndependentRestAdmissionTests.test_failed_receipt_holds_original_independent_source_without_recovery) ... ok",
+          "test_foreground_actor_target_and_conversation_participants_still_exclude_rest (test_independent_rest_admission.IndependentRestAdmissionTests.test_foreground_actor_target_and_conversation_participants_still_exclude_rest) ... ok",
+          "test_forged_copied_mutated_or_unaccepted_independent_sources_cannot_delegate (test_independent_rest_admission.IndependentRestAdmissionTests.test_forged_copied_mutated_or_unaccepted_independent_sources_cannot_delegate) ... ok",
+          "test_native_seat_and_slot_leases_remain_exclusive (test_independent_rest_admission.IndependentRestAdmissionTests.test_native_seat_and_slot_leases_remain_exclusive) ... ok",
+          "test_original_foreground_route_keeps_routine_guard (test_independent_rest_admission.IndependentRestAdmissionTests.test_original_foreground_route_keeps_routine_guard) ... ok",
+          "test_pending_global_effect_wrong_checkpoint_and_disabled_capability_remain_gates (test_independent_rest_admission.IndependentRestAdmissionTests.test_pending_global_effect_wrong_checkpoint_and_disabled_capability_remain_gates) ... ok",
+          "test_stale_session_or_base_review_is_not_rebound_to_current_actor (test_independent_rest_admission.IndependentRestAdmissionTests.test_stale_session_or_base_review_is_not_rebound_to_current_actor) ... ok",
+          "test_success_updates_only_independent_source_and_recovers_once (test_independent_rest_admission.IndependentRestAdmissionTests.test_success_updates_only_independent_source_and_recovers_once) ... ok"
+        ]
+      },
+      "papyrus": {
+        "step_status": "success",
+        "scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "df62e7ea3bf7eddbf76986ab5d950c7cf9a4f1041f95764e6c7756f7b3139f7f",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "4e4af1600c53f418e9444430965d4fe67da80c0b9c3117e1d410cd44db398dc5",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    }
+  },
+  "integration_method": "Four observed fixture residents in fresh checkpoint state. Actual service, resident-goal and independent-review claims, routing, rest, owner-work and production controllers; mocked native actor/form/alias/physics APIs and authored model choices. Foreground conversation is retained at propose after route acceptance; no spoken turn is claimed.",
+  "verified_behaviour": [
+    "Independent rest and owner-work reviews do not replace the unrelated foreground conversation.",
+    "Rest recovery uses exact seated attendance and settles once while foreground remains active.",
+    "Owner attendance overlaps foreground, but recipe effects wait for foreground release and settle once.",
+    "Seat contention holds one competing intention; inventory account conflicts reject admission.",
+    "One changed actor identity holds only that member; duplicate claims/results do not replay effects.",
+    "Goals and reviews share one subprocess, bounded concurrent inference and one background model budget.",
+    "Metrics distinguish claimed requests, accepted choices, native attendance and committed outcomes."
+  ],
+  "evidence_method": "Completed hosted metadata and logs. Per-platform totals; overlapping focused suites are not added.",
+  "full_log_sha256": "cd696aa7c98a09e58d8efadc3cbdbb5aa64b3b0910f7428067956037f7af5304",
+  "runtime_qualified": false,
+  "game_deployment_performed": false,
+  "native_execution_performed_locally": false,
+  "limits": [
+    "No live model choices, audible Skyrim speech or psychological-realism qualification.",
+    "Only rest/work goal-followup need reviews use the new lane; purchases, hiring and conversations remain foreground.",
+    "Rest capacity is two existing slots; owner jobs remain bounded and physically/account exclusive.",
+    "Inventory settlement waits for foreground availability; attendance permits can expire and hold.",
+    "Claims are not proof of actively running inference; missing telemetry and linkage remain unknown.",
+    "Explicit owner charter capability authorizes owner work without a separate personal knowledge check at this boundary.",
+    "Default recipes remain single-input/single-output; bilateral spoken commitments and full city qualification remain future work."
+  ]
+}

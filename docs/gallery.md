@@ -50,6 +50,12 @@ Generated system illustration — not gameplay
 
 ![Grain market loop](images/grain-market-loop.png)
 
+## Independent followthrough
+
+Generated system illustration — not gameplay
+
+![Independent followthrough](images/independent-followthrough.png)
+
 ## Independent lives metrics
 
 Generated system illustration — not gameplay
