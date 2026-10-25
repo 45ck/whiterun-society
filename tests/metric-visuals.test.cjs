@@ -27,6 +27,26 @@ test('missing target catalogue stays unavailable',()=>{
 });
 
 function dashboard(){return {control:{},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:null,accounts:0,population:0}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{known:0,high:0}])),economy:{}};}
+
+test('purse cash flow keeps grants separate and labels record and account coverage without profit',()=>{
+ const dom=new JSDOM('<main></main>');try{
+  const root=dom.window.document.querySelector('main'),d=dashboard();
+  d.economic_network={cashflow:{record_coverage:{success:3,n:4,percent:75},accounts:[
+   {sales_receipts:5,purchases_paid:1,wages_received:2,wages_paid:0,external_grants_received:20,net_operating_cashflow:6},
+   {sales_receipts:0,purchases_paid:5,wages_received:0,wages_paid:2,external_grants_received:0,net_operating_cashflow:-7},
+   {sales_receipts:100,purchases_paid:null,wages_received:0,wages_paid:0,external_grants_received:0}
+  ],scope:'Current retained receipts only'}};
+  renderTownCharts(root,d);
+  const cash=[...root.querySelectorAll('section')].find(s=>s.querySelector('h3')?.textContent==='Recorded purse cash flow');
+  assert.match(cash.textContent,/7Known cash in · septims8Known cash out · septims20External grants · septims/);
+  assert.match(cash.textContent,/75% · 3\/4 · complete cash fields 2\/3/);
+  assert.match(cash.textContent,/Shared household\/business purses; profit unmeasured/);
+  assert.doesNotMatch(cash.textContent,/107Known|27Known|conservation score/);
+  d.economic_network.cashflow={record_coverage:{n:0,success:0,percent:null},accounts:[]};renderTownCharts(root,d);
+  assert.match(root.textContent,/—Known cash in · septims—Known cash out · septims—External grants/);
+  assert.match(root.textContent,/Validated record coverage Unmeasured/);
+ }finally{dom.window.close();}
+});
 test('movement chart leaves missing intervals open and distinguishes intention from movement',()=>{
  const dom=new JSDOM('<main></main>');try{
   const root=dom.window.document.querySelector('main'),d=dashboard();

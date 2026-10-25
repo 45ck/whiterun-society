@@ -11,6 +11,8 @@ from decisions import validate_decision
 from routing import activity_blocker
 from inference_receipts import usage_receipt
 from dialogue_context import time_context
+from goal_opportunities import purposeful_options,pending_goal_review,queue_goal_review
+from context_window import bounded_goal_context
 
 ACTIVE=('complete','held')
 POLICY_PATH=Path(__file__).parent/'config/resident-goals.json'
@@ -56,6 +58,7 @@ def same_space(a,b):
 
 
 def families(context):
+    if 'goal_actions' in context:return {o['id']:context['goal_actions'][o['id']]['family'] for o in context['options']}
     sites={str(s['id']):s['kind'] for s in context['destinations']}
     return {o['id']:'quiet' if o['id']=='quiet' else 'visit_'+sites[o['id'].removeprefix('visit_')] for o in context['options']}
 
@@ -101,7 +104,7 @@ def destinations(observation,actor,policy=None):
         result.append({**site,'distance':round(gap,1)})
     return result
 
-def goal_context(state,observation,actor,policy=None):
+def goal_context(state,observation,actor,policy=None,opportunity_policy=None,*,bounded=True):
     policy=load_policy() if policy is None else policy
     person=state['people'][str(actor)];row=next(r for r in observation['residents'] if r['id']==actor)
     clock=time_context(observation.get('gameDays'))
@@ -117,7 +120,11 @@ def goal_context(state,observation,actor,policy=None):
     options=[{'id':'quiet','effect':'Stay here for a quiet interval. No rest recovery, work, food or social benefit is implied.'}]
     options += [{'id':'visit_'+str(s['id']),'effect':f"Walk to {s['name']} ({s['distance']} game units), a public location. "+
                 ('Look for a place to take a break; sitting and recovery need a later decision.' if s['kind']=='bench_area' else 'Look for opportunities there; no supplier, purchase or conversation is guaranteed.')} for s in sites]
-    return {'actor_id':actor,'actor_identity':{'reference_id':actor,'base_id':row.get('baseId')},
+    goals=purposeful_options(state,observation,actor,sites,opportunity_policy)
+    actions={'quiet':{'family':'quiet','focus':None,'target_id':None,'trigger':'decision'}}
+    actions.update({'visit_'+str(s['id']):{'family':'visit_'+s['kind'],'focus':None,'target_id':s['id'],'trigger':'arrival'} for s in sites})
+    actions.update(goals['actions']);options.extend(goals['options'])
+    context={'actor_id':actor,'actor_identity':{'reference_id':actor,'base_id':row.get('baseId')},
         'policy_version':policy['version'],'policy_id':policy_id(policy),
         'profile':copy.deepcopy(person['profile']),'needs':copy.deepcopy(person['needs']),
         'clock':clock,'own_observed_state':own_observation,
@@ -128,7 +135,9 @@ def goal_context(state,observation,actor,policy=None):
         'previous_goal':copy.deepcopy(person.get('standing_goal')),
         'event':{'kind':'choose_personal_destination','knowledge':'Public place and bench locations are authored shared town-map knowledge. Other people private state is unknown.',
                  'purpose':'Choose a place or quiet interval that fits your needs and experience. Do not walk just to animate the town. Economic decisions remain separate.'},
-        'options':options,'destinations':sites}
+        'options':options,'destinations':sites,'goal_actions':actions,
+        'opportunity_policy':goals['opportunity_policy'],'public_opportunities':goals['public_opportunities']}
+    return bounded_goal_context(context) if bounded else context
 
 
 class ResidentGoals:
@@ -149,6 +158,7 @@ class ResidentGoals:
         for r in observation.get('residents',[]):
             key=str(r['id']);person=self.active['people'].get(key)
             if key not in control['assignments'] or not person or r.get('isPerson') is not True or r['id'] in busy or activity_blocker(r):continue
+            if pending_goal_review(self.active,r['id']):continue
             goal=person.get('standing_goal') or {}
             if goal.get('phase')=='travelling' or day<goal.get('next_review_day',0):continue
             eligible.append((goal.get('decided_day',-1),r['id']))
@@ -169,7 +179,7 @@ class ResidentGoals:
         if not isinstance(wave.get('deadline_at'),(int,float)) or time.time()>=wave['deadline_at']:raise ValueError('Personal-goal claim expired; do not replay inference')
         if not isinstance(results,list) or not all(isinstance(r,dict) and type(r.get('actor')) is int for r in results) or len(results)!=len(wave['members']) or {r['actor'] for r in results}!={m['actor'] for m in wave['members']}:raise ValueError('Goal results must cover the claimed residents exactly')
         policy=validate_policy(wave['policy']);now=time.time()
-        state=copy.deepcopy(self.active);updated=next(w for w in state['town']['goal_waves'] if w['id']==event_id)
+        state=copy.deepcopy(self.active)
         rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True};busy=occupied(state);day=native_day(observation)
         if day<wave['day']:raise ValueError('Native time moved backwards within the goal claim')
         receipts=[]
@@ -183,19 +193,28 @@ class ResidentGoals:
                 claimed_base=member['context'].get('actor_identity',{}).get('base_id')
                 if claimed_base is not None and rows[actor].get('baseId')!=claimed_base:raise ValueError('resident_identity_changed')
                 decision=validate_decision(result.get('decision'),member['context'])
-                current=goal_context(state,observation,actor,policy)
+                current=goal_context(state,observation,actor,policy,member['context'].get('opportunity_policy'),bounded=False)
                 validate_decision(decision,current)
                 if families(current)[decision['action_id']]!=option_families[decision['action_id']]:raise ValueError('Destination purpose changed')
-                target=next((s for s in current['destinations'] if 'visit_'+str(s['id'])==decision['action_id']),None)
-                goal={'id':event_id+'-'+key,'action_id':decision['action_id'],'phase':'travelling' if target else 'quiet',
+                action=current['goal_actions'][decision['action_id']]
+                target=next((s for s in current['destinations'] if s['id']==action['target_id']),None)
+                goal={'id':event_id+'-'+key,'action_id':decision['action_id'],'phase':'travelling' if target else 'review_pending' if action['focus'] else 'quiet',
                       'decided_day':day,'decided_at':now,'next_review_day':day+policy['review_game_minutes']/1440,'target':copy.deepcopy(target),
                       'claimed_day':wave['day'],'policy':copy.deepcopy(policy),'policy_version':policy['version'],'policy_id':wave['policy_id'],
                       'option_count':len(option_families),'option_families':sorted(set(option_families.values())),
                       'action_family':option_families[decision['action_id']],'model':model_name(result),'provenance':provenance(model_name(result)),
+                      'focus':action['focus'],'opportunity_policy':copy.deepcopy(current['opportunity_policy']),
                       'source':'Resident decision model selected a standing goal; no economic effect'}
-                state['people'][key]['standing_goal']=goal
-                assignment=state['town']['resident_control']['assignments'][key]
+                # Queue preparation can touch existing invitations. Stage it
+                # separately so a rejected choice cannot leave a partial goal.
+                accepted_state=copy.deepcopy(state) if action['focus'] and target is None else state
+                accepted_state['people'][key]['standing_goal']=goal
+                assignment=accepted_state['town']['resident_control']['assignments'][key]
                 assignment.update(mode='go_to' if target else 'await_decision',target=target['id'] if target else actor,goal_id=goal['id'],source=goal['source'])
+                if action['focus'] and target is None:
+                    goal['follow_through']=queue_goal_review(accepted_state,goal,actor,observation)
+                    if goal['follow_through']['status']=='unavailable':goal['phase']='held'
+                state=accepted_state
             except (ValueError,KeyError,TypeError,StopIteration) as error:
                 failure=str(error) if str(error) in ('inference_failed','resident_unavailable','resident_identity_changed','malformed_result') else 'stale_or_invalid_choice'
                 # Failed inference does not erase the last goal or replay itself.
@@ -210,7 +229,7 @@ class ResidentGoals:
                 'chosen_family':option_families[result['decision']['action_id']] if failure is None else None,
                 'elapsed_seconds':elapsed if type(elapsed) in (int,float) and math.isfinite(elapsed) and 0<=elapsed<3600 else None,
                 'usage':usage_receipt(result.get('usage'))})
-        updated.update(phase='complete',settled_at=now,results=receipts,members=[{'actor':m['actor']} for m in wave['members']])
+        next(w for w in state['town']['goal_waves'] if w['id']==event_id).update(phase='complete',settled_at=now,results=receipts,members=[{'actor':m['actor']} for m in wave['members']])
         return {'checkpoint':self._write(state,'personal destinations selected independently; no inventory or need changes'),'results':receipts}
 
     def observe_resident_goals(self,observation):
@@ -224,9 +243,13 @@ class ResidentGoals:
         native={a['actor']:a for a in (observation.get('resident_control') or {}).get('activities',[])}
         rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
         sites={s['id']:s for s in observation.get('places',[])+(observation.get('rest') or {}).get('sites',[]) if s.get('available') is True or s.get('loaded') is True}
-        completed=[];busy=occupied(self.active)
+        completed=[];busy=occupied(self.active);reviewed=[]
+        queue={e['id']:e for e in town.get('daily',{}).get('queue',[])}
         for key,person in self.active['people'].items():
             goal=person.get('standing_goal') or {};a=native.get(int(key)) or {}
+            follow=goal.get('follow_through') or {};event=queue.get(follow.get('event_id'))
+            if follow.get('status')=='pending' and event and event.get('status') not in ('pending','started'):
+                reviewed.append((key,event))
             if goal.get('phase')!='travelling' or int(key) in busy or a.get('goal_id')!=goal['id'] or a.get('target')!=(goal.get('target') or {}).get('id'):continue
             row=rows.get(int(key),{});site=sites.get(a.get('target'),{});assignment=town.get('resident_control',{}).get('assignments',{}).get(key,{})
             policy=validate_policy(goal.get('policy',LEGACY_POLICY))
@@ -237,10 +260,14 @@ class ResidentGoals:
                      and same_space(row.get('space'),site.get('space')) is not False
                      and observed_gap<=policy['arrival_distance'] and type(a.get('distance')) in (int,float) and 0<=a['distance']<=policy['arrival_distance'])
             if arrived or a.get('phase')=='failed':completed.append((key,goal,a,arrived))
-        if not stale and not completed:return False
+        if not stale and not completed and not reviewed:return False
         state=copy.deepcopy(self.active);day=native_day(observation)
         for w in state['town'].get('goal_waves',[]):
             if w['id'] in stale:w.update(phase='held',settled_at=now,error=stale[w['id']],members=[{'actor':m['actor']} for m in w['members']])
+        for key,event in reviewed:
+            goal=state['people'][key]['standing_goal'];goal['follow_through'].update(status=event['status'],outcome=event.get('outcome'),settled_day=day)
+            if goal['phase']=='review_pending':goal['phase']='reviewed'
+            goal['next_review_day']=day+goal['policy']['review_game_minutes']/1440
         for key,goal,a,arrived in completed:
             policy=validate_policy(goal.get('policy',LEGACY_POLICY))
             elapsed=round(now-goal['decided_at'],3) if type(goal.get('decided_at')) in (int,float) and 0<=now-goal['decided_at'] else None
@@ -254,5 +281,7 @@ class ResidentGoals:
                 'source':'Native owned destination receipt; no rest, production, trade or conversation implied'}])[-32:]
             assignment=state['town']['resident_control']['assignments'].get(key)
             if assignment is not None:assignment.update(mode='await_decision',target=int(key))
-            if arrived:person['agency']['next_review_day']=day
+            if arrived:
+                person['agency']['next_review_day']=day
+                if goal.get('focus'):person['standing_goal']['follow_through']=queue_goal_review(state,person['standing_goal'],int(key),observation)
         self._write(state,'independent destination arrivals settled without inventing economic effects');return True

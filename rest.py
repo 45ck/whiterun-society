@@ -1,9 +1,9 @@
 """Seated breaks with native attendance; recovery rates are authored gameplay."""
 import copy
 import math
+from places import catalogued_site, venue_distance
 
 FATIGUE_PER_GAME_HOUR = .025
-BENCHES = {0x8f15c,0xe6c6c,0xe6c6b,0xe6c6a,0x8f15d,0x506f7,0x506f6,0x506f5,0x8f15b}
 
 
 def rest_opportunities(state, observation, actor):
@@ -14,13 +14,13 @@ def rest_opportunities(state, observation, actor):
         return []
     result=[]
     for site in sensor.get('sites',[]):
-        if site.get('id') not in BENCHES or site.get('loaded') is not True or site.get('occupancy_known') is not True:
+        venue=catalogued_site(site,'rest_bench')
+        if venue is None or site.get('loaded') is not True or site.get('occupancy_known') is not True:
             continue
         own_seat=senses.get('sit_state')==3 and senses.get('furniture')==site['id']
         if site.get('occupied') is not False and not own_seat:continue
-        try:gap=math.dist([resident[k] for k in ('x','y','z')],site['position'])
-        except (KeyError,TypeError,ValueError):continue
-        if math.isfinite(gap) and gap<=5000:result.append({**site,'distance':gap})
+        gap=venue_distance(resident,site)
+        if gap is not None and gap<=5000:result.append({**venue,'distance':gap})
     return sorted(result,key=lambda s:(s['distance'],s['id']))
 
 

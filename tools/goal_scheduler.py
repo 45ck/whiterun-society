@@ -10,6 +10,7 @@ import time
 import uuid
 from resident_goals import occupied
 from routing import activity_blocker
+from goal_opportunities import pending_goal_review
 
 
 def due_residents(snapshot):
@@ -26,7 +27,7 @@ def due_residents(snapshot):
     for row in obs.get('residents',[]):
         actor=row['id'];key=str(actor);person=people.get(key)
         if (key not in control.get('assignments',{}) or not person or row.get('isPerson') is not True
-                or actor in busy or activity_blocker(row)):continue
+                or actor in busy or activity_blocker(row) or pending_goal_review(society,actor)):continue
         goal=person.get('standing_goal') or {}
         if goal.get('phase')!='travelling' and day>=goal.get('next_review_day',0):due.append(actor)
     return sorted(set(due))

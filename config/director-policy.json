@@ -1,0 +1,19 @@
+{
+  "version": "director-policy-v1",
+  "modes": {
+    "sample": {
+      "default_events": 6,
+      "maximum_events": 12,
+      "watch_seconds": 600,
+      "goal_budget": 192,
+      "goal_review_seconds": 5
+    },
+    "play": {
+      "default_events": 96,
+      "maximum_events": 96,
+      "watch_seconds": 3600,
+      "goal_budget": 768,
+      "goal_review_seconds": 5
+    }
+  }
+}

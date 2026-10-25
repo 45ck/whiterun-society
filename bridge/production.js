@@ -6,6 +6,19 @@ function createProductionController(platform,now=Date.now){
  const items={gold:0xf,bread:0x65c97,grain:0x4b0ba};
  const equal=(a,b)=>Object.keys(a).every(r=>b[r]&&Object.keys(items).every(k=>a[r][k]===b[r][k]));
  const clone=x=>JSON.parse(JSON.stringify(x));
+ function ownerAttendance(sp,c){
+  const a=c.attendance;
+  if(!a||typeof a.id!=='string'||!a.id.startsWith('owner-work-')||a.id.length>75||
+     !Number.isInteger(a.slot)||a.slot<0||a.slot>=128||!Number.isInteger(a.serial)||a.serial<1||a.serial>16777215)return false;
+  try{
+   const get=n=>sp.Game.getFormFromFile(0x800+a.slot*16+n,'WhiterunCitizens.esp');
+   const quest=sp.Quest.from(get(0)),pkg=get(1),actors=sp.FormList.from(get(2)),targets=sp.FormList.from(get(3));
+   const request=sp.GlobalVariable.from(get(4)),ack=sp.GlobalVariable.from(get(5)),status=sp.GlobalVariable.from(get(6));
+   return quest.isRunning()&&pkg.getFormID()===c.expected_package&&actors.getSize()===1&&targets.getSize()===1&&
+    actors.getAt(0)?.getFormID()===c.actor&&targets.getAt(0)?.getFormID()===c.actor&&
+    request.getValue()===a.serial&&ack.getValue()===a.serial&&status.getValue()===1;
+  }catch(_){return false;}
+ }
  return {
   reset(){active=null;},
   status(){return active?{id:active.id,actor:active.actor,expectedPackage:active.package,ownedPackage:!['complete','held'].includes(active.phase)&&active.attendance?.package_owned===true,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:active.minutes,wageGold:active.wage,attendance:active.attendance||null}:null;},
@@ -44,7 +57,9 @@ function createProductionController(platform,now=Date.now){
    const pkg=worker.getCurrentPackage();
    const target=own?c.anchor:[employer.getPositionX(),employer.getPositionY(),employer.getPositionZ()];
    const gap=Math.hypot(worker.getPositionX()-target[0],worker.getPositionY()-target[1],worker.getPositionZ()-target[2]);
-   active.attendance={distance:gap,package_owned:!!pkg&&pkg.getFormID()===c.expected_package};
+   active.attendance={distance:gap,package_owned:!!pkg&&pkg.getFormID()===c.expected_package,
+     ...(own?{stationary_lease_verified:ownerAttendance(sp,c),hold_id:c.attendance?.id,slot:c.attendance?.slot,serial:c.attendance?.serial}:{})};
+   if(own&&!active.attendance.stationary_lease_verified)return fail('Owned stationary work mailbox is not verified');
    if(!active.attendance.package_owned)return fail('Owned work attendance interrupted');
    if(!Number.isFinite(gap))return fail('Invalid work attendance distance');
    // A moving employer may briefly pull ahead. Only nearby attendance earns

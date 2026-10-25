@@ -1,12 +1,13 @@
 """Resident-chosen production from an owner's single physical stock account."""
 import copy
 import math
+import time
 from enterprises import production_policy
 from routing import activity_blocker
 from entrepreneurship import learn_bread_recipe
 
 
-def owner_work_opportunities(state, observation, actor):
+def owner_work_opportunities(state, observation, actor, *, require_owned=True):
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
     if not resident or activity_blocker(resident):return []
     inventory=resident.get('inventory',{})
@@ -14,7 +15,8 @@ def owner_work_opportunities(state, observation, actor):
     if inventory['grain']<1:return []
     control=next((a for a in (observation.get('resident_control') or {}).get('activities',[]) if a.get('actor')==actor),{})
     package=control.get('expectedPackage')
-    if not (control.get('ownedPackage') is True and type(package) is int and package>0 and
+    if type(package) is not int or package<=0:return []
+    if require_owned and not (control.get('ownedPackage') is True and
             (resident.get('activity') or {}).get('package_id')==package):return []
     if any(type(resident.get(k)) not in (int,float) or not math.isfinite(resident[k]) for k in ('x','y','z')):return []
     result=[]
@@ -34,14 +36,38 @@ class OwnerProduction:
         if plan is not self.agency_plan() or plan['phase']!='ready_to_self_work':
             raise ValueError('Owner production requires a current resident decision')
         terms=plan['own_work_terms']
-        if terms not in owner_work_opportunities(self.active,observation,plan['actor']):
+        if terms not in owner_work_opportunities(self.active,observation,plan['actor'],require_owned=False):
             raise ValueError('Owner production opportunity changed')
         actor=next(a for a in observation['residents'] if a['id']==plan['actor'])
+        hold_id='owner-work-'+plan['id']
+        acquisition=plan.get('owner_work_attendance')
+        if not acquisition:
+            state=copy.deepcopy(self.active)
+            state['plans'][-1]['owner_work_attendance']={'id':hold_id,'started_at':time.time()}
+            self._write(state,'owner stationary attendance requested before labour or inventory effects')
+            return
+        if (acquisition.get('id')!=hold_id or type(acquisition.get('started_at')) not in (int,float)
+                or not math.isfinite(acquisition['started_at'])):
+            raise ValueError('Owner attendance claim is invalid')
+        elapsed=time.time()-acquisition['started_at']
+        if elapsed<0 or elapsed>30:
+            raise ValueError('Owner stationary attendance was not acquired within 30 seconds')
+        control=next((a for a in (observation.get('resident_control') or {}).get('activities',[]) if a.get('actor')==plan['actor']),{})
+        stationary=(control.get('work_hold_id')==hold_id and control.get('goal_id')==hold_id
+            and control.get('mode')=='await_decision' and control.get('target')==plan['actor']
+            and control.get('phase')=='work_holding' and control.get('ownedPackage') is True
+            and control.get('expectedPackage')==terms['expected_package']
+            and (actor.get('activity') or {}).get('package_id')==terms['expected_package']
+            and type(control.get('slot')) is int and 0<=control['slot']<128
+            and type(control.get('serial')) is int and 1<=control['serial']<=16777215)
+        if not stationary:return
+        attendance={'id':hold_id,'slot':control['slot'],'serial':control['serial'],
+            'source':'Observed self-targeted continuity mailbox and owned package; productive animation unverified'}
         before={'owner':{k:actor['inventory'][k] for k in ('gold','bread','grain')}}
         after=copy.deepcopy(before);after['owner']['grain']-=1;after['owner']['bread']+=2
         command={'id':'produce-'+plan['id'],'kind':'inventory_self_produce','actor':plan['actor'],
             'expected_package':terms['expected_package'],'work_minutes':terms['policy']['work_minutes'],
-            'anchor':[actor[k] for k in ('x','y','z')],'before':before,'after':after}
+            'anchor':[actor[k] for k in ('x','y','z')],'attendance':attendance,'before':before,'after':after}
         state=copy.deepcopy(self.active)
         state['pending']={'id':command['id'],'command':command,'status':'pending','evidence':None,
             'business_id':terms['business_id'],'source':'Owner chooses own labour and grain; no wage transfer'}

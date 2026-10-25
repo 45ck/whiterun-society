@@ -1,0 +1,269 @@
+{
+  "source_run": "society-48b1c8dd7d4f4df8",
+  "source_event": "daily-80-108162",
+  "qualification": "Offline current goal-context construction against saved native snapshot; all urlopen calls mocked. No network/model inference. Full contexts excluded.",
+  "unbounded_over_16k": 25,
+  "bounded_under_16k": 26,
+  "rows": [
+    {
+      "actor_id": 108165,
+      "original_context_bytes": 17432,
+      "bounded_context_bytes": 13965,
+      "actual_provider_payload_bytes": 14049,
+      "options_preserved": 23,
+      "nearby_people_available": 1,
+      "nearby_people_considered": 0,
+      "payload_sha256": "0dd70f120397e476d958eed2cc815e70ea8fef3a1aeb960de2c590cffb828d69"
+    },
+    {
+      "actor_id": 108167,
+      "original_context_bytes": 14470,
+      "bounded_context_bytes": 13693,
+      "actual_provider_payload_bytes": 13745,
+      "options_preserved": 25,
+      "nearby_people_available": 1,
+      "nearby_people_considered": 0,
+      "payload_sha256": "40efbd0e17041e34934edc09026d2d9bfbe7dcad72030c98744c685059ce04e6"
+    },
+    {
+      "actor_id": 108169,
+      "original_context_bytes": 27405,
+      "bounded_context_bytes": 13774,
+      "actual_provider_payload_bytes": 13826,
+      "options_preserved": 25,
+      "nearby_people_available": 16,
+      "nearby_people_considered": 0,
+      "payload_sha256": "0ea7bc5a648fd2b2075cfb251035ee6887e8028934e87e6d1c151d983290d289"
+    },
+    {
+      "actor_id": 108156,
+      "original_context_bytes": 27291,
+      "bounded_context_bytes": 13829,
+      "actual_provider_payload_bytes": 13913,
+      "options_preserved": 23,
+      "nearby_people_available": 19,
+      "nearby_people_considered": 0,
+      "payload_sha256": "c064707498f08c47f5112ed07f128a6ae45085fb369c6c945c5daf07af11c653"
+    },
+    {
+      "actor_id": 108140,
+      "original_context_bytes": 26843,
+      "bounded_context_bytes": 13954,
+      "actual_provider_payload_bytes": 14038,
+      "options_preserved": 23,
+      "nearby_people_available": 20,
+      "nearby_people_considered": 0,
+      "payload_sha256": "b5d2b4c4d23d47afe302a22cb2889801c749d7e3f8ba633bf1da72e7eedaf380"
+    },
+    {
+      "actor_id": 108185,
+      "original_context_bytes": 25863,
+      "bounded_context_bytes": 13808,
+      "actual_provider_payload_bytes": 13876,
+      "options_preserved": 24,
+      "nearby_people_available": 20,
+      "nearby_people_considered": 0,
+      "payload_sha256": "cf0bc255bfaf42a3577e214220910b8ff9054f75c343725602bd633a17817a5c"
+    },
+    {
+      "actor_id": 225386,
+      "original_context_bytes": 20075,
+      "bounded_context_bytes": 13942,
+      "actual_provider_payload_bytes": 14010,
+      "options_preserved": 24,
+      "nearby_people_available": 20,
+      "nearby_people_considered": 0,
+      "payload_sha256": "48795ffc7ab687be681b94b51dd0244e2f3ad9d7343b0aa82492535494070c53"
+    },
+    {
+      "actor_id": 108149,
+      "original_context_bytes": 24528,
+      "bounded_context_bytes": 13981,
+      "actual_provider_payload_bytes": 14049,
+      "options_preserved": 24,
+      "nearby_people_available": 20,
+      "nearby_people_considered": 0,
+      "payload_sha256": "e682c05ccaf984934444a7e62cfa8e47cfbf3e425c610c483e3921db412edeeb"
+    },
+    {
+      "actor_id": 1106614,
+      "original_context_bytes": 25853,
+      "bounded_context_bytes": 13823,
+      "actual_provider_payload_bytes": 13891,
+      "options_preserved": 24,
+      "nearby_people_available": 20,
+      "nearby_people_considered": 0,
+      "payload_sha256": "1bdb12d461d644b73ec02809cf04f909ad2ec4ff928c70aae5e09bc11439abbb"
+    },
+    {
+      "actor_id": 108164,
+      "original_context_bytes": 27848,
+      "bounded_context_bytes": 13809,
+      "actual_provider_payload_bytes": 13877,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "6ba651034892de1a686fdc371ed98e142ec882229c33686834f3b62f37fad4d9"
+    },
+    {
+      "actor_id": 108160,
+      "original_context_bytes": 28189,
+      "bounded_context_bytes": 13798,
+      "actual_provider_payload_bytes": 13866,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "62769657fa73a3f81a221a4b7ef1c80b4d74677299a7d98b73610c978928f3ca"
+    },
+    {
+      "actor_id": 1048823,
+      "original_context_bytes": 19685,
+      "bounded_context_bytes": 13900,
+      "actual_provider_payload_bytes": 13968,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "de7cac32064f9a71e08b5285ef3106f7e3375685b236b0f15d2b96131085dcc3"
+    },
+    {
+      "actor_id": 108162,
+      "original_context_bytes": 26998,
+      "bounded_context_bytes": 13778,
+      "actual_provider_payload_bytes": 13846,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "ef01290bb371fdff6b3c9fd3a40eda1780f3f1cfd9034a6003f37a5796291396"
+    },
+    {
+      "actor_id": 108186,
+      "original_context_bytes": 28373,
+      "bounded_context_bytes": 13914,
+      "actual_provider_payload_bytes": 13982,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "ce883825c73b9a320a8c46f4680bf7f38ca431455ae2be08d0078e680e88c010"
+    },
+    {
+      "actor_id": 225408,
+      "original_context_bytes": 21305,
+      "bounded_context_bytes": 13935,
+      "actual_provider_payload_bytes": 14003,
+      "options_preserved": 24,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "07f60688d0918f6a3f9b98264ee595980caec862f98c95b6989196f458e7a71c"
+    },
+    {
+      "actor_id": 843123,
+      "original_context_bytes": 27840,
+      "bounded_context_bytes": 13953,
+      "actual_provider_payload_bytes": 14037,
+      "options_preserved": 23,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "792d22dd1db174f8fffb5b97298d15a76207aca681b23b87cb46c2da3be51bde"
+    },
+    {
+      "actor_id": 108197,
+      "original_context_bytes": 27674,
+      "bounded_context_bytes": 13948,
+      "actual_provider_payload_bytes": 14032,
+      "options_preserved": 23,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "f6cecdef0ebd31189090430fe5968ddb1f5375e47c4d61fcc3517685c2955401"
+    },
+    {
+      "actor_id": 182543,
+      "original_context_bytes": 27811,
+      "bounded_context_bytes": 13955,
+      "actual_provider_payload_bytes": 14039,
+      "options_preserved": 23,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "4fcb86fa747cb1ef24c4ca7ffac5fb88958effc78c7ff4b14bab032210a83d5f"
+    },
+    {
+      "actor_id": 225366,
+      "original_context_bytes": 21179,
+      "bounded_context_bytes": 13833,
+      "actual_provider_payload_bytes": 13917,
+      "options_preserved": 23,
+      "nearby_people_available": 23,
+      "nearby_people_considered": 0,
+      "payload_sha256": "b162873509c17f8e396d7f0778cdd73349c0564555dd6df4366ebcf91fa57962"
+    },
+    {
+      "actor_id": 108138,
+      "original_context_bytes": 27382,
+      "bounded_context_bytes": 13951,
+      "actual_provider_payload_bytes": 14035,
+      "options_preserved": 23,
+      "nearby_people_available": 22,
+      "nearby_people_considered": 0,
+      "payload_sha256": "d850abf649fbbb3b1a39e1d5582ac527c61670d9e2bdf66738b35f176194e3b6"
+    },
+    {
+      "actor_id": 108170,
+      "original_context_bytes": 26895,
+      "bounded_context_bytes": 13959,
+      "actual_provider_payload_bytes": 14043,
+      "options_preserved": 23,
+      "nearby_people_available": 22,
+      "nearby_people_considered": 0,
+      "payload_sha256": "005e94502b068a9d21283d8b19016bf254ac827caa6ca8135946d2d3ecf79450"
+    },
+    {
+      "actor_id": 225392,
+      "original_context_bytes": 20763,
+      "bounded_context_bytes": 13835,
+      "actual_provider_payload_bytes": 13919,
+      "options_preserved": 23,
+      "nearby_people_available": 22,
+      "nearby_people_considered": 0,
+      "payload_sha256": "976e8f7da31eba03c7e16f1f8d8cf245ff58fd677c87324330f1bd0b0fd5539d"
+    },
+    {
+      "actor_id": 225409,
+      "original_context_bytes": 21382,
+      "bounded_context_bytes": 13890,
+      "actual_provider_payload_bytes": 13942,
+      "options_preserved": 25,
+      "nearby_people_available": 21,
+      "nearby_people_considered": 0,
+      "payload_sha256": "6e5643539cc94dfadde91ba39b8567ae99ea4dffe7dec2221b86e22edede45b8"
+    },
+    {
+      "actor_id": 225390,
+      "original_context_bytes": 19035,
+      "bounded_context_bytes": 13916,
+      "actual_provider_payload_bytes": 14016,
+      "options_preserved": 22,
+      "nearby_people_available": 16,
+      "nearby_people_considered": 2,
+      "payload_sha256": "c8b26a39bf442c75897e88e9074bc345da724e20ad9aefc3da149e31f9629dc0"
+    },
+    {
+      "actor_id": 108196,
+      "original_context_bytes": 23005,
+      "bounded_context_bytes": 13895,
+      "actual_provider_payload_bytes": 14011,
+      "options_preserved": 21,
+      "nearby_people_available": 16,
+      "nearby_people_considered": 2,
+      "payload_sha256": "03a7a390d53e62063806e591da391aa7ba183336843ed93c9b01936c826c1b54"
+    },
+    {
+      "actor_id": 225368,
+      "original_context_bytes": 19236,
+      "bounded_context_bytes": 13902,
+      "actual_provider_payload_bytes": 14002,
+      "options_preserved": 22,
+      "nearby_people_available": 16,
+      "nearby_people_considered": 2,
+      "payload_sha256": "af34f04eb705078ecce661bdb85b536c0095f537628f480b4941fc50ba0f62c1"
+    }
+  ]
+}

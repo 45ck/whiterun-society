@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createProductionController}=require('../bridge/production.js');
-function ownerSetup(){const h=setup();h.c={id:'owner',kind:'inventory_self_produce',actor:2,expected_package:99,work_minutes:10,anchor:[0,0,0],before:{owner:structuredClone(h.balances[2])},after:{owner:{gold:5,bread:4,grain:1}}};return h;}
+function ownerSetup(){const h=setup();h.c={id:'owner',kind:'inventory_self_produce',actor:2,expected_package:99,work_minutes:10,anchor:[0,0,0],attendance:{id:'owner-work-owner',slot:0,serial:1},before:{owner:structuredClone(h.balances[2])},after:{owner:{gold:5,bread:4,grain:1}}};return h;}
 test('owner labour uses one account, no wages and two asynchronous recipe legs',()=>{
  const h=ownerSetup(),other=structuredClone(h.balances[1]);h.engine.step(h.c);assert.equal(h.engine.status().ownedPackage,true);
  for(let i=0;i<24;i++){h.next();h.engine.step(h.c);}
@@ -16,20 +16,23 @@ test('owner cannot manufacture gold, change the recipe, or count distant attenda
 });
 function setup(){
  const balances={1:{gold:12,bread:0,grain:0},2:{gold:5,bread:2,grain:2}},calls=[],queue=[];
- let game=1,clock=0,owned=true,defer=false,frame=0,separation=0;
+ let game=1,clock=0,owned=true,defer=false,frame=0,separation=0,ownerTarget=2,ownerSerial=1,ownerRunning=true;
  const form=id=>{
   if(id===15)return 'gold';if(id===0x65c97)return 'bread';if(id===0x4b0ba)return 'grain';
   const born=frame,check=()=>assert.equal(born,frame);
-  return {id,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,getCurrentPackage:()=>({getFormID:()=>owned?99:88}),
+  return {id,getFormID:()=>id,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,getCurrentPackage:()=>({getFormID:()=>owned?99:88}),
    getPositionX:()=>id===1?separation:0,getPositionY:()=>0,getPositionZ:()=>0,getItemCount:k=>{check();return balances[id][k];},
    removeItem:(k,n,silent,to)=>{check();calls.push([id,k,-n,to?.id]);const f=()=>{balances[id][k]-=n;if(to)balances[to.id][k]+=n;};defer?queue.push(f):f();},
    addItem:(k,n)=>{check();calls.push([id,k,n]);const f=()=>{balances[id][k]+=n;};defer?queue.push(f):f();}};
  };
- const sp={Actor:{from:x=>x},Game:{getFormEx:form},Utility:{getCurrentGameTime:()=>game}};
+ const sp={Actor:{from:x=>x},Quest:{from:x=>x},FormList:{from:x=>x},GlobalVariable:{from:x=>x},
+  Game:{getFormEx:form,getFormFromFile(id,file){assert.equal(file,'WhiterunCitizens.esp');
+   return [{isRunning:()=>ownerRunning},{getFormID:()=>99},{getSize:()=>1,getAt:()=>form(2)},
+     {getSize:()=>1,getAt:()=>form(ownerTarget)},{getValue:()=>ownerSerial},{getValue:()=>1},{getValue:()=>1}][id-0x800];}},Utility:{getCurrentGameTime:()=>game}};
  const engine=createProductionController(()=>sp,()=>clock);
  const c={id:'work',kind:'inventory_produce',worker:1,employer:2,expected_package:99,work_minutes:30,
   before:structuredClone({worker:balances[1],employer:balances[2]}),after:{worker:{gold:14,bread:0,grain:0},employer:{gold:3,bread:4,grain:1}}};
- return {engine,c,balances,calls,sp,next:(minutes=.5)=>{frame++;game+=minutes/1440;clock+=100;},interrupt:()=>{owned=false;},
+ return {engine,c,balances,calls,sp,redirectOwner:n=>ownerTarget=n,ownerSerial:n=>ownerSerial=n,stopOwner:()=>ownerRunning=false,next:(minutes=.5)=>{frame++;game+=minutes/1440;clock+=100;},interrupt:()=>{owned=false;},
   separate:n=>{separation=n;},advanceWall:n=>{clock+=n;},defer:()=>{defer=true;},flush:()=>queue.splice(0).forEach(f=>f()),expire:()=>{clock+=6000;}};
 }
 function labour(h){h.engine.step(h.c);for(let i=0;i<62;i++){h.next();h.engine.step(h.c);}}
@@ -102,4 +105,20 @@ test('failed attendance can prove no effects but an issued mutation cannot',()=>
  const result=h.engine.step(h.c);assert.equal(result.ack.status,'held');assert.equal(result.ack.no_effects_issued,true);assert.equal(h.calls.length,0);
  const mutated=setup();mutated.defer();labour(mutated);mutated.expire();
  assert.equal(mutated.engine.step(mutated.c).ack.no_effects_issued,false);
+});
+
+
+test('an owned travelling package cannot earn owner labour without its self-target lease',()=>{
+ const h=ownerSetup();h.redirectOwner(1);
+ const result=h.engine.step(h.c);assert.equal(result.ack.status,'held');assert.equal(result.ack.no_effects_issued,true);
+ assert.equal(h.engine.status().workedMinutes,0);assert.equal(h.calls.length,0);
+ assert.equal(h.engine.status().attendance.stationary_lease_verified,false);
+});
+
+test('owner lease serial changes and quest release interrupt before inventory effects',()=>{
+ for(const disturb of [h=>h.ownerSerial(2),h=>h.stopOwner(),h=>delete h.c.attendance]){
+  const h=ownerSetup();h.engine.step(h.c);h.next();h.engine.step(h.c);assert.equal(h.engine.status().workedMinutes,.5);
+  disturb(h);h.next();const result=h.engine.step(h.c);
+  assert.equal(result.ack.status,'held');assert.equal(result.ack.no_effects_issued,true);assert.equal(h.calls.length,0);
+ }
 });

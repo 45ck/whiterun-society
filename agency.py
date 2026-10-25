@@ -13,7 +13,7 @@ from market_day import event_for
 from routing import route_available, dynamic_route, activity_blocker
 from labour import work_opportunities, settle_contract
 from rest import rest_opportunities
-from places import MARKET, market_opportunity, at_market
+from places import market_opportunity, market_opportunities, at_market
 from opportunities import food_sellers
 from knowledge import person_view
 from social import social_candidates
@@ -23,6 +23,8 @@ from procurement import grain_procurement
 from bargaining import PRICING_POLICY, own_prices, price_choices, record_quote, accept_quote, quote_valid
 from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_MINUTES
 from entrepreneurship import enterprise_choices, apply_resident_enterprise, knows_bread_recipe
+from context_window import bounded_economic_context
+from trade_memory import remember_refusal_decision
 
 TERMINAL = ('complete', 'held')
 
@@ -109,6 +111,7 @@ class Agency:
         if scheduled:
             plan['scheduled']=True
             if event.get('conversation_followups'):plan['conversation_followups']=copy.deepcopy(event['conversation_followups'])
+            if event.get('goal_followups'):plan['goal_followups']=copy.deepcopy(event['goal_followups'])
         state.setdefault('plans', []).append(plan)
         if kind == 'work_shift':
             jobs = work_opportunities(state, observation, actor)
@@ -140,6 +143,7 @@ class Agency:
         work_options = {}
         price_options = {}
         business_options = {}
+        market_options = {}
         if plan['phase'] in ('job_offer', 'job_accept'):
             current_work_terms(self.active, plan)
         policy = plan_work_policy(plan)
@@ -234,8 +238,14 @@ class Agency:
                     options.append({'id':action,'effect':'Walk to '+seller['name']+', a publicly registered food seller, and '+purpose+'. Stock is unknown and they may refuse.'})
             elif inventory['gold'] >= (1 if bargaining else 3) and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
                 purpose='choose an affordable bid for a loaf' if bargaining else 'offer 3 gold for a loaf'
-                options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, '+purpose+'; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
+                for i,site in enumerate(market_opportunities(self.active,observation,actor)):
+                    action='check_market' if i==0 else 'check_market_'+str(site['id'])
+                    market_options[action]=site
+                    options.append({'id':action,'effect':'Walk to '+site['name']+' to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, '+purpose+'; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review':
+                if any(b.get('active',True) is True and b.get('custodian')==actor and 'retail_food' in b.get('capabilities',[])
+                       for b in (self.active.get('town') or {}).get('businesses',{}).values()):
+                    options.append({'id':'review_food_reserve','effect':'Reconsider how much of your carried bread to keep for your household and how much to offer for sale. This changes only your reserve policy; it does not consume, sell or create food.'})
                 for option in enterprise_choices(self.active,observation,actor):
                     business_options[option['id']]=option['specification']
                     options.append({'id':option['id'],'effect':option['effect']})
@@ -258,9 +268,16 @@ class Agency:
         own_followups=[f for f in plan.get('conversation_followups',[]) if f.get('actor')==actor]
         if own_followups:
             information+=' You chose this review after a conversation. Consider the recorded focus and heard words, but recheck current resources and duties. A heard claim is not a verified fact or binding promise. You may change your mind.'
+        own_goals=[f for f in plan.get('goal_followups',[]) if f.get('actor')==actor]
+        if own_goals:
+            information+=' You chose this review as a personal goal. Consider its focus, recheck current resources and duties, and change your mind if appropriate. No need relief or economic effect has happened merely by choosing or arriving.'
+        other=plan.get('target') if actor==plan['actor'] else plan['actor']
+        counterparty=person_view(self.active,actor,other) if other!=actor and str(other) in self.active['people'] else None
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
                 'conversation_followups':copy.deepcopy(own_followups),
+                'own_goal_followups':copy.deepcopy(own_goals),
+                'economic_counterparty':counterparty,
                 'own_commitments':copy.deepcopy(person.get('commitments',[])),
                 'observed_inventory': copy.deepcopy(inventory),
                 'own_food_allocation': stock,
@@ -270,7 +287,7 @@ class Agency:
                 'own_price_history':own_prices(person,commodity), 'commodity':commodity, 'price_options':price_options,
                 'memories': person['memories'][-8:], 'trust': person['trust'],
                 'my_relationships':person.get('relationships',{}), 'option_targets':targets,
-                'work_options':work_options, 'enterprise_options':business_options,
+                'work_options':work_options, 'enterprise_options':business_options, 'market_options':market_options,
                 'own_recipe_knowledge':{'bread':knows_bread_recipe(person),'source':'Own verified production participation; authored learning rule'},
                 'options': options}
 
@@ -287,7 +304,8 @@ class Agency:
         plan = self.agency_plan()
         if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'quote', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
             raise ValueError('No unclaimed decision is ready')
-        context = self._plan_context(observation, plan)
+        context = bounded_economic_context(self._plan_context(observation, plan),self.active['people'][str(
+            plan['target'] if plan['phase'] in ('consent','job_offer') else plan['actor'])]['memories'])
         state = copy.deepcopy(self.active)
         updated = state['plans'][-1]
         updated['claim'] = {'id': secrets.token_hex(12), 'stage': plan['phase'], 'context': context}
@@ -314,6 +332,10 @@ class Agency:
             raise ValueError('The chosen price changed while deciding')
         if current.get('enterprise_options',{}).get(chosen)!=claim['context'].get('enterprise_options',{}).get(chosen):
             raise ValueError('The chosen enterprise revision changed while deciding')
+        if chosen in claim['context'].get('market_options',{}):
+            selected=claim['context']['market_options'][chosen]
+            if not market_opportunity(self.active,observation,plan['actor'],selected['id']):
+                raise ValueError('The selected public venue is no longer executable')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
         if plan.get('commodity','bread')=='bread' and (chosen in ('sell_bread','sell_reserved_bread') or chosen.startswith('ask_price_')) and current['own_food_allocation']!=claim['context']['own_food_allocation']:
@@ -329,11 +351,14 @@ class Agency:
         action = decision['action_id']
         if action in current['enterprise_options']:
             apply_resident_enterprise(state,updated,current['enterprise_options'][action],observation)
-        elif action == 'check_market':
-            site=market_opportunity(self.active,observation,updated['actor'])
+        elif action=='review_food_reserve':
+            updated.update(phase='allocate',intent='review_food_reserve')
+        elif action == 'check_market' or action.startswith('check_market_'):
+            selected=claim['context'].get('market_options',{}).get(action)
+            site=market_opportunity(self.active,observation,updated['actor'],selected['id'] if selected else None)
             if not site:raise ValueError('The known public destination is no longer executable')
-            updated.update(phase='travelling',target=MARKET,target_kind='place',destination=site,
-                intent=action,travel_id='travel-'+event_id,dynamic_route=True,release_required=True)
+            updated.update(phase='travelling',target=site['id'],target_kind='place',destination=site,
+                intent='check_market',travel_id='travel-'+event_id,dynamic_route=True,release_required=True)
         elif action == 'rest_at_bench':
             sites=rest_opportunities(self.active,observation,updated['actor'])
             if not sites:raise ValueError('No available rest site remains')
@@ -416,14 +441,7 @@ class Agency:
 
     @staticmethod
     def _remember_refusal(state, plan):
-        for actor, other, role in [(plan['actor'], plan['target'], 'buyer'),
-                                   (plan['target'], plan['actor'], 'seller')]:
-            person = state['people'][str(actor)]
-            person['memories'].append({'event_id': plan['id'], 'kind': 'trade_offer_declined',
-                'other': other, 'role': role, plan.get('commodity','bread'): 1, 'commodity':plan.get('commodity','bread'), 'gold': plan.get('unit_price', 3),
-                'source': 'agent consent decision, not spoken dialogue'})
-            person['memories'] = person['memories'][-32:]
-        plan['refusals_recorded'] = plan.get('refusals_recorded', 0) + 1
+        return remember_refusal_decision(state, plan)
 
     def hold_plan(self, event_id, reason, observation):
         self._agency_guard(observation)
@@ -461,7 +479,7 @@ class Agency:
             elif plan.get('outcome')=='market_seller_not_observed':
                 person=state['people'][str(plan['actor'])]
                 person['memories'].append({'event_id':plan['id'],'kind':plan['outcome'],
-                    'place':MARKET,'day':observation.get('gameDays'),
+                    'place':plan.get('market_visit',{}).get('place',plan.get('destination',{}).get('id')),'day':observation.get('gameDays'),
                     'source':'Owned arrival; seller not observed within interaction range. This does not prove the business is closed.'})
                 person['memories']=person['memories'][-32:]
             elif plan.get('outcome')=='allocated_stock':
@@ -494,7 +512,7 @@ class Agency:
                 return
             movement = ack.get('movement') or {}
             try:
-                arrived = at_market(observation,plan['actor']) if plan.get('target_kind')=='place' else distance(observation, plan['actor'], plan['target']) <= 300
+                arrived = at_market(observation,plan['actor'],plan['target']) if plan.get('target_kind')=='place' else distance(observation, plan['actor'], plan['target']) <= 300
             except ValueError:
                 arrived = False
             state = copy.deepcopy(self.active)
@@ -506,9 +524,9 @@ class Agency:
                 and (plan.get('target_kind')!='place' or movement.get('target_kind')=='place'))
             if ack.get('status') == 'applied' and movement.get('hasOwnedPackage') and arrived and binding_ok:
                 if plan['intent']=='check_market':
-                    sellers=[r for r in food_sellers(state,observation,plan['actor']) if r['distance'] is not None and r['distance']<=300 and at_market(observation,r['id'])]
+                    sellers=[r for r in food_sellers(state,observation,plan['actor']) if r['distance'] is not None and r['distance']<=300 and at_market(observation,r['id'],plan['target'])]
                     nearby=bool(sellers)
-                    updated['market_visit']={'place':MARKET,'seller_nearby':nearby,'day':observation.get('gameDays')}
+                    updated['market_visit']={'place':plan['target'],'seller_nearby':nearby,'day':observation.get('gameDays')}
                     if nearby:updated.update(phase='consent',target=sellers[0]['id'],target_kind='resident')
                     else:updated.update(phase='complete',outcome='market_seller_not_observed')
                 else:

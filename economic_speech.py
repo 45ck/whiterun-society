@@ -8,6 +8,7 @@ from enterprises import plan_work_policy, current_work_terms
 from employment import remember_unavailable, accept_contract
 from economic_language import economic_context, validate_wording, qualify_wording, wording_receipt, TERMS
 from decisions import validate_decision
+from trade_memory import remember_refusal_decision, remember_refusal_heard
 
 
 def attendance_id(plan):
@@ -46,6 +47,7 @@ class EconomicSpeech:
         plan['economic_speech']={'actor':actor,'listener':listener,'act':act,'line':line,'canonical_line':line,
             'source':'Deterministic wording of accepted economic terms; not generated dialogue',
             'origin_session':self.session,'resume_phase':plan['phase']}
+        if act=='refuse':plan['economic_speech']['refusal_event_id']=remember_refusal_decision(state,plan)
         plan['phase']=('economic_propose' if plan.get('natural_trade') else 'economic_synthesize') if plan.get('economic_attendance') else 'economic_attending'
         plan['release_required']=True
 
@@ -175,6 +177,7 @@ class EconomicSpeech:
         updated.setdefault('economic_turns',[]).append(turn);updated['phase']=turn['resume_phase']
         if turn['act']=='work_accept':accept_contract(state,updated)
         if turn['act']=='work_unavailable':remember_unavailable(state,updated,observation.get('gameDays'),turn['delivery_id'])
+        if turn['act']=='refuse':remember_refusal_heard(state,updated,turn)
         if updated['phase']=='travelling':updated.update(phase='economic_departing',economic_resume='travelling')
         for actor,kind in ((turn['actor'],'said'),(turn['listener'],'heard_speech')):
             person=state['people'][str(actor)]

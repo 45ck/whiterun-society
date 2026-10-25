@@ -13,7 +13,7 @@ function fixture(){
  const sp={Game:{getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];},getFormEx:id=>id===500?destination:actor},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Actor:{from:f=>f},ObjectReference:{from:f=>f}};
  const controller=createResidentControl(()=>sp,()=>clock),control={enabled:true,assignments:{7:{actor:7,slot:0,mode:'await_decision'}}};
  const f={controller,control,forms:slots[0],slots,actor,destination,sites:[{id:500}],position:n=>x=n,package:n=>current=n,scene:n=>scene=n,loaded:n=>loaded=n,
-  step(fresh=true,foreground=[]){clock+=1000;controller.tick(control,loaded?[{id:7,isPerson:true}]:[],fresh,foreground,this.sites);},
+  step(fresh=true,foreground=[],ownerWork=null){clock+=1000;controller.tick(control,loaded?[{id:7,isPerson:true}]:[],fresh,foreground,this.sites,ownerWork);},
   status:()=>controller.status().activities[0],
   bind(){slots[0][5].setValue(slots[0][4].getValue());slots[0][6].setValue(1);},
   start(){for(let i=0;i<4;i++)this.step();},
@@ -83,4 +83,24 @@ test('a competing package is reported as unacquired and never counted as standby
 });
 test('recovery clears saved leases before accepting fresh standing assignments',()=>{
  const f=fixture();f.hold();f.controller.reset();f.step();assert.equal(f.forms[0].isRunning(),false);assert.equal(f.controller.status().activities.length,0);
+});
+
+
+test('owner work rebinds a travelling continuity slot to self and restores its saved journey',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal'};f.hold();
+ const oldSerial=f.forms[4].getValue(),saved=JSON.stringify(f.control),work={id:'bake',actor:7,intent:'owner_production',phase:'ready_to_self_work'};
+ f.step(true,[7],work);assert.equal(f.forms[0].isRunning(),false);assert.equal(f.status().ownedPackage,false);
+ assert.equal(f.status().work_hold_id,'owner-work-bake');assert.equal(f.status().suspended_goal_id,'goal');
+ for(let i=0;i<2;i++)f.step(true,[7],work);f.bind();f.step(true,[7],work);
+ assert.equal(f.status().phase,'work_holding');assert.equal(f.forms[3].getAt(0),f.actor);assert.ok(f.forms[4].getValue()>oldSerial);
+ assert.equal(JSON.stringify(f.control),saved);assert.equal(f.status().mode,'await_decision');
+ work.phase='working';f.step(true,[7],work);assert.equal(f.status().phase,'work_holding');
+ work.phase='complete';f.step(true,[],work);assert.equal(f.forms[0].isRunning(),false);assert.equal(f.status().goal_id,'goal');
+ for(let i=0;i<2;i++)f.step();f.bind();f.step();assert.equal(f.status().phase,'travelling');assert.equal(f.forms[3].getAt(0),f.destination);
+});
+
+test('held owner intent releases its override without cancelling the saved goal',()=>{
+ const f=fixture();f.hold();const work={id:'held-work',actor:7,intent:'owner_production',phase:'ready_to_self_work'};
+ f.step(true,[7],work);assert.equal(f.status().work_hold_id,'owner-work-held-work');
+ work.phase='held';f.step(true,[],work);assert.equal(f.status().work_hold_id,null);assert.equal(f.forms[0].isRunning(),false);
 });

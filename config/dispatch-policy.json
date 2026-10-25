@@ -1,0 +1,7 @@
+{
+  "version": "dispatch-fairness-v1",
+  "urgent_priority_threshold": 0.8,
+  "urgent_wait_game_minutes": 60,
+  "ordinary_wait_game_minutes": 240,
+  "followup_burst_limit": 1
+}

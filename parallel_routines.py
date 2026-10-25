@@ -8,7 +8,7 @@ import math
 import re
 import secrets
 from decisions import validate_decision
-from places import MARKET, market_opportunity
+from places import market_opportunity, market_opportunities
 from routing import route_available
 from opportunities import food_sellers
 from social import capture_social_notice
@@ -64,18 +64,21 @@ class ParallelRoutines:
             event=next((e for e in queue if e['id']==event_id),None)
             if not event or event['status']!='pending' or event['kind']!='need_review':raise ValueError('A pending daily need opportunity is required')
             actor=event['actor'];person=state['people'][str(actor)];native=actors.get(actor)
-            if actor in [m['actor'] for m in members] or not native or not market_opportunity(state,observation,actor):raise ValueError('Resident has no executable public-market journey')
+            sites=market_opportunities(state,observation,actor)
+            if actor in [m['actor'] for m in members] or not native or not sites:raise ValueError('Resident has no executable public-market journey')
             inventory=native.get('inventory',{})
             if inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3 or person['needs']['hunger']<.6:
                 raise ValueError('This cohort requires an unmet affordable food search')
+            destinations={('check_market' if index==0 else 'check_market_'+str(site['id'])):site for index,site in enumerate(sites)}
             context={'actor_id':actor,'session':self.session,'profile':copy.deepcopy(person['profile']),
                 'event':{'id':event_id,'kind':'food_search','information':'Consider visiting the known public market to seek food. This travel cohort can take you there, but buying food requires a later nearby seller consent decision. You may remain with your ordinary routine instead.'},
                 'observed_inventory':copy.deepcopy(inventory),'scenario_state':{'needs':copy.deepcopy(person['needs'])},
                 'memories':copy.deepcopy(person['memories'][-8:]),'my_relationships':copy.deepcopy(person.get('relationships',{})),
                 'weather':copy.deepcopy(observation.get('weather')),
-                'prior_knowledge':'Authored public market location. Other residents private inventories and intentions are unknown.',
-                'options':[{'id':'check_market','effect':'Walk to the public market and look for a food seller. No purchase or hunger relief happens automatically.'},
-                           {'id':'defer','effect':'Keep your ordinary routine; do not take this journey now. No resources or needs change.'}]}
+                'prior_knowledge':'Authored public place catalogue. Other residents private inventories and intentions are unknown.',
+                'destinations':copy.deepcopy(destinations),
+                'options':[{'id':action,'effect':f"Walk to {site['name']} ({round(site['distance'],1)} game units) and look for a food seller. No purchase or hunger relief happens automatically."} for action,site in destinations.items()]+
+                           [{'id':'defer','effect':'Keep your ordinary routine; do not take this journey now. No resources or needs change.'}]}
             members.append({'event_id':event_id,'actor':actor,'slot':slot,'phase':'thinking','context':context})
             event['status']='started';person['agency'].update(state='deciding',reason='Independent food-search decision',event_id=event_id)
         batch={'id':batch_id,'session':self.session,'phase':'thinking','claim_id':secrets.token_hex(12),'members':members,'background':background}
@@ -98,9 +101,10 @@ class ParallelRoutines:
             member['result']=copy.deepcopy(result)
             if decision['action_id']=='defer':member.update(phase='complete',outcome='deferred');continue
             actor=member['actor'];native=actors.get(actor)
-            if not market_opportunity(state,observation,actor) or not native or native.get('inventory')!=member['context']['observed_inventory']:
+            chosen=member['context'].get('destinations',{}).get(decision['action_id'])
+            if not chosen or not market_opportunity(state,observation,actor,chosen['id']) or not native or native.get('inventory')!=member['context']['observed_inventory']:
                 member.update(phase='held',outcome='changed_before_departure');continue
-            job={'id':'lane-'+member['event_id'],'actor':actor,'target':MARKET,'target_kind':'place',
+            job={'id':'lane-'+member['event_id'],'actor':actor,'target':chosen['id'],'target_kind':'place',
                  'slot':member['slot'],'origin':'resident_decision','retain':False,'dynamic':True,
                  'public_seller_ids':sorted({b['custodian'] for b in state['town'].get('businesses',{}).values()
                     if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor})}
@@ -126,7 +130,7 @@ class ParallelRoutines:
         batch=state['routine_batches'][-1];day=observation.get('gameDays');queue=state['town']['daily']['queue']
         for member in batch['members']:
             person=state['people'][str(member['actor'])];outcome=member.get('outcome','journey_held')
-            memory={'event_id':member['event_id'],'kind':outcome,'place':MARKET,'day':day,
+            memory={'event_id':member['event_id'],'kind':outcome,'place':(member.get('command') or {}).get('target'),'day':day,
                     'source':'Independent native journey receipt' if member.get('receipt') else 'Own decision or interrupted claim'}
             movement=(member.get('receipt') or {}).get('movement') or {}
             if outcome=='journey_held' and movement.get('failureReason'):
@@ -168,7 +172,7 @@ class ParallelRoutines:
             receipt=matches[0] if len(matches)==1 else {};movement=receipt.get('movement') or {};gap=movement.get('distance')
             released=receipt.get('release_verified') is True;release_ok=release_ok and released
             valid=(receipt.get('status')=='applied' and released and receipt.get('slot')==job['slot']
-                and movement.get('actor')==job['actor'] and movement.get('target')==MARKET and movement.get('target_kind')=='place'
+                and movement.get('actor')==job['actor'] and movement.get('target')==job['target'] and movement.get('target_kind')=='place'
                 and movement.get('aliasesConfirmed') is True and movement.get('hasOwnedPackage') is True
                 and movement.get('adapter')=='papyrus-mailbox' and type(gap) in (int,float) and math.isfinite(gap) and 0<=gap<=250)
             member['receipt']=copy.deepcopy(receipt)

@@ -25,21 +25,16 @@ from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 from bargaining import MAX_ECONOMIC_CALLS
 from tools.checkpoint_http import CheckpointHTTP
 from tools.goal_scheduler import GoalScheduler
+from director_policy import load_run_policy, resolve_run_policy
+from dispatch_policy import fair_pending, can_insert_social, dispatch_metrics
 
 
-def fair_pending(events, social_first=True):
-    """Keep hunger backlogs from starving social life, without inventing events."""
-    ordered = sorted(events, key=lambda e: (-e['priority'], e.get('created_day', 0), e['id']))
-    followups=[e for e in ordered if e.get('conversation_followups')]
-    ordinary=[e for e in ordered if not e.get('conversation_followups')]
-    social = [e for e in ordinary if e['kind'] == 'social_review']
-    economic = [e for e in ordinary if e['kind'] != 'social_review']
-    result = list(followups)
-    while social or economic:
-        lane = social if social_first else economic
-        if not lane: lane = economic if social_first else social
-        result.append(lane.pop(0))
-        social_first = not social_first
+def routine_dispatch_prefix(state,observation,events):
+    """Batch only the consecutive journeys at the front of the fair queue."""
+    result=[]
+    for event in events:
+        if event.get('goal_followups') or not select_routine_events(state,observation,[event],1):break
+        result.append(event)
     return result
 
 
@@ -128,7 +123,8 @@ def main():
     parser.add_argument('--model-config',type=Path)
     parser.add_argument('--language-config',type=Path,help=f'Enables scheduled social encounters with at most {MAX_COMBINED_CALLS} model calls each')
     parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
-    parser.add_argument('--resident-goals',action='store_true',help='Give loaded residents independent standing destinations, at most 64 decisions per run')
+    parser.add_argument('--resident-goals',action='store_true',help='Give residents bounded personal decisions under the recorded run policy')
+    parser.add_argument('--run-policy',type=Path,help='Frozen validated director policy; its event and scheduling limits must match the CLI')
     parser.add_argument('--receipt',type=Path)
     parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
     parser.add_argument('--social-opportunities',action='store_true',help='Offer nearby encounters between economic events; participation remains a resident choice')
@@ -139,6 +135,9 @@ def main():
     if args.max_events and not args.model_config:raise ValueError('An explicit decision model configuration is required')
     if args.resident_goals and not args.model_config:raise ValueError('Personal goals require a decision model configuration')
     if args.social_opportunities and not args.language_config:raise ValueError('Social opportunities require a language configuration')
+    run_policy=(load_run_policy(args.run_policy,expected_max_events=args.max_events,expected_watch_seconds=args.watch_seconds)
+                if args.run_policy else resolve_run_policy('play' if args.max_events>12 or args.watch_seconds>600 else 'sample',
+                                                          max_events=args.max_events,watch_seconds=args.watch_seconds))
     runtime=args.root/'runtime'
     config=json.loads((runtime/'bridge-config.json').read_text())
     client=CheckpointHTTP(f"http://127.0.0.1:{config['port']}",config['token'])
@@ -154,14 +153,20 @@ def main():
         return state
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],'goal_waves':[],'goal_model_calls':0,
-              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events+(64 if args.resident_goals else 0),'status':'running'}
+              'run_policy':run_policy,
+              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events+(run_policy['goal_budget'] if args.resident_goals else 0),'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     record();deadline=time.monotonic()+args.watch_seconds;first=True
-    goals=GoalScheduler(args.root,args.model_config,session,evidence,record) if args.resident_goals else None
+    goals=GoalScheduler(args.root,args.model_config,session,evidence,record,budget=run_policy['goal_budget'],
+                        interval=run_policy['goal_review_seconds']) if args.resident_goals else None
     initial_goals=False
+    def scheduling_open():return not stopping() and time.monotonic()<deadline
     def run_worker(command):
+        # Recheck at launch, after any observation or receipt-writing latency.
+        # Returning None means no claim, subprocess or model call was started.
+        if not scheduling_open():return None
         return goals.run_foreground(command,fresh,stopping,deadline) if goals else subprocess.run(command,check=False)
     try:
         while first or time.monotonic()<deadline:
@@ -174,7 +179,7 @@ def main():
                 time.sleep(.2);state=fresh()
                 if state['bridge']['session']!=session:raise ValueError('Save/session changed while waiting for director review')
             candidates=scene_candidates(state['society'],state['bridge']['observation']) if args.scene_handoffs else []
-            if candidates and len(evidence['scene_handoffs'])<args.max_events:
+            if candidates and len(evidence['scene_handoffs'])<args.max_events and scheduling_open():
                 resident=candidates[0];handoff_id='scene-'+uuid.uuid4().hex[:20]
                 request('/town/scene-handoff',{'id':handoff_id,'actor':resident['id'],'scene_id':resident['activity']['scene_id']})
                 handoff_deadline=time.monotonic()+45
@@ -187,7 +192,7 @@ def main():
                     if time.monotonic()>handoff_deadline:raise TimeoutError('Scene handoff did not settle; no automatic retry')
                     time.sleep(.2)
             if goals:
-                goals.tick(state,allow_launch=not stopping() and (not initial_goals or time.monotonic()<deadline))
+                goals.tick(state,allow_launch=scheduling_open())
                 if not initial_goals:goals.drain();initial_goals=True
                 state=fresh()
             result=request('/town/review',{'source':'bounded_director'})
@@ -201,17 +206,21 @@ def main():
                 time.sleep(.4)
             loaded={a['id'] for a in state['bridge']['observation']['residents'] if a.get('isPerson') is True}
             queue=(state['society']['town'].get('daily') or {}).get('queue',[])
+            game_day=state['bridge']['observation'].get('gameDays')
             pending=fair_pending((e for e in queue if e['status']=='pending' and e['actor'] in loaded
                             and (e['kind']!='social_review' or args.language_config)),
-                           social_first=len(evidence['events'])%2==0)
-            if args.social_opportunities and not any(e.get('conversation_followups') for e in pending) and len(evidence['events'])%2==0 and not any(e['kind']=='social_review' and event_available(state,e) for e in pending):
+                           social_first=len(evidence['events'])%2==0,game_day=game_day)
+            evidence['dispatch']=dispatch_metrics(pending,game_day=game_day);record()
+            if args.social_opportunities and scheduling_open() and can_insert_social(pending,game_day=game_day) and len(evidence['events'])%2==0 and not any(e['kind']=='social_review' and event_available(state,e) for e in pending):
                 opportunity={'id':'encounter-'+uuid.uuid4().hex[:20],'kind':'social_opportunity','actor':None,
                              'source':'director nearby opportunity; not a claimed urgent need'}
                 if event_available(state,opportunity):pending.insert(0,opportunity)
-            if args.parallel_journeys:
+            if args.parallel_journeys and scheduling_open():
                 remaining=args.max_events-len(evidence['events'])
                 overlap=bool(args.language_config and remaining>=3)
-                travel_pending=[e for e in pending if e.get('conversation_followups')] or pending
+                # A travel batch may not jump over an older resident's self-care.
+                # Goal reviews retain their full action menu in the normal worker.
+                travel_pending=routine_dispatch_prefix(state['society'],state['bridge']['observation'],pending)
                 selected=select_routine_events(state['society'],state['bridge']['observation'],travel_pending,min(6 if overlap else 8,remaining-int(overlap)))
                 if len(selected)>=2:
                     ids=[e['id'] for e in selected];batch_id='daily-routes-'+hashlib.sha256('|'.join(ids).encode()).hexdigest()[:16]
@@ -219,6 +228,7 @@ def main():
                         '--root',str(args.root),'--id',batch_id,'--events',*ids,'--model-config',str(args.model_config)]
                     if overlap:command+=['--social-during-travel','--language-config',str(args.language_config)]
                     result=run_worker(command)
+                    if result is None:break
                     current=fresh();batch=current['society'].get('routine_batch')
                     if current['bridge']['session']!=session or not batch or batch['id']!=batch_id:
                         raise ValueError('Independent-journey cohort did not finish cleanly')
@@ -243,7 +253,7 @@ def main():
                     # even if another service revision later changes its status.
                     pending=[e for e in pending if e['id'] not in ids]
             for event in pending:
-                if stopping() or len(evidence['events'])>=args.max_events:break
+                if not scheduling_open() or len(evidence['events'])>=args.max_events:break
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed before resident decision')
                 if not event_available(current,event):continue
@@ -258,6 +268,8 @@ def main():
                     '--kind',event['kind'],'--model-config',str(args.model_config)]
                 if not social and args.language_config:command+=['--voice-trade','--language-config',str(args.language_config)]
                 result=run_worker(command)
+                if result is None:
+                    evidence['events'].pop();record();break
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')
                 # A worker's hold/finish response can precede the engine's

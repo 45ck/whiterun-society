@@ -22,7 +22,7 @@ class ResidentGoalTests(unittest.TestCase):
         wave=self.world.claim_resident_goals('wave',self.obs)['wave'];self.sync();return wave
 
     def results(self,wave):
-        return [{'actor':m['actor'],'result':{'model':'test-jev','decision':{'action_id':m['context']['options'][-1]['id'],'reason':'Test choice','emotion':'calm'},'usage':{'cost':.001}}} for m in wave['members']]
+        return [{'actor':m['actor'],'result':{'model':'test-jev','decision':{'action_id':next((o['id'] for o in m['context']['options'] if o['id'].startswith('visit_') and o['id'][6:].isdigit()),'quiet'),'reason':'Test choice','emotion':'calm'},'usage':{'cost':.001}}} for m in wave['members']]
 
     def test_all_loaded_people_get_independent_goals_without_asset_or_need_changes(self):
         self.start();before=copy.deepcopy(self.world.active);obs=copy.deepcopy(self.obs)
@@ -77,7 +77,7 @@ class ResidentGoalTests(unittest.TestCase):
         self.start();self.world.active['people']['108149']['memories'].append({'secret':'private memory'})
         context=goal_context(self.world.active,self.obs,108186)
         self.assertNotIn('private memory',str(context));self.assertNotIn('people',context)
-        self.assertTrue(all(o['id']=='quiet' or o['id'].startswith('visit_') for o in context['options']))
+        self.assertTrue(all(o['id']=='quiet' or o['id'].startswith(('visit_','review_')) for o in context['options']))
 
     def test_context_tracks_time_weather_and_only_own_native_activity(self):
         self.start();actor=next(r for r in self.obs['residents'] if r['id']==108186)
@@ -124,7 +124,9 @@ class ResidentGoalTests(unittest.TestCase):
         self.assertEqual(goal['policy'],wave['policy']);self.assertEqual(goal['policy_id'],wave['policy_id'])
         self.assertAlmostEqual(goal['next_review_day']-goal['decided_day'],wave['policy']['review_game_minutes']/1440)
         receipt=next(r for r in self.world.active['town']['goal_waves'][-1]['results'] if r['actor']==108186)
-        self.assertEqual(receipt['option_count'],2);self.assertEqual(receipt['option_families'],['quiet','visit_public_place'])
+        context=next(m['context'] for m in wave['members'] if m['actor']==108186)
+        self.assertEqual(receipt['option_count'],len(context['options']))
+        self.assertIn('quiet',receipt['option_families']);self.assertIn('visit_public_place',receipt['option_families'])
 
     def test_invalid_configuration_is_rejected_before_claim_mutation(self):
         policy=load_policy()

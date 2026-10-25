@@ -1,0 +1,61 @@
+{
+  "scope": "Controlled native owner-work attendance fixture; authored choices, not autonomous behaviour",
+  "date": "2026-10-25",
+  "model_calls": 0,
+  "status": "complete",
+  "outcome": "owner_work_completed",
+  "actor": 108149,
+  "business_id": "business-108149",
+  "sample_count": 86,
+  "observed_work_seconds": 38.112,
+  "before": {
+    "owned_package": true,
+    "mode": "go_to",
+    "target": 329461
+  },
+  "inventory_before": {
+    "gold": 102,
+    "bread": 4,
+    "grain": 20
+  },
+  "inventory_after": {
+    "gold": 102,
+    "bread": 6,
+    "grain": 19
+  },
+  "qualified_work": {
+    "id": "produce-daily-68-108149",
+    "actor": 108149,
+    "expectedPackage": 167774241,
+    "ownedPackage": false,
+    "phase": "complete",
+    "workedMinutes": 10,
+    "requiredMinutes": 10,
+    "wageGold": 0,
+    "attendance": {
+      "distance": 0.09238198665064272,
+      "package_owned": true,
+      "stationary_lease_verified": true,
+      "hold_id": "owner-work-daily-68-108149",
+      "slot": 2,
+      "serial": 61
+    }
+  },
+  "resume": {
+    "owned_package": true,
+    "phase": "travelling",
+    "mode": "go_to",
+    "same_goal": true,
+    "same_target": true
+  },
+  "save_restore": {
+    "baseline": "WS-ProductiveBaseline-20261025-BU",
+    "fields_matched": 17,
+    "fields_compared": 17
+  },
+  "limits": [
+    "This fixture explicitly selected work; it does not prove a resident chose production autonomously.",
+    "One recipe and one owner do not establish broad economy realism.",
+    "The baseline was restored after verification, so fixture output is not retained autonomous economic growth."
+  ]
+}

@@ -21,6 +21,38 @@ function native(){
  return {dom,w,messages,intervals};
 }
 
+test('resident intent reviews show pending work and actual follow-through instead of invented quiet activity',()=>{
+ const {dom,w}=native();try{
+  const goal={id:'goal-7',phase:'review_pending',focus:'food',decided_day:1,follow_through:{event_id:'review-7',status:'pending'}};
+  const person={profile:{name:'Resident',role:'resident',big_five:{}},standing_goal:goal,needs:{hunger:.6},memories:[],relationships:{}};
+  const data={gameDays:1,camera:{manual:true,mode:'focus',id:7},residents:[{id:7,name:'Resident',isPerson:true,inventory:{gold:2,bread:1}}],trades:[],director:{dispatch:{pending_count:4,overdue_count:1,maximum_wait_game_minutes:20}},society:{people:{7:person},town:{residents:{7:{name:'Resident'}},daily:{queue:[{id:'review-7',status:'pending'}]}}}};
+  for(const focus of ['food','work','rest','social']){
+   goal.focus=focus;w.whiterunRender(data);w.whiterunInspectKey(2);
+   const content=w.document.getElementById('resident-inspector').textContent;
+   assert.match(content,new RegExp(focus.charAt(0).toUpperCase()+focus.slice(1)+' review'));
+   assert.match(content,/Waiting for review · not currently thinking or completing work/);
+   assert.doesNotMatch(content,/Quiet interval/);
+  }
+  assert.match(w.document.getElementById('dispatch-state').textContent,/4 pending · 1 overdue · longest wait 20 game min/);
+  goal.phase='reviewed';data.society.town.daily.queue[0]={id:'review-7',status:'complete',outcome:'deferred'};w.whiterunRender(data);
+  assert.match(w.document.getElementById('resident-inspector').textContent,/Follow-through · completeRecorded event · review-7Recorded outcome · deferred/);
+  assert.match(w.document.getElementById('resident-inspector').textContent,/Movement does not imply trade, work or rest recovery/);
+  goal.phase='arrived';goal.target={name:'Workshop'};goal.follow_through={status:'unavailable',reason:'No nearby opportunity'};w.whiterunRender(data);
+  assert.match(w.document.getElementById('resident-inspector').textContent,/Workshop · arrived/);
+  assert.match(w.document.getElementById('resident-inspector').textContent,/Follow-through · unavailableNo nearby opportunity/);
+ }finally{dom.window.close();}
+});
+
+test('town review summary uses the recorded focus without claiming every model is idle',()=>{
+ const {dom,w}=native();try{
+  const data={camera:{manual:false,mode:'story'},residents:[],trades:[],director:{running:true},society:{people:{7:{profile:{name:'Worker'},needs:{hunger:.2},agency:{state:'decision_pending'}}},town:{residents:{7:{}},counts:{residents:1},daily:{sequence:2,queue:[{actor:7,status:'pending',kind:'need_review',goal_followups:[{focus:'work'}]}]}}}};
+  w.whiterunRender(data);assert.equal(w.document.getElementById('town-next').textContent,'Queued: Worker · work review');
+  data.society.town.daily.queue=[];w.whiterunRender(data);
+  assert.match(w.document.getElementById('town-next').textContent,/Personal scheduling is reported separately/);
+  assert.doesNotMatch(w.document.getElementById('town-next').textContent,/No model is running|considers food/);
+ }finally{dom.window.close();}
+});
+
 test('native RTS gestures use the reported camera and focused browser can release F8',()=>{
  const {dom,w,messages,intervals}=native();try{
  w.whiterunRender({residents:[],trades:[],camera:{mode:'free',manual:true,distance:1200,elevation:900,yaw:225,panX:24000,panY:-8000},director:{running:false},dashboard:dashboard()});
@@ -62,6 +94,28 @@ test('native UI defaults to movie view and retains explicit Play/Pause and RTS c
  }finally{dom.window.close();}
 });
 
+test('both run labels distinguish an intentional stop from a completed run and settling pause',()=>{
+ const {dom,w}=native();try{
+  const cases=[
+   [{running:false,status:'complete',outcome:'stopped'},'Paused'],
+   [{running:true,status:'stopping',outcome:'running'},'Pausing'],
+   [{running:true,status:'running'},'Playing'],
+   [{running:false,status:'complete',outcome:'complete'},'Run complete'],
+   [{running:false,status:'complete'},'Stopped'],
+   [{running:false,status:'held',outcome:'held',error:'Receipt unavailable'},'Held'],
+   [{running:false,status:'idle'},'Paused']
+  ];
+  for(const [director,label] of cases){
+   w.whiterunRender({residents:[],trades:[],director:{...director,max_events:12,events_completed:1}});
+   const sidebar=w.document.getElementById('society-state').textContent,left=w.document.getElementById('director-state').textContent;
+   assert.equal(left,'Society '+sidebar);assert.ok(sidebar.startsWith(label+' · 1 / 12 events'));
+   assert.equal(w.document.getElementById('live-badge').textContent,label.toUpperCase());
+   if(label==='Pausing')assert.match(sidebar,/settling current activity/);
+   if(label==='Paused')assert.doesNotMatch(left,/complete/i);
+  }
+ }finally{dom.window.close();}
+});
+
 test('movie camera-follow card cannot obscure the encounter during any dialogue phase',()=>{
  const {dom,w}=native();try{
   const data={residents:[{id:7,name:'Resident',isPerson:true,inventory:{gold:5,bread:1}}],trades:[],director:{running:true},camera:{manual:false,mode:'focus',id:7},society:{people:{},town:{residents:{'7':{name:'Resident'}}}}};
@@ -91,6 +145,11 @@ test('control room uses same charts and play API; rendering does not auto-steer 
  w.setInterval=()=>1;w.fetch=async(url,options)=>{requests.push({url,options});return {ok:true,json:async()=>url==='/observer/state'?state:{running:true,status:'running'}};};
  try{for(const script of w.document.scripts)w.eval(script.textContent);await new Promise(r=>setImmediate(r));
  assert.equal(w.document.querySelectorAll('#town-charts svg').length,1);
+ for(const [director,label] of [[{status:'complete',running:false,outcome:'stopped'},'Paused'],[{status:'stopping',running:true},'Pausing'],[{status:'complete',running:false,outcome:'complete'},'Run complete']]){
+  state.director={...director,max_events:12,events_completed:1};await w.poll();
+  assert.match(w.document.getElementById('director-status').textContent,new RegExp('^Society '+label+' · 1 / 12 events settled'));
+ }
+ state.director={status:'idle',running:false};await w.poll();
  w.document.getElementById('director-start').click();await new Promise(r=>setImmediate(r));
  const request=requests.find(r=>r.url==='/observer/director');assert.equal(JSON.parse(request.options.body).action,'play');assert.equal(JSON.parse(request.options.body).max_events,96);
  assert.equal(requests.some(r=>r.url==='/observer/camera'),false);

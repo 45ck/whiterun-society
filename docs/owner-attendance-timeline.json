@@ -1,0 +1,1316 @@
+{
+  "scope": "Controlled native fixture with authored choices, not autonomous behaviour",
+  "model_calls": 0,
+  "sample_count": 86,
+  "elapsed_wall_seconds": 38.112188,
+  "acquisition_first_observed_seconds": 1.63458,
+  "stationary_hold_first_observed_seconds": 3.578215,
+  "inventory_effects_first_observed_seconds": 36.115492,
+  "resumed_journey": {
+    "observed": true,
+    "elapsed_wall_seconds": null,
+    "scope": "Separate post-completion observation; no timestamp assigned on the sample axis"
+  },
+  "baseline_restore": {
+    "fields_matched": 17,
+    "fields_compared": 17
+  },
+  "limits": [
+    "Point samples do not establish exact transition time between samples.",
+    "Work time is credited game minutes, not wall-clock minutes.",
+    "Inventory effects in this fixture were subsequently undone by baseline restoration.",
+    "No profit, autonomy, animation or psychological realism demonstrated."
+  ],
+  "samples": [
+    {
+      "elapsed_wall_seconds": 0.0,
+      "plan_phase": "thinking",
+      "control_phase": "interaction_priority",
+      "control_mode": "go_to",
+      "control_owned_package": true,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 0.848198,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "interaction_priority",
+      "control_mode": "go_to",
+      "control_owned_package": true,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 1.234314,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "interaction_priority",
+      "control_mode": "go_to",
+      "control_owned_package": true,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 1.63458,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "resetting",
+      "control_mode": "await_decision",
+      "control_owned_package": false,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 2.032365,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "mailbox",
+      "control_mode": "await_decision",
+      "control_owned_package": false,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 2.433523,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "binding",
+      "control_mode": "await_decision",
+      "control_owned_package": false,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 2.831874,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "binding",
+      "control_mode": "await_decision",
+      "control_owned_package": false,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 3.578215,
+      "plan_phase": "ready_to_self_work",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 3.983299,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": null,
+      "credited_work_game_minutes": null,
+      "stationary_lease_verified": null,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 4.402344,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 4.795308,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 5.170867,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 5.550436,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 5.935297,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 6.335325,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 6.753482,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 0.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 7.164675,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 7.572259,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 7.979857,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 8.370795,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 8.753873,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 9.149451,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 9.544373,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 9.951469,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 1.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 10.349876,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 10.734491,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 11.117126,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 11.507658,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 11.919529,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 12.324767,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 12.716883,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 13.115081,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 2.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 13.514146,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 13.905496,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 14.305742,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 14.69846,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 15.124295,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 15.517221,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 15.933528,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 16.339153,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 3.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 16.733926,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 17.132276,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 17.533297,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 17.955528,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 18.354789,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 18.767278,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 19.152429,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 19.560527,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 4.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 19.963295,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 20.336823,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 20.904183,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 21.812504,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 22.196516,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 22.58389,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 5.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 22.998061,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 24.152176,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 6.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 24.53885,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 6.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 25.24492,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 6.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 25.635491,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 6.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 26.027385,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 26.427914,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 26.817123,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 27.203681,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 27.592135,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 27.982148,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 28.398283,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 28.784569,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 7.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 29.170257,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 29.581209,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.1,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 29.979885,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 30.379484,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 30.767919,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.5,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 31.180741,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 31.602358,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.8,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 32.015254,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 8.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 32.402503,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 32.796448,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.2,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 33.208586,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.3,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 33.61437,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.4,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 34.01933,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.6,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 34.419689,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.7,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 34.826557,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 35.231319,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "working",
+      "credited_work_game_minutes": 9.9,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 20,
+        "bread": 4,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 36.115492,
+      "plan_phase": "working",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "complete",
+      "credited_work_game_minutes": 10,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 19,
+        "bread": 6,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 37.714503,
+      "plan_phase": "complete",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "complete",
+      "credited_work_game_minutes": 10,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 19,
+        "bread": 6,
+        "gold": 102
+      }
+    },
+    {
+      "elapsed_wall_seconds": 38.112188,
+      "plan_phase": "complete",
+      "control_phase": "work_holding",
+      "control_mode": "await_decision",
+      "control_owned_package": true,
+      "work_phase": "complete",
+      "credited_work_game_minutes": 10,
+      "stationary_lease_verified": true,
+      "inventory": {
+        "grain": 19,
+        "bread": 6,
+        "gold": 102
+      }
+    }
+  ]
+}

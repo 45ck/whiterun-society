@@ -41,6 +41,27 @@ test('distant pairs follow the lead resident and invalid geometry cannot steer a
  assert.ok(movieFrame([a,{...b,x:650}]).offset.every(Number.isFinite));
  assert.equal(movieFrame([a,{...b,x:651}]).kind,'resident');
 });
+
+test('a resident turning in place does not orbit the movie camera',()=>{
+ const actor={id:7,x:100,y:200,z:0,heading:0};
+ const first=movieFrame([actor]);
+ const turned=movieFrame([{...actor,heading:180}],first);
+ assert.deepEqual(turned.offset,first.offset);assert.deepEqual(turned.position,first.position);
+ const moved=movieFrame([{...actor,x:200,heading:270}],turned);
+ assert.deepEqual(moved.offset,first.offset);assert.equal(moved.position[0],first.position[0]+100);
+ assert.equal(moved.collision,'unverified');assert.equal(moved.profile,'subject-relative-v2');
+});
+
+test('new movie subjects recompose and invalid prior bearings cannot steer the camera',()=>{
+ const actor={id:7,x:0,y:0,z:0,heading:0},first=movieFrame([actor]);
+ const next={...actor,id:8,heading:180},newShot=movieFrame([next],first);
+ assert.deepEqual(newShot,movieFrame([next]));
+ for(const offset of [[NaN,260,110],[0,0,110],[1,2]]){
+  assert.deepEqual(movieFrame([next],{...newShot,offset}),movieFrame([next]));
+ }
+ const pair=movieFrame([actor,{...next,x:200}]);
+ assert.deepEqual(movieFrame([actor],pair),movieFrame([actor]));
+});
 test('activity camera follows current speaker and respects manual override',()=>{
  const camera=createObserverCamera(),rows=[{id:7,isPerson:true},{id:8,isPerson:true}];
  assert.equal(camera.accept({mode:'story',request_id:'story'},rows,{}),true);

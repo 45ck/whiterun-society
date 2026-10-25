@@ -139,7 +139,7 @@ class SpatialTelemetry:
             owned = (a.get('ownedPackage') is True and type(package) is int and package > 0 and
                      (r.get('activity') or {}).get('package_id') == package)
             rows[actor] = {'position': coords, 'space': space_key(r.get('space')),
-                'goal': goal.get('phase') in ('travelling', 'quiet', 'arrived'),
+                'goal': goal.get('phase') in ('travelling', 'quiet', 'arrived', 'review_pending', 'reviewed'),
                 'target': (goal.get('target') or {}).get('id'),
                 'travel_intent': owned and a.get('mode') == 'go_to' and a.get('phase') == 'travelling'}
 

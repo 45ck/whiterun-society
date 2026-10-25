@@ -30,11 +30,17 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 62 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 64 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
 ## Independent lives and measurable progress
+
+![From intention to consequence](docs/images/intention-to-consequence.png)
+
+**Purposeful activity:** personal food, rest, work and social goals now lead to source-linked decisions after verified arrival. Fair dispatch exposes overdue waits; per-run budgets and policy hashes make each session reproducible. A controlled native test stopped an owner travelling, verified stationary production of two bread from one grain, then resumed the same journey. All 17 baseline fields restored afterward. This qualifies the work protocol; autonomous town-wide productivity remains under test. [Implementation, quantitative evidence and remaining work](docs/purposeful-agency.md) · [Native fixture receipt](docs/owner-attendance-evidence.json).
+
+*Generated architecture illustration, not gameplay. [Full image-generation prompt](docs/images/intention-to-consequence.prompt.md).*
 
 ![Independent NPC loops and measurement](docs/images/independent-lives-metrics.png)
 
@@ -247,7 +253,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (62)</summary>
+<summary>Browse every finished project image (64)</summary>
 
 ### Economic speech layers
 
@@ -284,6 +290,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Independent lives](docs/images/independent-lives.png)
+
+### Intention to consequence
+
+Generated system illustration — not gameplay
+
+![Intention to consequence](docs/images/intention-to-consequence.png)
 
 ### Npc four systems
 
@@ -488,6 +500,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Owner production aerial ui](docs/images/owner-production-aerial-ui.jpg)
+
+### Owner work fixture timeline
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Owner work fixture timeline](docs/images/owner-work-fixture-timeline.png)
 
 ### Paid work complete
 

@@ -56,7 +56,22 @@ window.drawEncounter=()=>{
  if(goal){
   const native=state.resident_control?.activities?.find(a=>a.actor===displayResident);
   inspectorText(panel,'Personal standing goal','label');
-  inspectorText(panel,(goal.target?.name||'Quiet interval')+' · '+goal.phase.replaceAll('_',' '));
+  const focus=typeof goal.focus==='string'?goal.focus.replaceAll('_',' '):null;
+  const review=focus?focus.charAt(0).toUpperCase()+focus.slice(1)+' review':null;
+  const label=goal.target?.name||review||(goal.phase==='quiet'?'Quiet interval':'Personal goal');
+  inspectorText(panel,label+' · '+String(goal.phase||'unknown').replaceAll('_',' '));
+  if(review&&goal.target)inspectorText(panel,review+' after arrival · no completed action implied');
+  const follow=goal.follow_through;
+  if(follow){
+   const event=(state.society?.town?.daily?.queue||[]).find(e=>e.id===follow.event_id);
+   const status=event?.status||follow.status||'unknown',outcome=event?.outcome||follow.outcome;
+   inspectorText(panel,'Follow-through · '+String(status).replaceAll('_',' '),'label');
+   if(follow.event_id)inspectorText(panel,'Recorded event · '+follow.event_id);
+   if(outcome)inspectorText(panel,'Recorded outcome · '+String(outcome).replaceAll('_',' '));
+   else if(status==='pending')inspectorText(panel,'Waiting for review · not currently thinking or completing work');
+   else if(status==='started')inspectorText(panel,'Review started · outcome not yet recorded');
+   if(follow.reason)inspectorText(panel,follow.reason);
+  }
   if(Number.isFinite(native?.distance)&&native.goal_id===goal.id)inspectorText(panel,Math.round(native.distance)+' units to chosen destination');
   if(Number.isFinite(state.gameDays)&&Number.isFinite(goal.decided_day))inspectorText(panel,Math.max(0,Math.round((state.gameDays-goal.decided_day)*1440))+' game minutes since this decision');
   inspectorText(panel,'Movement does not imply trade, work or rest recovery.');

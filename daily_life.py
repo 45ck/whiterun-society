@@ -79,10 +79,23 @@ class DailyLife:
             urgent_rest = person['needs']['fatigue'] >= .8 and actor and rest_opportunities(state, observation, int(key))
             interrupted = False
             for queued in pending:
-                if queued['kind'] == 'need_review':
+                expires = queued.get('review_expires_day')
+                if (queued['kind'] == 'social_review' and queued.get('goal_followups')
+                    and type(expires) in (int, float) and math.isfinite(expires) and day >= expires
+                    and not social_candidates(state, observation, int(key))):
+                    # A selected conversation remains an invitation, not an
+                    # obligation to wait forever after every partner leaves.
+                    # Started encounters are excluded from `pending` above.
+                    queued.update(status='superseded', settled_day=day,
+                        outcome='goal_social_opportunity_unavailable', reason_before_interruption=queued.get('reason'),
+                        interruption_reason='The personal review interval elapsed without a currently available conversation partner')
+                    interrupted = True
+                elif queued['kind'] == 'need_review':
                     queued['priority'] = max(person['needs']['hunger'], person['needs']['fatigue'])
                     queued['priority_reviewed_day'] = day
-                elif queued['kind'] in ('social_review', 'stock_review') and (urgent_food or urgent_rest):
+                elif (queued['kind'] in ('social_review', 'stock_review') and (urgent_food or urgent_rest)
+                      and not (queued.get('goal_followups') and type(queued.get('review_expires_day')) in (int,float)
+                               and math.isfinite(queued['review_expires_day']) and day<queued['review_expires_day'])):
                     queued.update(status='superseded', settled_day=day,
                         outcome='urgent_needs_review', reason_before_interruption=queued.get('reason'),
                         interruption_reason='An executable personal need took priority before this activity started')

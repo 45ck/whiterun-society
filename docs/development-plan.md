@@ -123,3 +123,13 @@ Personal goals, concurrent bounded inference, background due reviews, native des
 ## Follow-up context and native input qualification
 
 Crowded social decisions now use a versioned recent/relevant memory view without deleting saved memories or raising the provider limit. All 18 candidates and 19 choices survived the reproduced failure's compaction; a new native run completed a five-line conversation and two refusals, with 17-field save/reload matching. The movie HUD follow-card overlap is repaired. Reliable native pointer mapping remains an immediate blocker to full RTS control; complete upstream build dependencies and real input qualification are required. [Current evidence](personal-goals.md#context-repair-and-fresh-native-qualification).
+
+## Purposeful goals, fair dispatch and stationary work
+
+Personal goals now include state-dependent food, rest, work and social reviews. Immediate choices and observed arrivals can queue source-linked follow-through; later decisions recheck resources and consent rather than treating intention as a completed effect. A data-defined fairness policy gives overdue work oldest-first attention, bounds follow-up bursts and prevents discretionary conversation insertion from overtaking unfinished follow-up reviews. It controls attention, not the resident's answer.
+
+Run limits are now versioned and frozen before each worker starts: new sample sessions allow up to 192 personal calls within the 600-second scheduling window, and play sessions allow up to 768 within 3,600 seconds. Both review due work every five seconds. A run records the exact configuration snapshot and hashes; source edits cannot silently expand a live session. These are bounded allowances, not continuous inference or authorization for a 24/7 broadcast.
+
+Owner production now temporarily suspends a standing journey under an exact stationary native lease. A controlled zero-model trial completed ten game minutes of qualified attendance, changed bread 4 → 6 and grain 20 → 19, kept gold 102 → 102, and resumed the same original journey. This verifies an authored native protocol case. Unforced purposeful-goal chains, productive locations and labour animations remain unqualified. [Implementation, policy, measured trial and limitations](purposeful-agency.md).
+
+The integrated validation reported 501 Python tests, five subsequent focused integration checks and 204 JavaScript tests passing. The native RTS input rebuild remains unbuilt: automatic policy review blocked the offline toolchain-layout action before execution. Full input qualification and the wider economy/social goal remain open.

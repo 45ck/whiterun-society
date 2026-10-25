@@ -1,6 +1,17 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {JSDOM}=require('jsdom');
-const {movieBroadcastFrames,renderMovieBroadcast,personalGoalBudget}=require('../ui/movie-broadcast.js');
+const {movieBroadcastFrames,renderMovieBroadcast,personalGoalBudget,dispatchStatus}=require('../ui/movie-broadcast.js');
+
+test('dispatch exposes queue starvation with game-time units and preserves unknowns',()=>{
+ assert.equal(dispatchStatus({}),'Activity dispatch unavailable');
+ assert.match(dispatchStatus({dispatch:{}}),/— pending · — overdue · longest wait — game min/);
+ assert.match(dispatchStatus({dispatch:{pending_count:0,overdue_count:0,maximum_wait_game_minutes:0}}),/0 pending · 0 overdue · longest wait 0 game min/);
+ const director={running:true,dispatch:{pending_count:9,overdue_count:3,maximum_wait_game_minutes:42.25}};
+ const frame=movieBroadcastFrames({director})[2];
+ assert.match(frame.detail,/9 pending · 3 overdue · longest wait 42.3 game min/);
+ assert.doesNotMatch(frame.detail,/thinking|productive/);
+ assert.match(dispatchStatus({dispatch:{pending_count:-1,overdue_count:null,maximum_wait_game_minutes:NaN}}),/— pending · — overdue · longest wait — game min/);
+});
 test('movie updates distinguish unknown economics, queued work and observed activity',()=>{
  const data={society:{town:{residents:{7:{},8:{}},daily:{queue:[{actor:7,status:'pending'},{actor:8,status:'complete',outcome:'ate_bread'}]}},people:{8:{profile:{name:'Resident B'}}}},parallel_routines:{activities:[{phase:'travelling'},{phase:'complete'}]}};
  const frames=movieBroadcastFrames(data);

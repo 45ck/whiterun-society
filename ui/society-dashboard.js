@@ -1,3 +1,11 @@
+function directorLabel(director){
+ if(director.running)return director.status==='stopping'?'Pausing':'Playing';
+ if(director.status==='held'||director.outcome==='held')return 'Held';
+ if(director.outcome==='stopped'||['stopped','paused'].includes(director.status))return 'Paused';
+ if(director.outcome==='complete')return 'Run complete';
+ if(director.status==='complete')return 'Stopped';
+ return 'Paused';
+}
 // Operator charts. No chart value enters a resident's private decision context.
 function renderTownCharts(root,data){
  if(!root||!data)return;
@@ -79,6 +87,17 @@ function renderTownCharts(root,data){
   add(panel,'p',`Largest seller: ${shown(n.largest_seller_transaction_share)}% of identified sales · concentration HHI ${shown(n.seller_transaction_hhi)} (0–1).`,'town-chart-note');
   add(panel,'p',`Party identity coverage ${ratio(n.party_identity_coverage)}. ${n.scope||''}`,'town-chart-note');
  }
+ if(data.economic_network?.cashflow){const cash=data.economic_network.cashflow,panel=section('Recorded purse cash flow');
+  const fields=['sales_receipts','purchases_paid','wages_received','wages_paid','external_grants_received'];
+  const accounts=Array.isArray(cash.accounts)?cash.accounts:[];
+  const complete=accounts.filter(a=>fields.every(k=>number(a[k])!==null&&a[k]>=0));
+  const measured=cash.record_coverage?.success>0&&complete.length>0;
+  const sum=keys=>measured?complete.reduce((total,a)=>total+keys.reduce((n,k)=>n+a[k],0),0):'—';
+  metricTiles(panel,[[sum(['sales_receipts','wages_received']),'Known cash in · septims'],[sum(['purchases_paid','wages_paid']),'Known cash out · septims'],[sum(['external_grants_received']),'External grants · septims']]);
+  add(panel,'p',`Validated record coverage ${ratio(cash.record_coverage)} · complete cash fields ${complete.length}/${accounts.length} account rows.`,'town-chart-note');
+  add(panel,'p','Cash in = sales + wages received. Cash out = purchases + wages paid. Grants are separate. Shared household/business purses; profit unmeasured.','town-chart-note');
+  const scope=detail('Cash-flow accounting scope');add(scope,'p',cash.scope||'Retained receipts only; period and unrecorded changes unknown.','town-chart-note');
+ }
  if(data.drama){const d=data.drama,panel=detail('Relationships and drama evidence');
   metricTiles(panel,[[shown(d.recorded_directed_edges),'Recorded directed relationships'],[ratio(d.heard_history_coverage),'Relationships with heard history'],[shown(d.positive_affinity_edges),'Positive-affinity edges'],[shown(d.negative_affinity_edges),'Negative-affinity edges']]);
   add(panel,'p',`${shown(d.authored_background_edges)} relationships have authored starting history. Conflict-resolution chains: ${d.qualified_conflict_resolution_chains??'unmeasured'}.`,'town-chart-note');add(panel,'p',d.scope,'town-chart-note');
@@ -151,4 +170,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals};
+if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel};

@@ -38,6 +38,12 @@ Generated system illustration — not gameplay
 
 ![Independent lives](images/independent-lives.png)
 
+## Intention to consequence
+
+Generated system illustration — not gameplay
+
+![Intention to consequence](images/intention-to-consequence.png)
+
 ## Npc four systems
 
 Generated system illustration — not gameplay
@@ -241,6 +247,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Owner production aerial ui](images/owner-production-aerial-ui.jpg)
+
+## Owner work fixture timeline
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Owner work fixture timeline](images/owner-work-fixture-timeline.png)
 
 ## Paid work complete
 

@@ -12,6 +12,13 @@ function personalGoalBudget(director){
   scheduler.status==='idle'?(director.running?'Waiting for due personal goals':'Personal scheduling paused'):'Personal scheduling status unavailable';
  return tally+' · '+reason;
 }
+function dispatchStatus(director){
+ const dispatch=director?.dispatch;
+ if(!dispatch)return 'Activity dispatch unavailable';
+ const count=value=>Number.isInteger(value)&&value>=0?value:'—';
+ const wait=Number.isFinite(dispatch.maximum_wait_game_minutes)&&dispatch.maximum_wait_game_minutes>=0?Math.round(dispatch.maximum_wait_game_minutes*10)/10:'—';
+ return `Activity dispatch: ${count(dispatch.pending_count)} pending · ${count(dispatch.overdue_count)} overdue · longest wait ${wait} game min`;
+}
 function movieBroadcastFrames(data){
  const society=data?.society||{},metrics=society.metrics||{},economy=metrics.economy||{};
  const population=Object.keys(society.town?.residents||{}).length;
@@ -28,6 +35,7 @@ function movieBroadcastFrames(data){
   {title:'Latest completed activity',value:completed?`${name(completed.actor)} · ${(completed.outcome||completed.kind||'activity').replaceAll('_',' ')}`:'No completed queued activity recorded',detail:'Latest retained activity, not a fabricated live event'}
  ];
  if(data.director?.goal_scheduler)frames[1].detail+=' · '+personalGoalBudget(data.director);
+ if(data.director?.dispatch)frames[2].detail+=' · '+dispatchStatus(data.director);
  const spatial=data.dashboard?.spatial;
  const motion=spatial?.current;
  const motionMeasured=Number.isFinite(motion?.observed_moving)&&motion.observed_moving>=0&&Number.isFinite(motion?.observed_stationary)&&motion.observed_stationary>=0&&motion.observed_moving+motion.observed_stationary>0;
@@ -48,5 +56,5 @@ function renderMovieBroadcast(root,data,now=Date.now()){
  title.textContent=frame.title;value.textContent=frame.value;
  detail.textContent=frame.detail+` · ${index+1}/${frames.length}`;
 }
-if(typeof module!=='undefined')module.exports={movieBroadcastFrames,renderMovieBroadcast,personalGoalBudget};
-if(typeof window!=='undefined'){window.renderMovieBroadcast=renderMovieBroadcast;window.personalGoalBudget=personalGoalBudget;}
+if(typeof module!=='undefined')module.exports={movieBroadcastFrames,renderMovieBroadcast,personalGoalBudget,dispatchStatus};
+if(typeof window!=='undefined'){window.renderMovieBroadcast=renderMovieBroadcast;window.personalGoalBudget=personalGoalBudget;window.dispatchStatus=dispatchStatus;}

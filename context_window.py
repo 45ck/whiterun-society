@@ -15,10 +15,11 @@ def encoded_size(value):return len(json.dumps(value,separators=(',',':'),ensure_
 
 def load_policy():
     value=json.loads(POLICY_PATH.read_text(encoding='utf-8'))
-    required={'version','maximum_context_bytes','maximum_memories','relevant_memories','maximum_memory_bytes','maximum_appraisals','maximum_commitments'}
+    required={'version','maximum_context_bytes','maximum_goal_context_bytes','maximum_memories','relevant_memories','maximum_memory_bytes','maximum_appraisals','maximum_commitments'}
     if set(value)!=required or not isinstance(value['version'],str) or not 1<=len(value['version'])<=64:raise ValueError('Invalid context-window policy')
     if any(type(value[k]) is not int or value[k]<0 for k in required-{'version'}):raise ValueError('Invalid context-window number')
     if not 2000<=value['maximum_context_bytes']<=12000:raise ValueError('Context window must leave room for provider contract')
+    if not 2000<=value['maximum_goal_context_bytes']<=14000:raise ValueError('Goal context must leave room for provider contract')
     if not 1<=value['maximum_memories']<=16 or value['relevant_memories']>value['maximum_memories']:raise ValueError('Invalid memory window')
     if not 256<=value['maximum_memory_bytes']<=4000 or value['maximum_appraisals']>4 or not 1<=value['maximum_commitments']<=16:raise ValueError('Invalid social-history window')
     return value
@@ -113,4 +114,135 @@ def bounded_social_context(context,own_memories=None):
         result['memories'].pop(0);window['memories_included']=len(result['memories'])
     if encoded_size(result)>policy['maximum_context_bytes']:
         raise ValueError('Required social context exceeds attention budget; no claim or model call created')
+    return result
+
+
+def bounded_economic_context(context,own_memories=None):
+    """Bound an actor-owned economic view without pruning executable choices.
+
+    All financial terms, inventories, identity views, commitments and options
+    remain exact. Only memory and relationship attention is reduced. Call this
+    before persisting a claim: irreducible required data fails without inference.
+    This function cannot establish ownership; its input must already belong to
+    the deciding resident, never a global people or private-counterparty view.
+    """
+    policy=load_policy();result=copy.deepcopy(context)
+    counterpart=context.get('economic_counterparty') or {}
+    counterpart_id=counterpart.get('id') if isinstance(counterpart,dict) else None
+    targets={str(v) for v in context.get('option_targets',{}).values() if type(v) is int}
+    if type(counterpart_id) is int:targets.add(str(counterpart_id))
+    memories=context.get('memories',[]) if own_memories is None else own_memories
+    # Counterparty recollections outrank incidental travel and other option
+    # targets. Do not count the deciding actor appearing as listener as relevant.
+    relevant={str(counterpart_id)} if type(counterpart_id) is int else targets
+    participant_keys=('other','speaker','listener','buyer','seller','employer','worker','counterparty','target')
+    records=[]
+    for index,memory in enumerate(memories):
+        if not isinstance(memory,dict):continue
+        view={k:copy.deepcopy(v) for k,v in memory.items() if k not in TELEMETRY_FIELDS-{'provenance'}}
+        related=any(type(memory.get(k)) is int and memory[k]!=context.get('actor_id')
+                    and str(memory[k]) in relevant for k in participant_keys)
+        records.append((index,view,related))
+    prioritized=[r for r in records if r[2]][-policy['relevant_memories']:]
+    selected={r[0]:r for r in prioritized}
+    for row in reversed(records):
+        if len(selected)>=policy['maximum_memories']:break
+        selected.setdefault(row[0],row)
+    # Keep priority order separately so an older relevant refusal survives if
+    # later byte pressure requires dropping additional travel recollections.
+    ranked=sorted(selected.values(),key=lambda r:(r[2],r[0]),reverse=True)
+    kept=[]
+    for row in ranked:
+        if encoded_size([r[1] for r in kept]+[row[1]])<=policy['maximum_memory_bytes']:kept.append(row)
+    relationships=context.get('my_relationships',{})
+    if not isinstance(relationships,dict):relationships={}
+    compact={};available_appraisals=0;included_appraisals=0
+    for key,relation in relationships.items():
+        if not isinstance(relation,dict):continue
+        appraisals=relation.get('appraisals') or []
+        available_appraisals+=len(appraisals)
+        if str(key) not in targets:continue
+        # Keep exact current state and epistemic background. Detailed historical
+        # appraisals are relevant only to the current economic counterparty.
+        view={k:copy.deepcopy(v) for k,v in relation.items() if k!='appraisals'}
+        view['appraisals']=copy.deepcopy(appraisals[-policy['maximum_appraisals']:]) if str(key)==str(counterpart_id) and policy['maximum_appraisals'] else []
+        included_appraisals+=len(view['appraisals'])
+        view['older_appraisals_omitted']=len(appraisals)-len(view['appraisals'])
+        compact[key]=view
+    if 'my_relationships' in result:result['my_relationships']=compact
+    # Repeated authored acquaintance provenance is evidence, not disposable
+    # noise. Store identical background objects once with explicit references.
+    backgrounds={}
+    for relation in compact.values():
+        background=relation.get('background')
+        if isinstance(background,dict):
+            encoded=json.dumps(background,sort_keys=True,separators=(',',':'))
+            backgrounds.setdefault(encoded,[]).append(relation)
+    sources={}
+    for owners in backgrounds.values():
+        if len(owners)<2:continue
+        reference='economic_source_'+str(len(sources)+1)
+        sources[reference]=owners[0]['background']
+        for owner in owners:owner['background']={'source_ref':reference}
+    if sources:result['economic_evidence_sources']=sources
+    trust=context.get('trust',{})
+    if isinstance(trust,dict) and 'trust' in result:
+        result['trust']={k:copy.deepcopy(v) for k,v in trust.items() if str(k) in targets}
+    window={'version':policy['version'],'kind':'economic','memories_available':len(memories),
+            'memories_included':len(kept),'relationships_available':len(relationships),
+            'relationships_included':len(compact),'appraisals_available':available_appraisals,
+            'appraisals_included':included_appraisals,
+            'trust_entries_omitted':len(trust)-len(result.get('trust',{})) if isinstance(trust,dict) else 0,
+            'options_preserved':len(result.get('options',[])),
+            'scope':'Actor-owned evidence only. Recent and counterparty-relevant memories; relationships for current counterparty and executable option targets. Omission is not forgetting, absence or neutral feeling. All economic choices, terms, resources and identity evidence remain unchanged. Relationship background source_ref resolves exactly in economic_evidence_sources.'}
+    result['context_window']=window
+    def update_memories():
+        result['memories']=[r[1] for r in sorted(kept,key=lambda r:r[0])]
+        window['memories_included']=len(kept)
+    update_memories()
+    while encoded_size(result)>policy['maximum_context_bytes'] and kept:
+        kept.pop();update_memories()
+    if encoded_size(result)>policy['maximum_context_bytes']:
+        raise ValueError('Required economic context exceeds attention budget; no claim or model call created')
+    return result
+
+
+def bounded_goal_context(context):
+    """Bound personal-goal attention without changing any executable action.
+
+    Nearby people describe potential later social review, not action targets:
+    reducing their attention window does not remove destinations or choices.
+    This is a preclaim view; neither saved memories nor personal goals change.
+    """
+    policy=load_policy();result=copy.deepcopy(context);budget=policy['maximum_goal_context_bytes']
+    public=result.get('public_opportunities',{})
+    people=public.get('nearby_people',[])
+    relevant={p.get('id') for p in people if isinstance(p,dict)}-{None}
+    memories=context.get('own_memories',[])
+    result['own_memories']=memory_view(memories,relevant,policy)
+    previous=result.get('previous_goal')
+    previous_omitted=[]
+    if isinstance(previous,dict):
+        # Keep the intention, timing and observed outcome. Repeated policy and
+        # mailbox telemetry are executor details, not additional recollections.
+        fields={'id','action_id','phase','decided_day','next_review_day','target','focus','follow_through','source','error'}
+        previous_omitted=sorted(set(previous)-fields)
+        result['previous_goal']={k:v for k,v in previous.items() if k in fields}
+    for person in people:
+        if 'my_relationship' in person:
+            person['my_relationship']=relationship_view(person['my_relationship'],{**policy,'maximum_appraisals':0})
+    window={'version':policy['version'],'kind':'personal_goal','nearby_people_available':len(people),
+            'nearby_people_considered':len(people),'memories_available':len(memories),
+            'memories_included':len(result['own_memories']),'previous_goal_executor_fields_omitted':len(previous_omitted),
+            'options_preserved':len(result.get('options',[])),
+            'scope':'Actor-owned evidence only. Nearby people are a bounded attention window for a possible later social review, not the full population. Omission is not forgetting or absence. All executable choices, destinations, goal action mappings, resources and public economic terms remain unchanged.'}
+    result['context_window']=window
+    # social_candidates is already nearest-first. No option is removed: a
+    # separate later social decision chooses an actual consenting partner.
+    while encoded_size(result)>budget and people:
+        people.pop();window['nearby_people_considered']=len(people)
+    while encoded_size(result)>budget and result['own_memories']:
+        result['own_memories'].pop(0);window['memories_included']=len(result['own_memories'])
+    if encoded_size(result)>budget:
+        raise ValueError('Required personal-goal context exceeds attention budget; no claim or model call created')
     return result

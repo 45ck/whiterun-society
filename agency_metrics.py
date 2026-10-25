@@ -1,5 +1,6 @@
 """Save-derived agency and exchange structure; no synthetic realism score."""
 from collections import Counter
+import json
 import math
 from statistics import mean,median
 
@@ -80,7 +81,7 @@ def agency_metrics(state):
         'distinct_chosen_destinations':len(destinations),
         'options_per_decision':distribution(r.get('option_count') for r in results),
         'current_goal_phases':dict(phases),
-        'current_goal_coverage':rate(sum(phases[p] for p in ('travelling','quiet','arrived')),len(managed)),
+        'current_goal_coverage':rate(sum(phases[p] for p in ('travelling','quiet','arrived','review_pending','reviewed')),len(managed)),
         'journey_arrival':rate(sum(m['kind']=='standing_goal_arrival' for m in outcomes),len(outcomes)),
         'excluded_fixture_journey_outcomes':len(all_outcomes)-len(outcomes),
         'journey_outcomes_with_model_provenance':sum(m.get('provenance')=='model_decision' for m in outcomes),
@@ -115,7 +116,83 @@ def economic_network(state):
         'seller_transaction_hhi':round(hhi,4) if hhi is not None else None,
         'largest_seller_transaction_share':round(100*max(sellers.values())/total,2) if total else None,
         'trade_link_density':round(len(links)/(len(participants)*(len(participants)-1)),4) if len(participants)>1 else None,
+        'cashflow':account_cashflow(state),
         'scope':'Committed physical receipts, including controlled integration experiments. Graph uses complete distinct buyer/seller IDs; unknown commodity labels are not guessed. Turnover is not profit, supply-chain depth or welfare. Seller concentration is transaction-count based, not market power or a target to maximize.'}
+
+
+def account_cashflow(state):
+    """Reconcile cash legs of retained commits without inventing business profits.
+
+    Household and enterprise money share one native purse. A gold movement is
+    assigned to that purse only, never guessed into a custodian's business.
+    """
+    records=[r for field in ('trades','production') for r in state.get(field,[]) if r.get('status')=='committed']
+    records += [r for r in ((state.get('town') or {}).get('resource_program') or {}).get('grants',{}).values() if r.get('status')=='committed']
+    unique={};conflicts=set();duplicate_count=0;missing_ids=0
+    for record in records:
+        event=record.get('id');command=record.get('command')
+        if not isinstance(event,str) or not event or not isinstance(command,dict):
+            missing_ids+=1;continue
+        fingerprint=json.dumps(command,sort_keys=True,separators=(',',':'))
+        if event in unique:
+            duplicate_count+=1
+            if fingerprint!=unique[event][0]:conflicts.add(event)
+        else:unique[event]=(fingerprint,command)
+    accounts={};rejected=Counter();kinds=Counter();recognized=0
+    valid_gold=lambda x:type(x) is int and x>=0
+    valid_id=lambda x:type(x) is int and x>0
+    def change(command,role=None):
+        before=command.get('before') or {};after=command.get('after') or {}
+        if role:before=before.get(role) or {};after=after.get(role) or {}
+        a,b=before.get('gold'),after.get('gold')
+        return b-a if valid_gold(a) and valid_gold(b) else None
+    def add(actor,field,amount):
+        row=accounts.setdefault(actor,{'actor':actor,'sales_receipts':0,'purchases_paid':0,
+            'wages_received':0,'wages_paid':0,'external_grants_received':0,'production_events':0,'cash_leg_events':0})
+        row[field]+=amount
+        if field!='production_events':row['cash_leg_events']+=1
+    for event,(_,c) in unique.items():
+        if event in conflicts:rejected['conflicting_duplicate_id']+=1;continue
+        kind=c.get('kind')
+        if kind=='inventory_trade':
+            buyer,seller=c.get('buyer'),c.get('seller');cost=c.get('cost')
+            if not (valid_id(buyer) and valid_id(seller) and buyer!=seller and valid_gold(cost) and cost>0 and
+                    change(c,'buyer')==-cost and change(c,'seller')==cost):
+                rejected['invalid_trade_cash_leg']+=1;continue
+            add(buyer,'purchases_paid',cost);add(seller,'sales_receipts',cost)
+        elif kind=='inventory_produce':
+            worker,employer=c.get('worker'),c.get('employer');wage=change(c,'worker')
+            if not (valid_id(worker) and valid_id(employer) and worker!=employer and type(wage) is int and wage>0 and
+                    change(c,'employer')==-wage and ('wage_gold' not in c or type(c['wage_gold']) is int and c['wage_gold']==wage)):
+                rejected['invalid_wage_cash_leg']+=1;continue
+            add(worker,'wages_received',wage);add(employer,'wages_paid',wage);add(employer,'production_events',1)
+        elif kind=='inventory_self_produce':
+            actor=c.get('actor')
+            if not valid_id(actor) or change(c,'owner')!=0:
+                rejected['invalid_owner_cash_leg']+=1;continue
+            add(actor,'production_events',1)
+        elif kind=='inventory_endowment':
+            actor=c.get('actor');grant=(c.get('grant') or {}).get('gold')
+            if not valid_id(actor) or not valid_gold(grant) or change(c)!=grant:
+                rejected['invalid_external_grant_cash_leg']+=1;continue
+            add(actor,'external_grants_received',grant)
+        else:rejected['unsupported_cash_record_kind']+=1;continue
+        recognized+=1;kinds[kind]+=1
+    for row in accounts.values():
+        row['operating_cash_in']=row['sales_receipts']+row['wages_received']
+        row['operating_cash_out']=row['purchases_paid']+row['wages_paid']
+        row['net_operating_cashflow']=row['operating_cash_in']-row['operating_cash_out']
+        row['net_including_recorded_grants']=row['net_operating_cashflow']+row['external_grants_received']
+    valid=list(accounts.values());denominator=len(unique)+missing_ids
+    return {'accounts':sorted(valid,key=lambda row:row['actor']),
+        'raw_committed_records':len(records),'duplicate_records_excluded':duplicate_count,
+        'record_coverage':rate(recognized,denominator),'missing_id_or_command_records':missing_ids,
+        'rejected_records':dict(rejected),'recognized_record_kinds':dict(kinds),
+        'observed_transfer_balance_septims':sum(r['net_operating_cashflow'] for r in valid) if recognized else None,
+        'transfer_balance_scope':'Sum of validated paired cash legs, balanced by validation; not an independent conservation test. Inspect rejected-record coverage.',
+        'external_grants_received_septims':sum(r['external_grants_received'] for r in valid) if recognized else None,
+        'profit':None,'accounting_period':None,
+        'scope':'Retained committed trade, production and founding-grant records only, including controlled trials. Native before/after gold deltas must match the recorded payment. Household and businesses share a native purse; amounts are not attributed to a particular enterprise. Cash flow is not profit: input cost basis, inventory valuation, unpaid owner labour, overheads and accounting periods remain unmeasured. Starting wealth and unjournalled native changes are outside this reconciliation.'}
 
 
 def drama_metrics(state):

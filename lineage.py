@@ -213,8 +213,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         after['buyer']['gold']-=cost;after['seller']['gold']+=cost
         after['buyer'][commodity]+=quantity;after['seller'][commodity]-=quantity
         command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
-                       quantity=quantity, cost=cost, before=before, after=after)
-        if commodity!='bread':command['commodity']=commodity
+                       quantity=quantity, cost=cost, commodity=commodity, before=before, after=after)
         record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
         if reserve_consent:record['reserve_release']=copy.deepcopy(reserve_consent)
         state = copy.deepcopy(self.active)

@@ -1,0 +1,6 @@
+{
+  "version": "goal-opportunities-v1",
+  "enabled_focuses": ["food", "rest", "work", "social"],
+  "priority_floor": 0.5,
+  "maximum_followup_sources": 8
+}

@@ -493,7 +493,7 @@ on('update', () => {
   // A checkpoint transition pauses new bindings; it must not release every
   // standing task while a disjoint conversation commits a memory.
   if(!controlFresh||(!societyState?.transition&&societyState?.checkpoint===checkpointValue()))
-    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)]);
+    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],plan);
   else residentControl.renew(residents,controlFresh);
   const observation = {
     director_control:directorControl,

@@ -70,9 +70,15 @@ function movieFrame(rows,previous=null,cameraPosition=null){
   // Before attendance, follow the selected resident rather than framing a
   // distant pair through multiple buildings. The caller orders that actor first.
   actors=[rows[0]];const a=actors[0],heading=a.heading*Math.PI/180;
-  target=[a.x,a.y,a.z+90];offset=[Math.sin(heading)*260,Math.cos(heading)*260,110];
+  // Keep the established bearing when a resident turns in place. Body heading
+  // is animation/attention evidence, not a request to orbit the camera through
+  // nearby architecture. New subjects and manual/reset transitions recompose.
+  const stable=previous?.kind==='resident'&&previous.key===String(a.id)&&
+    Array.isArray(previous.offset)&&previous.offset.length===3&&previous.offset.every(Number.isFinite)&&
+    Math.hypot(previous.offset[0],previous.offset[1])>0;
+  target=[a.x,a.y,a.z+90];offset=stable?[previous.offset[0],previous.offset[1],110]:[Math.sin(heading)*260,Math.cos(heading)*260,110];
  }
  return {key:actors.map(a=>a.id).join(':'),ids:actors.map(a=>a.id),kind,side,target,offset,
-  position:target.map((v,i)=>v+offset[i]),collision:'unverified',profile:'subject-relative-v1'};
+  position:target.map((v,i)=>v+offset[i]),collision:'unverified',profile:'subject-relative-v2'};
 }
 if(typeof module!=='undefined')module.exports={createObserverCamera,storyActor,tradeCameraActors,movieSubjects,movieFrame};

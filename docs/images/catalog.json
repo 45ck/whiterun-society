@@ -30,6 +30,11 @@
     "kind": "Generated system illustration \u2014 not gameplay"
   },
   {
+    "file": "intention-to-consequence.png",
+    "title": "Intention to consequence",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "npc-four-systems.png",
     "title": "Npc four systems",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -198,6 +203,11 @@
     "file": "owner-production-aerial-ui.jpg",
     "title": "Owner production aerial ui",
     "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "owner-work-fixture-timeline.png",
+    "title": "Owner work fixture timeline",
+    "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
   },
   {
     "file": "paid-work-complete.jpg",

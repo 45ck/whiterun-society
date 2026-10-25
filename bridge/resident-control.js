@@ -26,7 +26,7 @@ function createResidentControl(platform,now=Date.now){
    }
   },
   status(){return {available:available(),goal_destinations:true,enabled:active,capacity,error,activities:Array.from(activities.values()).map(a=>({...a,phase:a.loaded===false?'unloaded':a.blocker?'blocked':a.phase}))};},
-  tick(control,residents,fresh,foreground=[],publicSites=[]){
+  tick(control,residents,fresh,foreground=[],publicSites=[],ownerWork=null){
    if(now()-lastTick<250)return;lastTick=now();
    if(!available())return;
    if(recover){release();recover=false;return;}
@@ -34,7 +34,14 @@ function createResidentControl(platform,now=Date.now){
    let rows;try{rows=validate(control);}catch(e){release();error=String(e);return;}
    error=null;active=true;const desired=new Set(rows.map(r=>r.actor));
    for(const [actor,a] of activities){if(!desired.has(actor)){const r=records(a.slot);if(r.quest.isRunning())r.quest.stop();activities.delete(actor);}}
-   for(const row of rows){
+   for(const savedRow of rows){
+    // Reuse only this actor's existing continuity slot. The saved journey is
+    // untouched; dropping the foreground work intent restores its destination.
+    const work=ownerWork&&ownerWork.actor===savedRow.actor&&ownerWork.intent==='owner_production'&&
+      ['ready_to_self_work','working'].includes(ownerWork.phase)&&typeof ownerWork.id==='string'&&ownerWork.id.length<=64;
+    const holdId=work?'owner-work-'+ownerWork.id:null;
+    const row=work?{...savedRow,mode:'await_decision',target:savedRow.actor,goal_id:holdId,
+      work_hold_id:holdId,suspended_goal_id:savedRow.goal_id,source:'Owned stationary attendance for resident-chosen production'}:savedRow;
     const loaded=residents.find(r=>r.id===row.actor&&r.isPerson===true),r=records(row.slot);
     let a=activities.get(row.actor);
     if(a&&a.slot!==row.slot){release();error='Resident slot changed during an active policy';return;}
@@ -42,7 +49,7 @@ function createResidentControl(platform,now=Date.now){
     if(a&&(a.target!==targetId||a.goal_id!==row.goal_id||a.mode!==row.mode)){if(r.quest.isRunning())r.quest.stop();activities.delete(row.actor);a=null;}
     if(!loaded){if(a){a.ownedPackage=null;a.loaded=false;}continue;}
     const actor=r.sp.Actor.from(r.sp.Game.getFormEx(row.actor));if(!actor?.is3DLoaded()||actor.isDead()||actor.isChild())continue;
-    if(!a){a={actor:row.actor,slot:row.slot,mode:row.mode,target:targetId,goal_id:row.goal_id,loaded:true,phase:'resetting',expectedPackage:r.pkg.getFormID(),ownedPackage:false,began:now(),source:row.source||'deterministic continuity while awaiting a resident decision'};activities.set(row.actor,a);if(r.quest.isRunning())r.quest.stop();continue;}
+    if(!a){a={actor:row.actor,slot:row.slot,mode:row.mode,target:targetId,goal_id:row.goal_id,work_hold_id:row.work_hold_id||null,suspended_goal_id:row.suspended_goal_id||null,loaded:true,phase:'resetting',expectedPackage:r.pkg.getFormID(),ownedPackage:false,began:now(),source:row.source||'deterministic continuity while awaiting a resident decision'};activities.set(row.actor,a);if(r.quest.isRunning())r.quest.stop();continue;}
     if(a.loaded===false){a.loaded=true;a.phase='resetting';if(r.quest.isRunning())r.quest.stop();}
     try{
      if(a.phase==='failed')continue;
@@ -72,9 +79,9 @@ function createResidentControl(platform,now=Date.now){
      if(a.phase==='failed')continue;
      if(!r.quest.isRunning()||!matches()||r.request.getValue()!==a.serial||r.ack.getValue()!==a.serial||r.status.getValue()!==1){a.lease_diagnostic={running:r.quest.isRunning(),status:r.status.getValue(),request:r.request.getValue(),ack:r.ack.getValue(),mailbox_matches:matches()};throw Error('Continuity lease changed');}
      r.pulse.setValue((r.pulse.getValue()%16777215)+1);
-     if(foreground.includes(row.actor)){a.phase='interaction_priority';a.began=now();a.movingSince=null;}
+     if(foreground.includes(row.actor)&&!a.work_hold_id){a.phase='interaction_priority';a.began=now();a.movingSince=null;}
      else if(a.ownedPackage){
-      a.phase='holding';a.last_owned_at=now();
+      a.phase=a.work_hold_id?'work_holding':'holding';a.last_owned_at=now();
       if(row.mode==='go_to'){
        a.distance=Math.hypot(actor.getPositionX()-destination.getPositionX(),actor.getPositionY()-destination.getPositionY(),actor.getPositionZ()-destination.getPositionZ());
        if(!Number.isFinite(a.distance))throw Error('Invalid destination coordinates');

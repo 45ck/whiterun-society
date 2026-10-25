@@ -34,7 +34,7 @@ The `PLAN-*` identifiers below are **planned acceptance measures**. Their target
 
 ## M1 — Independent lives that remain observable
 
-Current work adds save-bound personal destination/quiet decisions and native standing travel below encounter priority. The first reported live wave selected 26 goals, observed a peak of 25 concurrent journeys and settled 25 arrivals with one held journey. Several standing leases subsequently expired together. These are preliminary trial results under investigation, not sustained all-resident acceptance. Read the final trial receipts when published before using this as a performance baseline.
+Save-bound personal goals and native standing travel below encounter priority are implemented. The initial 26-choice trial exposed shared lease expiry; the repaired 44-call trial retained 41 arrivals and movement during a four-line conversation. Later work adds food/rest/work/social review purposes, source-linked follow-through, fair queue attention and frozen run budgets. A controlled zero-model owner-work trial verified stationary attendance, the exact grain/bread recipe effect and resumption of the earlier standing journey. These are distinct evidence stages, not sustained all-resident acceptance. [Personal-goal trials](personal-goals.md) · [Purposeful reviews and work qualification](purposeful-agency.md).
 
 | Planned measure | Initial target and denominator | Qualification protocol |
 | --- | --- | --- |
@@ -132,13 +132,21 @@ No continuous livestream or 24/7 automation has been launched by this plan. A fu
 
 ## Delivery order and exit conditions
 
-1. **Stabilize concurrent goals.** Resolve the shared lease-expiry failure, verify independent movement alongside speech, expose decision/goal/failure state, and qualify save/resume. Exit with a complete bounded native run and retained failures.
+1. **Extend qualified concurrent goals.** Preserve the repaired lease/receipt ordering and demonstrated movement alongside speech; qualify the new purposeful follow-through and stationary-work paths under unforced decisions, backlog, interruption and save/resume. Exit with a complete bounded native run and retained failures.
 2. **Instrument before claiming depth.** Add save-aware activity/spatial time series, explicit sample coverage, data-driven targets and per-resident inspection. Exit with replayable evidence exports and tested missing-data/reload behaviour.
 3. **Connect meaningful daily life.** Turn arrival into a new, state-informed opportunity for actual work, trade, rest or social interaction. Add commitment completion/breach records. Exit with unforced chains, truthful speech and observed consequences.
 4. **Expand the economy and social mechanisms.** Add finite upstream supply, multi-stage production, enterprise accounting and causally linked disagreements/reconciliation. Exit against the relevant multi-trial acceptance protocols above.
 5. **Add city interventions and sustained viewing.** Implement reversible policy controls, spatial/access experiments, clearer movie composition and reproducible recordings. Exit with qualified long-run sessions before attempting continuous broadcast.
 
 These phases can have parallel implementation work, but later visual polish or a larger option count cannot waive an earlier accounting, identity, execution or evidence failure. The [development plan](development-plan.md) records implementation milestones; [Society OKRs](society-okrs.md) distinguishes the current executable scorecard from this planned programme.
+
+## Current integrated slice and remaining gates
+
+The current slice implements meaningful review purposes, review-source propagation, overdue-first/bounded-follow-up dispatch, and per-run frozen inference budgets. New sample/play policies allow 192/768 personal calls respectively, with 600/3,600-second scheduling windows and five-second due reviews. These settings are explicit data and their actual resolved values are hashed into each run. Increasing a budget does not establish improved behaviour; cost, completion, delay and observed consequences must still be compared.
+
+Stationary owner work now has native fixture evidence: zero model calls, ten credited game minutes, gold 102 → 102, bread 4 → 6, grain 20 → 19, followed by the original journey resuming. It qualifies attendance and effects for that authored case; it does not qualify autonomous production choice, a workplace/animation, profitability or an unforced supply chain. The integrated test baseline is 501 Python tests, five later focused integration checks and 204 JavaScript tests passing.
+
+Native RTS input remains a separate unresolved gate. Automatic policy review blocked the offline toolchain-layout action before execution, so the native input rebuild is unbuilt. The full society, reliable native controls, long-run autonomy, richer economic/social mechanisms and continuous-broadcast qualification remain active work rather than achieved outcomes.
 
 
 ## Integrated evidence update

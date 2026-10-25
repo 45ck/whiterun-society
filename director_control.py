@@ -7,6 +7,7 @@ import sys
 import time
 import uuid
 from dialogue_policy import MAX_COMBINED_CALLS
+from director_policy import resolve_run_policy, write_run_policy
 
 
 class DirectorControl:
@@ -35,6 +36,7 @@ class DirectorControl:
             if receipt.get('goal_scheduler'):
                 result['goal_scheduler']=receipt['goal_scheduler']
                 result['goal_model_calls']=receipt.get('goal_model_calls')
+            if receipt.get('dispatch'):result['dispatch']=receipt['dispatch']
             if receipt.get('error'): result['error'] = receipt['error'][:240]
         except (OSError, ValueError, KeyError):
             pass
@@ -48,11 +50,12 @@ class DirectorControl:
             raise ValueError('The society director is already running')
         mode=data.get('mode','sample')
         if mode not in ('sample','play'):raise ValueError('Choose sample or play mode')
-        count = data.get('max_events', 96 if mode=='play' else 6)
+        policy = resolve_run_policy(mode, data.get('max_events'))
+        count = policy['max_events']
         handoffs=data.get('scene_handoffs',False)
         if type(handoffs) is not bool:raise ValueError('Scene handoffs must be boolean')
-        if type(count) is not int or not 1 <= count <= (96 if mode=='play' else 12):
-            raise ValueError('Choose 1 to 12 sample events or 1 to 96 play-session events')
+        if count < 1:
+            raise ValueError('Choose at least one resident event for an observer run')
         if time.time() - (bridge.get('last_seen') or 0) > 10:
             raise ValueError('Game bridge unavailable')
         if not society.get('town') or society.get('error') or society.get('transition') or bridge.get('command'):
@@ -72,9 +75,11 @@ class DirectorControl:
         run_id = 'society-' + uuid.uuid4().hex[:16]
         receipt = self.runtime/(run_id+'.json')
         stop_file = self.runtime/(run_id+'.stop')
+        policy_file = self.runtime/(run_id+'.policy.json')
+        write_run_policy(policy_file, policy)
         command = [sys.executable, str(Path(__file__).parent/'tools/run_daily_life.py'),
                    '--root', str(self.runtime.parent), '--max-events', str(count),
-                   '--watch-seconds', '3600' if mode=='play' else '600', '--model-config', str(configs[0]),
+                   '--watch-seconds', str(policy['watch_seconds']), '--run-policy', str(policy_file), '--model-config', str(configs[0]),
                    '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--resident-goals', '--receipt', str(receipt),
                    '--stop-file', str(stop_file)]
         if handoffs:command.append('--scene-handoffs')
@@ -86,9 +91,10 @@ class DirectorControl:
             self.log.close(); self.log = None
             raise
         self.run = {'id': run_id, 'status': 'running', 'max_events': count,
-                    'mode':mode,'session_limit_seconds':3600 if mode=='play' else 600,
+                    'mode':mode,'session_limit_seconds':policy['watch_seconds'],
+                    'run_policy':policy,
                     'scene_handoffs_enabled':handoffs,
-                    'maximum_model_calls': MAX_COMBINED_CALLS*count+64, 'started_at': time.time(),
+                    'maximum_model_calls': MAX_COMBINED_CALLS*count+policy['goal_budget'], 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()
 
