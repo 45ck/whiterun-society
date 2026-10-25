@@ -46,11 +46,11 @@ test('a missed pointer release cannot turn later hovering into camera movement',
  assert.equal(messages.filter(m=>m.type==='society-camera').length,before);
  }finally{dom.window.close();}
 });
-test('native RTS UI sends Play/Pause and follows movie activity only when requested',()=>{
+test('native UI defaults to movie view and retains explicit Play/Pause and RTS controls',()=>{
  const {dom,w,messages,intervals}=native();try{
- assert.equal(w.whiterunRtsActive(),true);assert.equal(w.document.getElementById('tour'),null);
+ assert.equal(w.whiterunRtsActive(),false);assert.equal(w.document.getElementById('tour'),null);
  w.whiterunRender({residents:[],trades:[],society:{people:{},town:{residents:{}}},director:{running:false,status:'idle'},dashboard:dashboard(),camera:{manual:true,mode:'free'}});
- assert.equal(w.document.getElementById('live-badge').textContent,'PAUSED');assert.match(w.document.getElementById('notice').textContent,/Simulation paused/);
+ assert.equal(w.document.getElementById('live-badge').textContent,'PAUSED');assert.match(w.document.getElementById('notice').textContent,/Scheduling paused/);
  w.document.getElementById('society-play').click();assert.equal(messages.at(-1).action,'play');
  w.whiterunRender({residents:[],trades:[],director:{running:true,status:'running'},dashboard:dashboard()});
  w.document.getElementById('society-pause').click();assert.equal(messages.at(-1).action,'pause');

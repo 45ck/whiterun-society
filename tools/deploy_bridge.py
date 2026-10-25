@@ -40,7 +40,7 @@ source=source.replace('__SPEECH_FACTORY__',speech)
 source=source.replace('__OBSERVER_CAMERA_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'observer-camera.js').read_text().split('\nif(typeof module')[0])
 target=game/'Data'/'Platform'/'PluginsDev'/'whiterun-society.js'
 target.parent.mkdir(parents=True,exist_ok=True)
-ui_source=''.join((Path(__file__).resolve().parents[1]/'ui'/name).read_text(encoding='utf-8') for name in ('index.html','speech.js','encounter.js','rts-camera.js','rts-controls.js','society-dashboard.js','voice-output.js','resident-media-data.js','resident-media.js'))
+ui_source=''.join((Path(__file__).resolve().parents[1]/'ui'/name).read_text(encoding='utf-8') for name in ('index.html','speech.js','encounter.js','rts-camera.js','rts-controls.js','movie-broadcast.js','society-dashboard.js','voice-output.js','resident-media-data.js','resident-media.js'))
 source+='\n// UI revision: '+hashlib.sha256(ui_source.encode()).hexdigest()+'\n'
 target.write_text(source.replace('__BRIDGE_CONFIG__',json.dumps(config)),encoding='utf-8')
 ui=game/'Data'/'Platform'/'UI'/'index.html'
@@ -48,7 +48,7 @@ ui.parent.mkdir(parents=True,exist_ok=True)
 ui.write_text((Path(__file__).resolve().parents[1]/'ui'/'index.html').read_text(encoding='utf-8'),encoding='utf-8')
 (ui.parent/'speech.js').write_text((Path(__file__).resolve().parents[1]/'ui'/'speech.js').read_text(encoding='utf-8'),encoding='utf-8')
 (ui.parent/'encounter.js').write_text((Path(__file__).resolve().parents[1]/'ui'/'encounter.js').read_text(encoding='utf-8'),encoding='utf-8')
-for name in ('rts-camera.js','rts-controls.js','society-dashboard.js','voice-output.js','resident-media-data.js','resident-media.js'):
+for name in ('rts-camera.js','rts-controls.js','movie-broadcast.js','society-dashboard.js','voice-output.js','resident-media-data.js','resident-media.js'):
     (ui.parent/name).write_text((Path(__file__).resolve().parents[1]/'ui'/name).read_text(encoding='utf-8'),encoding='utf-8')
 (ui.parent/'voice-check.wav').write_bytes((Path(__file__).resolve().parents[1]/'docs/audio/scene-handoff-a-1.wav').read_bytes())
 print('Deployed custom bridge to isolated game')

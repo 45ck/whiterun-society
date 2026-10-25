@@ -19,6 +19,7 @@ from tools.voice_worker import VoiceWorker
 from tools.run_conversation import stock_voice
 from language import propose, LanguageOutputError
 from economic_language import MAX_ECONOMIC_LANGUAGE_CALLS
+from tools.prepared_speech import PreparedSpeech
 
 
 def main():
@@ -64,7 +65,7 @@ def main():
     if started.get('duplicate'):
         print(json.dumps({'duplicate': True, 'model_calls': 0, 'phase': started['plan']['phase']}), flush=True)
         return
-    previous = None;voice_worker=None
+    previous = None;voice_worker=None;prepared=PreparedSpeech()
     deadline = time.monotonic()+480
     try:
         while time.monotonic() < deadline:
@@ -85,7 +86,9 @@ def main():
                 record(phase, state)
                 previous = phase
             if args.voice_trade and phase in ('travelling','economic_attending','economic_propose','economic_synthesize') and voice_worker is None:
-                voice_worker=VoiceWorker(args.runtime.parent,5,[model.get('key_env'),(wording or {}).get('key_env')])
+                # At most five spoken turns: two silent options plus a possible
+                # original-terms fallback each. Preparation never plays audio.
+                voice_worker=VoiceWorker(args.runtime.parent,15 if wording else 5,[model.get('key_env'),(wording or {}).get('key_env')])
             if phase in ('complete', 'held') and not plan.get('release_required') and plan.get('remembered'):
                 evidence['after'] = state
                 evidence['status'] = phase
@@ -105,6 +108,10 @@ def main():
                 if (confirmed['bridge']['session']!=claim['session'] or current.get('id')!=args.event_id
                         or (current.get('economic_speech',{}).get('claim') or {}).get('id')!=claim['id']):
                     raise ValueError('Wording claim changed before inference')
+                if claim['stage']=='select':
+                    count=prepared.prepare(voice_worker,current,claim['session'],
+                        stock_voice(current['economic_speech']['actor'],confirmed['bridge']['observation']))
+                    evidence['prepared_voice_requests']=evidence.get('prepared_voice_requests',0)+count
                 evidence['wording_calls']+=1
                 path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
                 start=time.monotonic();used=wording if claim['stage']=='propose' else model
@@ -124,8 +131,13 @@ def main():
                 raise ValueError('Economic wording inference already claimed; refusing automatic repetition')
             if phase=='economic_synthesize':
                 turn=plan['economic_speech'];began=time.monotonic()
-                audio=voice_worker.synthesize(turn['line'],stock_voice(turn['actor'],state['bridge']['observation']))
-                evidence.setdefault('synthesis_timings',[]).append({'act':turn['act'],'seconds':round(time.monotonic()-began,3),'engine_seconds':audio['synthesis_seconds']})
+                voice=stock_voice(turn['actor'],state['bridge']['observation'])
+                cached=prepared.selected(voice_worker,plan,state['bridge']['session'],voice)
+                if cached:audio,timing=cached
+                else:
+                    audio=voice_worker.synthesize(turn['line'],voice)
+                    timing={'mode':'on_demand','wait_seconds':round(time.monotonic()-began,3),'lead_seconds':0}
+                evidence.setdefault('synthesis_timings',[]).append({'act':turn['act'],'seconds':round(time.monotonic()-began,3),'engine_seconds':audio['synthesis_seconds'],**timing})
                 request('/agency/audio',{'id':args.event_id,'audio':audio['audio']})
                 continue  # Observe the persisted audio checkpoint without an extra fixed pause.
             elif phase in ('choose', 'quote', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):

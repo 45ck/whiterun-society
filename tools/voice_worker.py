@@ -10,7 +10,9 @@ import time
 
 class VoiceWorker:
     def __init__(self, root, limit=6, credential_names=()):
+        if type(limit) is not int or not 1<=limit<=16:raise ValueError('Voice request limit must be 1 to 16')
         self.responses=queue.Queue();self.sequence=0;self.limit=limit;self.ready=None
+        self.submitted=set();self.completed={}
         self.log=(root/'runtime/voice-worker.log').open('a',encoding='utf-8')
         environment={k:v for k,v in os.environ.items() if k not in credential_names}
         try:
@@ -32,8 +34,19 @@ class VoiceWorker:
         except (OSError,ValueError):pass
         finally:self.responses.put({'error':'Voice worker closed its output'})
 
-    def synthesize(self,text,voice,timeout=90):
+    def submit(self,text,voice):
+        """Prepare a silent local asset; only the server can authorize playback."""
+        from tools.synthesize_voice import validate_request
+        validate_request({'text':text,'voice':voice})
         if self.sequence>=self.limit:raise ValueError('Voice request budget exhausted')
+        self.sequence+=1;request_id='voice-'+str(self.sequence)
+        self.submitted.add(request_id)
+        self.process.stdin.write((json.dumps({'id':request_id,'text':text,'voice':voice})+'\n').encode())
+        self.process.stdin.flush()
+        return request_id
+
+    def result(self,request_id,timeout=90):
+        if request_id not in self.submitted:raise ValueError('Unknown voice request identity')
         deadline=time.monotonic()+timeout
         def receive():
             try:return self.responses.get(timeout=max(.001,deadline-time.monotonic()))
@@ -41,12 +54,15 @@ class VoiceWorker:
         if self.ready is None:
             self.ready=receive()
             if self.ready.get('ready') is not True:raise ValueError(self.ready.get('error','Voice worker did not become ready'))
-        self.sequence+=1;request_id='voice-'+str(self.sequence)
-        self.process.stdin.write((json.dumps({'id':request_id,'text':text,'voice':voice})+'\n').encode())
-        self.process.stdin.flush();result=receive()
-        if result.get('id')!=request_id or result.get('error'):
-            raise ValueError(result.get('error','Voice response identity mismatch'))
-        return result
+        while request_id not in self.completed:
+            result=receive();identity=result.get('id')
+            if identity not in self.submitted or identity in self.completed or result.get('error'):
+                raise ValueError(result.get('error','Voice response identity mismatch'))
+            self.completed[identity]=result
+        return self.completed[request_id]
+
+    def synthesize(self,text,voice,timeout=90):
+        return self.result(self.submit(text,voice),timeout)
 
     def close(self):
         try:

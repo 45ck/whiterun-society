@@ -26,9 +26,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Contextual economic voices:** Mercury proposes phrasing around code-preserved terms; Jev chooses the wording and local Kokoro speaks it. Three native trials are published, including fallback failures. The final two-line work inquiry completed with generated wording, but formal language and a 20.5-second reply gap remain quality defects. [Infographic, actual clips, state flow and measured results](docs/economic-wording.md).
 
+**Movie view is the default:** recurring 12-second cards show actual economy, activity and queue updates. Economic candidate voices prepare while Jev chooses; only selected speech plays. A native work inquiry/refusal completed with a 10.997-second reply gap, still too slow for natural dialogue. [Screenshots, measurements and the remaining all-resident autonomy gap](docs/movie-watch.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 55 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 57 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -237,7 +239,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (55)</summary>
+<summary>Browse every finished project image (57)</summary>
 
 ### Economic speech layers
 
@@ -425,6 +427,12 @@ Captured game or observer interface — historical prototype
 
 ![Market travel live](docs/images/market-travel-live.png)
 
+### Movie broadcast native
+
+Captured game or observer interface — historical prototype
+
+![Movie broadcast native](docs/images/movie-broadcast-native.jpg)
+
 ### Movie pair receipt fixture
 
 Controlled native protocol fixture — authored choices, not autonomous behaviour
@@ -520,6 +528,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Portrait 182543](docs/images/portrait-182543.jpg)
+
+### Prepared speech native
+
+Captured game or observer interface — historical prototype
+
+![Prepared speech native](docs/images/prepared-speech-native.jpg)
 
 ### Resident follow live
 

@@ -51,7 +51,7 @@ let lastBindingAttempt = 0;
 let bindingAttempts = 0;
 let residents = [];
 let hud = null;
-let cameraMode='free',cameraActor=0,cameraDirty=true,cursor=true,movieShot=null,cameraFraming=null;
+let cameraMode='story',cameraActor=0,cameraDirty=true,cursor=true,movieShot=null,cameraFraming=null;
 let directorControl=null,playerControlRequest=null,audioOutput=null;
 let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[],mapProjection=null;
@@ -108,7 +108,7 @@ on('browserMessage',event=>{
   }
   if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null,selection:message.selection||null};return;}
   if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30),pointer:message.pointer||null,click:message.click||null,diagnostics:message.diagnostics||null};return;}
-  if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='free';cameraActor=0;cameraDirty=true;return;}
+  if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='story';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
   if(message.automatic===true){
@@ -158,14 +158,14 @@ function updateCamera(player) {
     for(const id of ids){const a=sp.Actor.from(sp.Game.getFormEx(id));if(a&&a.is3DLoaded())rows.push({id,x:a.getPositionX(),y:a.getPositionY(),z:a.getPositionZ(),heading:a.getAngleZ()});}
     const shot=rows.length===ids.length?movieFrame(rows,movieShot,typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null):null;
     if(shot){if(shot.key!==movieShot?.key)cameraDirty=true;movieShot=shot;}
-    if(!movieShot){cameraFraming={status:'waiting_for_activity',collision:'unverified'};return;}
+    if(!movieShot){cameraFraming={status:'waiting_for_activity',collision:'unverified'};cameraMode='story';cameraActor=0;}
     // Freeze the last composition when the encounter ends; do not chase a
     // departed speaker or start an unsolicited tour while the director is idle.
-    target=movieShot.target;offset=movieShot.offset;
+    if(movieShot){target=movieShot.target;offset=movieShot.offset;
     cameraMode=movieShot.kind==='pair'?'trade':'focus';cameraActor=lead||movieShot.ids[0];
     cameraFraming={profile:movieShot.profile,kind:movieShot.kind,subjects:movieShot.ids,
       status:shot?'following_activity':'holding_last_shot',distance:Math.hypot(offset[0],offset[1]),
-      elevation:offset[2],target,collision:'unverified'};
+      elevation:offset[2],target,collision:'unverified'};}
   }
   if(cameraMode==='atlas'){target=[control.panX,control.panY,-3320];offset=[0,0,18000];}
   if(cameraMode==='portrait'){

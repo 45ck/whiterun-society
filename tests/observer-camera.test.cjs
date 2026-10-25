@@ -3,6 +3,19 @@ const {createObserverCamera}=require('../bridge/observer-camera.js');
 const {storyActor}=require('../bridge/observer-camera.js');
 const {movieSubjects,movieFrame}=require('../bridge/observer-camera.js');
 
+test('movie view is the default and manual RTS remains an explicit override',()=>{
+ const camera=createObserverCamera();assert.equal(camera.status().mode,'story');assert.equal(camera.status().manual,false);
+ camera.accept({mode:'free'},[],{});assert.equal(camera.status().manual,true);
+ camera.reset();assert.equal(camera.status().mode,'story');assert.equal(camera.status().manual,false);
+});
+
+test('movie view can follow an active independent journey without inventing a tour',()=>{
+ const rows=[{id:7,isPerson:true},{id:8,isPerson:true}],society={routine_batch:{phase:'travelling',members:[{actor:99,phase:'travelling'},{actor:7,phase:'complete'},{actor:8,phase:'travelling'}]}};
+ assert.equal(storyActor(society,rows),8);assert.deepEqual(movieSubjects(society,rows),[8]);
+ society.conversation={phase:'speaking',current:{speaker:7}};assert.equal(storyActor(society,rows),7);
+ society.conversation.phase='complete';society.routine_batch.phase='complete';assert.equal(storyActor(society,rows),null);
+});
+
 test('movie pair remains stable across speaker changes and excludes finished encounters',()=>{
  const rows=[7,8].map(id=>({id,isPerson:true}));
  for(const speaker of [7,8])assert.deepEqual(movieSubjects({conversation:{phase:'speaking',speakers:[8,7],current:{speaker}}},rows),[7,8]);
@@ -49,7 +62,7 @@ test('unknown unloaded and non-person IDs cannot steer follow camera',()=>{
 test('invalid camera parameters cannot partially mutate the current view',()=>{
  const camera=createObserverCamera(),before=camera.status();
  for(const value of [Infinity,NaN,0,4001,'800'])assert.equal(camera.accept({mode:'free',distance:value},[],{}),false);
- assert.deepEqual(camera.status(),before);assert.equal(camera.accept({mode:'free',distance:1200,panX:25000},[],{}),true);camera.reset();assert.equal(camera.status().manual,true);assert.equal(camera.status().mode,'free');
+ assert.deepEqual(camera.status(),before);assert.equal(camera.accept({mode:'free',distance:1200,panX:25000},[],{}),true);camera.reset();assert.equal(camera.status().manual,false);assert.equal(camera.status().mode,'story');
 });
 
 test('capture is restricted to explicit portrait/atlas requests and reset restores UI',()=>{
@@ -57,7 +70,7 @@ test('capture is restricted to explicit portrait/atlas requests and reset restor
  assert.equal(c.accept({mode:'portrait',id:7,capture:true},rows,managed),true);assert.equal(c.status().capture,true);
  assert.equal(c.accept({mode:'portrait',id:9,capture:true},rows,managed),false);
  assert.equal(c.accept({mode:'free',capture:true},rows,managed),false);assert.equal(c.status().capture,true);
- c.reset();assert.equal(c.status().capture,false);assert.equal(c.status().mode,'free');
+ c.reset();assert.equal(c.status().capture,false);assert.equal(c.status().mode,'story');
  assert.equal(c.accept({mode:'atlas',capture:true},rows,managed),true);assert.equal(c.accept({mode:'story'},rows,managed),true);assert.equal(c.status().capture,false);
 });
 

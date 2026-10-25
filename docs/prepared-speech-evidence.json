@@ -1,0 +1,269 @@
+{
+  "selection": "Operator selected nearest currently feasible pending food review; not a forced sale",
+  "outcome": "employer_declined",
+  "turns": [
+    {
+      "actor": 108170,
+      "listener": 108149,
+      "act": "work_request",
+      "line": "Evening. Are you hiring for that 10-minute bread-making shift? Please let me know.",
+      "canonical_line": "Are you hiring for that 10-minute bread-making shift?",
+      "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+      "selected": {
+        "id": "option_2",
+        "intention": "check job availability casually",
+        "line": "Evening. [[TERMS]] Please let me know.",
+        "tone": "calm"
+      },
+      "wording_fallback": null,
+      "wording_results": [
+        {
+          "accepted": true,
+          "candidate_rejections": {},
+          "claim_id": "wording-1118a08f15d6f331d715633c",
+          "elapsed_seconds": 2.0,
+          "model": "inception/mercury-2.5",
+          "stage": "propose",
+          "usage": {
+            "completion_tokens": 237,
+            "completion_tokens_details": {
+              "reasoning_tokens": 98
+            },
+            "cost": 7.851e-05,
+            "prompt_tokens": 1074,
+            "total_tokens": 1311
+          },
+          "validation_failure": null
+        },
+        {
+          "accepted": true,
+          "claim_id": "wording-cf6c6d952bc4e59516f854d4",
+          "elapsed_seconds": 1.422,
+          "model": "typesafe/jev-1.14-20261014",
+          "selected_id": "option_2",
+          "stage": "select",
+          "usage": {
+            "cost": 5.3676e-05
+          },
+          "validation_failure": null
+        }
+      ],
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 5.227,
+        "facing": [
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-633de1bf5df0c7f58226df94",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 39.77982320744934,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 522,
+          "sum_error_degrees": 68.76810376514754
+        },
+        "playedSeconds": 5.131333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792911940.3184075,
+      "ended_at": 1792911946.3862312,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "c6543baa428237b24dcb4f13711d779762f575ba4bf9140da83628507b6fbddc.wav",
+        "seconds": 5.1313,
+        "sha256": "c6543baa428237b24dcb4f13711d779762f575ba4bf9140da83628507b6fbddc",
+        "voice": "bm_lewis",
+        "public_file": "prepared-speech-1.wav"
+      }
+    },
+    {
+      "actor": 108149,
+      "listener": 108170,
+      "act": "work_unavailable",
+      "line": "I know it's hard. I am not offering you a shift right now. I can't take you on right now, but I'll remember.",
+      "canonical_line": "I am not offering you a shift right now.",
+      "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+      "selected": {
+        "id": "option_2",
+        "intention": "Empathize and gently decline.",
+        "line": "I know it's hard. [[TERMS]] I can't take you on right now, but I'll remember.",
+        "tone": "worried"
+      },
+      "wording_fallback": null,
+      "wording_results": [
+        {
+          "accepted": true,
+          "candidate_rejections": {
+            "option_1": "extra_terms"
+          },
+          "claim_id": "wording-e6076c254dc695a6d6b97a62",
+          "elapsed_seconds": 2.688,
+          "model": "inception/mercury-2.5",
+          "stage": "propose",
+          "usage": {
+            "completion_tokens": 253,
+            "completion_tokens_details": {
+              "reasoning_tokens": 101
+            },
+            "cost": 7.983e-05,
+            "prompt_tokens": 1047,
+            "total_tokens": 1300
+          },
+          "validation_failure": null
+        },
+        {
+          "accepted": true,
+          "claim_id": "wording-4a4c3c536564460fabc3919c",
+          "elapsed_seconds": 0.875,
+          "model": "typesafe/jev-1.14-20261014",
+          "selected_id": "option_2",
+          "stage": "select",
+          "usage": {
+            "cost": 5.3256e-05
+          },
+          "validation_failure": null
+        }
+      ],
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 6.61,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-e6863a6d294d21620fce3a39",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.024683941454668457,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 686,
+          "sum_error_degrees": 0.18997646388550038
+        },
+        "playedSeconds": 6.536,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792911957.3831935,
+      "ended_at": 1792911964.9297957,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "5f8db06544e3a47ab64f2397a3dcbc5deeceee202ebf1b8b9765f3b395f35897.wav",
+        "seconds": 6.536,
+        "sha256": "5f8db06544e3a47ab64f2397a3dcbc5deeceee202ebf1b8b9765f3b395f35897",
+        "voice": "bf_alice",
+        "public_file": "prepared-speech-2.wav"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "actor_id": 108170,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "seek_work",
+        "emotion": "unspecified",
+        "reason": "Selected action: Ask Carlotta Valentia about an advertised 10-game-minute bread-making shift paying 4 gold. The employer must offer and you must accept. No wage is guaranteed."
+      },
+      "elapsed_seconds": 0.906,
+      "usage": {
+        "cost": 0.000200298,
+        "input_tokens": 4769,
+        "output_tokens": 204
+      }
+    },
+    {
+      "actor_id": 108149,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "defer",
+        "emotion": "unspecified",
+        "reason": "Selected action: Do not offer this job; keep your resources."
+      },
+      "elapsed_seconds": 1.547,
+      "usage": {
+        "cost": 0.000178332,
+        "input_tokens": 4246,
+        "output_tokens": 34
+      }
+    }
+  ],
+  "prepared_voice_requests": 4,
+  "synthesis_timings": [
+    {
+      "act": "work_request",
+      "seconds": 1.969,
+      "engine_seconds": 1.75,
+      "mode": "prepared_candidate",
+      "wait_seconds": 1.969,
+      "lead_seconds": 2.296
+    },
+    {
+      "act": "work_unavailable",
+      "seconds": 1.344,
+      "engine_seconds": 2.032,
+      "mode": "prepared_candidate",
+      "wait_seconds": 1.344,
+      "lead_seconds": 1.672
+    }
+  ],
+  "sampled_worker_seconds": 64.42,
+  "reported_model_cost_usd": 0.000643902,
+  "reply_dispatch_gaps_seconds": [
+    10.997
+  ],
+  "balances_before": {
+    "108149": {
+      "gold": 102,
+      "bread": 4,
+      "grain": 20
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "balances_after": {
+    "108149": {
+      "gold": 102,
+      "bread": 4,
+      "grain": 20
+    },
+    "108170": {
+      "gold": 34,
+      "bread": 0,
+      "grain": 0
+    }
+  },
+  "rollback": {
+    "save": "WS-SpeechLatency-20261025-BP",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "limits": [
+    "One unforced encounter; provider latency and resident differed from previous trial, so no causal end-to-end speedup claim.",
+    "Both selected the second prepared candidate. Unselected clips were synthesized silently and never submitted for playback.",
+    "Generated speech remains repetitive and includes an unverified broad acknowledgement and future-memory claim.",
+    "No all-resident concurrent autonomy, physical listening check, lip sync or sustained livestream acceptance."
+  ]
+}

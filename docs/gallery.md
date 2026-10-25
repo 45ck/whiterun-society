@@ -188,6 +188,12 @@ Captured game or observer interface — historical prototype
 
 ![Market travel live](images/market-travel-live.png)
 
+## Movie broadcast native
+
+Captured game or observer interface — historical prototype
+
+![Movie broadcast native](images/movie-broadcast-native.jpg)
+
 ## Movie pair receipt fixture
 
 Controlled native protocol fixture — authored choices, not autonomous behaviour
@@ -283,6 +289,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Portrait 182543](images/portrait-182543.jpg)
+
+## Prepared speech native
+
+Captured game or observer interface — historical prototype
+
+![Prepared speech native](images/prepared-speech-native.jpg)
 
 ## Resident follow live
 

@@ -9,6 +9,21 @@ from tools.voice_worker import VoiceWorker
 
 
 class VoiceWorkerTests(unittest.TestCase):
+    def test_prepare_before_ready_and_read_second_without_losing_first(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);(root/'runtime').mkdir()
+            process=Mock();process.stdin=io.BytesIO();process.stdout=io.BytesIO(b'{"ready":true}\n{"id":"voice-1","audio":{"file":"first"}}\n{"id":"voice-2","audio":{"file":"second"}}\n')
+            with patch('tools.voice_worker.subprocess.Popen',return_value=process):
+                worker=VoiceWorker(root,2)
+                try:
+                    first=worker.submit('Please.','bm_lewis');second=worker.submit('Thank you.','bm_lewis')
+                    self.assertIsNone(worker.ready)
+                    self.assertEqual(worker.result(second)['audio']['file'],'second')
+                    self.assertEqual(worker.result(first)['audio']['file'],'first')
+                    self.assertEqual(len(process.stdin.getvalue().splitlines()),2)
+                    with self.assertRaisesRegex(ValueError,'Unknown'):worker.result('unsubmitted')
+                finally:worker.close()
+
     def test_warm_child_is_bounded_and_does_not_inherit_model_credential(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);(root/'runtime').mkdir()

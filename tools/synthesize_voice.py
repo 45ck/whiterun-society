@@ -43,7 +43,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True)
     mode=p.add_mutually_exclusive_group(required=True);mode.add_argument('--input',type=Path);mode.add_argument('--serve',action='store_true')
     p.add_argument('--max-requests',type=int,default=6);args=p.parse_args()
-    if not 1<=args.max_requests<=12:raise ValueError('Voice request limit must be 1 to 12')
+    if not 1<=args.max_requests<=16:raise ValueError('Voice request limit must be 1 to 16')
     started=time.monotonic()
     with contextlib.redirect_stdout(sys.stderr):kokoro=load_voice(args.root)
     if args.input:

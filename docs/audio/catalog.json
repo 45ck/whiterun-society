@@ -474,5 +474,21 @@
     "sha256": "8daa8bbd3b1bf889f484953048e26f2a45f2fd86978bd799242399b3f1409b94",
     "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
     "encounter": "Economic wording \u2014 final native trial; language remains formal"
+  },
+  {
+    "file": "prepared-speech-1.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Evening. Are you hiring for that 10-minute bread-making shift? Please let me know.",
+    "sha256": "c6543baa428237b24dcb4f13711d779762f575ba4bf9140da83628507b6fbddc",
+    "source": "Selected prepared Kokoro clip used in native overlay; not a physical output recording. Surrounding generated claims remain unverified.",
+    "encounter": "Prepared economic speech \u2014 Jon and Carlotta"
+  },
+  {
+    "file": "prepared-speech-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I know it's hard. I am not offering you a shift right now. I can't take you on right now, but I'll remember.",
+    "sha256": "5f8db06544e3a47ab64f2397a3dcbc5deeceee202ebf1b8b9765f3b395f35897",
+    "source": "Selected prepared Kokoro clip used in native overlay; not a physical output recording. Surrounding generated claims remain unverified.",
+    "encounter": "Prepared economic speech \u2014 Jon and Carlotta"
   }
 ]
