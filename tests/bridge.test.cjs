@@ -12,6 +12,8 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__CONVERSATION_ATTENDANCE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/conversation-attendance.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__OBSERVER_CAMERA_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/observer-camera.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
+  .replace('__RESOURCE_MANIFEST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/resource-manifest.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__RESOURCE_MANIFEST__',JSON.stringify(require('../config/resource-manifest.json')))
   .replace('__ENDOWMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/endowments.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PRODUCTION_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/production.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
@@ -25,8 +27,8 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
-function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null) {
-  const handlers = new Map(), notifications=[], requests=[], looks=[];
+function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null,endowmentFactory=null) {
+  const handlers = new Map(), notifications=[], requests=[], looks=[], nativeReads=[];
   let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
     getPositionX:()=>1,getPositionY:()=>2,getPositionZ:()=>3,setLookAt:(...args)=>looks.push(args)};
@@ -34,16 +36,17 @@ function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=nul
   const player={getFormID:()=>20,getParentCell:()=>cell,is3DLoaded:()=>true,setGhost:()=>{},getPositionX:()=>0,getPositionY:()=>0,getPositionZ:()=>0};
   const itemForms=Object.fromEntries(catalogManifest.commodities.map(item=>[item.native.local_form_id,{getFormID:()=>item.native.local_form_id,getType:()=>({MISC:32,ALCH:46,INGR:30})[item.native.record_type]}]));
   const sp={storage:{},on:(event,fn)=>{handlers.set(event,fn);return event;},once:(event,fn)=>{handlers.set(event,fn);return event;},
-    unsubscribe:key=>handlers.delete(key), Actor:{from:value=>value},Game:{getPlayer:()=>player,getFormEx:id=>id===123?actor:itemForms[id]||null},
+    unsubscribe:key=>handlers.delete(key), Actor:{from:value=>value},Game:{getPlayer:()=>player,getFormEx:id=>{nativeReads.push(id);return id===123?actor:itemForms[id]||null;}},
     enableFreeCamera:()=>{},setFreeCameraPosition:()=>{},
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
-  sp.Game.getFormFromFile=(id,file)=>file==='Skyrim.esm'?itemForms[id]||null:null;
+  sp.Game.getFormFromFile=(id,file)=>{nativeReads.push([id,file]);return file==='Skyrim.esm'?itemForms[id]||null:null;};
   let compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
   if(residentFactory)compiled=compiled.replace('const residentControl=createResidentControl(()=>sp);','const residentControl=residentFactory();');
-  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory});
+  if(endowmentFactory)compiled=compiled.replace(/const endowments=createEndowmentController\([^;]+;/,'const endowments=endowmentFactory(()=>session);');
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory,endowmentFactory});
   vm.runInContext(compiled,context);
-  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
+  return {handlers,notifications,requests,looks,nativeReads,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 function checkpointFixture(h){
@@ -400,4 +403,105 @@ test('focused browser release survives heartbeat and native F8 can restore focus
  assert.equal(focus.at(-1),false);
  h.handlers.get('update')();assert.equal(focus.at(-1),false);
  h.handlers.get('buttonEvent')({code:66,isDown:true});assert.equal(focus.at(-1),true);
+});
+
+
+test('resource protocol status is published with a ready session and reset epoch',async()=>{
+ const sessions=[];let epoch=1;
+ const factory=getSession=>{sessions.push(getSession());return {
+  reservedActors:()=>[],reset(){epoch++;},step(){throw Error('not used');},
+  status:()=>({protocol:2,epoch:'epoch-'+epoch,manifest_hash:'manifest',catalog_hash:'catalog',available:true})};};
+ const h=harness(false,null,null,factory);h.handlers.get('update')();await settle();
+ assert.equal(typeof sessions[0],'string');assert.ok(sessions[0]);
+ assert.equal(h.requests[0].resource_import.protocol,2);
+ assert.equal(h.requests[0].resource_import.manifest_hash,'manifest');
+ assert.equal(h.requests[0].resource_import.catalog_hash,'catalog');
+ assert.equal(h.requests[0].resource_import.available,true);
+ const old=h.requests[0].resource_import.epoch;
+ h.advance();h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.handlers.get('update')();
+ assert.notEqual(h.requests.at(-1).resource_import.epoch,old);
+});
+
+test('every repeated resource ID reaches identity validation including changed payloads',async()=>{
+ const received=[];
+ const factory=()=>({reservedActors:()=>[],reset(){},status:()=>({protocol:2}),step(command){
+  received.push({...command});return {done:true,ack:{id:command.id,status:command.contract==='original'?'armed':'held'}};}});
+ const h=harness(false,null,null,factory);checkpointFixture(h);let contract='original';
+ h.setResponse(body=>({id:'grant-arm',kind:'inventory_endowment',phase:'arm',protocol:2,actor:123,session:body.session,checkpoint:0,contract}));
+ h.handlers.get('update')();await settle();h.advance();h.handlers.get('update')();await settle();
+ contract='changed';h.advance();h.handlers.get('update')();await settle();h.advance();h.handlers.get('update')();await settle();
+ assert.ok(received.length>=3);assert.equal(received.at(-1).contract,'changed');
+ assert.equal(h.requests.at(-1).ack.status,'held');
+});
+
+test('resource commands bypass an unrelated cached ID and do not cache thrown failure',async()=>{
+ let calls=0;
+ const factory=()=>({reservedActors:()=>[],reset(){},status:()=>({protocol:2}),step(command){
+  calls++;if(calls===1)throw Error('first contract rejected');return {done:true,ack:{id:command.id,status:'armed'}};}});
+ const h=harness(false,null,null,factory);checkpointFixture(h);let kind='notify';
+ h.setResponse(body=>({id:'reused-id',kind,phase:'arm',protocol:2,actor:123,session:body.session,checkpoint:0}));
+ for(let i=0;i<2;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(h.notifications.length,1);kind='inventory_endowment';
+ for(let i=0;i<4;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.ok(calls>=2);assert.equal(h.requests.at(-1).ack.status,'armed');
+});
+
+test('armed and pending resource actors yield standing control and reject unrelated movement',async()=>{
+ const blocked=[],yielded=[];
+ const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push([...actors]);}});
+ const factory=()=>({reservedActors:()=>[123],reset(){},status:()=>({protocol:2}),step(){throw Error('not used');}});
+ const h=harness(false,null,control,factory);checkpointFixture(h);
+ h.setPresentation({society:{checkpoint:0,resource_delivery:{status:'pending',command:{kind:'inventory_endowment',actor:124}}}});
+ h.setResponse(body=>({id:'conflicting-walk',kind:'walk_to',actor:123,target:124,checkpoint:0,session:body.session}));
+ for(let i=0;i<4;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.ok(blocked.at(-1).includes(123)&&blocked.at(-1).includes(124));
+ assert.ok(yielded.some(ids=>ids.includes(123)&&ids.includes(124)));
+ assert.match(h.requests.at(-1).ack.error,/Pending resource grant/);
+});
+
+
+test('held saved imports retain quarantine after native reset and malformed identities cover the census',async()=>{
+ for(const delivery of [
+  {status:'held',command:{kind:'inventory_endowment',actor:124}},
+  {status:'held',command:{kind:'inventory_endowment',actor:null},recipient:{actor:126}}
+ ]){
+  const blocked=[];
+  const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push([...actors]);}});
+  const factory=()=>({reservedActors:()=>[],reset(){},status:()=>({protocol:2,reserved_actors:[]}),step(){throw Error('not used');}});
+  const h=harness(false,null,control,factory);checkpointFixture(h);
+  h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();
+  h.setPresentation({society:{checkpoint:0,resource_delivery:delivery,people:{'124':{}},town:{residents:{'125':{}}}}});
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.ok(blocked.at(-1).includes(124));
+  if(delivery.command.actor===null)for(const id of [123,125,126])assert.ok(blocked.at(-1).includes(id));
+ }
+});
+
+test('malformed native reservation identity conservatively blocks managed and observed residents',async()=>{
+ const blocked=[];
+ const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push([...actors]);}});
+ const factory=()=>({reservedActors:()=>[],reset(){},status:()=>({protocol:2,reserved_actors:'unknown'}),step(){throw Error('not used');}});
+ const h=harness(false,null,control,factory);checkpointFixture(h);
+ h.setPresentation({society:{checkpoint:0,people:{'124':{}},town:{residents:{'125':{}}}}});
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.deepEqual(blocked.at(-1).sort((a,b)=>a-b),[123,124,125]);
+});
+
+
+test('real resource controller advertises reviewed hashes and rotates epoch without constructor native reads',async()=>{
+ const manifest=require('../config/resource-manifest.json');
+ const {resourceManifestHash}=require('../bridge/resource-manifest.js');
+ const h=harness();
+ assert.equal(h.nativeReads.length,0,'native forms may only resolve inside update/native handlers');
+ h.handlers.get('update')();await settle();
+ const before=h.requests[0].resource_import;
+ assert.equal(before.protocol,2);assert.equal(before.available,true);
+ assert.equal(before.manifest_hash,resourceManifestHash(manifest));
+ assert.equal(before.catalog_hash,manifest.catalog_hash);
+ assert.deepEqual(before.reserved_actors,[]);
+ h.advance();h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.handlers.get('update')();await settle();
+ const after=h.requests.at(-1).resource_import;
+ assert.notEqual(after.epoch,before.epoch);
+ assert.equal(after.manifest_hash,before.manifest_hash);
+ assert.notEqual(h.requests.at(-1).session,h.requests[0].session);
 });

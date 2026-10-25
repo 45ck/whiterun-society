@@ -34,7 +34,7 @@ def _account_actor(value):
     return int(suffix) if len(suffix)<=10 and suffix.isascii() and suffix.isdigit() and str(int(suffix))==suffix and int(suffix)>0 else None
 
 def reserved_work_accounts(state,observation=None):
-    actors=set()
+    actors=resource_quarantine_actors(state,observation)
     for row in _work_rows(state,observation):
         actors.update(row.get(field) for field in ('actor','custodian','account_actor')
                       if type(row.get(field)) is int and row[field]>0)
@@ -52,6 +52,42 @@ def work_account_conflict(state,actors=(),business_ids=(),observation=None):
     accounts={'native-inventory:'+str(actor) for actor in actors if type(actor) is int and actor>0}
     return bool(accounts&reserved_work_accounts(state,observation)
                 or set(business_ids)&reserved_work_businesses(state,observation))
+
+def resource_quarantine_actors(state,observation=None):
+    """Unsettled imports reserve their recipient even when delivery is held.
+
+    A native arm can survive a service rollback. Missing saved identity cannot
+    authorize a different resident to spend an ambiguous inventory account.
+    """
+    state=state or {};observation=observation or {};actors=set();unknown=False
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    for record in (state.get('pending'),state.get('resource_delivery')):
+        if not isinstance(record,dict):continue
+        command=record.get('command')
+        if not isinstance(command,dict) or command.get('kind')!='inventory_endowment':continue
+        if record.get('status') in ('committed','complete'):continue
+        identities=[command.get('actor')]
+        if 'actor' in record:identities.append(record['actor'])
+        if 'recipient' in record:
+            recipient=record['recipient']
+            identities.append(recipient.get('actor') if isinstance(recipient,dict) else None)
+        actors.update(value for value in identities if valid(value))
+        unknown=unknown or not all(valid(value) for value in identities)
+    native=observation.get('resource_import') or {}
+    if isinstance(native,dict) and 'reserved_actors' in native:
+        reserved=native['reserved_actors']
+        if isinstance(reserved,list):
+            actors.update(value for value in reserved if valid(value))
+            unknown=unknown or not all(valid(value) for value in reserved)
+        else:unknown=True
+    if unknown:
+        for people in (state.get('people'),(state.get('town') or {}).get('residents')):
+            if isinstance(people,dict):
+                actors.update(int(key) for key in people if isinstance(key,str) and key.isascii() and key.isdigit()
+                              and len(key)<=10 and str(int(key))==key and valid(int(key)))
+        for field in ('residents','inventory_observations'):
+            actors.update(row['id'] for row in observation.get(field,[]) if isinstance(row,dict) and valid(row.get('id')))
+    return actors
 
 def conversation_quarantine_actors(state,observation=None):
     """Reserve ambiguous cleanup participants without choosing a release owner.
@@ -97,6 +133,7 @@ def _reserved_activity(state,observation,field):
     if field=='actor':
         ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation))
         ids.extend(conversation_quarantine_actors(state,observation))
+        ids.extend(resource_quarantine_actors(state,observation))
     return {value for value in ids if type(value) is int and value>0}
 
 def reserved_activity_actors(state,observation=None):

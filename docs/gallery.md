@@ -26,6 +26,12 @@ Generated system illustration — not gameplay
 
 ![Employment encounter loop](images/employment-encounter-loop.png)
 
+## Finite resource delivery flow
+
+Generated system illustration — not gameplay
+
+![Finite resource delivery flow](images/finite-resource-delivery-flow.png)
+
 ## Grain market loop
 
 Generated system illustration — not gameplay

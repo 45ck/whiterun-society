@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const {JSDOM}=require('jsdom');
 
-function report(){
+function report(program){
  const template=fs.readFileSync(path.join(__dirname,'../tools/render_population.py'),'utf8').match(/HTML = '''([\s\S]*?)'''/)[1];
  const residents=[true,false,null,null].map((support,index)=>({id:index+1,name:['Available','Unavailable','Unmeasured','Missing observation'][index],household:'fixture',native_route_supported:support,loaded:true,latest_inventory:{gold:0,bread:0,grain:0},person:{profile:{role:'Resident',big_five:{}},needs:{hunger:.2},agency:{state:'awaiting_review'},relationships:{},commitments:[],memories:[]}}));
- const data={checkpoint:7,counts:{residents:4,households:4,businesses:0,native_route_supported:1,native_route_unavailable:1,native_route_unknown:2},residents,businesses:[],events:[]};
+ const data={resource_program:program,checkpoint:7,counts:{residents:4,households:4,businesses:0,native_route_supported:1,native_route_unavailable:1,native_route_unknown:2},residents,businesses:[],events:[]};
  const dom=new JSDOM(template.replace('__SNAPSHOT__',JSON.stringify(data)),{runScripts:'outside-only'});
  for(const script of dom.window.document.scripts)if(script.type!=='application/json')vm.runInContext(script.textContent,dom.getInternalVMContext());
  return dom;
@@ -32,5 +32,21 @@ test('population filters preserve separate available unavailable and unknown cat
   filter.value='unknown';search.value='Missing';search.dispatchEvent(new w.Event('input'));
   assert.equal(doc.querySelectorAll('.resident').length,1);
   assert.match(doc.getElementById('residents').textContent,/Missing observation/);
+ }finally{dom.window.close();}
+});
+
+
+test('population snapshot labels legacy imports without reconstructing verified deliveries',()=>{
+ const dom=report({capacity:{gold:100},remaining:{gold:3},grants:{}});try{
+  const text=dom.window.document.getElementById('resources').textContent;
+  assert.match(text,/Historical external grants · legacy provenance/);
+  assert.doesNotMatch(text,/97|verified settled imports/);
+ }finally{dom.window.close();}
+});
+
+test('population snapshot displays generic reserved and verified import buckets separately',()=>{
+ const dom=report({protocol:2,id:'example',manifest_hash:'b'.repeat(64),manifest:{id:'example',version:'v2',provenance:'Authored test',capacity:{ore:10}},capacity:{ore:10},available:{ore:4},reserved:{ore:6},delivered:{ore:0},grants:{}});try{
+  assert.match(dom.window.document.getElementById('resources').textContent,/partial or uncertain native effects may already be present/);
+  assert.match(dom.window.document.getElementById('resources').textContent,/ore: 4 available · 6 reserved · 0 verified settled imports · 10 source capacity/);
  }finally{dom.window.close();}
 });

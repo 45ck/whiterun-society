@@ -89,6 +89,7 @@ def town_dashboard(society, observation, spatial=None, fresh=True):
     metrics=society.get('metrics') or {}
     return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,'autonomy':autonomy,
         'inventory_catalog':inventory_catalog_status(observation,fresh=fresh),
+        'resource_program':(society.get('town') or {}).get('resource_program'),
         'spatial':spatial,'agency':metrics.get('agency'),'economic_network':metrics.get('economic_network'),
         'activity_jobs':activities,
         'owner_work':owner_work_metrics(society,observation),

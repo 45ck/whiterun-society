@@ -459,3 +459,19 @@ test('economic wording stages and fallback provenance are visible without exposi
  assert.match(w.document.getElementById('encounter-timing').textContent,/Original terms fallback/);
  }finally{dom.window.close();}
 });
+
+test('external import view shows finite generic buckets without counting them as earned activity',()=>{
+ const {renderResourceImports}=require('../ui/society-dashboard.js');
+ const dom=new JSDOM('<div id="root"></div>');try{const root=dom.window.document.getElementById('root');
+  const program={protocol:2,id:'experiment',manifest_hash:'a'.repeat(64),manifest:{id:'experiment',version:'v2',provenance:'<img src=x>',capacity:{ore:20,gold:10}},capacity:{ore:20,gold:10},available:{ore:12,gold:8},reserved:{ore:3,gold:2},delivered:{ore:5},grants:{'7':{}}};
+  renderResourceImports(root,program);
+  assert.match(root.textContent,/ore: 12 available · 3 reserved · 5 verified settled imports · 20 source capacity/);
+  assert.match(root.textContent,/gold: 8 available · 2 reserved · — verified settled imports/);
+  assert.match(root.textContent,/not sales, wages or production/);assert.match(root.textContent,/Reserved amounts are not yet settled imports; partial or uncertain native effects may already be present/);assert.doesNotMatch(root.textContent,/remains outside resident balances/);assert.equal(root.querySelector('img'),null);
+  assert.equal(root.dataset.resourceProvenance,'manifest-v2');assert.equal(root.querySelector('details').open,false);
+  root.replaceChildren();renderResourceImports(root,{capacity:{gold:10},remaining:{gold:2},grants:{'7':{}}});
+  assert.match(root.textContent,/Historical external grants · legacy provenance/);
+  assert.doesNotMatch(root.textContent,/8 verified|available ·|source capacity/);
+  assert.equal(root.querySelector('button'),null);
+ }finally{dom.window.close();}
+});

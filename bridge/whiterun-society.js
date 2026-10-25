@@ -3,12 +3,14 @@
 (() => {
 // The installed Node-backed build exposes native exports as a global.
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
+let session = Date.now() + '-' + Math.random();
 __ECONOMY_CATALOG_FACTORY__
 const economyCatalog=createEconomyCatalogController(()=>sp,__ECONOMY_CATALOG_MANIFEST__);
 __TRANSFER_FACTORY__
 const transfers=createInventoryTransfers(()=>sp,Date.now,{catalog:economyCatalog});
+__RESOURCE_MANIFEST_FACTORY__
 __ENDOWMENT_FACTORY__
-const endowments=createEndowmentController(()=>sp,Date.now,{catalog:economyCatalog});
+const endowments=createEndowmentController(()=>sp,Date.now,{catalog:economyCatalog,manifest:__RESOURCE_MANIFEST__,session:()=>session});
 __PRODUCTION_FACTORY__
 const production=createProductionController(()=>sp,Date.now,{catalog:economyCatalog});
 __MOVEMENT_FACTORY__
@@ -57,7 +59,6 @@ function conversationQuarantineActors(society,observed){
 }
 const config = __BRIDGE_CONFIG__;
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
-let session = Date.now() + '-' + Math.random();
 let selected = 0;
 let pending = null;
 let ack = null;
@@ -92,6 +93,32 @@ const registrations = [];
 sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
+function resourceReservedActors(inventoryObserved=[]) {
+  const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
+  const ids=new Set();let unknown=false;
+  const include=values=>{if(!Array.isArray(values)){unknown=true;return;}
+    for(const id of values){if(valid(id))ids.add(id);else unknown=true;}};
+  include(endowments.reservedActors());
+  const native=endowments.status();
+  if(native&&Object.prototype.hasOwnProperty.call(native,'reserved_actors'))include(native.reserved_actors);
+  if(pending?.kind==='inventory_endowment'&&pending.session===session)include([pending.actor]);
+  const society=presentation.society;
+  for(const record of [society?.pending,society?.resource_delivery]){
+    const command=record?.command;
+    if(command?.kind!=='inventory_endowment'||['committed','complete'].includes(record.status))continue;
+    const actors=[command.actor];
+    if(Object.prototype.hasOwnProperty.call(record,'actor'))actors.push(record.actor);
+    if(Object.prototype.hasOwnProperty.call(record,'recipient'))actors.push(record.recipient?.actor);
+    include(actors);
+  }
+  if(unknown){
+    for(const people of [society?.people,society?.town?.residents])
+      for(const key of Object.keys(people||{}))if(/^[1-9][0-9]{0,9}$/.test(key)&&valid(Number(key)))ids.add(Number(key));
+    for(const row of Object.values(society?.town?.resident_control?.assignments||{}))if(valid(row?.actor))ids.add(row.actor);
+    for(const row of [...residents,...inventoryObserved])if(valid(row?.id))ids.add(row.id);
+  }
+  return [...ids];
+}
 function reset() {
   browserFocusReady=false;uiHealth=null;nativeButtonEvents=0;lastNativeControlKey=null;
   directorControl=null;playerControlRequest=null;audioOutput=null;
@@ -281,16 +308,23 @@ on('update', () => {
   speech.tick();
   // Long furniture attendance progresses even while a disjoint voice, meal,
   // model decision or checkpoint occupies the foreground command channel.
-  residentControl.yieldActors(activityJobs.reservedActors());
+  residentControl.yieldActors([...activityJobs.reservedActors(),...resourceReservedActors()]);
   activityJobs.tick(presentation.society?.activity_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error);
   ownerWorkJobs.tick(presentation.society?.owner_work_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error,residentControl.status());
   residentControl.yieldActors(ownerWorkJobs.releasingActors());
   if (pending) {
     const command = pending; pending = null;
-    // Repeat only the recorded receipt, never an already executed effect.
-    if(command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
-    if (command.session === session && !completed.has(command.id)) {
+    // Resource grants validate their complete identity on every arm/deliver replay.
+    // The generic ID-only cache must never bypass that controller's checks.
+    const resourceCommand=command.kind==='inventory_endowment';
+    if(!resourceCommand&&command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
+    if (command.session === session && (resourceCommand||!completed.has(command.id))) {
       try {
+        if(!resourceCommand){
+          const reserved=resourceReservedActors();
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target])];
+          if(actors.some(id=>reserved.includes(id)))throw new Error('Pending resource grant reserves a command participant');
+        }
         if(!['activity_start_rest','activity_ack_receipt'].includes(command.kind)){
           const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor)];
           if(actors.some(id=>activityJobs.ownsActor(id))||activityJobs.ownsTarget(command.target))throw new Error('Background activity owns a command participant or furniture');
@@ -315,7 +349,7 @@ on('update', () => {
             if(travel&&!['applied','held','released'].includes(travel.phase))blocked.push(travel.actor,travel.target);
             if(['starting','playing'].includes(speech.status()?.status))for(const participant of speech.status()?.facing||[])blocked.push(participant.actor);
             if(parallelRoutines.ownsActor(command.actor))blocked.push(command.actor);
-            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors());
+            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...resourceReservedActors());
           }
           const result=command.kind==='activity_start_rest'?activityJobs.start(command,blocked):
             command.kind==='activity_ack_receipt'?activityJobs.acknowledge(command):
@@ -360,7 +394,7 @@ on('update', () => {
           if(checkpointValue()!==command.checkpoint)throw new Error('Endowment checkpoint mismatch');
           const result=endowments.step(command);
           if(!result.done)pending=command;
-          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
+          else ack=result.ack;
         }
         else if(command.kind==='parallel_routines'||command.kind==='background_routines'){
           if(checkpointValue()!==command.checkpoint||command.origin_session!==session)throw new Error('Independent routine checkpoint or session mismatch');
@@ -414,7 +448,7 @@ on('update', () => {
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
         if (!['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt','scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_self_produce_commit','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
-      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
+      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};if(!resourceCommand)completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
     }
   }
   const activeConversation=presentation.society?.conversation;
@@ -543,7 +577,7 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   function controlEnabled(name){try{return typeof sp.Game[name]==='function'?sp.Game[name]():null;}catch(_){return null;}}
-  const societyState=presentation.society,foreground=new Set();
+  const societyState=presentation.society,foreground=new Set(resourceReservedActors(inventoryObservations));
   const plan=societyState?.plan,chat=societyState?.conversation,batch=societyState?.routine_batch;
   if(plan&&(!['complete','held','delegated'].includes(plan.phase)||plan.release_required)){for(const id of [plan.actor,plan.target,...(plan.economic_pair||[])])if(id)foreground.add(id);}
   if(chat&&(!['complete','held'].includes(chat.phase)||chat.release_required||chat.cleanup_review_required)){
@@ -562,6 +596,7 @@ on('update', () => {
   else residentControl.renew(residents,controlFresh);
   const observation = {
     economy_catalog:economyCatalog.status(),
+    resource_import:endowments.status(),
     director_control:directorControl,
     player_controls:{request:playerControlRequest,
       movement:controlEnabled('isMovementControlsEnabled'),

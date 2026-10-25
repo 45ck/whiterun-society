@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "founding-resources-v2",
+  "version": "uniform-experimental-v1",
+  "catalog_hash": "1f7f5d79e976a74ac5e8b2f9752734a759cbaf591b5941ae5cd82d33145ae554",
+  "capacity": {"gold": 1000, "bread": 100, "grain": 100},
+  "default_grant": {"gold": 20, "bread": 2, "grain": 2},
+  "overrides": [],
+  "max_recipient_stock": 1000000,
+  "provenance": "Explicit experimental authored imports from outside the town, bounded by this finite source pool. Uniform grants are scenario inputs, not earned income, inferred wealth, or canonical NPC occupations."
+}

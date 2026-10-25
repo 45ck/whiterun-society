@@ -103,12 +103,12 @@ class OwnerWorkDirectEffectTests(unittest.TestCase):
                     if method=='food':self.world.plan_consumption('eat',self.obs,actor,'effect')
                     elif method=='paid':self.world.plan_production(self.obs,self.world.agency_plan())
                     elif method=='owner':self.world.plan_owner_production(self.obs,self.world.agency_plan())
-                    elif method=='grant':self.world.plan_endowment(actor,self.obs)
+                    elif method=='grant':self.world.plan_endowment(actor,self.obs,self.manifest['id'],self.manifest_hash)
                     elif method=='supply':self.world.setup_production(self.obs)
                     else:self.world.plan_trade('trade',self.obs,actor,108149)
                 self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
 
     def test_disjoint_native_purse_can_receive_grant(self):
         self.obs['owner_work_jobs']={'jobs':[work(108149)]}
-        self.world.plan_endowment(99,self.obs)
+        self.world.plan_endowment(99,self.obs,self.manifest['id'],self.manifest_hash)
         self.assertIsNotNone(self.world.transition)

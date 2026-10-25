@@ -6,6 +6,12 @@ from catalog_fixture import native_catalog
 from observer import observer_state
 
 class DashboardTests(unittest.TestCase):
+    def test_external_program_provenance_is_projected_without_reconstructed_totals(self):
+        program={'id':'legacy','capacity':{'gold':100},'remaining':{'gold':2},'grants':{}}
+        result=town_dashboard({'town':{'resource_program':program}}, {})
+        self.assertEqual(result['resource_program'],program)
+        self.assertNotIn('delivered',result['resource_program'])
+
     def test_catalog_status_separates_configured_counts_from_native_verification(self):
         result=town_dashboard({}, {})['inventory_catalog']
         self.assertEqual(result['status'],'missing');self.assertFalse(result['verified'])

@@ -4,6 +4,12 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Finite resources from scenario data, source implementation:** starting allocations now come from one reviewed manifest, with uniform defaults instead of a privileged NPC branch. The saved program separates available, reserved and settled imports. A native permit is saved before delivery; each resource addition requires its own issued/observed witness. A lost session or witness holds the reservation without replay. This is an external import mechanism, not autonomous production or earned income. [Contract, historical evidence and native qualification still required](docs/founding-resources.md).
+
+![Finite scenario resources, saved permits, witnessed delivery and uncertain-delivery holds](docs/images/finite-resource-delivery-flow.png)
+
+*Generated system illustration. Service accounting is durable; native effect witnesses are live only, so there is no exactly-once guarantee across crashes. [Full generation prompts](docs/images/finite-resource-delivery-flow.full.prompt.md).*
+
 **Independent activities, controlled native overlap:** two authored rests and four authored local-voice turns achieved **28.359 cumulative seconds** of verified two-seat/voice overlap, passing the 10-second cumulative target with **zero cloud calls**. The longest continuous interval was **7.375 seconds**. This proves the bounded execution protocol, not autonomous choices or human realism; C1's zero-overlap refusal and obstructed camera remain documented. [Architecture, actual screenshots and limits](docs/concurrent-activities.md) · [C2 evidence](docs/concurrent-rest-controlled-trial.json) · [C1 evidence](docs/concurrent-rest-first-trial.json).
 
 ![Independent owner work, rest and conversation architecture](docs/images/independent-owner-work.png)
@@ -54,7 +60,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 72 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 73 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -277,7 +283,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (72)</summary>
+<summary>Browse every finished project image (73)</summary>
 
 ### Concurrent resident lives
 
@@ -302,6 +308,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Employment encounter loop](docs/images/employment-encounter-loop.png)
+
+### Finite resource delivery flow
+
+Generated system illustration — not gameplay
+
+![Finite resource delivery flow](docs/images/finite-resource-delivery-flow.png)
 
 ### Grain market loop
 

@@ -13,6 +13,7 @@ GENERATED.add('concurrent-resident-lives.png')
 GENERATED.add('independent-owner-work.png')
 GENERATED.add('economy-catalog-flow.png')
 GENERATED.add('resident-initialization-flow.png')
+GENERATED.add('finite-resource-delivery-flow.png')
 MEASURED={'personal-goals-movement-chart.png','owner-work-fixture-timeline.png'}
 
 def build():

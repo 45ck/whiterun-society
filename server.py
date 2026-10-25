@@ -27,6 +27,19 @@ def begin_agency_event(world, observation, data):
         data.get('kind', 'meal_time'), data.get('voiced_trade', False), data.get('natural_trade', False))
 
 
+def begin_endowment_event(world, observation, data):
+    """An operator explicitly selects a reviewed finite scenario; no default."""
+    if not isinstance(data,dict) or set(data)!={'actor','scenario_id','scenario_hash'}:
+        raise ValueError('Endowment requires exactly actor, scenario_id and scenario_hash')
+    if type(data['actor']) is not int or not 0<data['actor']<=0xffffffff:
+        raise ValueError('Endowment actor must be a positive integer')
+    if not isinstance(data['scenario_id'],str) or not data['scenario_id']:
+        raise ValueError('An explicit resource scenario ID is required')
+    if not isinstance(data['scenario_hash'],str) or not re.fullmatch('[0-9a-f]{64}',data['scenario_hash']):
+        raise ValueError('An exact resource scenario hash is required')
+    return world.plan_endowment(data['actor'],observation,data['scenario_id'],data['scenario_hash'])
+
+
 def begin_conversation_event(world, observation, data, *, scenario=False):
     """Authored demonstrations have a separate explicit admission boundary."""
     allowed={'id','scenario','reply_policy'} if scenario else {'id','actor','max_turns','opportunity_batch','reply_policy'}
@@ -260,7 +273,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
                     if self.path=='/town/scene-handoff':result=world.request_scene_handoff(data['id'],data['actor'],data['scene_id'],bridge['observation'])
-                    elif self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
+                    elif self.path=='/town/endow':result=begin_endowment_event(world,bridge['observation'],data)
                     elif self.path=='/town/social-background':result=world.establish_social_background(data['id'],data['cohort'],bridge['observation'])
                     elif self.path=='/town/enterprise':result=world.configure_enterprise(data['id'],data['enterprise'],bridge['observation'])
                     elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])

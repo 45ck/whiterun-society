@@ -115,6 +115,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         # A prepared recipe owns the writer until its exact receipt settles.
         # Do not hide its acknowledgement behind an unrelated conversation.
         effect = self.active.get('pending')
+        if effect and effect.get('command',{}).get('kind')=='inventory_endowment':
+            self.observe_endowment(observation)
+            return
         if (effect and effect.get('status')=='pending' and effect.get('command',{}).get('kind','').startswith('inventory_')
             and (effect['command'].get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation))):
             state=copy.deepcopy(self.active);record=state['pending']
@@ -273,6 +276,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             command=self.active['pending']['command']
+            if command.get('kind')=='inventory_endowment':return self.endowment_pending_command(session)
             if command.get('kind','').startswith('inventory_') and command.get('catalog_hash')!=catalog_hash():return None
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
         foreground_command = self.speech_command(session) or self.agency_command(session)

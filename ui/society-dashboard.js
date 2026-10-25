@@ -36,6 +36,21 @@ function ownerRecipeLabel(recipe){
  const goods=amounts=>Object.entries(amounts||{}).map(([good,quantity])=>`${quantity} ${good}`).join(' + ');
  return `${recipe.id} · ${recipe.version} · ${goods(recipe.inputs)} → ${goods(recipe.outputs)}`;
 }
+function renderResourceImports(root,program){
+ if(!root||!program)return;
+ const add=(tag,text,parent=root)=>{const el=root.ownerDocument.createElement(tag);el.textContent=text;parent.append(el);return el;};
+ const modern=program.protocol===2&&typeof program.manifest_hash==='string'&&/^[0-9a-f]{64}$/.test(program.manifest_hash)&&program.manifest?.id===program.id;
+ root.dataset.resourceProvenance=modern?'manifest-v2':'legacy';
+ add('h3','External scenario imports');
+ if(!modern){add('p','Historical external grants · legacy provenance. Modern delivery verification is unavailable.');add('p',`${Object.keys(program.grants||{}).length} recorded recipients. These records do not count as earned revenue or production.`);return;}
+ add('p',`${program.id} · ${program.manifest.version||'Version unrecorded'}`);
+ add('p',program.manifest.provenance||'Provenance unrecorded');
+ const shown=value=>Number.isInteger(value)&&value>=0?value:'—';
+ const items=Object.keys(program.manifest.capacity||{}).sort();
+ for(const item of items)add('p',`${item}: ${shown(program.available?.[item])} available · ${shown(program.reserved?.[item])} reserved · ${shown(program.delivered?.[item])} verified settled imports · ${shown(program.capacity?.[item])} source capacity`);
+ add('p',`${Object.keys(program.grants||{}).length} recorded recipients. External imports are not sales, wages or production. Reserved amounts are not yet settled imports; partial or uncertain native effects may already be present.`);
+ const detail=add('details','');add('summary','Scenario provenance details',detail);add('p',`Manifest ${program.manifest_hash}`,detail);
+}
 function renderTownCharts(root,data){
  if(!root||!data)return;
  const signature=JSON.stringify(data);if(root.dataset.snapshot===signature)return;root.dataset.snapshot=signature;
@@ -58,6 +73,7 @@ function renderTownCharts(root,data){
  const shown=value=>number(value)??'—';
  const ratio=value=>value?.n?`${shown(value.percent)}% · ${value.success}/${value.n}`:'Unmeasured';
  const detail=title=>{const e=add(root,'details',undefined,'town-detail');e.dataset.panel=title;e.open=opened.has(title);add(e,'summary',title);return e;};
+ if(data.resource_program){const imports=add(root,'section');renderResourceImports(imports,data.resource_program);}
  const metricTiles=(parent,entries)=>{const grid=add(parent,'div',undefined,'town-flow');for(const [value,label] of entries){const tile=add(grid,'div');add(tile,'strong',value);add(tile,'span',label);}return grid;};
  if(data.inventory_catalog){const catalog=data.inventory_catalog,verified=catalog.fresh===true&&catalog.verified===true&&catalog.status==='verified';
   const panel=section(verified?'Game items verified':'Inventory actions waiting for verified game items');
@@ -245,4 +261,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel};
+if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel};

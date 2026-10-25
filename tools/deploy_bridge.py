@@ -8,6 +8,18 @@ from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from economy_catalog import canonical_json, load_catalog
+from resource_manifest import load_manifest, manifest_hash
+
+def resource_bundle_inputs(repo):
+    """Validate and hash reviewed resource configuration before any game writes."""
+    reviewed=load_manifest(repo/'config/resource-manifest.json')
+    encoded=canonical_json(reviewed)
+    digest=manifest_hash(reviewed)
+    if not re.fullmatch(r'[a-f0-9]{64}',digest) or digest!=hashlib.sha256(encoded.encode()).hexdigest():
+        raise ValueError('Resource manifest canonical hash mismatch')
+    factory=(repo/'bridge/resource-manifest.js').read_text(encoding='utf-8').split('\nif(typeof module')[0]
+    return factory,encoded,digest
+
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--root',type=Path,required=True)
@@ -23,6 +35,10 @@ config['audioDiagnostic']=json.loads(audio_mode.read_text()).get('disabled',Fals
 source=(Path(__file__).resolve().parents[1]/'bridge'/'whiterun-society.js').read_text()
 source=source.replace('__ECONOMY_CATALOG_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'economy-catalog.js').read_text(encoding='utf-8').split('\nif(typeof module')[0])
 source=source.replace('__ECONOMY_CATALOG_MANIFEST__',canonical_json(load_catalog()))
+resource_factory,resource_manifest_json,resource_manifest_digest=resource_bundle_inputs(Path(__file__).resolve().parents[1])
+source=source.replace('__RESOURCE_MANIFEST_FACTORY__',resource_factory)
+source=source.replace('__RESOURCE_MANIFEST__',resource_manifest_json)
+source+='\n// Resource manifest SHA256: '+resource_manifest_digest+'\n'
 factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
 source=source.replace('__TRANSFER_FACTORY__',factory)
 endowments=(Path(__file__).resolve().parents[1]/'bridge'/'endowments.js').read_text().split('\nif(typeof module')[0]

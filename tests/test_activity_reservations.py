@@ -194,7 +194,7 @@ class ReservedDirectEffectTests(unittest.TestCase):
                     if method=='food':self.world.plan_consumption('eat',self.obs,actor,'effect')
                     elif method=='work':self.world.plan_production(self.obs,self.world.agency_plan())
                     elif method=='owner':self.world.plan_owner_production(self.obs,self.world.agency_plan())
-                    elif method=='grant':self.world.plan_endowment(actor,self.obs)
+                    elif method=='grant':self.world.plan_endowment(actor,self.obs,self.manifest['id'],self.manifest_hash)
                     else:self.world.setup_production(self.obs)
                 self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
 
@@ -207,7 +207,7 @@ class ReservedDirectEffectTests(unittest.TestCase):
 
     def test_disjoint_resource_recipient_is_still_admitted(self):
         self.obs['activity_jobs']={'jobs':[lease(108149)]}
-        self.world.plan_endowment(99,self.obs)
+        self.world.plan_endowment(99,self.obs,self.manifest['id'],self.manifest_hash)
         self.assertIsNotNone(self.world.transition)
 
     def test_disjoint_consuming_actor_is_still_admitted(self):
