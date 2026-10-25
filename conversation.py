@@ -18,6 +18,7 @@ from activity_leases import background_social_ready,routine_actors,activity_conf
 from dialogue_policy import POLICIES,candidate_roles
 from inference_receipts import rejected_language_receipt
 from context_window import bounded_social_context
+from conversation_scenarios import validate_scenario,scenario_hash
 
 
 def validate_candidates(value):
@@ -54,13 +55,36 @@ def valid_meeting_route(conversation, session):
             and route==meeting_route(actor,target,session))
 
 
+def cleanup_participants(conversation):
+    """Recover original route ownership; speaking order may reverse on refusal."""
+    pairs=[]
+    route=conversation.get('meeting_route')
+    if route is not None:
+        if not isinstance(route,dict):return None
+        pairs.append([route.get('actor'),route.get('target')])
+    if 'initiator' in conversation or 'partner' in conversation:
+        pairs.append([conversation.get('initiator'),conversation.get('partner')])
+    scenario=conversation.get('scenario')
+    if scenario is not None:
+        try:pairs.append(validate_scenario(scenario)['participants'])
+        except ValueError:return None
+    speakers=conversation.get('speakers')
+    if not isinstance(speakers,list) or len(speakers)!=2:return None
+    if not pairs:pairs.append(speakers)
+    if any(len(pair)!=2 or any(type(a) is not int or not 0<a<=0xffffffff for a in pair) or pair[0]==pair[1] for pair in pairs):return None
+    owner=pairs[0]
+    if any(pair!=owner for pair in pairs[1:]):return None
+    if any(type(a) is not int for a in speakers) or set(speakers)!=set(owner):return None
+    return list(owner)
+
+
 class Conversation:
     def conversation_status(self):
         return copy.deepcopy(self.active.get('conversation')) if self.active else None
 
     def conversation_busy(self):
         c = self.conversation_status()
-        return bool(c and c['phase'] not in ('complete', 'held'))
+        return bool(c and (c['phase'] not in ('complete', 'held') or c.get('cleanup_review_required') or c.get('release_required')))
 
     def start_conversation(self, event_id, observation, actor=None, max_turns=None, opportunity_batch=None, reply_policy='separate_choice'):
         self._agency_guard(observation,allow_routines=background_social_ready(self.active))
@@ -73,14 +97,18 @@ class Conversation:
         history = self.active.get('conversation_history', []) + ([old] if old else [])
         for item in history:
             if item['id'] == event_id:
+                if item.get('scenario') is not None or item.get('mode')=='authored_scenario':
+                    raise ValueError('Conversation ID belongs to an authored scenario')
                 if actor is not None and item.get('initiator')!=actor:raise ValueError('Conversation ID reused for another resident')
                 if max_turns is not None and item.get('turn_limit',2)!=max_turns:raise ValueError('Conversation ID reused with another turn limit')
                 if item.get('reply_policy','separate_choice')!=reply_policy:raise ValueError('Conversation ID reused with another reply policy')
                 return {'duplicate': True, 'conversation': item}
+        if not self.active.get('town',{}).get('residents'):
+            raise ValueError('An established nonempty resident census is required for ordinary conversation')
         day = self.active.get('market_day')
         if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
             raise ValueError('Another resident event is active')
-        offered = actor is None and bool(self.active.get('town'))
+        offered = actor is None
         notice=None
         if opportunity_batch is not None:
             batch=self.routine_batch()
@@ -102,20 +130,16 @@ class Conversation:
                 return max([person.get('social_attempt_day',0),person.get('social_clock',0),*prior])
             actor=min(eligible,key=lambda aid:(last_attempt(aid),aid))
             self._social_day(observation)
-        elif actor is None:
-            distance(observation, 108186, 108149)
-            if not route_available(observation,108186,108149,self.active):
-                raise ValueError('Observed mailbox route required for authored encounter')
         else:
             event=next((e for e in self.active.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
             if type(actor) is not int or not event or event['actor']!=actor or event['kind']!='social_review' or event['status']!='pending':
                 raise ValueError('A pending scheduled social opportunity is required')
             if not social_candidates(self.active,observation,actor):raise ValueError('No qualified nearby social partner remains')
             self._social_day(observation)
-        if activity_conflict(self.active,actors=(actor,) if actor is not None else (108186,108149),observation=observation):
+        if activity_conflict(self.active,actors=(actor,),observation=observation):
             raise ValueError('An independent activity owns a conversation participant')
         state = copy.deepcopy(self.active)
-        limit=max_turns if max_turns is not None else (6 if actor is not None else 2)
+        limit=max_turns if max_turns is not None else 6
         if offered:
             daily=state['town'].setdefault('daily',{'last_day':observation['gameDays'],'sequence':0,'queue':[],'reviews':[]})
             if any(e['id']==event_id for e in daily['queue']):raise ValueError('Opportunity ID already exists')
@@ -125,12 +149,9 @@ class Conversation:
                 'source':'operator opportunity, not a claimed autonomous need'})
         if old: state.setdefault('conversation_history', []).append(old)
         state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0, 'started_at':time.time(),
-            'speakers': [108186,108149], 'turns': [], 'claim': None,'reply_policy':reply_policy,
-            'meeting_route':meeting_route(108186,108149,self.session),
-            'source': 'Authored two-person encounter; generated intentions and speech',
+            'speakers': [], 'turns': [], 'claim': None,'reply_policy':reply_policy,
             'turn_limit':limit,'max_turns':limit,'max_llm_calls':limit,'max_jev_calls':limit}
         if actor is not None:
-            state['conversation'].pop('meeting_route')
             state['conversation'].update(phase='choose_partner',initiator=actor,partner=None,mode='autonomous_social',
                 speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 and reply_policy=='separate_choice' else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
@@ -142,6 +163,45 @@ class Conversation:
                 state['conversation']['opportunity_batch']=opportunity_batch
                 state['conversation']['notice_to_start_seconds']=round(time.time()-notice['captured_at'],3)
         return {'checkpoint': self._write(state, 'conversation encounter started')}
+
+    def start_scenario_conversation(self,event_id,observation,scenario,reply_policy='separate_choice'):
+        self._agency_guard(observation,allow_routines=background_social_ready(self.active))
+        snapshot=validate_scenario(scenario);digest=scenario_hash(snapshot)
+        if reply_policy not in POLICIES:raise ValueError('Unknown reply policy')
+        if not isinstance(event_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}',event_id):
+            raise ValueError('Invalid conversation ID')
+        old=self.conversation_status()
+        history=self.active.get('conversation_history',[])+([old] if old else [])
+        for item in history:
+            prior=item.get('scenario')
+            if isinstance(prior,dict) and prior.get('id')==snapshot['id'] and (item.get('scenario_hash')!=digest or prior!=snapshot):
+                raise ValueError('Scenario ID reused with different authored content')
+            if item['id']==event_id:
+                if (item.get('mode')!='authored_scenario' or prior!=snapshot or item.get('scenario_hash')!=digest
+                        or item.get('reply_policy','separate_choice')!=reply_policy):
+                    raise ValueError('Conversation ID reused for another scenario or policy')
+                return {'duplicate':True,'conversation':copy.deepcopy(item)}
+        day=self.active.get('market_day')
+        if self.agency_busy() or self.conversation_busy() or day and day['status']!='complete':
+            raise ValueError('Another resident event is active')
+        actor,target=snapshot['participants']
+        if routine_actors(self.active).intersection((actor,target)):
+            raise ValueError('A journey owns a scenario participant')
+        if any(str(a) not in self.active['people'] for a in (actor,target)):
+            raise ValueError('Scenario participants must already be initialized residents')
+        if not route_available(observation,actor,target,self.active):
+            raise ValueError('Scenario requires available observed residents and current mailbox capability')
+        distance(observation,actor,target)
+        state=copy.deepcopy(self.active)
+        if old:state.setdefault('conversation_history',[]).append(old)
+        limit=snapshot['max_turns']
+        state['conversation']={'id':event_id,'phase':'meeting','turn':0,'started_at':time.time(),
+            'speakers':[actor,target],'initiator':actor,'partner':target,'turns':[],'claim':None,
+            'mode':'authored_scenario','scenario':snapshot,'scenario_hash':digest,
+            'reply_policy':reply_policy,'meeting_route':meeting_route(actor,target,self.session),
+            'source':'Explicit authored scenario; participant pairing is not autonomous choice',
+            'turn_limit':limit,'max_turns':limit,'max_llm_calls':limit,'max_jev_calls':limit}
+        return {'checkpoint':self._write(state,'authored conversation scenario started')}
 
     def _social_day(self, observation):
         day=observation.get('gameDays')
@@ -246,7 +306,7 @@ class Conversation:
                 if c['response']=='decline':c['speakers']=[c['partner'],c['initiator']];c['max_turns']=1
             elif stage=='continue_dialogue':
                 if decision['action_id']=='leave_quietly':
-                    c.update(phase='releasing',final_phase='complete',end_reason='left_quietly')
+                    c.update(phase='releasing',final_phase='complete',release_required=True,end_reason='left_quietly')
                 else:
                     c['phase']='propose'
                     if decision['action_id']=='close_politely':c.update(end_after_turn=True,end_reason='polite_closure')
@@ -274,7 +334,7 @@ class Conversation:
             c['current']['decision']=result
             if choice=='leave_quietly' and c.get('reply_policy')=='combined_choice':
                 c.setdefault('unspoken_turns',[]).append({**c.pop('current'),'outcome':'left_quietly','delivered':False})
-                c.update(phase='releasing',final_phase='complete',end_reason='left_quietly')
+                c.update(phase='releasing',final_phase='complete',release_required=True,end_reason='left_quietly')
             else:
                 c['current']['selected']=next(v for v in c['current']['candidates'] if v['id']==choice)
                 if c['current'].get('candidate_roles',{}).get(choice)=='close_politely':
@@ -316,11 +376,13 @@ class Conversation:
             if not valid_meeting_route(c,session):return None
             route=c['meeting_route'];actor=route['actor'];target=route['target']
             return {'id':'meet-'+c['id'],'kind':'walk_to','actor':actor,'target':target,'dynamic':True,
-                'method':'package','retain':True,'origin':'resident_decision' if c.get('mode') else 'authored_encounter','session':session,'checkpoint':self.marker}
+                'method':'package','retain':True,'origin':'resident_decision' if c.get('mode')=='autonomous_social' else 'authored_encounter','session':session,'checkpoint':self.marker}
         if c and c['phase']=='releasing':
-            return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':c.get('initiator',108186),
+            participants=cleanup_participants(c)
+            if participants is None:return None
+            return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':participants[0],
                 **({'stop_speech_id':c['current']['delivery_id']} if c.get('final_phase')=='held' and c.get('current',{}).get('delivery_id') else {}),
-                **({'participants':[c['initiator'],c['partner']]} if c.get('paired_attendance') else {}),
+                **({'participants':participants} if c.get('paired_attendance') else {}),
                 'session':session,'checkpoint':self.marker}
         if not c or c['phase']!='speaking' or c['current']['delivery_session']!=session: return None
         t=c['current']
@@ -339,6 +401,11 @@ class Conversation:
     def observe_conversation(self, observation):
         c=self.conversation_status()
         if not c:return
+        if c['phase']=='releasing' and cleanup_participants(c) is None:
+            c.update(phase='held',cleanup_review_required=True,release_required=True,
+                error='Conversation cleanup identity is unknown or contradictory; manual review required')
+            state=copy.deepcopy(self.active);state['conversation']=c
+            self._write(state,'conversation cleanup held without guessing participant identity');return
         if c['phase']=='meeting' and not valid_meeting_route(c,self.session):
             return self.hold_conversation(c['id'],'Legacy or changed-session meeting requires release; no route replay',observation)
         ack=observation.get('ack') or {}
@@ -365,12 +432,16 @@ class Conversation:
             self._write(state,'conversation participants met under owned route');return
         if c['phase']=='releasing' and ack.get('id')=='release-chat-'+c['id']:
             c['release_evidence']=ack
-            c['phase']=c.pop('final_phase') if ack.get('released') is True else 'held'
-            if ack.get('released') is not True:c['error']='Conversation route release was not verified'
+            released=ack.get('status')=='applied' and ack.get('released') is True
+            c['phase']=c.pop('final_phase') if released else 'held'
+            c['release_required']=not released
+            if not released:
+                c.update(error='Conversation route release was not verified',cleanup_review_required=True)
+            else:c.pop('cleanup_review_required',None)
             state=copy.deepcopy(self.active);state['conversation']=c
             if c.get('mode')=='autonomous_social' and c['phase']=='complete':c['phase']='reflect_first'
-            if c.get('mode')=='autonomous_social' and c['phase']=='held':settle_social(state,c,self._social_day(observation))
-            if c['phase'] in ('complete','held'):c['finished_at']=time.time()
+            if released and c.get('mode')=='autonomous_social' and c['phase']=='held':settle_social(state,c,self._social_day(observation))
+            if released and c['phase'] in ('complete','held'):c['finished_at']=time.time()
             self._write(state,'conversation travel task release observed');return
         if c['phase']!='speaking': return
         t=c['current'];report=observation.get('speech') or {}
@@ -397,7 +468,7 @@ class Conversation:
         at_limit=c['turn']>=c.get('max_turns',len(c['speakers']))
         c['phase']='releasing' if at_limit or c.get('end_after_turn') else 'continue_dialogue' if c.get('mode')=='autonomous_social' and c.get('turn_limit',2)>2 and c.get('reply_policy','separate_choice')=='separate_choice' else 'propose'
         if c['phase']=='releasing':
-            c['final_phase']='complete';c.setdefault('end_reason','turn_limit' if at_limit else 'polite_closure')
+            c['final_phase']='complete';c['release_required']=True;c.setdefault('end_reason','turn_limit' if at_limit else 'polite_closure')
         state['conversation']=c
         self._write(state,'completed speech recorded as witnessed claims')
 
@@ -426,7 +497,10 @@ class Conversation:
         if interruption:
             c['interruption']={'kind':'observer','requested_at':time.time(),'stage':c['phase'],'delivered_turns':len(c['turns']),'release_not_required':no_route}
             c.update(outcome='observer_interrupted',end_reason='observer_interruption')
-        c.update(phase='held' if no_route else 'releasing',final_phase='held',error=str(reason)[:200])
+        c.update(phase='held' if no_route else 'releasing',final_phase='held',release_required=not no_route,error=str(reason)[:200])
+        if not no_route and cleanup_participants(c) is None:
+            c.update(phase='held',cleanup_review_required=True,release_required=True,
+                error='Conversation cleanup identity is unknown or contradictory; manual review required')
         if no_route:c['finished_at']=time.time()
         state=copy.deepcopy(self.active);state['conversation']=c
         if c.get('mode')=='autonomous_social' and no_route:settle_social(state,c,self._social_day(observation))

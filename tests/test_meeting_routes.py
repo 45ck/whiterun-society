@@ -44,7 +44,13 @@ class MeetingRouteTests(unittest.TestCase):
         self.world.active['conversation']['meeting_route']['target']=108156
         self.assertIsNone(self.world.speech_command(self.obs['session']))
         self.world.observe(self.obs);self.sync()
-        self.assertEqual(self.world.conversation_status()['phase'],'releasing')
+        conversation=self.world.conversation_status()
+        self.assertEqual(conversation['phase'],'held')
+        self.assertTrue(conversation['cleanup_review_required'])
+        self.assertTrue(conversation['release_required'])
+        self.assertTrue(self.world.conversation_busy())
+        self.assertIsNone(self.world.speech_command(self.obs['session']))
+        self.assertNotIn('meeting_evidence',conversation)
 
     def test_changed_session_does_not_replay_meeting(self):
         self.prepare_meeting()
@@ -77,7 +83,7 @@ class AuthoredMeetingRouteTests(unittest.TestCase):
     sync=test_conversation.ConversationTests.sync
 
     def test_authored_meeting_has_no_receipt_bypass(self):
-        self.world.start_conversation('chat',self.obs);self.sync()
+        self.world.start_scenario_conversation('chat',self.obs,test_conversation.authored_pair_scenario(108186,108149));self.sync()
         self.assertTrue(self.world.pending(self.obs['session'])['dynamic'])
         self.obs['ack']={'id':'meet-chat','status':'applied'}
         self.world.observe(self.obs);self.sync()
@@ -87,8 +93,8 @@ class AuthoredMeetingRouteTests(unittest.TestCase):
     def test_authored_meeting_requires_same_observed_executor(self):
         self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':False}
         before=copy.deepcopy(self.world.active)
-        with self.assertRaisesRegex(ValueError,'mailbox route'):
-            self.world.start_conversation('chat',self.obs)
+        with self.assertRaisesRegex(ValueError,'mailbox capability'):
+            self.world.start_scenario_conversation('chat',self.obs,test_conversation.authored_pair_scenario(108186,108149))
         self.assertEqual(self.world.active,before)
 
 

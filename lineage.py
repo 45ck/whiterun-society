@@ -8,7 +8,6 @@ import copy
 import hashlib
 import json
 import sqlite3
-from decisions import PROFILES
 from world_economy import snapshot
 from agency import Agency
 from food import FoodEconomy, allocation
@@ -71,9 +70,14 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             raise ValueError('Bootstrap requires a freshly observed zero-marker world')
         if observation.get('session') != self.session or self.transition:
             raise ValueError('Session changed or checkpoint transition pending')
-        state = {'trades': [], 'pending': None, 'starting_inventory': observation.get('residents', []), 'people': {
-            str(actor): {'profile': profile, 'memories': [], 'trust': {}, 'needs': {'hunger': .4}}
-            for actor, profile in PROFILES.items()}}
+        # Bootstrap binds observational history only. An explicit census applies
+        # the same initialization policy to every currently observed adult.
+        state = {'trades': [], 'pending': None, 'people': {},
+                 'starting_inventory': copy.deepcopy(observation.get('residents', [])),
+                 'starting_inventory_provenance': {
+                     'source': 'Observed snapshot at explicit fresh-world bootstrap',
+                     'session': self.session, 'checkpoint': 0,
+                     'scope': 'Historical observation only; not a spendable account, endowment, or population census'}}
         self.error = None
         return {'checkpoint': self._write(state, 'explicit new-world bootstrap')}
 

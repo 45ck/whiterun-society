@@ -1,8 +1,12 @@
 """Run one finite market-day scenario, with save-bound stages and no automatic retries.
 
 Uses a ready lab game, or launches it if no lab bridge is connected. A fresh world
-gets explicitly prepared demo bread and two grain; existing managed saves are not
-reset or replenished. Requires the configured model key in its environment.
+gets explicitly prepared demo bread and an observed census; existing managed saves are not
+reset or replenished. Fresh census creates no business: this historical authored
+sequence requires separately configured production/retail charters and feasible
+work; it is not an automatically runnable nine-call demo. A fresh census stops
+for that setup; supply any grain explicitly afterward with prepare_production.py.
+This tool does not replenish managed worlds. Requires the configured model key in its environment.
 """
 import argparse
 import hashlib
@@ -14,6 +18,8 @@ import time
 import urllib.request
 
 SOURCE=Path(__file__).resolve().parents[1]
+if str(SOURCE) not in sys.path:sys.path.insert(0,str(SOURCE))
+from tools.authored_population import initialize_fresh_population, validate_participants, validate_market_contract
 
 
 def main():
@@ -25,11 +31,12 @@ def main():
     args=parser.parse_args();runtime=args.root/'runtime'
     config_path=runtime/'bridge-config.json'
     def config():return json.loads(config_path.read_text())
-    def request(route,data=None):
+    def request(route,data=None,*,session=None):
         c=config()
         req=urllib.request.Request(f"http://127.0.0.1:{c['port']}"+route,
             None if data is None else json.dumps(data).encode(),
-            headers={'Authorization':'Bearer '+c['token'],'Content-Type':'application/json'})
+            headers={'Authorization':'Bearer '+c['token'],'Content-Type':'application/json',
+                     **({'X-Society-Session':session} if session is not None else {})})
         try:
             with urllib.request.urlopen(req,timeout=15) as response:return json.load(response)
         except urllib.error.HTTPError as error:
@@ -49,19 +56,25 @@ def main():
     state=wait_ready(lambda s:True)
     if args.audio_diagnostic and not state['bridge']['observation'].get('audioDiagnostic'):
         raise ValueError('This connected game is not in audio diagnostic mode')
+    population_provenance={'policy':'preserved-managed-save','source':'Existing people and seed retained; no census or profile reset'}
     if state['society']['checkpoint']==0:
+        validate_participants(state)
         command=request('/command',{'kind':'prepare_market'})
         prepared=wait_ready(lambda s:(s['bridge']['last_ack'] or {}).get('id')==command['id'])
         if prepared['bridge']['last_ack']['status']!='applied':raise ValueError('Demo bread setup failed')
         request('/world/bootstrap',{})
-        wait_ready(lambda s:not s['society']['error'])
-        child('prepare_production.py','--root',args.root)
+        bound=wait_ready(lambda s:not s['society']['error'] and s['society']['checkpoint']>0)
+        state,population_provenance=initialize_fresh_population(request,wait_ready,bound,'market-day',args.id)
+        # Census deliberately does not invent an employer charter. A fresh empty
+        # town stops here until business/fixture setup is explicitly provided.
+        validate_market_contract(state,args.id)
+    validate_market_contract(state,args.id)
     # No persistent client-side cursor: the loaded game checkpoint owns progress.
     result=request('/market-day/start',{'id':args.id})
     if result.get('duplicate') and result['scenario']['status']=='complete':
         print(json.dumps({'duplicate':True,'model_calls':0,'scenario':result['scenario']}));return
     path=runtime/('market-day-'+hashlib.sha256(args.id.encode()).hexdigest()[:12]+'.json')
-    evidence={'id':args.id,'started_at':time.time(),'before':state,'events':[]}
+    evidence={'id':args.id,'started_at':time.time(),'before':state,'population_initialization':population_provenance,'events':[]}
     while True:
         state=wait_ready(lambda s:not s['society']['error'])
         day=state['society']['market_day']

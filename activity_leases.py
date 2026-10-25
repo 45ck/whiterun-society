@@ -53,6 +53,40 @@ def work_account_conflict(state,actors=(),business_ids=(),observation=None):
     return bool(accounts&reserved_work_accounts(state,observation)
                 or set(business_ids)&reserved_work_businesses(state,observation))
 
+def conversation_quarantine_actors(state,observation=None):
+    """Reserve ambiguous cleanup participants without choosing a release owner.
+
+    Only terminal-held cleanup is added here. Active/releasing conversations
+    retain their existing gates so claims cannot conflict with their own lease.
+    """
+    state=state or {};conversation=state.get('conversation') or {}
+    if not isinstance(conversation,dict) or conversation.get('phase')!='held' or not (
+            conversation.get('release_required') is True or conversation.get('cleanup_review_required') is True):return set()
+    route=conversation.get('meeting_route');scenario=conversation.get('scenario')
+    candidates=[conversation.get('initiator'),conversation.get('partner')]
+    if isinstance(route,dict):candidates.extend((route.get('actor'),route.get('target')))
+    if isinstance(conversation.get('speakers'),list):candidates.extend(conversation['speakers'])
+    if isinstance(scenario,dict) and isinstance(scenario.get('participants'),list):candidates.extend(scenario['participants'])
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    actors={value for value in candidates if valid(value)}
+    pairs=[]
+    if 'meeting_route' in conversation:pairs.append([route.get('actor'),route.get('target')] if isinstance(route,dict) else None)
+    if 'initiator' in conversation or 'partner' in conversation:pairs.append([conversation.get('initiator'),conversation.get('partner')])
+    if 'speakers' in conversation:pairs.append(conversation['speakers'])
+    if 'scenario' in conversation:pairs.append(scenario.get('participants') if isinstance(scenario,dict) else None)
+    complete=lambda pair:isinstance(pair,list) and len(pair)==2 and all(valid(value) for value in pair) and pair[0]!=pair[1]
+    if len(actors)>=2 and all(complete(pair) for pair in pairs):return actors
+    for people in (state.get('people'),(state.get('town') or {}).get('residents')):
+        if isinstance(people,dict):
+            actors.update(int(key) for key in people if isinstance(key,str) and key.isascii() and key.isdigit()
+                          and len(key)<=10 and str(int(key))==key and valid(int(key)))
+    control=((state.get('town') or {}).get('resident_control') or {}).get('assignments') or {}
+    if isinstance(control,dict):actors.update(row.get('actor') for row in control.values() if isinstance(row,dict) and valid(row.get('actor')))
+    actors.update(row.get('id') for row in (observation or {}).get('residents',[])
+                  if isinstance(row,dict) and valid(row.get('id')))
+    return actors
+
+
 def _reserved_activity(state,observation,field):
     native=(observation or {}).get('activity_jobs') or {}
     # Native identities can outlive their saved assignment after a rollback.
@@ -60,7 +94,9 @@ def _reserved_activity(state,observation,field):
     rows=[*activity_leases(state),*_native_rows(observation,'activity_jobs'),*_work_rows(state,observation)]
     ids=[row.get(field) for row in rows]
     ids.extend(native.get('reserved_actors' if field=='actor' else 'reserved_targets',[]))
-    if field=='actor':ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation))
+    if field=='actor':
+        ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation))
+        ids.extend(conversation_quarantine_actors(state,observation))
     return {value for value in ids if type(value) is int and value>0}
 
 def reserved_activity_actors(state,observation=None):

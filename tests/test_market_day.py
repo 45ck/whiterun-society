@@ -14,6 +14,18 @@ class MarketDayTests(unittest.TestCase):
     def start(self,name='day'):
         self.world.start_market_day(name,self.obs);self.sync()
 
+    def test_uninitialized_participants_cannot_create_a_running_scenario(self):
+        for people in ({},{'108186':copy.deepcopy(self.world.active['people']['108186'])}):
+            with self.subTest(people=list(people)):
+                self.world.active['people']=people
+                before=copy.deepcopy(self.world.active)
+                count=self.world.db.execute('SELECT COUNT(*) FROM checkpoints').fetchone()[0]
+                with self.assertRaisesRegex(ValueError,'Initialize every authored'):
+                    self.world.start_market_day('missing-people',self.obs)
+                self.assertEqual(self.world.active,before)
+                self.assertIsNone(self.world.transition)
+                self.assertEqual(self.world.db.execute('SELECT COUNT(*) FROM checkpoints').fetchone()[0],count)
+
     def stage(self):
         event=self.world.scenario_status()['next_event']
         self.world.begin_plan(event['id'],self.obs,event['actor'],event['kind']);self.sync()

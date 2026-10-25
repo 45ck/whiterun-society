@@ -38,6 +38,23 @@ const observerCamera=createObserverCamera();
 let remoteCamera=null,lastPresentationAt=0;
 let movementSource=null;
 let routineRecoveryNeeded=true;
+function conversationQuarantineActors(society,observed){
+  const chat=society?.conversation;
+  if(chat?.phase!=='held'||!(chat.release_required===true||chat.cleanup_review_required===true))return [];
+  const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
+  const ids=[chat.initiator,chat.partner,chat.meeting_route?.actor,chat.meeting_route?.target,
+    ...(Array.isArray(chat.speakers)?chat.speakers:[]),...(Array.isArray(chat.scenario?.participants)?chat.scenario.participants:[])].filter(valid);
+  const pairs=[];
+  if('meeting_route' in chat)pairs.push([chat.meeting_route?.actor,chat.meeting_route?.target]);
+  if('initiator' in chat||'partner' in chat)pairs.push([chat.initiator,chat.partner]);
+  if('speakers' in chat)pairs.push(chat.speakers);
+  if('scenario' in chat)pairs.push(chat.scenario?.participants);
+  const complete=pair=>Array.isArray(pair)&&pair.length===2&&pair.every(valid)&&pair[0]!==pair[1];
+  if(new Set(ids).size>=2&&pairs.every(complete))return [...new Set(ids)];
+  const managed=Object.values(society?.town?.resident_control?.assignments||{}).map(row=>row?.actor);
+  const people=[...Object.keys(society?.people||{}),...Object.keys(society?.town?.residents||{})].filter(key=>/^[1-9][0-9]{0,9}$/.test(key)).map(Number);
+  return [...new Set([...ids,...managed,...people,...(observed||[]).map(row=>row?.id)].filter(valid))];
+}
 const config = __BRIDGE_CONFIG__;
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
 let session = Date.now() + '-' + Math.random();
@@ -282,6 +299,11 @@ on('update', () => {
           const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor)];
           if(actors.some(id=>ownerWorkJobs.ownsActor(id))&&!ownerWorkJobs.permitsCommand(command))throw new Error('Independent owner work reserves a command participant');
         }
+        if(['walk_to','parallel_routines','background_routines','rest_at_bench','activity_start_rest','owner_work_start','conversation_attend','scene_handoff'].includes(command.kind)){
+          const quarantined=conversationQuarantineActors(presentation.society,residents);
+          const actors=[command.actor,command.target,...(command.participants||[]),...(command.members||[]).flatMap(member=>[member.actor,member.target])];
+          if(actors.some(id=>quarantined.includes(id)))throw new Error('Unverified conversation cleanup reserves a command participant');
+        }
         if(['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt'].includes(command.kind)){
           if(checkpointValue()!==command.checkpoint)throw new Error('Activity checkpoint mismatch');
           const blocked=[];
@@ -524,7 +546,10 @@ on('update', () => {
   const societyState=presentation.society,foreground=new Set();
   const plan=societyState?.plan,chat=societyState?.conversation,batch=societyState?.routine_batch;
   if(plan&&(!['complete','held','delegated'].includes(plan.phase)||plan.release_required)){for(const id of [plan.actor,plan.target,...(plan.economic_pair||[])])if(id)foreground.add(id);}
-  if(chat&&!['complete','held'].includes(chat.phase))for(const id of chat.speakers||[])foreground.add(id);
+  if(chat&&(!['complete','held'].includes(chat.phase)||chat.release_required||chat.cleanup_review_required)){
+    for(const id of [chat.initiator,chat.partner,...(Array.isArray(chat.speakers)?chat.speakers:[]),...conversationQuarantineActors(societyState,residents)])
+      if(Number.isInteger(id)&&id>0)foreground.add(id);
+  }
   if(batch&&!['complete','held'].includes(batch.phase))for(const m of batch.members||[])foreground.add(m.actor);
   const controlFresh=Date.now()-lastPresentationAt<10000&&!societyState?.error;
   const activityReserved=[...activityJobs.reservedActors(),...ownerWorkJobs.releasingActors()],savedControl=societyState?.town?.resident_control;

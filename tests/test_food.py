@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
+from legacy_fixture import install_legacy_people
 from food import allocation
 from catalog_fixture import native_catalog, native_ack
 
@@ -17,6 +18,7 @@ class FoodTests(unittest.TestCase):
         self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
         for resident in self.obs['residents']:resident['isPerson']=True
         self.world.observe(self.obs);self.world.bootstrap(self.obs);self.sync()
+        install_legacy_people(self.world);self.sync()
 
     def tearDown(self):
         self.world.db.close();self.temp.cleanup()

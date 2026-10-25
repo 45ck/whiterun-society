@@ -1,11 +1,21 @@
-"""Real lab scenario: seed explicit starting stock, trade, and load both saves."""
+"""Authored lab stock/trade/save trial using an explicit observed population census.
+
+Fresh profiles use uniform scenario-seeded traits; old fixed-profile trial choices
+are not reproduced. Resume/restore paths preserve saved profiles and census seeds.
+"""
 import argparse
 import hashlib
 import json
 from pathlib import Path
 import time
+import sys
 import urllib.request
 import urllib.error
+
+
+SOURCE = Path(__file__).resolve().parents[1]
+if str(SOURCE) not in sys.path:sys.path.insert(0,str(SOURCE))
+from tools.authored_population import initialize_fresh_population, validate_participants
 
 
 def main():
@@ -30,10 +40,11 @@ def main():
             raise ValueError('Restore verification requires the recorded before/after trade states')
         evidence['recovery']='Restore verification rerun after correcting loadGame/preLoadGame event ordering to the SKSE pre/post pair.'
 
-    def request(route, data=None):
+    def request(route, data=None, *, session=None):
         req = urllib.request.Request(f"http://127.0.0.1:{config['port']}" + route,
             data=None if data is None else json.dumps(data).encode(),
-            headers={'Authorization': 'Bearer ' + config['token'], 'Content-Type': 'application/json'})
+            headers={'Authorization': 'Bearer ' + config['token'], 'Content-Type': 'application/json',
+                     **({'X-Society-Session':session} if session is not None else {})})
         try:
             with urllib.request.urlopen(req, timeout=5) as response:
                 return json.load(response)
@@ -103,16 +114,22 @@ def main():
         start = request('/state')
         if args.resume_before_trade:
             before=evidence['steps'][0]
-            if not stable(start) or start['society']['checkpoint']!=before['checkpoint'] or start['world']!=before['world'] or inventory(start)!=before['inventory']:
+            evidence.setdefault('population_initialization',{'policy':'preserved-managed-save','source':'Resume preserves recorded profiles, memories and seed; no census'})
+            if not stable(start) or start['society']['checkpoint']!=before['checkpoint'] or start['world']!=before['world'] or inventory(start)!=before['inventory'] or start['society']['people']!=before['people']:
                 raise ValueError('Recorded pre-trade state no longer matches the game')
         else:
             if start['society']['checkpoint'] != 0:
                 raise ValueError('This fresh-world test refuses to overwrite an established timeline')
+            validate_participants(start)
             request('/command', {'kind': 'prepare_market'})
             wait(lambda s: inventory(s).get('108149', {}).get('bread') == 3 and s['bridge']['command'] is None, 'Demo stock observed')
             request('/world/bootstrap', {})
-            before = record('before', wait(lambda s: stable(s) and s['society']['checkpoint'] > 0, 'Baseline checkpoint bound'))
+            bound=wait(lambda s: stable(s) and s['society']['checkpoint'] > 0, 'Empty bootstrap checkpoint bound')
+            initialized,provenance=initialize_fresh_population(request,lambda predicate:wait(predicate,'Explicit census checkpoint bound'),bound,'save-lineage',args.run_id)
+            evidence['population_initialization']=provenance
+            before = record('before', initialized)
             save('WS-' + args.run_id + '-A')
+        validate_participants(request('/state'),require_saved=True)
         trade = {'id': args.run_id + '-trade', 'buyer': 108186, 'seller': 108149}
         request('/world/trade', trade)
         after = record('after', wait(lambda s: stable(s) and len(s['world']) == 1 and s['world'][0]['status'] == 'committed', 'Trade and memories committed'))
@@ -120,8 +137,8 @@ def main():
         assert after['inventory']['108149']['gold'] == before['inventory']['108149']['gold'] + 3
         assert after['inventory']['108186']['bread'] == before['inventory']['108186']['bread'] + 1
         assert after['inventory']['108149']['bread'] == before['inventory']['108149']['bread'] - 1
-        assert len(after['people']['108186']['memories']) == 1
-        assert after['people']['108186']['trust']['108149'] == 1
+        assert len(after['people']['108186']['memories']) == len(before['people']['108186']['memories']) + 1
+        assert after['people']['108186']['trust']['108149'] == before['people']['108186']['trust'].get('108149',0) + 1
         request('/world/trade', trade)
         duplicate = record('duplicate', request('/state'))
         assert duplicate['inventory'] == after['inventory'] and duplicate['people'] == after['people']

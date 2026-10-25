@@ -12,11 +12,17 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Data-defined economy, source implementation:** a shared versioned catalog now drives commodity identity, owner-recipe quantities, enterprise recipe policies and verified-recipe learning, with hashes pinned to inventory intents. The default remains three commodities and the existing bread recipe; trade/consumption paths are still limited, and native generic production is unqualified. Verified iron-smelting metadata remains disabled pending workstation and knowledge gates. [Data → decision → effect diagram and migration limits](docs/economy-catalog.md) · [Remaining economy gaps](docs/data-driven-economy-gap.md).
 
-**Uniform resident routing, source implementation:** new trips use the same observed mailbox capability for every resident, without a privileged three-NPC route table. Event requests require an explicit resident; population reports distinguish available, unavailable and unmeasured capability. Old fixed journeys require release instead of silent replay, and new conversation meetings bind their participants and session before accepting arrival. This migration is tested separately from native installation; authored demonstration casts and the founding-resource allocation still remain. [Contracts, recovery and remaining exceptions](docs/data-driven-economy-gap.md#npc-identity-migration-and-remaining-exceptions).
+**Uniform resident routing, source implementation:** new trips use the same observed mailbox capability for every resident, without a privileged three-NPC route table. Event requests require an explicit resident; population reports distinguish available, unavailable and unmeasured capability. Old fixed journeys require release instead of silent replay, and new conversation meetings bind their participants and session before accepting arrival. This migration is tested separately from native installation; explicit demonstration casts and authored resource rules still remain. [Contracts, recovery and remaining exceptions](docs/data-driven-economy-gap.md#npc-identity-migration-and-remaining-exceptions).
 
 ![From world state to verified economy: catalog, agent choices and physical receipts](docs/images/economy-catalog-flow.png)
 
 *Generated architecture illustration, not gameplay. Depicted crafting is conceptual; native generic production and smelter access remain unqualified. [Image prompt](docs/images/economy-catalog-flow.prompt.md).*
+
+**Population and conversation admission, source implementation:** fresh bootstrap starts with no invented residents. An explicit census initializes observed adults under one seed policy; old saves retain their profiles and history. Ordinary social opportunities preserve partner choice, quiet deferral and refusal. Directed encounters require an explicit scenario definition with saved participants and a content hash. Uncertain native cleanup reserves affected residents until resolved. [Scenario contract and recovery](docs/conversation-scenarios.md) · [Population model](docs/population.md).
+
+![Observed residents, saved personal state and two explicit conversation flows](docs/images/resident-initialization-flow.png)
+
+*Generated system illustration; in-game qualification remains pending. [Full image prompt](docs/images/resident-initialization-flow.prompt.md).*
 
 **Native UI candidate:** [hosted run 40191256470](https://github.com/45ck/whiterun-society/actions/runs/40191256470) built the separate unchanged baseline and reviewed saving/focus/mouse-routing candidate. All 159 C++ policy checks passed, all 158 artifact hashes verified, and both DLL/PDB pairs match. Status is **`compiled-unqualified`**: the candidate is not installed and RTS input has not been verified in Skyrim. [Build evidence and limits](docs/native-ui-build.md).
 
@@ -46,7 +52,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 71 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 72 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -269,7 +275,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (71)</summary>
+<summary>Browse every finished project image (72)</summary>
 
 ### Concurrent resident lives
 
@@ -360,6 +366,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Resident enterprise loop](docs/images/resident-enterprise-loop.png)
+
+### Resident initialization flow
+
+Generated system illustration — not gameplay
+
+![Resident initialization flow](docs/images/resident-initialization-flow.png)
 
 ### Voiced trade loop
 

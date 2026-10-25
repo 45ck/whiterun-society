@@ -27,6 +27,19 @@ def begin_agency_event(world, observation, data):
         data.get('kind', 'meal_time'), data.get('voiced_trade', False), data.get('natural_trade', False))
 
 
+def begin_conversation_event(world, observation, data, *, scenario=False):
+    """Authored demonstrations have a separate explicit admission boundary."""
+    allowed={'id','scenario','reply_policy'} if scenario else {'id','actor','max_turns','opportunity_batch','reply_policy'}
+    if not isinstance(data,dict) or set(data)-allowed or 'id' not in data:
+        raise ValueError('Invalid scenario request fields' if scenario else 'Invalid ordinary conversation request fields')
+    if scenario:
+        if 'scenario' not in data:raise ValueError('An explicit scenario definition is required')
+        return world.start_scenario_conversation(data['id'],observation,data['scenario'],
+            reply_policy=data.get('reply_policy','separate_choice'))
+    return world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'),
+        data.get('opportunity_batch'),data.get('reply_policy','combined_choice'))
+
+
 def authored_walk_command(world, observation, data, session, command_id):
     """A new operator request uses the same current route evidence as agents."""
     world._agency_guard(observation)
@@ -258,7 +271,8 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'),data.get('opportunity_batch'),data.get('reply_policy','combined_choice'))
+                    if self.path=='/conversation/start': result=begin_conversation_event(world,observation,data)
+                    elif self.path=='/conversation/scenario': result=begin_conversation_event(world,observation,data,scenario=True)
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':

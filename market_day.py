@@ -40,6 +40,9 @@ class MarketDay:
             if old['id']==scenario_id:return {'duplicate':True,'scenario':{**copy.deepcopy(old),'next_event':None}}
         if prior and prior['status']!='complete':raise ValueError('Existing market day requires review')
         if self.agency_busy():raise ValueError('Finish the active resident plan first')
+        participants={actor for _,actor,_,_ in STAGES}
+        if any(str(actor) not in self.active.get('people',{}) for actor in participants):
+            raise ValueError('Initialize every authored market-day participant before starting the scenario')
         baseline=inventories(observation)
         state=copy.deepcopy(self.active)
         if prior:state.setdefault('market_day_history',[]).append(copy.deepcopy(prior))

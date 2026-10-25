@@ -92,6 +92,12 @@ Generated system illustration — not gameplay
 
 ![Resident enterprise loop](images/resident-enterprise-loop.png)
 
+## Resident initialization flow
+
+Generated system illustration — not gameplay
+
+![Resident initialization flow](images/resident-initialization-flow.png)
+
 ## Voiced trade loop
 
 Generated system illustration — not gameplay

@@ -25,7 +25,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
-function harness(nativeGlobal=false,activityRestFactory=null) {
+function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null) {
   const handlers = new Map(), notifications=[], requests=[], looks=[];
   let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
@@ -39,12 +39,57 @@ function harness(nativeGlobal=false,activityRestFactory=null) {
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
   sp.Game.getFormFromFile=(id,file)=>file==='Skyrim.esm'?itemForms[id]||null:null;
-  const compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
-  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory});
+  let compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
+  if(residentFactory)compiled=compiled.replace('const residentControl=createResidentControl(()=>sp);','const residentControl=residentFactory();');
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory});
   vm.runInContext(compiled,context);
   return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
+function checkpointFixture(h){
+ const original=h.sp.Game.getFormFromFile,marker={getValue:()=>0};h.sp.GlobalVariable={from:value=>value};
+ h.sp.Game.getFormFromFile=(id,file)=>file==='WhiterunSociety.esp'&&id===0x800?marker:original(id,file);
+}
+
+test('held conversation cleanup keeps every possible participant out of standing tasks',async()=>{
+ const blocked=[];const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push(Array.from(actors));}});
+ const h=harness(false,null,control);
+ checkpointFixture(h);
+ h.setPresentation({society:{checkpoint:0,conversation:{phase:'held',release_required:true,cleanup_review_required:true,
+  meeting_route:{actor:123,target:124},initiator:125,partner:126,speakers:[127,128],scenario:{participants:[129,130]}}}});
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.deepEqual(blocked.at(-1).sort((a,b)=>a-b),[123,124,125,126,127,128,129,130]);
+});
+
+test('unknown held cleanup identity blocks managed and observed actors even with malformed speakers',async()=>{
+ const blocked=[];const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push(Array.from(actors));}});
+ const h=harness(false,null,control);
+ checkpointFixture(h);
+ h.setPresentation({society:{checkpoint:0,conversation:{phase:'held',cleanup_review_required:true,speakers:{}},
+  town:{residents:{'125':{}},resident_control:{assignments:{'0':{actor:124}}}}}});
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.deepEqual(blocked.at(-1).sort((a,b)=>a-b),[123,124,125]);
+});
+
+test('quarantined conversation rejects a new background journey before acquiring its package',async()=>{
+ const h=harness();h.setPresentation({society:{checkpoint:0,conversation:{phase:'held',release_required:true,speakers:[123,124]}}});
+ h.setResponse(body=>({id:'blocked-background',kind:'background_routines',session:body.session,origin_session:body.session,
+  checkpoint:0,members:[{actor:123,target:124}]}));
+ for(let i=0;i<4;i++){h.handlers.get('update')();await settle();h.advance();}
+ const receipt=h.requests.find(row=>row.ack?.id==='blocked-background')?.ack;
+ assert.equal(receipt?.status,'failed');assert.match(receipt.error,/Unverified conversation cleanup/);
+});
+
+test('partial cleanup identities reserve all managed actors while retaining unobserved hints',async()=>{
+ for(const identity of [{speakers:[900]}, {initiator:900,meeting_route:{target:901}},
+                       {speakers:[900,901],scenario:{}}, {speakers:{},meeting_route:{actor:900,target:901}}]){
+  const blocked=[];const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push(Array.from(actors));}});
+  const h=harness(false,null,control);checkpointFixture(h);
+  h.setPresentation({society:{checkpoint:0,conversation:{phase:'held',release_required:true,...identity},town:{residents:{'124':{}}}}});
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.deepEqual(blocked.at(-1).sort((a,b)=>a-b),identity.speakers?.length===1?[123,124,900]:[123,124,900,901]);
+ }
+});
 
 test('accepted background rest jobs tick while a disjoint native meal uses the foreground command channel',async()=>{
  const lanes=[];

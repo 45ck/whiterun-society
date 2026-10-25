@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
+from legacy_fixture import install_legacy_people
 from catalog_fixture import native_catalog, native_ack
 
 
@@ -15,7 +16,9 @@ class LineageTests(unittest.TestCase):
             {'id': 108186, 'inventory': {'gold': 9, 'bread': 0, 'grain': 0}},
             {'id': 108149, 'inventory': {'gold': 10, 'bread': 1, 'grain': 0}}]}
         self.world.observe(self.obs)
-        self.initial = self.world.bootstrap(self.obs)['checkpoint']
+        self.world.bootstrap(self.obs)
+        self.bind()
+        self.initial = install_legacy_people(self.world)
         self.bind()
 
     def tearDown(self):

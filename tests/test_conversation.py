@@ -7,6 +7,11 @@ CANDIDATES=[{'id':'option_1','intention':'Ask for bread','line':'Could you spare
             {'id':'option_2','intention':'Express frustration','line':'I worked hard and still have no bread.','tone':'frustrated'}]
 AUDIO={'file':'a'*64+'.wav','sha256':'a'*64,'seconds':3.,'voice':'bf_emma','engine':'kokoro-onnx-0.6.1'}
 
+def authored_pair_scenario(actor, target, max_turns=2, identifier='fixture-pair'):
+    """Explicit offline test casting; never ordinary social selection evidence."""
+    return {'version':1,'id':identifier,'participants':[actor,target],'max_turns':max_turns,
+            'provenance':'Authored offline conversation test pair; not a resident-selected encounter.'}
+
 def candidates_for(context):
     if context['event']['dialogue_stage'] in ('closing','refusal'):
         return [{'id':'option_1','intention':'Close politely','line':'Thanks. Take care.','tone':'calm'},
@@ -20,7 +25,7 @@ class ConversationTests(unittest.TestCase):
     sync=test_food.FoodTests.sync
 
     def start(self):
-        self.world.start_conversation('chat',self.obs);self.sync()
+        self.world.start_scenario_conversation('chat',self.obs,authored_pair_scenario(108186,108149));self.sync()
         self.obs['ack']={'id':'meet-chat','status':'applied','movement':{'id':'meet-chat','adapter':'papyrus-mailbox',
             'aliasesConfirmed':True,'actor':108186,'target':108149,'ownedPackage':True}}
         self.world.observe(self.obs);self.sync()
@@ -80,7 +85,7 @@ class ConversationTests(unittest.TestCase):
         self.start()
         for _ in range(2):self.delivered(self.select())
         self.assertEqual(self.world.conversation_status()['phase'],'complete')
-        self.assertTrue(self.world.start_conversation('chat',self.obs)['duplicate'])
+        self.assertTrue(self.world.start_scenario_conversation('chat',self.obs,authored_pair_scenario(108186,108149))['duplicate'])
         self.assertEqual(len(self.world.status()['people']['108149']['memories']),2)
         before=copy.deepcopy(self.world.active);self.world.observe(self.obs);self.assertEqual(before,self.world.active)
 

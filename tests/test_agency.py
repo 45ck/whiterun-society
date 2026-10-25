@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
+from legacy_fixture import install_legacy_people
 from catalog_fixture import native_catalog, native_ack
 
 
@@ -18,6 +19,8 @@ class AgencyTests(unittest.TestCase):
         for resident in self.obs['residents']:resident['isPerson']=True
         self.world.observe(self.obs)
         self.world.bootstrap(self.obs)
+        self.sync()
+        install_legacy_people(self.world)
         self.sync()
 
     def tearDown(self):
