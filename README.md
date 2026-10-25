@@ -16,6 +16,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Resident-selected prices:** buyers now choose bids, sellers can counteroffer, and spoken terms are checked against the physical exchange. A real Jev negotiation ended in two refusals; a separate controlled native test exchanged one loaf for 7 septims and was rolled back. [Diagram, screenshot, audio and evidence](docs/bargaining.md).
 
+**Connected input market:** dynamic bakeries can buy grain, negotiate, produce bread and sell it for consumption. A controlled native chain completed both sales, production and a meal, with seven spoken lines and conserved money. The real model trial and its context-size failure are documented separately. [Infographic, screenshot, audio, receipts and limits](docs/grain-market.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
 **Visual documentation:** [all 42 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
@@ -76,7 +78,7 @@ The observer now includes an interruption control, derived friendship bands, sma
 
 The control room now has **Start society**, **Stop after encounter**, and **Follow activity**. A bounded session alternates eligible economic and social events, offers nearby conversations when urgent-needs queues would otherwise crowd them out, and lets residents accept or decline. The in-game overlay identifies whether the director is running or idle. Both consenting speakers now receive temporary attendance packages; release must be verified for both.
 
-The **Society quality lab** reports encounter failures, duration, reply gaps, body-facing error, physical economic outcomes and relationship counts. Unknown gaze/raycast accuracy, lip sync and human realism remain unscored. The initial live baseline was **4/6 accepted chats completed**, **zero sales in the current save**, **two production events** and **39 meals**; the ledger includes staged experiments. There is still only one sale good and one production recipe. These are shortcomings to fix, not a high realism score. [Metrics definitions, baseline and acceptance targets](docs/quality-metrics.md)
+The **Society quality lab** reports encounter failures, duration, reply gaps, body-facing error, physical economic outcomes and relationship counts. Unknown gaze/raycast accuracy, lip sync and human realism remain unscored. The initial live baseline was **4/6 accepted chats completed**, **zero sales in that save**, **two production events** and **39 meals**; the ledger includes staged experiments. Implementation now supports two sale goods and one production recipe, with separate grain and bread prices. These are breadth counts, not a high realism score. [Metrics definitions, baseline and acceptance targets](docs/quality-metrics.md)
 
 Conversations now allow up to **six turns**, with a fresh listener decision to reply, close politely or leave quietly. A live three-turn exchange completed with a model-chosen closing and verified native release. A voice worker warmed during approach generated each line in 1.8–2.1 seconds; the full reply gaps were still 10.3–10.6 seconds. The current lineage reached **8/10 completed chats**, but retained dialogue still invents work details and does not execute suggested actions such as sitting. [Transcript, timings and grounding defects](docs/evidence/extended-dialogue-live.json)
 
@@ -227,7 +229,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (42)</summary>
+<summary>Browse every finished project image (45)</summary>
+
+### Grain market loop
+
+Generated system illustration — not gameplay
+
+![Grain market loop](docs/images/grain-market-loop.png)
 
 ### Independent lives observed
 
@@ -312,6 +320,18 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Food consumption restored](docs/images/food-consumption-restored.jpg)
+
+### Grain chain camera obstruction
+
+Captured game or observer interface — historical prototype
+
+![Grain chain camera obstruction](docs/images/grain-chain-camera-obstruction.jpg)
+
+### Grain trade native fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Grain trade native fixture](docs/images/grain-trade-native-fixture.jpg)
 
 ### Jev resident decisions
 

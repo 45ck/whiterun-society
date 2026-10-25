@@ -5,7 +5,7 @@ import json
 import re
 
 ROOT=Path(__file__).resolve().parents[1]
-GENERATED={'resident-bargaining-loop.png','npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
+GENERATED={'grain-market-loop.png','resident-bargaining-loop.png','npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
 
 def build():
     images=sorted((ROOT/'docs/images').iterdir(),key=lambda p:(p.name not in GENERATED,p.name))

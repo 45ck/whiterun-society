@@ -10,15 +10,16 @@ class EconomicSpeech:
     def queue_trade_speech(self, state, plan, act):
         if not plan.get('voiced_trade'):return
         buyer,seller=plan.setdefault('economic_pair',[plan['actor'],plan['target']]);price=plan.get('unit_price',3)
+        unit='loaf' if plan.get('commodity','bread')=='bread' else 'unit of grain'
         lines={
-            'offer':(buyer,seller,f'Would you sell me one loaf for {price} gold?'),
-            'counteroffer':(buyer,seller,f'Would {price} gold change your mind? That is my final offer for one loaf.'),
-            'seller_counteroffer':(seller,buyer,f'I can sell you one loaf for {price} gold. Would that suit you?'),
-            'buyer_accept':(buyer,seller,f'Agreed. I will pay {price} gold for one loaf.'),
-            'accept':(seller,buyer,f'Agreed. One loaf for {price} gold.'),
-            'refuse':(seller,buyer,'No, I will not sell a loaf on those terms.'),
+            'offer':(buyer,seller,f'Would you sell me one {unit} for {price} gold?'),
+            'counteroffer':(buyer,seller,f'Would {price} gold change your mind? That is my final offer for one {unit}.'),
+            'seller_counteroffer':(seller,buyer,f'I can sell you one {unit} for {price} gold. Would that suit you?'),
+            'buyer_accept':(buyer,seller,f'Agreed. I will pay {price} gold for one {unit}.'),
+            'accept':(seller,buyer,f'Agreed. One {unit} for {price} gold.'),
+            'refuse':(seller,buyer,f'No, I will not sell a {unit} on those terms.'),
             'leave':(buyer,seller,'All right. I will leave it there. Goodbye.'),
-            'receipt':(buyer,seller,f'Thank you. I have received one loaf and paid {price} gold.')}
+            'receipt':(buyer,seller,f'Thank you. I have received one {unit} and paid {price} gold.')}
         actor,listener,line=lines[act]
         if len(plan.get('economic_turns',[]))>=5:raise ValueError('Trade speech budget exhausted')
         plan['economic_speech']={'actor':actor,'listener':listener,'act':act,'line':line,

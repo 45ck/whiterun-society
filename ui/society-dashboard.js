@@ -49,13 +49,17 @@ function renderTownCharts(root,data){
   add(trade,'p',`${data.economy.household_release_sales??'Unknown'} committed sales released one reserved loaf. Remaining household stock stays reserved.`,'town-chart-note');
   const bargaining=data.economy.bargaining;
   if(bargaining?.plans){
-   const prices=add(trade,'div',undefined,'town-stock-grid');
+   for(const [commodity,seriesGroup] of Object.entries(bargaining.by_commodity||{bread:bargaining})){
+     if(!seriesGroup.plans)continue;
+     add(trade,'h4',commodity==='grain'?'Grain input market':'Bread market');
+     const prices=add(trade,'div',undefined,'town-stock-grid');
    for(const [label,key] of [['Buyer bids','buyer_offers'],['Seller asks','seller_counteroffers'],['Paid prices','paid_prices']]){
-    const series=bargaining[key],card=add(prices,'div',undefined,'town-stock');
+    const series=seriesGroup[key],card=add(prices,'div',undefined,'town-stock');
     add(card,'strong',series?.n?String(series.median):'—');
     add(card,'span',`${label} · ${series?.n||0}`);
    }
-   add(trade,'p','Median septims per loaf. Bids and asks are proposals; paid prices require verified inventory exchange.','town-chart-note');
+   add(trade,'p',`Median septims per ${commodity==='grain'?'grain unit':'loaf'}. Bids and asks are proposals; paid prices require verified inventory exchange.`,'town-chart-note');
+    }
   }
  }
 }

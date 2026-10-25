@@ -97,6 +97,26 @@ class DailyLifeTests(unittest.TestCase):
         self.review(4)
         self.assertEqual(self.world.active['people']['99']['agency']['state'],'unmet_food_need')
 
+    def test_one_septim_still_allows_resident_to_consider_negotiating_food(self):
+        self.obs['residents'][2]['inventory'].update(bread=0,gold=1)
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        self.review(4)
+        self.assertIn(99,[e['actor'] for e in self.world.active['town']['daily']['queue']])
+
+    def test_input_shortfall_queues_livelihood_before_hunger_is_urgent(self):
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        self.obs['residents'][2]['inventory'].update(bread=2,grain=0,gold=7)
+        self.world.active['people']['99']['needs'].update(hunger=.4,fatigue=.2)
+        self.world.active['town']['businesses']['buyer-bakery']={
+            'owner':99,'custodian':99,'revision':1,'capabilities':['bread_recipe']}
+        self.world.active['town']['businesses']['business-108149']['capabilities'].append('retail_grain')
+        self.review()
+        event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
+        self.assertIn('buying inputs',event['reason'])
+        self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
+        claim=self.world.claim_plan_decision(event['id'],self.obs)['claim']
+        self.assertIn('procure_grain_108149',{o['id'] for o in claim['context']['options']})
+
     def test_unloaded_residents_age_but_get_no_fictitious_execution(self):
         self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=99]
         self.review(4)

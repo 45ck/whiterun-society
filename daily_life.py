@@ -11,6 +11,7 @@ from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from social import social_candidates
 from places import market_opportunity
 from opportunities import food_sellers
+from procurement import grain_procurement
 from resident_control import sync_resident_assignments
 from owner_production import owner_work_opportunities
 
@@ -72,7 +73,7 @@ class DailyLife:
             inventory = actor.get('inventory', {}) if actor else {}
             urgent_food = person['needs']['hunger'] >= .6 and actor and (
                 type(inventory.get('bread')) is int and inventory['bread'] > 0 or
-                type(inventory.get('gold')) is int and inventory['gold'] >= 3 and (
+                type(inventory.get('gold')) is int and inventory['gold'] >= 1 and (
                     food_sellers(state, observation, int(key)) or market_opportunity(state, observation, int(key))))
             urgent_rest = person['needs']['fatigue'] >= .8 and actor and rest_opportunities(state, observation, int(key))
             interrupted = False
@@ -112,9 +113,9 @@ class DailyLife:
                 continue
             if person['needs']['hunger'] >= .6:
                 can_eat = inventory['bread'] > 0
-                can_seek = (food_sellers(state,observation,int(key)) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 3
+                can_seek = (food_sellers(state,observation,int(key)) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 1
                 can_rest = person['needs']['fatigue']>=.8 and bool(rest_opportunities(state,observation,int(key)))
-                can_work = bool(work_opportunities(state,observation,int(key)) or owner_work_opportunities(state,observation,int(key)))
+                can_work = bool(work_opportunities(state,observation,int(key)) or owner_work_opportunities(state,observation,int(key)) or grain_procurement(state,observation,int(key)))
                 if not any((can_eat,can_seek,can_rest,can_work)):
                     agency.update(state='unmet_food_need', reason='No carried bread or qualified affordable seller route')
                     continue
@@ -145,10 +146,10 @@ class DailyLife:
                     'observed_inventory':copy.deepcopy(inventory)}
                 daily['queue'].append(event);added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
-            elif work_opportunities(state, observation, int(key)) or owner_work_opportunities(state,observation,int(key)):
+            elif work_opportunities(state, observation, int(key)) or owner_work_opportunities(state,observation,int(key)) or grain_procurement(state,observation,int(key)):
                 event = {'id': f"daily-{daily['sequence']}-{key}", 'actor': int(key),
                     'kind':'need_review', 'status':'pending', 'created_day':day,
-                    'priority':.5, 'reason':'An executable enterprise opportunity can replenish stock with paid or owner labour',
+                    'priority':.5, 'reason':'An executable enterprise opportunity can replenish stock through labour or buying inputs',
                     'observed_inventory':copy.deepcopy(inventory)}
                 daily['queue'].append(event);added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])

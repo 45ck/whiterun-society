@@ -6,7 +6,7 @@ function setup() {
   const calls=[];let frame=0,clock=0,defer=false;
   const queued=[];
   const fresh=id=>{
-    if (id===15) return 'gold';if (id===0x65c97) return 'bread';
+    if (id===15) return 'gold';if (id===0x65c97) return 'bread';if(id===0x4b0ba)return 'grain';
     const born=frame;
     return {id,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
       getItemCount:item=>{assert.equal(born,frame);return balances[id][item];},
@@ -75,4 +75,30 @@ test('consumption rejects inventory drift and malformed effects before mutation'
  const h=setup(),c={id:'eat',actor:200,before:{gold:10,bread:1},after:{gold:9,bread:0}};
  assert.equal(h.engine.consume(c).ack.status,'held');c.after.gold=10;h.balances[200].gold=11;
  assert.equal(h.engine.consume(c).ack.status,'held');assert.equal(h.calls.length,0);
+});
+
+function grainSetup(){
+ const h=setup();Object.assign(h.balances[100],{grain:0});Object.assign(h.balances[200],{grain:3});
+ h.command.commodity='grain';h.command.before.buyer.grain=0;h.command.before.seller.grain=3;
+ h.command.after.buyer={gold:6,bread:0,grain:1};h.command.after.seller={gold:13,bread:1,grain:2};return h;
+}
+test('grain purchase transfers wheat and payment exactly once without consuming bread',()=>{
+ const h=grainSetup();h.engine.step(h.command);h.next();h.engine.step(h.command);h.next();
+ assert.deepEqual(h.engine.step(h.command).ack.inventory,h.command.after);
+ h.engine.step(h.command);assert.deepEqual(h.calls,[{id:200,item:'grain',n:1,to:100},{id:100,item:'gold',n:3,to:200}]);
+});
+test('grain payment resumes after a goods-leg restart and awaits deferred effects',()=>{
+ const h=grainSetup();h.defer();h.engine.step(h.command);h.next();h.engine.step(h.command);assert.equal(h.calls.length,1);
+ h.flush();h.engine.reset();h.next();h.engine.step(h.command);h.next();h.engine.step(h.command);assert.equal(h.calls.length,2);
+ h.flush();h.next();assert.equal(h.engine.step(h.command).ack.status,'applied');
+});
+test('grain trade holds if even the untraded bread inventory changes',()=>{
+ const h=grainSetup();h.balances[200].bread++;
+ assert.equal(h.engine.step(h.command).ack.status,'held');assert.equal(h.calls.length,0);
+});
+test('malformed contracts cannot mint stock, skip payment or change another commodity',()=>{
+ for(const mutate of [c=>c.after.buyer.grain++,c=>c.after.seller.gold--,c=>c.after.buyer.bread++,
+   c=>c.quantity=0,c=>c.cost=-1,c=>c.commodity='ore',c=>c.buyer=c.seller,c=>delete c.before.buyer.grain]){
+  const h=grainSetup();mutate(h.command);assert.equal(h.engine.step(h.command).ack.status,'held');assert.equal(h.calls.length,0);
+ }
 });

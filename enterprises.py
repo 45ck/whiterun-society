@@ -9,7 +9,7 @@ import re
 DEFAULT_POLICY = {'target_bread': 8, 'wage_gold': 2, 'grain_per_shift': 1,
                   'bread_per_shift': 2, 'work_minutes': 30}
 POLICY_SOURCE = 'Authored enterprise policy; one grain becomes two bread after qualified labour'
-CAPABILITIES = {'retail_food', 'bread_recipe'}
+CAPABILITIES = {'retail_food', 'bread_recipe', 'retail_grain'}
 
 
 def production_policy(business):

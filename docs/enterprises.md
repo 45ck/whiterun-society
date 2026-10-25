@@ -77,6 +77,6 @@ The corrected native fixture completed in 72.578 seconds including decisions, ap
 
 [Compact live receipts, retained failure and save comparison](evidence/enterprise-live.json). The full regression run passed 195 Python tests and 93 JavaScript tests before the final small compatibility/interrupt-memory checks. No new screenshot is claimed: Computer Use was stopped before capture.
 
-This implementation does not provide upstream farming, grain procurement, dynamic food pricing, rent, taxes, debt, company-owned chests, skill-based productivity, crafting animations, or autonomous business formation. Household and enterprise cash still share a physical purse. The population's accumulated hunger and fatigue also expose the need for a better continuously exercised daily schedule. These remain part of the active programme, not completed features.
+Grain procurement and resident-selected food prices have since been added: [connected chain and native evidence](grain-market.md). Upstream farming, rent, taxes, debt, company-owned chests, skill-based productivity, crafting animations and autonomous business formation remain unfinished. Household and enterprise cash still share a physical purse. The population's accumulated hunger and fatigue also expose the need for a better continuously exercised daily schedule.
 
 See [development plan](development-plan.md), [earlier agent-selected paid-work evidence](paid-work.md), and [personal knowledge and voiced dialogue](dynamic-society.md).

@@ -33,3 +33,16 @@ class TypedDecisionTests(unittest.TestCase):
         with patch('decision_provider.urllib.request.urlopen') as http,self.assertRaises(ValueError):
             infer_jev(self.context,self.config,'test-placeholder')
         http.assert_not_called()
+
+    def test_choice_descriptions_are_sent_once_without_losing_resident_state(self):
+        self.context['memories']=['m'*10000]
+        self.context['options'][0]['effect']='w'*2500
+        response=io.BytesIO(json.dumps({'answers':{'action':{'choice':'go','probabilities':{'wait':.2,'go':.8}}}}).encode())
+        with patch('decision_provider.urllib.request.urlopen',return_value=response) as http:
+            infer_jev(self.context,self.config,'test-placeholder')
+        request=http.call_args.args[0];body=json.loads(request.data)
+        self.assertLessEqual(len(request.data),16000)
+        self.assertNotIn('options',body['state'])
+        self.assertEqual(body['state']['memories'],self.context['memories'])
+        self.assertEqual(body['questions']['action']['criteria']['wait'],'w'*2500)
+        self.assertEqual(len(self.context['options']),2,'original claimed context stays intact')

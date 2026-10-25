@@ -2,6 +2,12 @@
 
 All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.
 
+## Grain market loop
+
+Generated system illustration — not gameplay
+
+![Grain market loop](images/grain-market-loop.png)
+
 ## Independent lives observed
 
 Generated system illustration — not gameplay
@@ -85,6 +91,18 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Food consumption restored](images/food-consumption-restored.jpg)
+
+## Grain chain camera obstruction
+
+Captured game or observer interface — historical prototype
+
+![Grain chain camera obstruction](images/grain-chain-camera-obstruction.jpg)
+
+## Grain trade native fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Grain trade native fixture](images/grain-trade-native-fixture.jpg)
 
 ## Jev resident decisions
 

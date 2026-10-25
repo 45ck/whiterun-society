@@ -8,15 +8,17 @@ import json
 import sqlite3
 
 
-def snapshot(observation,buyer,seller):
+def snapshot(observation,buyer,seller,commodity='bread'):
+    if commodity not in ('bread','grain'):raise ValueError('Unsupported sale commodity')
+    items=('gold','bread','grain') if commodity=='grain' else ('gold','bread')
     actors={row['id']:row for row in observation.get('residents',[])}
     result={}
     for role,actor_id in [('buyer',buyer),('seller',seller)]:
         if actor_id not in actors: raise ValueError('Both actors must be observed and loaded')
         inv=actors[actor_id].get('inventory',{})
-        if any(type(inv.get(key)) is not int or inv[key]<0 for key in ('gold','bread')):
+        if any(type(inv.get(key)) is not int or inv[key]<0 for key in items):
             raise ValueError('Complete nonnegative inventory observation required')
-        result[role]={'gold':inv['gold'],'bread':inv['bread']}
+        result[role]={key:inv[key] for key in items}
     return result
 
 

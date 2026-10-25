@@ -138,7 +138,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return
         command = pending['command']
         try:
-            actual = snapshot(observation, command['buyer'], command['seller'])
+            actual = snapshot(observation, command['buyer'], command['seller'],command.get('commodity','bread'))
         except ValueError:
             return
         state = copy.deepcopy(self.active)
@@ -150,16 +150,17 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             state['pending'] = None
             if state.get('plans') and state['plans'][-1]['trade_id'] == record['id']:
                 if state['plans'][-1].get('food_actions'):
-                    state['plans'][-1].update(phase='after_purchase', purchase_completed=True)
+                    state['plans'][-1].update(phase='complete' if command.get('commodity')=='grain' else 'after_purchase', purchase_completed=True)
+                    if command.get('commodity')=='grain':state['plans'][-1]['outcome']='bought_grain'
                     self.queue_trade_speech(state,state['plans'][-1],'receipt')
                 else:
-                    state['plans'][-1].update(phase='complete', outcome='bought_bread')
+                    state['plans'][-1].update(phase='complete', outcome='bought_'+command.get('commodity','bread'))
             for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
                                         (command['seller'], command['buyer'], 'sold')]:
                 person = state['people'].get(str(actor))
                 if person is not None:
                     person['memories'].append({'event_id': record['id'], 'kind': 'completed_trade',
-                        'role': role, 'other': other, 'bread': command['quantity'], 'gold': command['cost']})
+                        'role': role, 'other': other, command.get('commodity','bread'): command['quantity'], 'commodity':command.get('commodity','bread'), 'quantity':command['quantity'], 'gold': command['cost']})
                     person['memories'] = person['memories'][-32:]
                     person['trust'][str(other)] = min(10, person['trust'].get(str(other), 0) + 1)
             self._write(state, 'trade observed; memories and trust updated')
@@ -170,7 +171,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 state['plans'][-1].update(phase='held', error='Physical trade requires reconciliation')
             self._write(state, 'trade requires reconciliation')
 
-    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None):
+    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None, commodity='bread'):
         if self.routines_busy():raise ValueError('Independent journeys are still executing')
         if self.conversation_busy():
             raise ValueError('A conversation owns the participants')
@@ -184,7 +185,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             raise ValueError('Positive integer trade values required')
         if buyer == seller or quantity > 10 or unit_price > 100:
             raise ValueError('Invalid or oversized trade')
+        if commodity not in ('bread','grain'):raise ValueError('Unsupported sale commodity')
         request = dict(buyer=buyer, seller=seller, quantity=quantity, unit_price=unit_price)
+        if commodity!='bread':request['commodity']=commodity
         for old in self.active['trades'] + ([self.active['pending']] if self.active['pending'] else []):
             if old['id'] == event_id:
                 if old['request'] != request:
@@ -192,18 +195,21 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                 return old
         if self.active['pending']:
             raise ValueError('An unsettled trade must be reconciled first')
-        before = snapshot(observation, buyer, seller)
+        before = snapshot(observation, buyer, seller,commodity)
         cost = quantity * unit_price
-        if before['buyer']['gold'] < cost or before['seller']['bread'] < quantity:
-            raise ValueError('Insufficient observed funds or bread')
+        if before['buyer']['gold'] < cost or before['seller'][commodity] < quantity:
+            raise ValueError('Insufficient observed funds or goods')
         stock = allocation(self.active['people'].get(str(seller), {}), before['seller'])
-        reserve_consent=reserved_sale_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before['seller'])
-        if stock['allocated'] and stock['for_sale'] < quantity and not reserve_consent:
+        reserve_consent=(reserved_sale_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before['seller'])
+                         if commodity=='bread' else None)
+        if commodity=='bread' and stock['allocated'] and stock['for_sale'] < quantity and not reserve_consent:
             raise ValueError('This trade would spend the resident\'s household reserve')
-        after = {'buyer': {'gold': before['buyer']['gold']-cost, 'bread': before['buyer']['bread']+quantity},
-                 'seller': {'gold': before['seller']['gold']+cost, 'bread': before['seller']['bread']-quantity}}
+        after=copy.deepcopy(before)
+        after['buyer']['gold']-=cost;after['seller']['gold']+=cost
+        after['buyer'][commodity]+=quantity;after['seller'][commodity]-=quantity
         command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
                        quantity=quantity, cost=cost, before=before, after=after)
+        if commodity!='bread':command['commodity']=commodity
         record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
         if reserve_consent:record['reserve_release']=copy.deepcopy(reserve_consent)
         state = copy.deepcopy(self.active)

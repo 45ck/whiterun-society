@@ -10,25 +10,26 @@ PRICING_POLICY = 'resident-bargaining-v1'
 MAX_ECONOMIC_CALLS = 6
 
 
-def own_prices(person):
+def own_prices(person, commodity='bread'):
     result = []
     for memory in person.get('memories', []):
-        quantity, paid = memory.get('bread'), memory.get('gold')
+        quantity, paid = memory.get('quantity',memory.get(commodity)), memory.get('gold')
+        if memory.get('commodity','bread')!=commodity:continue
         if (memory.get('kind') == 'completed_trade' and type(quantity) is int and quantity > 0
                 and type(paid) is int and 0 < paid <= quantity * 100):
-            result.append({'septims_per_loaf': paid / quantity, 'role': memory.get('role'),
+            result.append({**({'septims_per_loaf':paid/quantity} if commodity=='bread' else {}),'septims_per_unit':paid/quantity,'commodity':commodity, 'role': memory.get('role'),
                            'source': 'Own completed trade', 'event_id': memory.get('event_id')})
     return result[-6:]
 
 
-def price_choices(person, maximum=100, above=0):
+def price_choices(person, maximum=100, above=0, commodity='bread'):
     """Dense low bids, wider higher bids and remembered-price neighbours."""
     if type(maximum) is not int or type(above) is not int:
         raise ValueError('Integer price bounds required')
     cap = min(100, maximum)
     values = set(range(1, 13)) | {15, 20, 30, 50, 75, 100, cap, above + 1}
-    for record in own_prices(person):
-        anchor = round(record['septims_per_loaf'])
+    for record in own_prices(person,commodity):
+        anchor = round(record['septims_per_unit'])
         values.update((anchor - 1, anchor, anchor + 1))
     return sorted(v for v in values if above < v <= cap)
 
@@ -38,22 +39,24 @@ def quote_valid(state, plan, observation):
     if not quote:
         return False
     seller = next((r for r in observation.get('residents', []) if r['id'] == plan['target']), {})
-    inventory = {k: seller.get('inventory', {}).get(k) for k in ('gold', 'bread')}
+    commodity=plan.get('commodity','bread')
+    inventory = {k: seller.get('inventory', {}).get(k) for k in (('gold','bread','grain') if commodity=='grain' else ('gold','bread'))}
     person = state['people'].get(str(plan['target']), {})
     return (quote['seller'] == plan['target'] and quote['buyer'] == plan['actor']
             and quote['unit_price'] == plan['unit_price'] and inventory == quote['inventory']
-            and inventory['bread'] > 0 and person.get('food_policy') == quote['policy']
-            and allocation(person, inventory) == quote['allocation'])
+            and quote.get('commodity','bread')==commodity and inventory[commodity] > 0
+            and (commodity!='bread' or (person.get('food_policy') == quote['policy']
+            and allocation(person, inventory) == quote['allocation'])))
 
 
 def record_quote(state, plan, context, price, claim_id):
     """Internal consent evidence; never put these private fields in buyer prompts."""
     person = state['people'][str(plan['target'])]
-    stock = context['own_food_allocation']
+    stock = context['own_food_allocation'];commodity=plan.get('commodity','bread')
     plan['counter_quote'] = {'buyer': plan['actor'], 'seller': plan['target'], 'unit_price': price,
-        'inventory': {k: context['observed_inventory'][k] for k in ('gold', 'bread')},
+        'commodity':commodity,'inventory': {k: context['observed_inventory'][k] for k in (('gold','bread','grain') if commodity=='grain' else ('gold','bread'))},
         'policy': copy.deepcopy(person.get('food_policy')), 'allocation': copy.deepcopy(stock),
-        'release_reserved': stock['allocated'] and stock['for_sale'] < 1, 'claim_id': claim_id}
+        'release_reserved': commodity=='bread' and stock['allocated'] and stock['for_sale'] < 1, 'claim_id': claim_id}
 
 
 def accept_quote(state, plan, observation):

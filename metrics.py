@@ -85,13 +85,21 @@ def simulation_metrics(state):
         trade_outcomes[category]+=1
     option_counts=[len(d['context']['options']) for p in plans for d in p.get('decisions',[]) if isinstance(d.get('context',{}).get('options'),list)]
     bargaining_plans=[p for p in plans if p.get('pricing_policy')=='resident-bargaining-v1']
-    price_proposals=[(d['decision']['action_id'],d.get('context',{}).get('price_options',{}).get(d['decision']['action_id']))
-                     for p in bargaining_plans for d in p.get('decisions',[]) if d.get('decision')]
-    buyer_prices=[v for a,v in price_proposals if a.startswith('bid_price_') and number(v)]
-    seller_prices=[v for a,v in price_proposals if a.startswith('ask_price_') and number(v)]
-    bargaining_ids={p.get('trade_id') for p in bargaining_plans}
-    paid_prices=[r['command']['cost']/r['command']['quantity'] for r in state.get('trades',[])
-                 if r.get('status')=='committed' and r.get('id') in bargaining_ids and r['command'].get('quantity',0)>0]
+    by_commodity={}
+    for commodity in ('bread','grain'):
+        relevant=[p for p in bargaining_plans if p.get('commodity','bread')==commodity]
+        proposals=[(d['decision']['action_id'],d.get('context',{}).get('price_options',{}).get(d['decision']['action_id']))
+                   for p in relevant for d in p.get('decisions',[]) if d.get('decision')]
+        bids=[v for a,v in proposals if a.startswith('bid_price_') and number(v)]
+        asks=[v for a,v in proposals if a.startswith('ask_price_') and number(v)]
+        ids={p.get('trade_id') for p in relevant}
+        paid=[r['command']['cost']/r['command']['quantity'] for r in state.get('trades',[])
+              if r.get('status')=='committed' and r.get('id') in ids and r['command'].get('quantity',0)>0
+              and r['command'].get('commodity','bread')==commodity]
+        by_commodity[commodity]={'plans':len(relevant),'buyer_offers':distribution(bids),
+            'seller_counteroffers':distribution(asks),'paid_prices':distribution(paid),
+            'buyer_offer_histogram':dict(Counter(str(v) for v in bids)),
+            'seller_ask_histogram':dict(Counter(str(v) for v in asks))}
     total_actions=sum(actions.values())
     interrupted=[c for c in terminal if c.get('interruption')]
     natural_chats=[c for c in chats if not c.get('interruption')]
@@ -163,12 +171,11 @@ def simulation_metrics(state):
             'results_with_cost':sum(number(v) for v in model_cost),
             'cost_coverage':'Retained accepted results and claim-bound language rejection receipts. Older rejections and other failed calls may exist only in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
-            'bargaining':{'plans':len(bargaining_plans),'buyer_offers':distribution(buyer_prices),
-                'seller_counteroffers':distribution(seller_prices),'paid_prices':distribution(paid_prices),
-                'buyer_offer_histogram':dict(Counter(str(v) for v in buyer_prices)),
-                'seller_ask_histogram':dict(Counter(str(v) for v in seller_prices)),
+            'bargaining':{**by_commodity['bread'],'plans':len(bargaining_plans),'by_commodity':by_commodity,
                 'accepted_counteroffers':sum(p.get('counter_quote_accepted') is True for p in bargaining_plans),
                 'scope':'Retained resident bargaining plans, including fixtures. Offers and accepted terms are not payments; paid prices require committed native inventory receipts.'},
+            'grain_procurement_sales':sum(c.get('commodity')=='grain' for c in trades),
+            'grain_units_traded':sum(c['quantity'] for c in trades if c.get('commodity')=='grain'),
             'owner_production_batches':sum(c.get('kind')=='inventory_self_produce' for c in production),
             'negotiations':{'n':len(negotiations),'outcomes':dict(trade_outcomes),
                 'scope':'Retained voiced trade plans, including staged experiments. Sales require committed inventory receipts; refusals are choices, not technical failures.'},
@@ -181,7 +188,7 @@ def simulation_metrics(state):
             'gold_conservation':rate(sum(conserved),len(conserved)),
             'distinct_observed_sale_prices':len({c['cost']/c['quantity'] for c in trades if c.get('quantity',0)>0}),
             'active_enterprises':sum(b.get('active',True) for b in state.get('town',{}).get('businesses',{}).values()),
-            'supported_production_recipes':1,'supported_sale_goods':1,'supported_supply_chain_transforms':1,
+            'supported_production_recipes':1,'supported_sale_goods':2,'supported_supply_chain_transforms':1,
             'pricing':'Residents choose bids and counteroffers from bounded price options using personal history; legacy fixtures retain 3/5 offers. No market-clearing equilibrium is claimed.',
             'scope':'Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour.'},
         'resident_plans':{'terminal':len(terminal_plans),'held':sum(p['phase']=='held' for p in terminal_plans),

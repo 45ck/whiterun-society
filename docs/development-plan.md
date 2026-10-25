@@ -70,3 +70,9 @@ Next acceptance work: capture remaining identities; qualify physical in-game sel
 ## Resident-selected prices
 
 Initialized towns now let buyers choose affordable bids and sellers choose acceptance, refusal or a counteroffer. Personal completed trades inform candidate prices; private counterparty resources stay out of prompts. Prices remain a bounded authored search space, not an equilibrium solution. A real Jev trial delivered two bids and two refusals; a controlled native counteroffer sale verified inventory and consent, then restored all 17 save fields. [Architecture, audio, screenshot and limitations](bargaining.md).
+
+## Grain inputs and connected production
+
+Current charters can advertise grain supply. Bakery shortfalls offer procurement using personal stock and public suppliers, with grain-specific bargaining, voice, native transfers and price memory. A controlled three-resident native chain completed grain purchase, owned production, bread sale and consumption, with seven spoken lines and conserved money; all 17 save fields restored. A real model chose bread instead and exposed duplicated decision context, now repaired and provider-qualified. [Illustration, audio and receipts](grain-market.md).
+
+Next: qualify repeated unforced supply-chain choices, farming and replenishment, meaningful productive/rest routines and natural dialogue. RTS remains the sole current interaction mode; observer camera obstruction and native input delivery remain open. A continuous livestream still needs bounded-cost operation, durable recovery and recorded audio/video qualification.

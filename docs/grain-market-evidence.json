@@ -1,0 +1,911 @@
+{
+  "real": {
+    "selection": {
+      "actor": 108170,
+      "supplier": 108149,
+      "event": {
+        "actor": 108170,
+        "created_day": 7.434417247772217,
+        "id": "daily-58-108170",
+        "kind": "need_review",
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 34,
+          "grain": 0
+        },
+        "priority": 1,
+        "priority_reviewed_day": 8.077377319335938,
+        "reason": "Simulated hunger crossed the meal-review threshold",
+        "status": "pending"
+      },
+      "scope": "Operator authored supplier and bakery capabilities; no resources created. Buyer is nearest eligible queued civilian to existing grain stock."
+    },
+    "phase": "held",
+    "outcome": null,
+    "error": "ValueError: Decision request exceeds the bounded context size",
+    "decisions": [
+      {
+        "actor_id": 108170,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_bread",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to Carlotta Valentia, a publicly registered food seller, and choose an affordable bid on arrival. Stock is unknown and they may refuse."
+        },
+        "elapsed_seconds": 0.782,
+        "usage": {
+          "cost": 0.00021,
+          "input_tokens": 5000,
+          "output_tokens": 131
+        }
+      },
+      {
+        "actor_id": 108170,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "bid_price_2",
+          "emotion": "unspecified",
+          "reason": "Selected action: Offer 2 septims for one loaf; pay only if accepted."
+        },
+        "elapsed_seconds": 0.61,
+        "usage": {
+          "cost": 0.000214998,
+          "input_tokens": 5119,
+          "output_tokens": 196
+        }
+      }
+    ],
+    "balances_before": {
+      "108170": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "balances_after": {
+      "108170": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "turns": [
+      {
+        "actor": 108170,
+        "listener": 108149,
+        "line": "Would you sell me one loaf for 2 gold?",
+        "act": "offer",
+        "audio_file": "grain-real-1.wav",
+        "delivered": true,
+        "seconds": 2.4727,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.597,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-b40bbb23a7edb839f5b05fea",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 2.5383036356324737,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 270,
+            "sum_error_degrees": 2.6084805490520466
+          },
+          "playedSeconds": 2.472667,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "hunger_before": 1,
+    "hunger_after": 1,
+    "duration_seconds": 21.428,
+    "duration_scope": "Sampled worker interval, excludes charter setup and post-purchase scheduling wait",
+    "reported_model_cost": 0.000424998,
+    "trade_receipts": [],
+    "production_receipts": [],
+    "consumption_receipts": []
+  },
+  "fixture": {
+    "selection": {
+      "actor": 108170,
+      "supplier": 108149,
+      "event": {
+        "actor": 108170,
+        "created_day": 7.434417247772217,
+        "id": "daily-58-108170",
+        "kind": "need_review",
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 34,
+          "grain": 0
+        },
+        "priority": 1,
+        "priority_reviewed_day": 8.077377319335938,
+        "reason": "Simulated hunger crossed the meal-review threshold",
+        "status": "pending"
+      },
+      "scope": "Operator authored supplier and bakery capabilities; no resources created. Buyer is nearest eligible queued civilian to existing grain stock."
+    },
+    "phase": "complete",
+    "outcome": "bought_grain",
+    "error": null,
+    "decisions": [
+      {
+        "actor_id": 108170,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "procure_grain_108149",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108170,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "bid_price_2",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108149,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "ask_price_4",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108170,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "accept_counterprice",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      }
+    ],
+    "balances_before": {
+      "108170": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "balances_after": {
+      "108170": {
+        "gold": 30,
+        "bread": 0,
+        "grain": 1
+      },
+      "108149": {
+        "gold": 106,
+        "bread": 4,
+        "grain": 19
+      }
+    },
+    "turns": [
+      {
+        "actor": 108170,
+        "listener": 108149,
+        "line": "Would you sell me one unit of grain for 2 gold?",
+        "act": "offer",
+        "audio_file": "grain-fixture-1.wav",
+        "delivered": true,
+        "seconds": 3.188,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.352,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-41f0e940604b5927bffc2852",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 5.087775991629542,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 346,
+            "sum_error_degrees": 5.169925406261427
+          },
+          "playedSeconds": 3.188,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "actor": 108149,
+        "listener": 108170,
+        "line": "I can sell you one unit of grain for 4 gold. Would that suit you?",
+        "act": "seller_counteroffer",
+        "audio_file": "grain-fixture-2.wav",
+        "delivered": true,
+        "seconds": 4.42,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.467,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-e0aca405243c8252b9936cfa",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 2.2695731104249717e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 468,
+            "sum_error_degrees": 0.005377347090870899
+          },
+          "playedSeconds": 4.419958,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "actor": 108170,
+        "listener": 108149,
+        "line": "Agreed. I will pay 4 gold for one unit of grain.",
+        "act": "buyer_accept",
+        "audio_file": "grain-fixture-3.wav",
+        "delivered": true,
+        "seconds": 3.646,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.732,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-d99415ace29a5385b981598b",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 2.2695731104249717e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 382,
+            "sum_error_degrees": 0.004389202112633939
+          },
+          "playedSeconds": 3.646,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "actor": 108170,
+        "listener": 108149,
+        "line": "Thank you. I have received one unit of grain and paid 4 gold.",
+        "act": "receipt",
+        "audio_file": "grain-fixture-4.wav",
+        "delivered": true,
+        "seconds": 4.2393,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.322,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-a9f9b97fb634cebfea1c01e1",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 2.2695731104249717e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 446,
+            "sum_error_degrees": 0.0051245658173684205
+          },
+          "playedSeconds": 4.239333,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "hunger_before": 1,
+    "hunger_after": 1,
+    "duration_seconds": 46.074,
+    "duration_scope": "Sampled worker interval, excludes charter setup and post-purchase scheduling wait",
+    "reported_model_cost": 0,
+    "trade_receipts": [
+      {
+        "command": "{\"after\": {\"buyer\": {\"bread\": 0, \"gold\": 30, \"grain\": 1}, \"seller\": {\"bread\": 4, \"gold\": 106, \"grain\": 19}}, \"before\": {\"buyer\": {\"bread\": 0, \"gold\": 34, \"grain\": 0}, \"seller\": {\"bread\": 4, \"gold\": 102, \"grain\": 20}}, \"buyer\": 108170, \"commodity\": \"grain\", \"cost\": 4, \"id\": \"input-daily-58-108170\", \"kind\": \"inventory_trade\", \"quantity\": 1, \"seller\": 108149}",
+        "evidence": {
+          "ack": {
+            "id": "input-daily-58-108170",
+            "inventory": {
+              "buyer": {
+                "bread": 0,
+                "gold": 30,
+                "grain": 1
+              },
+              "seller": {
+                "bread": 4,
+                "gold": 106,
+                "grain": 19
+              }
+            },
+            "status": "applied"
+          },
+          "actual": {
+            "buyer": {
+              "bread": 0,
+              "gold": 30,
+              "grain": 1
+            },
+            "seller": {
+              "bread": 4,
+              "gold": 106,
+              "grain": 19
+            }
+          },
+          "session": "1792905645724-0.6629980818206198"
+        },
+        "id": "input-daily-58-108170",
+        "request": {
+          "buyer": 108170,
+          "commodity": "grain",
+          "quantity": 1,
+          "seller": 108149,
+          "unit_price": 4
+        },
+        "status": "committed"
+      }
+    ],
+    "production_receipts": [],
+    "consumption_receipts": []
+  },
+  "produce": {
+    "selection": {
+      "actor": 108170,
+      "supplier": 108149,
+      "event": {
+        "actor": 108170,
+        "created_day": 8.800348281860352,
+        "id": "daily-74-108170",
+        "kind": "need_review",
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 30,
+          "grain": 1
+        },
+        "priority": 1,
+        "reason": "Simulated hunger crossed the meal-review threshold",
+        "status": "pending"
+      },
+      "scope": "Operator authored supplier and bakery capabilities; no resources created. Buyer is nearest eligible queued civilian to existing grain stock."
+    },
+    "phase": "complete",
+    "outcome": "owner_work_completed",
+    "error": null,
+    "decisions": [
+      {
+        "actor_id": 108170,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "work_own_input-trial-108170",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      }
+    ],
+    "balances_before": {
+      "108170": {
+        "gold": 30,
+        "bread": 0,
+        "grain": 1
+      },
+      "108149": {
+        "gold": 106,
+        "bread": 4,
+        "grain": 19
+      }
+    },
+    "balances_after": {
+      "108170": {
+        "gold": 30,
+        "bread": 2,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 106,
+        "bread": 4,
+        "grain": 19
+      }
+    },
+    "turns": [],
+    "hunger_before": 1,
+    "hunger_after": 1,
+    "duration_seconds": 19.848,
+    "duration_scope": "Sampled worker interval, excludes charter setup and post-purchase scheduling wait",
+    "reported_model_cost": 0,
+    "trade_receipts": [],
+    "production_receipts": [
+      {
+        "business_id": "input-trial-108170",
+        "command": {
+          "actor": 108170,
+          "after": {
+            "owner": {
+              "bread": 2,
+              "gold": 30,
+              "grain": 0
+            }
+          },
+          "anchor": [
+            24747.9921875,
+            -5348.34130859375,
+            -3005.50537109375
+          ],
+          "before": {
+            "owner": {
+              "bread": 0,
+              "gold": 30,
+              "grain": 1
+            }
+          },
+          "expected_package": 167774385,
+          "id": "produce-daily-74-108170",
+          "kind": "inventory_self_produce",
+          "work_minutes": 5
+        },
+        "evidence": {
+          "ack": {
+            "animation_verified": false,
+            "id": "produce-daily-74-108170",
+            "inventory": {
+              "owner": {
+                "bread": 2,
+                "gold": 30,
+                "grain": 0
+              }
+            },
+            "mechanism": "native_owner_recipe",
+            "status": "applied",
+            "work": {
+              "actor": 108170,
+              "attendance": {
+                "distance": 0,
+                "package_owned": true
+              },
+              "expectedPackage": 167774385,
+              "id": "produce-daily-74-108170",
+              "ownedPackage": false,
+              "phase": "complete",
+              "requiredMinutes": 5,
+              "wageGold": 0,
+              "workedMinutes": 5
+            }
+          },
+          "actual": {
+            "owner": {
+              "bread": 2,
+              "gold": 30,
+              "grain": 0
+            }
+          },
+          "session": "1792905645724-0.6629980818206198"
+        },
+        "id": "produce-daily-74-108170",
+        "source": "Owner chooses own labour and grain; no wage transfer",
+        "status": "committed"
+      }
+    ],
+    "consumption_receipts": []
+  },
+  "consume_sale": {
+    "selection": {
+      "actor": 108164,
+      "supplier": 108170,
+      "event": {
+        "actor": 108164,
+        "created_day": 8.762478828430176,
+        "id": "daily-72-108164",
+        "kind": "need_review",
+        "observed_inventory": {
+          "bread": 0,
+          "gold": 34,
+          "grain": 0
+        },
+        "priority": 1,
+        "priority_reviewed_day": 8.800348281860352,
+        "reason": "Simulated hunger crossed the meal-review threshold",
+        "status": "pending"
+      },
+      "scope": "Controlled purchase from the new bakery followed by consumption; nearest eligible queued civilian, no resources added."
+    },
+    "phase": "complete",
+    "outcome": "ate_bread",
+    "error": null,
+    "decisions": [
+      {
+        "actor_id": 108164,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "seek_bread_108170",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "bid_price_3",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108170,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "sell_bread",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "model": "controlled-native-grain-fixture",
+        "decision": {
+          "action_id": "eat_bread",
+          "emotion": "unspecified",
+          "reason": "Authored integration choice, not autonomous behaviour"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      }
+    ],
+    "balances_before": {
+      "108170": {
+        "gold": 30,
+        "bread": 2,
+        "grain": 0
+      },
+      "108164": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108170": {
+        "gold": 33,
+        "bread": 1,
+        "grain": 0
+      },
+      "108164": {
+        "gold": 31,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "turns": [
+      {
+        "actor": 108164,
+        "listener": 108170,
+        "line": "Would you sell me one loaf for 3 gold?",
+        "act": "offer",
+        "audio_file": "grain-consume-sale-1.wav",
+        "delivered": true,
+        "seconds": 2.336,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.482,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-d4ae6b07cde15b450e8bd96c",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 23.683515950755805,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 256,
+            "sum_error_degrees": 32.50836901049547
+          },
+          "playedSeconds": 2.336,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "actor": 108170,
+        "listener": 108164,
+        "line": "Agreed. One loaf for 3 gold.",
+        "act": "accept",
+        "audio_file": "grain-consume-sale-2.wav",
+        "delivered": true,
+        "seconds": 2.5126,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.61,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-bbcf93979c520f154f7b868a",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0007300217062038428,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 272,
+            "sum_error_degrees": 0.19708014343450486
+          },
+          "playedSeconds": 2.512625,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "actor": 108164,
+        "listener": 108170,
+        "line": "Thank you. I have received one loaf and paid 3 gold.",
+        "act": "receipt",
+        "audio_file": "grain-consume-sale-3.wav",
+        "delivered": true,
+        "seconds": 3.3353,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.408,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-1467115768d872b58d3a9ef5",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.000733141999489817,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 352,
+            "sum_error_degrees": 0.2539584890646438
+          },
+          "playedSeconds": 3.335292,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "hunger_before": 1,
+    "hunger_after": 0.4,
+    "duration_seconds": 37.715,
+    "duration_scope": "Sampled worker interval, excludes charter setup and post-purchase scheduling wait",
+    "reported_model_cost": 0,
+    "trade_receipts": [
+      {
+        "command": "{\"after\": {\"buyer\": {\"bread\": 1, \"gold\": 31}, \"seller\": {\"bread\": 1, \"gold\": 33}}, \"before\": {\"buyer\": {\"bread\": 0, \"gold\": 34}, \"seller\": {\"bread\": 2, \"gold\": 30}}, \"buyer\": 108164, \"cost\": 3, \"id\": \"meal-daily-72-108164\", \"kind\": \"inventory_trade\", \"quantity\": 1, \"seller\": 108170}",
+        "evidence": {
+          "ack": {
+            "id": "meal-daily-72-108164",
+            "inventory": {
+              "buyer": {
+                "bread": 1,
+                "gold": 31
+              },
+              "seller": {
+                "bread": 1,
+                "gold": 33
+              }
+            },
+            "status": "applied"
+          },
+          "actual": {
+            "buyer": {
+              "bread": 1,
+              "gold": 31
+            },
+            "seller": {
+              "bread": 1,
+              "gold": 33
+            }
+          },
+          "session": "1792905645724-0.6629980818206198"
+        },
+        "id": "meal-daily-72-108164",
+        "request": {
+          "buyer": 108164,
+          "quantity": 1,
+          "seller": 108170,
+          "unit_price": 3
+        },
+        "status": "committed"
+      }
+    ],
+    "production_receipts": [],
+    "consumption_receipts": [
+      {
+        "command": {
+          "actor": 108164,
+          "after": {
+            "bread": 0,
+            "gold": 31
+          },
+          "before": {
+            "bread": 1,
+            "gold": 31
+          },
+          "id": "consume-daily-72-108164",
+          "kind": "inventory_consume"
+        },
+        "evidence": {
+          "ack": {
+            "id": "consume-daily-72-108164",
+            "inventory": {
+              "bread": 0,
+              "gold": 31
+            },
+            "mechanism": "native_equip_food",
+            "status": "applied"
+          },
+          "actual": {
+            "bread": 0,
+            "gold": 31
+          },
+          "session": "1792905645724-0.6629980818206198"
+        },
+        "id": "consume-daily-72-108164",
+        "status": "committed"
+      }
+    ]
+  },
+  "provider_context_fix": {
+    "scope": "Provider-only qualification of previously oversized consent context. Proposal was not applied to Skyrim; original event remains held in its historical evidence.",
+    "result": {
+      "decision": {
+        "action_id": "decline",
+        "reason": "Selected action: Decline the request; keep your goods.",
+        "emotion": "unspecified"
+      },
+      "rationale_kind": "authored_action_label_not_dialogue",
+      "probabilities": {
+        "decline": 0.88,
+        "sell_reserved_bread": 0.03,
+        "ask_price_3": 0.01,
+        "ask_price_4": 0.01,
+        "ask_price_5": 0.01,
+        "ask_price_6": 0.03,
+        "ask_price_7": 0.01,
+        "ask_price_8": 0.01,
+        "ask_price_9": 0,
+        "ask_price_10": 0.01,
+        "ask_price_11": 0,
+        "ask_price_12": 0,
+        "ask_price_15": 0,
+        "ask_price_20": 0,
+        "ask_price_30": 0,
+        "ask_price_50": 0,
+        "ask_price_75": 0,
+        "ask_price_100": 0
+      },
+      "elapsed_seconds": 4.0,
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "input_tokens": 5059,
+        "output_tokens": 206,
+        "cost": 0.000212478
+      },
+      "status": "proposal_only"
+    },
+    "options": 18,
+    "context_characters": 13702
+  },
+  "restoration": {
+    "save": "WS-Grain-20261025-BJ",
+    "checkpoint": 2037,
+    "compared_fields": 17,
+    "all_matched": true,
+    "scope": "All trial charters, trades, work and consumption rolled back; source and evidence retained"
+  },
+  "limits": [
+    "The complete chain used controlled choices, not unforced model behaviour.",
+    "Existing grain is finite; no farming or replenishment.",
+    "Five minutes of native attended work does not prove a crafting animation.",
+    "Overlay playback and body-yaw measurements do not verify physical audibility, lip sync, gaze or raycasts.",
+    "Automatic movie camera can intersect buildings; native injected selection remains unqualified."
+  ]
+}

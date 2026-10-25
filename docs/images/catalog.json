@@ -1,5 +1,10 @@
 [
   {
+    "file": "grain-market-loop.png",
+    "title": "Grain market loop",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "independent-lives-observed.png",
     "title": "Independent lives observed",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -68,6 +73,16 @@
     "file": "food-consumption-restored.jpg",
     "title": "Food consumption restored",
     "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "grain-chain-camera-obstruction.jpg",
+    "title": "Grain chain camera obstruction",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "grain-trade-native-fixture.jpg",
+    "title": "Grain trade native fixture",
+    "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
   },
   {
     "file": "jev-resident-decisions.jpg",

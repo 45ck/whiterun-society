@@ -266,5 +266,69 @@
     "sha256": "b909cfe653c0e07e5f76b81fdfb706b6d8b8c46feca2d14d9a2adc0055ef3db0",
     "source": "Controlled fixture with authored choices; generated Kokoro utterance used in native playback, not a recording of game audio",
     "encounter": "Resident bargaining \u2014 fixture"
+  },
+  {
+    "file": "grain-real-1.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Would you sell me one loaf for 2 gold?",
+    "sha256": "929ecce8717c2a14f8379d066edf12d40ced4e0935f5f32b04d6163aeb0cff43",
+    "source": "Model-selected action, deterministic terms; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 real"
+  },
+  {
+    "file": "grain-fixture-1.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Would you sell me one unit of grain for 2 gold?",
+    "sha256": "5253a4e7caeea705b2fb7f6747bf1090376641696134bc21befb0ec979a1cda1",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 fixture"
+  },
+  {
+    "file": "grain-fixture-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I can sell you one unit of grain for 4 gold. Would that suit you?",
+    "sha256": "21f516cefb9dd365c0f5a26d6ea9bf887baa1d4261c3eb414238c2cd816e7b2c",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 fixture"
+  },
+  {
+    "file": "grain-fixture-3.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Agreed. I will pay 4 gold for one unit of grain.",
+    "sha256": "e4a778aa64a2157245b1a2402df97719eb9fd91e98b2ad728bf999b0bddea4da",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 fixture"
+  },
+  {
+    "file": "grain-fixture-4.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Thank you. I have received one unit of grain and paid 4 gold.",
+    "sha256": "396400f68e503a1ac3b4507e7080b677dabd8fae64e11fed3674760a820593c7",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 fixture"
+  },
+  {
+    "file": "grain-consume-sale-1.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Would you sell me one loaf for 3 gold?",
+    "sha256": "abef7a5d7230373e13a611dc0c340675347b6e821e0092ac87e1a5e4e2d06046",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 consume sale"
+  },
+  {
+    "file": "grain-consume-sale-2.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Agreed. One loaf for 3 gold.",
+    "sha256": "cae182c6909cf19f7d188bbd932f16524ad91a83f9aa2ddeebf59181876a648c",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 consume sale"
+  },
+  {
+    "file": "grain-consume-sale-3.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Thank you. I have received one loaf and paid 3 gold.",
+    "sha256": "e2dff791b5564d92ac4a90ebfdae78e4ae40b545f88085c578daba3be35223df",
+    "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Grain supply chain \u2014 consume sale"
   }
 ]
