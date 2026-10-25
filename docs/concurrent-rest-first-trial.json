@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "trial_id": "rest-voice-ff2d1be667d44e08",
+  "trial_label": "C1",
+  "date": "2026-10-25",
+  "source_sha256": "cf454ad2522ad52e91e05dd15d9c051305c300e89f3df8c968342e647aa7e159",
+  "source_scope": "Curated from local native trial evidence; full game snapshots, provider payloads, credentials and process details omitted.",
+  "status": "not_qualified",
+  "qualified": false,
+  "interpretation": "Two authored rest choices completed in Skyrim. A separate autonomous conversation chose a brief refusal. Required simultaneous two-seat verified voice overlap was not achieved.",
+  "rest_choice_mode": "Explicit authored integration fixture, not autonomous rest selection",
+  "rest_model_calls": 0,
+  "conversation": {
+    "id": "rest-voice-ff2d1be667d44e08",
+    "selection_mode": "Autonomous partner, consent and dialogue decisions",
+    "outcome": "spoke_brief_refusal",
+    "model_calls": 6,
+    "model_call_cap": 16,
+    "completion_verified": true,
+    "verified_deliveries": 1,
+    "delivery_id": "speech-a652acb1aa4bfdda329b2387",
+    "played_seconds": 2.836,
+    "nearby_throughout": true,
+    "muted": false,
+    "volume": 1,
+    "receipt_sha256": "02e3efd5f804953b293ac55d0984dc884505ee750cc0195d6dfc14c8410e9067",
+    "audio_scope": "Verified software playback telemetry, not a microphone recording or proof the user heard it."
+  },
+  "jobs": [
+    {
+      "job_id": "rest-9bf41f899d17846d5fb9f543",
+      "source_plan": "goal-d8c2f524e2130c69cf53039c",
+      "actor": 108138,
+      "target": 586076,
+      "slot": 0,
+      "completion_at_admission": false,
+      "id": "rest-9bf41f899d17846d5fb9f543",
+      "phase": "complete",
+      "release_verified": true,
+      "receipt_hash": "bf364095c2260d89c13febaf247615e57be5b9ab5458be67a42b810fa7cc58e4",
+      "receipt_acknowledged": true,
+      "outcome": "rested_at_bench"
+    },
+    {
+      "job_id": "rest-17ccc86d6b1ac350bbc926b3",
+      "source_plan": "daily-89-108170",
+      "actor": 108170,
+      "target": 945258,
+      "slot": 1,
+      "completion_at_admission": false,
+      "id": "rest-17ccc86d6b1ac350bbc926b3",
+      "phase": "complete",
+      "release_verified": true,
+      "receipt_hash": "876bad797dfeb5f0d79b7223495cbe2acc703c42f4dfcf697be7073df99f3832",
+      "receipt_acknowledged": true,
+      "outcome": "rested_at_bench"
+    }
+  ],
+  "native_rest_completions_verified": true,
+  "required_verified_overlap_seconds": 10,
+  "overlap": {
+    "verified_voice_and_two_seated_seconds": 0,
+    "longest_continuous_verified_overlap_seconds": 0.0,
+    "unverified_playing_overlap_seconds": 0,
+    "method": "Sum only adjacent samples <=1.75s apart, both exact seats verified and same speech playing; count only subsequently verified completed playback. Report cumulative and continuous time separately."
+  },
+  "sampling": {
+    "sample_count": 120,
+    "two_exact_seated_samples": 71,
+    "speech_playing_samples": 3,
+    "last_sample_elapsed_seconds": 133.937,
+    "sampling_limit_seconds": 600,
+    "first_two_exact_seated_sample_seconds": 37.922,
+    "last_two_exact_seated_sample_seconds": 113.328,
+    "scope": "Correlated observations, not independent trials. First/last sample times do not prove uninterrupted attendance between them."
+  },
+  "final_sample_checkpoint": 3125,
+  "selected_samples": [
+    {
+      "elapsed_seconds": 0.094,
+      "checkpoint": 3091,
+      "exact_seated_actors": [],
+      "two_exact_seated": false,
+      "playing_delivery_id": null,
+      "conversation_id": "encounter-8d51bb78136640e785b2",
+      "conversation_phase": "complete",
+      "speech_status": null
+    },
+    {
+      "elapsed_seconds": 30.781,
+      "checkpoint": 3113,
+      "exact_seated_actors": [
+        108138
+      ],
+      "two_exact_seated": false,
+      "playing_delivery_id": "speech-a652acb1aa4bfdda329b2387",
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 32.875,
+      "checkpoint": 3113,
+      "exact_seated_actors": [
+        108138
+      ],
+      "two_exact_seated": false,
+      "playing_delivery_id": "speech-a652acb1aa4bfdda329b2387",
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 37.922,
+      "checkpoint": 3116,
+      "exact_seated_actors": [
+        108138,
+        108170
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "thinking_reflect_first",
+      "speech_status": "ended"
+    },
+    {
+      "elapsed_seconds": 113.328,
+      "checkpoint": 3119,
+      "exact_seated_actors": [
+        108138,
+        108170
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "complete",
+      "speech_status": "ended"
+    },
+    {
+      "elapsed_seconds": 133.937,
+      "checkpoint": 3125,
+      "exact_seated_actors": [],
+      "two_exact_seated": false,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "complete",
+      "speech_status": "ended"
+    }
+  ],
+  "limits": [
+    "No verified voice playback overlap with both exact seats; 10-second target not met.",
+    "No autonomous selection of the two rest choices proved by this fixture.",
+    "No economic transaction or production demonstrated by this trial.",
+    "No human realism rating, lip-sync proof, or user-audibility proof.",
+    "Captured movie view was occluded by scene geometry; labels and telemetry do not prove a clear visual encounter."
+  ],
+  "assets": {
+    "architecture": "images/concurrent-resident-lives.png",
+    "architecture_prompt": "images/concurrent-resident-lives.prompt.md",
+    "actual_camera_limitation": "images/concurrent-rest-camera-occlusion.jpg"
+  },
+  "save_restore_checks": [
+    {
+      "save_name": "WS-GoalsContext-20261025-BX",
+      "checkpoint": 3091,
+      "source_sha256": "83104a864966df0c47cf4fba5c8ef56a1bd37b6f189ca332a80cb6a6707d6095",
+      "scope": "Settled plan, people, inventory and journal; not long-term stability",
+      "restore_matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "cancelled_production": true,
+        "unsettled_effect": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "routine_batch": true,
+        "scene_handoffs": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "matched_fields": 17,
+      "compared_fields": 17,
+      "fresh_session": true,
+      "allowed_plugin_addition": "WhiterunActivities.esp",
+      "native_save_files": {
+        "WS-GoalsContext-20261025-BX.ess": {
+          "sha256": "d705802ebd0b277fdf6fc87a0450ca87f8057e6aa9acf3739fb0e801316ea753",
+          "bytes": 2600463
+        },
+        "WS-GoalsContext-20261025-BX.skse": {
+          "sha256": "c85f457796bc0ac15d6f58ebecff2e0e41a14209a2f8edee2961f686f9198638",
+          "bytes": 501
+        }
+      },
+      "recorded_plugin_manifest": [
+        {
+          "name": "WhiterunSociety.esp",
+          "sha256": "71c44f1358068d49546b4d5eb6c3ea4bd65ad4b8a13f46e6f437efd58c7e86ae"
+        },
+        {
+          "name": "WhiterunAgents.esp",
+          "sha256": "3b7bd304a87cb9d37a801869b83ca1abb81878f76053bb685cfc624b95e3fbbc"
+        },
+        {
+          "name": "WhiterunRouter.esp",
+          "sha256": "c4fee9f7bf1258759fa9870fe779e9284e8ab36ff2f80f8cc30ce1b48f745761"
+        },
+        {
+          "name": "WhiterunRest.esp",
+          "sha256": "062da410c6270bfdc00774e7648ca62ceb93b1086e03da287561926fe4726223"
+        },
+        {
+          "name": "WhiterunLanes.esp",
+          "sha256": "405f4d72a15af047b60c6c52b5ed32d7b76c31295bd30a0412fcd55977639909"
+        },
+        {
+          "name": "WhiterunCitizens.esp",
+          "sha256": "9b58189df85b3b98b279edacfac07586dbac17a78c4196601f11822147850a9c"
+        }
+      ],
+      "restored_plugin_manifest": [
+        {
+          "name": "WhiterunSociety.esp",
+          "sha256": "71c44f1358068d49546b4d5eb6c3ea4bd65ad4b8a13f46e6f437efd58c7e86ae"
+        },
+        {
+          "name": "WhiterunAgents.esp",
+          "sha256": "3b7bd304a87cb9d37a801869b83ca1abb81878f76053bb685cfc624b95e3fbbc"
+        },
+        {
+          "name": "WhiterunRouter.esp",
+          "sha256": "c4fee9f7bf1258759fa9870fe779e9284e8ab36ff2f80f8cc30ce1b48f745761"
+        },
+        {
+          "name": "WhiterunRest.esp",
+          "sha256": "062da410c6270bfdc00774e7648ca62ceb93b1086e03da287561926fe4726223"
+        },
+        {
+          "name": "WhiterunLanes.esp",
+          "sha256": "405f4d72a15af047b60c6c52b5ed32d7b76c31295bd30a0412fcd55977639909"
+        },
+        {
+          "name": "WhiterunCitizens.esp",
+          "sha256": "9b58189df85b3b98b279edacfac07586dbac17a78c4196601f11822147850a9c"
+        },
+        {
+          "name": "WhiterunActivities.esp",
+          "sha256": "72da7d079be7710f72d2ec573bafa1cc1ed2e2122e05c169b407d0e7c21ed4a3"
+        }
+      ]
+    },
+    {
+      "save_name": "WS-ConcurrentRest-20261025-BY",
+      "checkpoint": 3125,
+      "source_sha256": "0f1e771ab484a23a702d59f67cd7540d79dfb826fa79c7fe30e0a91f11e9d36a",
+      "scope": "Settled plan, people, inventory, journal and independent activity epoch/history; not active-job recovery or long-term stability",
+      "restore_matches": {
+        "checkpoint": true,
+        "plan": true,
+        "people": true,
+        "world": true,
+        "consumptions": true,
+        "production": true,
+        "cancelled_production": true,
+        "unsettled_effect": true,
+        "rests": true,
+        "imports": true,
+        "market_day": true,
+        "conversation": true,
+        "routine_batch": true,
+        "activity_jobs": true,
+        "scene_handoffs": true,
+        "town": true,
+        "inventory": true,
+        "asset_inventory": true
+      },
+      "matched_fields": 18,
+      "compared_fields": 18,
+      "fresh_session": true,
+      "allowed_plugin_addition": null,
+      "native_save_files": {
+        "WS-ConcurrentRest-20261025-BY.ess": {
+          "sha256": "340c35fdbef090d34afcbccdca1664937d622226629d60a004b7733ec89fe453",
+          "bytes": 2592667
+        },
+        "WS-ConcurrentRest-20261025-BY.skse": {
+          "sha256": "ef9d8b6e9265b9ed8ddd0aea017659c89a7f30a45bf5791f63de712e8e1e874d",
+          "bytes": 526
+        }
+      },
+      "recorded_plugin_manifest": [
+        {
+          "name": "WhiterunSociety.esp",
+          "sha256": "71c44f1358068d49546b4d5eb6c3ea4bd65ad4b8a13f46e6f437efd58c7e86ae"
+        },
+        {
+          "name": "WhiterunAgents.esp",
+          "sha256": "3b7bd304a87cb9d37a801869b83ca1abb81878f76053bb685cfc624b95e3fbbc"
+        },
+        {
+          "name": "WhiterunRouter.esp",
+          "sha256": "c4fee9f7bf1258759fa9870fe779e9284e8ab36ff2f80f8cc30ce1b48f745761"
+        },
+        {
+          "name": "WhiterunRest.esp",
+          "sha256": "062da410c6270bfdc00774e7648ca62ceb93b1086e03da287561926fe4726223"
+        },
+        {
+          "name": "WhiterunLanes.esp",
+          "sha256": "405f4d72a15af047b60c6c52b5ed32d7b76c31295bd30a0412fcd55977639909"
+        },
+        {
+          "name": "WhiterunCitizens.esp",
+          "sha256": "9b58189df85b3b98b279edacfac07586dbac17a78c4196601f11822147850a9c"
+        },
+        {
+          "name": "WhiterunActivities.esp",
+          "sha256": "72da7d079be7710f72d2ec573bafa1cc1ed2e2122e05c169b407d0e7c21ed4a3"
+        }
+      ],
+      "restored_plugin_manifest": [
+        {
+          "name": "WhiterunSociety.esp",
+          "sha256": "71c44f1358068d49546b4d5eb6c3ea4bd65ad4b8a13f46e6f437efd58c7e86ae"
+        },
+        {
+          "name": "WhiterunAgents.esp",
+          "sha256": "3b7bd304a87cb9d37a801869b83ca1abb81878f76053bb685cfc624b95e3fbbc"
+        },
+        {
+          "name": "WhiterunRouter.esp",
+          "sha256": "c4fee9f7bf1258759fa9870fe779e9284e8ab36ff2f80f8cc30ce1b48f745761"
+        },
+        {
+          "name": "WhiterunRest.esp",
+          "sha256": "062da410c6270bfdc00774e7648ca62ceb93b1086e03da287561926fe4726223"
+        },
+        {
+          "name": "WhiterunLanes.esp",
+          "sha256": "405f4d72a15af047b60c6c52b5ed32d7b76c31295bd30a0412fcd55977639909"
+        },
+        {
+          "name": "WhiterunCitizens.esp",
+          "sha256": "9b58189df85b3b98b279edacfac07586dbac17a78c4196601f11822147850a9c"
+        },
+        {
+          "name": "WhiterunActivities.esp",
+          "sha256": "72da7d079be7710f72d2ec573bafa1cc1ed2e2122e05c169b407d0e7c21ed4a3"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# One town, many independent lives
+
+Generated with the built-in image-generation tool on 2026-10-25. Architecture illustration, not runtime evidence. Final asset: `concurrent-resident-lives.png`.
+
+## Generation prompt
+
+Use case: infographic-diagram. Create a polished wide landscape infographic for the Whiterun Society open-source Skyrim economy simulation README. Dark charcoal, antique gold and teal, highly legible editorial typography, subtle illustrated medieval town silhouettes. Title: 'ONE TOWN, MANY INDEPENDENT LIVES'. Subtitle: 'Architecture illustration — not gameplay evidence'. Top horizontal loop with five clear connected boxes: 'Observe state' -> 'Personal goals' -> 'Choose an action' -> 'Reserve actor + place' -> 'Execute in Skyrim'. Under choice box show three cooperating small labels: 'Language model: context + dialogue', 'Decision model: compare choices', 'Game rules: validate effects'. Main center show THREE PARALLEL horizontal lanes with shared timeline but no misleading factual metrics: 'Resident A • seated rest', 'Resident B • seated rest', 'Residents C + D • conversation'. Each lane uses distinct portrait silhouettes and native-style activity icons; rest lanes show walk -> sit -> elapsed time -> release, conversation lane shows meet -> face -> speak -> respond -> goodbye. Bottom loop from execution: 'Verify receipt' -> 'Commit once' -> 'Update needs + memory' -> back to Observe state. Bottom-right small gold note: 'Accepted does not mean completed'. Bottom-left concise note: 'Current slice: two background rest slots + one foreground interaction'. No invented success percentage, screenshots, chart data, money totals, or claims of proven human realism. Make all words accurate, uncluttered and easy to read at full resolution.
+
+## Corrective edit prompt
+
+Edit this infographic, preserving its composition, style, portraits, all other text and layout. Correct exactly the small explanatory text inside the bottom-left 'Verify receipt' box. Replace 'Confirm the game accepted the command.' with 'Confirm attendance, elapsed time and release.' This correction matters: acceptance is not completion. Keep the heading 'Verify receipt' and the bottom-right note unchanged. No other changes.

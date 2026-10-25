@@ -1,5 +1,10 @@
 [
   {
+    "file": "concurrent-resident-lives.png",
+    "title": "Concurrent resident lives",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "economic-speech-layers.png",
     "title": "Economic speech layers",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -88,6 +93,11 @@
     "file": "bargaining-native-fixture.jpg",
     "title": "Bargaining native fixture",
     "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
+  },
+  {
+    "file": "concurrent-rest-camera-occlusion.jpg",
+    "title": "Concurrent rest camera occlusion",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
   },
   {
     "file": "context-window-completed-hud.jpg",

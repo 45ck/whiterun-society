@@ -4,6 +4,8 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Independent activities, first native trial:** two authored rest choices completed in separate Skyrim slots while a disjoint autonomous encounter used six model calls and delivered a 2.836-second refusal. Verified voice overlap with both residents seated was **0 seconds against a 10-second target**, so the concurrency acceptance case is not qualified. Movie framing was obstructed by scene geometry. [Architecture, actual screenshot, receipts and limits](docs/concurrent-activities.md) · [Compact C1 evidence](docs/concurrent-rest-first-trial.json).
+
 **RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).
 
 **RTS controls and charts:** [implementation and runtime qualification](docs/rts-experience.md). Play starts resident decisions; Pause settles the current interaction. Movie view follows current activity, with no automatic tours.
@@ -30,7 +32,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 66 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 68 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -253,7 +255,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (66)</summary>
+<summary>Browse every finished project image (68)</summary>
+
+### Concurrent resident lives
+
+Generated system illustration — not gameplay
+
+![Concurrent resident lives](docs/images/concurrent-resident-lives.png)
 
 ### Economic speech layers
 
@@ -362,6 +370,12 @@ Captured game or observer interface — historical prototype
 Controlled native protocol fixture — authored choices, not autonomous behaviour
 
 ![Bargaining native fixture](docs/images/bargaining-native-fixture.jpg)
+
+### Concurrent rest camera occlusion
+
+Captured game or observer interface — historical prototype
+
+![Concurrent rest camera occlusion](docs/images/concurrent-rest-camera-occlusion.jpg)
 
 ### Context window completed hud
 

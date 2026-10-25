@@ -2,6 +2,12 @@
 
 All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.
 
+## Concurrent resident lives
+
+Generated system illustration — not gameplay
+
+![Concurrent resident lives](images/concurrent-resident-lives.png)
+
 ## Economic speech layers
 
 Generated system illustration — not gameplay
@@ -109,6 +115,12 @@ Captured game or observer interface — historical prototype
 Controlled native protocol fixture — authored choices, not autonomous behaviour
 
 ![Bargaining native fixture](images/bargaining-native-fixture.jpg)
+
+## Concurrent rest camera occlusion
+
+Captured game or observer interface — historical prototype
+
+![Concurrent rest camera occlusion](images/concurrent-rest-camera-occlusion.jpg)
 
 ## Context window completed hud
 
