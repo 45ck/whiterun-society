@@ -70,9 +70,15 @@ In particular, saved `accepted_at`/`accepted_day` timestamps denote **native job
 
 For each admitted job, retain one lineage from opportunity and consent through attendance, permit, each physical leg, terminal receipt, settlement, memory and release. Record latency per transition and time spent held. Avoid summing unrelated recipe quantities into one throughput score: report units by commodity and wages by currency. Production value, profit and GDP need separate valuation/costing definitions; a wage transfer is not itself new economic output.
 
-## Focused source evidence
+## Source qualification
 
-The integrated positive suite reported five cases passing through the actual JavaScript paid controller and Python service state with fake native actor/form APIs, including a later purchase using earned wages. The Agency choice suite separately reported five cases passing through the actual decision path, including refusal and privacy checks. The native-controller source suite reported 20 passing cases, and a bridge/resident-control regression run reported 105. These are separately scoped, potentially overlapping source suites, not a summed unique total, hosted qualification or game evidence.
+[Hosted run 40208269941](https://github.com/45ck/whiterun-society/actions/runs/40208269941) passed on Windows and Ubuntu at revision `d8361c4`. Each platform ran 1,236 Python tests (1,235 passed, one generated-file check initially skipped and subsequently passed), 488 JavaScript tests and six generated-plugin readback tests. Windows compiled both Papyrus scripts. [Exact revision, suite evidence and limitations](evidence/paid-employment-validation.json).
+
+Six interoperability cases exercise the actual JavaScript paid/trade controllers and Python checkpoints with simulated native actor/form APIs: witnessed work and later spending of earned wages; partial unpaid output; reset after input debit; identity replacement; cold controller loss; and rejected admission without retry. Metrics are checked against those actual controller receipts. Five Agency tests separately exercise the real decision path, including refusal and privacy, with authored model choices. These suites are included in the full counts, not added to them. No live model, audible game speech, crafting animation or native economic outcome is proved by this run.
+
+![Offers, consent, attendance, production, wages and consequences](images/paid-employment-cycle.png)
+
+Generated system illustration, not gameplay. Its pictured goods are conceptual; [full prompt and limits](images/paid-employment-cycle.prompt.md).
 
 The generic path remains limited to the reviewed **one-input/one-output recipe schema** and one configured batch per job. Renamed test commodities and a synthetic recipe exercise data generality; they do not activate another production chain in Skyrim. Station access, productive animation, multi-input/output recipes, negotiated wage policy and sustained unforced employment remain separate qualification or implementation work.
 

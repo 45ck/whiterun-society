@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T15:47:20.436783+00:00",
+  "run_id": 40208269941,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40208269941",
+  "revision": "d8361c494e817fb673132926b8983bf3d07c7de4",
+  "conclusion": "success",
+  "platforms": {
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T15:43:14Z",
+      "completed_at": "2026-10-25T15:46:47Z",
+      "python": {
+        "run": 1236,
+        "passed": 1235,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 488,
+        "passed": 488,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "paid_suites": {
+        "test_paid_employment_integration": [
+          "test_cold_controller_loses_permit_without_reconstructing_existing_input_debit (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_cold_controller_loses_permit_without_reconstructing_existing_input_debit) ... ok",
+          "test_generic_job_attendance_effects_wages_learning_and_replay (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_generic_job_attendance_effects_wages_learning_and_replay) ... ok",
+          "test_native_blocked_start_holds_service_instead_of_retrying_admission (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_native_blocked_start_holds_service_instead_of_retrying_admission) ... ok",
+          "test_partial_wage_is_visible_held_and_does_not_teach_recipe (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_partial_wage_is_visible_held_and_does_not_teach_recipe) ... ok",
+          "test_replaced_employer_before_first_effect_cannot_spend (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_replaced_employer_before_first_effect_cannot_spend) ... ok",
+          "test_reset_after_issued_input_cannot_replay_or_award_output (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_reset_after_issued_input_cannot_replay_or_award_output) ... ok"
+        ],
+        "test_paid_employment_choices": [
+          "test_changed_accepted_terms_during_worker_inference_are_rejected (test_paid_employment_choices.PaidEmploymentChoiceTests.test_changed_accepted_terms_during_worker_inference_are_rejected) ... ok",
+          "test_changed_business_during_actual_selection_cannot_retarget_claim (test_paid_employment_choices.PaidEmploymentChoiceTests.test_changed_business_during_actual_selection_cannot_retarget_claim) ... ok",
+          "test_employer_refusal_is_real_option_without_contract_or_wage (test_paid_employment_choices.PaidEmploymentChoiceTests.test_employer_refusal_is_real_option_without_contract_or_wage) ... ok",
+          "test_worker_decline_is_independent_of_employer_offer (test_paid_employment_choices.PaidEmploymentChoiceTests.test_worker_decline_is_independent_of_employer_offer) ... ok",
+          "test_worker_discovers_specific_recipe_and_two_real_claims_authorize_only_consent (test_paid_employment_choices.PaidEmploymentChoiceTests.test_worker_discovers_specific_recipe_and_two_real_claims_authorize_only_consent) ... ok"
+        ],
+        "test_paid_employment_worker_director": [
+          "test_actual_director_continues_third_actor_without_reusing_worker_or_employer (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_director_continues_third_actor_without_reusing_worker_or_employer) ... ok",
+          "test_actual_director_tracks_completed_old_job_and_rejects_worker_overclaim (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_director_tracks_completed_old_job_and_rejects_worker_overclaim) ... ok",
+          "test_actual_worker_stops_polling_at_admission_without_completion_or_inference (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_worker_stops_polling_at_admission_without_completion_or_inference) ... ok",
+          "test_corrupt_observation_leaves_independent_cleanup_authority_intact (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_corrupt_observation_leaves_independent_cleanup_authority_intact) ... ok",
+          "test_director_cannot_credit_changed_identity_or_another_source_job (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_director_cannot_credit_changed_identity_or_another_source_job) ... ok",
+          "test_director_reconciles_original_job_after_foreground_moves_and_separates_held (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_director_reconciles_original_job_after_foreground_moves_and_separates_held) ... ok",
+          "test_fast_complete_requires_separate_output_both_wages_inventory_and_release (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_fast_complete_requires_separate_output_both_wages_inventory_and_release) ... ok",
+          "test_prepared_waits_working_admits_and_advanced_progress_does_not_complete (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_prepared_waits_working_admits_and_advanced_progress_does_not_complete) ... ok",
+          "test_wrong_protocol_party_base_epoch_and_unadmitted_status_reject (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_wrong_protocol_party_base_epoch_and_unadmitted_status_reject) ... ok"
+        ],
+        "test_paid_employment_metrics": [
+          "test_bad_clock_numbers_do_not_count_as_measured_zero (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_bad_clock_numbers_do_not_count_as_measured_zero) ... ok",
+          "test_empty_conversion_denominator_is_not_zero_or_perfect_percent (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_empty_conversion_denominator_is_not_zero_or_perfect_percent) ... ok",
+          "test_game_and_wall_time_are_distinct_with_missing_coverage (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_game_and_wall_time_are_distinct_with_missing_coverage) ... ok",
+          "test_incomplete_conversion_cannot_look_like_full_success (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_incomplete_conversion_cannot_look_like_full_success) ... ok",
+          "test_missing_instrumentation_is_not_a_zero_job_sample (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_missing_instrumentation_is_not_a_zero_job_sample) ... ok",
+          "test_timestamps_alone_cannot_create_verified_attendance_latency (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_timestamps_alone_cannot_create_verified_attendance_latency) ... ok",
+          "test_unknown_outcomes_are_not_failed_jobs_or_assessed_samples (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_unknown_outcomes_are_not_failed_jobs_or_assessed_samples) ... ok",
+          "test_zero_elapsed_time_is_a_valid_measured_sample (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_zero_elapsed_time_is_a_valid_measured_sample) ... ok",
+          "test_cashflow_missing_attendance_is_not_a_fully_verified_paid_record (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_cashflow_missing_attendance_is_not_a_fully_verified_paid_record) ... ok",
+          "test_cashflow_requires_full_committed_receipts_not_pending_or_partial_wages (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_cashflow_requires_full_committed_receipts_not_pending_or_partial_wages) ... ok",
+          "test_changed_receipt_hash_identity_or_actual_balances_remove_proof (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_changed_receipt_hash_identity_or_actual_balances_remove_proof) ... ok",
+          "test_conflicting_public_job_copies_are_one_unknown_lineage (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_conflicting_public_job_copies_are_one_unknown_lineage) ... ok",
+          "test_exact_retained_native_journal_counts_without_fabricating_ack_fields (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_exact_retained_native_journal_counts_without_fabricating_ack_fields) ... ok",
+          "test_fixture_provenance_does_not_become_autonomous_economic_evidence (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_fixture_provenance_does_not_become_autonomous_economic_evidence) ... ok",
+          "test_full_verified_completion_is_deduplicated_and_private_proofs_are_omitted (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_full_verified_completion_is_deduplicated_and_private_proofs_are_omitted) ... ok",
+          "test_incomplete_missing_or_invalid_playback_cannot_count_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_incomplete_missing_or_invalid_playback_cannot_count_historical_consent) ... ok",
+          "test_ledger_missing_or_conflicting_never_credits_committed_output (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_ledger_missing_or_conflicting_never_credits_committed_output) ... ok",
+          "test_missing_actual_account_observation_cannot_credit_receipt_only_effects (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_actual_account_observation_cannot_credit_receipt_only_effects) ... ok",
+          "test_missing_or_reused_claims_are_not_verified_human_choices (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_or_reused_claims_are_not_verified_human_choices) ... ok",
+          "test_missing_schema_empty_schema_and_unknown_capability_are_distinct (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_schema_empty_schema_and_unknown_capability_are_distinct) ... ok",
+          "test_offers_and_acceptance_do_not_imply_attendance_output_or_wages (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_offers_and_acceptance_do_not_imply_attendance_output_or_wages) ... ok",
+          "test_partial_output_and_employer_debit_are_not_paid_wages_or_committed_goods (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_partial_output_and_employer_debit_are_not_paid_wages_or_committed_goods) ... ok",
+          "test_phase_flags_and_after_balances_without_receipts_do_not_count (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_phase_flags_and_after_balances_without_receipts_do_not_count) ... ok",
+          "test_protocol_one_or_unrelated_command_cannot_use_paid_cashflow_validator (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_protocol_one_or_unrelated_command_cannot_use_paid_cashflow_validator) ... ok",
+          "test_released_terminal_without_economic_proofs_is_not_completion (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_released_terminal_without_economic_proofs_is_not_completion) ... ok",
+          "test_replayed_public_job_copies_count_once (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_replayed_public_job_copies_count_once) ... ok",
+          "test_retained_journal_label_cannot_credit_partial_or_inexact_receipts (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_retained_journal_label_cannot_credit_partial_or_inexact_receipts) ... ok",
+          "test_reused_delivery_id_or_duplicate_offer_cannot_count_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_reused_delivery_id_or_duplicate_offer_cannot_count_historical_consent) ... ok",
+          "test_stale_epoch_and_malformed_native_capability_remain_unknown (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_stale_epoch_and_malformed_native_capability_remain_unknown) ... ok",
+          "test_transplanted_claim_event_is_not_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_transplanted_claim_event_is_not_historical_consent) ... ok",
+          "test_verified_effects_without_release_are_not_contract_completion (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_verified_effects_without_release_are_not_contract_completion) ... ok"
+        ]
+      },
+      "papyrus": {
+        "step_status": "success",
+        "scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "3bcff8c1a34b41177b51cecb501a0530659dd67708230018709498273bdde67e",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "97d146a20a69272e67e80bcf27a87554f453265aa6b12ff3f6828ac5dcd78433",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    },
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T15:43:14Z",
+      "completed_at": "2026-10-25T15:44:19Z",
+      "python": {
+        "run": 1236,
+        "passed": 1235,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 488,
+        "passed": 488,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "paid_suites": {
+        "test_paid_employment_integration": [
+          "test_cold_controller_loses_permit_without_reconstructing_existing_input_debit (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_cold_controller_loses_permit_without_reconstructing_existing_input_debit) ... ok",
+          "test_generic_job_attendance_effects_wages_learning_and_replay (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_generic_job_attendance_effects_wages_learning_and_replay) ... ok",
+          "test_native_blocked_start_holds_service_instead_of_retrying_admission (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_native_blocked_start_holds_service_instead_of_retrying_admission) ... ok",
+          "test_partial_wage_is_visible_held_and_does_not_teach_recipe (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_partial_wage_is_visible_held_and_does_not_teach_recipe) ... ok",
+          "test_replaced_employer_before_first_effect_cannot_spend (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_replaced_employer_before_first_effect_cannot_spend) ... ok",
+          "test_reset_after_issued_input_cannot_replay_or_award_output (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_reset_after_issued_input_cannot_replay_or_award_output) ... ok"
+        ],
+        "test_paid_employment_choices": [
+          "test_changed_accepted_terms_during_worker_inference_are_rejected (test_paid_employment_choices.PaidEmploymentChoiceTests.test_changed_accepted_terms_during_worker_inference_are_rejected) ... ok",
+          "test_changed_business_during_actual_selection_cannot_retarget_claim (test_paid_employment_choices.PaidEmploymentChoiceTests.test_changed_business_during_actual_selection_cannot_retarget_claim) ... ok",
+          "test_employer_refusal_is_real_option_without_contract_or_wage (test_paid_employment_choices.PaidEmploymentChoiceTests.test_employer_refusal_is_real_option_without_contract_or_wage) ... ok",
+          "test_worker_decline_is_independent_of_employer_offer (test_paid_employment_choices.PaidEmploymentChoiceTests.test_worker_decline_is_independent_of_employer_offer) ... ok",
+          "test_worker_discovers_specific_recipe_and_two_real_claims_authorize_only_consent (test_paid_employment_choices.PaidEmploymentChoiceTests.test_worker_discovers_specific_recipe_and_two_real_claims_authorize_only_consent) ... ok"
+        ],
+        "test_paid_employment_worker_director": [
+          "test_actual_director_continues_third_actor_without_reusing_worker_or_employer (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_director_continues_third_actor_without_reusing_worker_or_employer) ... ok",
+          "test_actual_director_tracks_completed_old_job_and_rejects_worker_overclaim (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_director_tracks_completed_old_job_and_rejects_worker_overclaim) ... ok",
+          "test_actual_worker_stops_polling_at_admission_without_completion_or_inference (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_actual_worker_stops_polling_at_admission_without_completion_or_inference) ... ok",
+          "test_corrupt_observation_leaves_independent_cleanup_authority_intact (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_corrupt_observation_leaves_independent_cleanup_authority_intact) ... ok",
+          "test_director_cannot_credit_changed_identity_or_another_source_job (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_director_cannot_credit_changed_identity_or_another_source_job) ... ok",
+          "test_director_reconciles_original_job_after_foreground_moves_and_separates_held (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_director_reconciles_original_job_after_foreground_moves_and_separates_held) ... ok",
+          "test_fast_complete_requires_separate_output_both_wages_inventory_and_release (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_fast_complete_requires_separate_output_both_wages_inventory_and_release) ... ok",
+          "test_prepared_waits_working_admits_and_advanced_progress_does_not_complete (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_prepared_waits_working_admits_and_advanced_progress_does_not_complete) ... ok",
+          "test_wrong_protocol_party_base_epoch_and_unadmitted_status_reject (test_paid_employment_worker_director.PaidWorkerDirectorTests.test_wrong_protocol_party_base_epoch_and_unadmitted_status_reject) ... ok"
+        ],
+        "test_paid_employment_metrics": [
+          "test_bad_clock_numbers_do_not_count_as_measured_zero (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_bad_clock_numbers_do_not_count_as_measured_zero) ... ok",
+          "test_empty_conversion_denominator_is_not_zero_or_perfect_percent (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_empty_conversion_denominator_is_not_zero_or_perfect_percent) ... ok",
+          "test_game_and_wall_time_are_distinct_with_missing_coverage (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_game_and_wall_time_are_distinct_with_missing_coverage) ... ok",
+          "test_incomplete_conversion_cannot_look_like_full_success (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_incomplete_conversion_cannot_look_like_full_success) ... ok",
+          "test_missing_instrumentation_is_not_a_zero_job_sample (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_missing_instrumentation_is_not_a_zero_job_sample) ... ok",
+          "test_timestamps_alone_cannot_create_verified_attendance_latency (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_timestamps_alone_cannot_create_verified_attendance_latency) ... ok",
+          "test_unknown_outcomes_are_not_failed_jobs_or_assessed_samples (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_unknown_outcomes_are_not_failed_jobs_or_assessed_samples) ... ok",
+          "test_zero_elapsed_time_is_a_valid_measured_sample (test_paid_employment_metrics.PaidEmploymentAggregateTests.test_zero_elapsed_time_is_a_valid_measured_sample) ... ok",
+          "test_cashflow_missing_attendance_is_not_a_fully_verified_paid_record (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_cashflow_missing_attendance_is_not_a_fully_verified_paid_record) ... ok",
+          "test_cashflow_requires_full_committed_receipts_not_pending_or_partial_wages (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_cashflow_requires_full_committed_receipts_not_pending_or_partial_wages) ... ok",
+          "test_changed_receipt_hash_identity_or_actual_balances_remove_proof (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_changed_receipt_hash_identity_or_actual_balances_remove_proof) ... ok",
+          "test_conflicting_public_job_copies_are_one_unknown_lineage (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_conflicting_public_job_copies_are_one_unknown_lineage) ... ok",
+          "test_exact_retained_native_journal_counts_without_fabricating_ack_fields (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_exact_retained_native_journal_counts_without_fabricating_ack_fields) ... ok",
+          "test_fixture_provenance_does_not_become_autonomous_economic_evidence (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_fixture_provenance_does_not_become_autonomous_economic_evidence) ... ok",
+          "test_full_verified_completion_is_deduplicated_and_private_proofs_are_omitted (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_full_verified_completion_is_deduplicated_and_private_proofs_are_omitted) ... ok",
+          "test_incomplete_missing_or_invalid_playback_cannot_count_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_incomplete_missing_or_invalid_playback_cannot_count_historical_consent) ... ok",
+          "test_ledger_missing_or_conflicting_never_credits_committed_output (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_ledger_missing_or_conflicting_never_credits_committed_output) ... ok",
+          "test_missing_actual_account_observation_cannot_credit_receipt_only_effects (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_actual_account_observation_cannot_credit_receipt_only_effects) ... ok",
+          "test_missing_or_reused_claims_are_not_verified_human_choices (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_or_reused_claims_are_not_verified_human_choices) ... ok",
+          "test_missing_schema_empty_schema_and_unknown_capability_are_distinct (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_missing_schema_empty_schema_and_unknown_capability_are_distinct) ... ok",
+          "test_offers_and_acceptance_do_not_imply_attendance_output_or_wages (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_offers_and_acceptance_do_not_imply_attendance_output_or_wages) ... ok",
+          "test_partial_output_and_employer_debit_are_not_paid_wages_or_committed_goods (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_partial_output_and_employer_debit_are_not_paid_wages_or_committed_goods) ... ok",
+          "test_phase_flags_and_after_balances_without_receipts_do_not_count (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_phase_flags_and_after_balances_without_receipts_do_not_count) ... ok",
+          "test_protocol_one_or_unrelated_command_cannot_use_paid_cashflow_validator (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_protocol_one_or_unrelated_command_cannot_use_paid_cashflow_validator) ... ok",
+          "test_released_terminal_without_economic_proofs_is_not_completion (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_released_terminal_without_economic_proofs_is_not_completion) ... ok",
+          "test_replayed_public_job_copies_count_once (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_replayed_public_job_copies_count_once) ... ok",
+          "test_retained_journal_label_cannot_credit_partial_or_inexact_receipts (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_retained_journal_label_cannot_credit_partial_or_inexact_receipts) ... ok",
+          "test_reused_delivery_id_or_duplicate_offer_cannot_count_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_reused_delivery_id_or_duplicate_offer_cannot_count_historical_consent) ... ok",
+          "test_stale_epoch_and_malformed_native_capability_remain_unknown (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_stale_epoch_and_malformed_native_capability_remain_unknown) ... ok",
+          "test_transplanted_claim_event_is_not_historical_consent (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_transplanted_claim_event_is_not_historical_consent) ... ok",
+          "test_verified_effects_without_release_are_not_contract_completion (test_paid_employment_metrics.PaidEmploymentProofMetricsTests.test_verified_effects_without_release_are_not_contract_completion) ... ok"
+        ]
+      }
+    }
+  },
+  "integration_method": "Fresh SQLite checkpoints and explicit census/knowledge/charter fixtures; real retained decision claims; actual paid-employment and trade JavaScript controllers with simulated native APIs. Attendance, economic effects, release, metrics and earned-wage purchase verified. Model choices and heard audio reports are authored fixtures, not live model or audible game evidence.",
+  "economic_example": {
+    "worker_initial_currency": 8,
+    "agreed_wage": 3,
+    "worker_after_wage": 11,
+    "subsequent_purchase_cost": 9,
+    "worker_after_purchase": 2,
+    "scope": "Explicit integration fixture using catalog-defined metal production and a later grain purchase; not a live economic outcome."
+  },
+  "protocol": 2,
+  "legacy_inventory_produce": "held; no legacy replay or automatic migration",
+  "evidence_method": "Completed hosted metadata and logs; counts are per platform, overlapping focused suites are not added.",
+  "full_log_sha256": "89cc3f9c91dfc9cfbac7034bf8367a71be5b75aa9a1197fff211920c4147a46b",
+  "infographic": {
+    "file": "docs/images/paid-employment-cycle.png",
+    "kind": "Generated system illustration, not gameplay",
+    "sha256": "2d1cee5fe602bc72fbd068ccad07cbf204b6a5deba54ee4c7a0e2c0f2457edde"
+  },
+  "public_gallery": {
+    "url": "https://45ck.github.io/whiterun-society/",
+    "image_bytes": 2725866,
+    "sha256": "2d1cee5fe602bc72fbd068ccad07cbf204b6a5deba54ee4c7a0e2c0f2457edde",
+    "deployment_run_id": 40208269313,
+    "conclusion": "success"
+  },
+  "runtime_qualified": false,
+  "game_deployment_performed": false,
+  "native_execution_performed_locally": false,
+  "limits": [
+    "No live model reasoning, audible dialogue, lip sync, natural interaction or human realism measured.",
+    "Stationary worker attendance does not prove crafting animation or workstation use.",
+    "Catalog v1 admits one input and one output per recipe; the default economy remains small.",
+    "Both participants remain excluded from other activities while their accounts await verified cleanup.",
+    "Lost live witnesses hold effects; no automatic replay, compensation or crash-spanning exactly-once guarantee.",
+    "Same-reference, same-base replacement is outside the identity detector.",
+    "Full RTS, sustained city economy and integrated Skyrim runtime qualification remain outstanding."
+  ]
+}
