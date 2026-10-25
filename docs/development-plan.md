@@ -24,6 +24,8 @@ Next delivery qualifies model-driven navigation and the resource/trade protocols
 
 ## Accepted direction
 
+Latest source qualification: [generic-market revision `20269b4`](evidence/generic-market-validation.json) passed the complete Windows/Ubuntu workflow with 1,039 Python tests per platform (one initial generated-file skip subsequently passed), 420 JavaScript tests, six plugin readback checks and Windows Papyrus compilation. This qualifies the configured procurement, exact consent and witnessed transfer implementation under test conditions; native installation, audible encounters and sustained autonomous productivity remain open.
+
 - Employment must be an observable encounter. Voiced job searches now require approach, heard offer/refusal, heard acceptance and verified work before a spoken receipt. Personal refusal memory advances the needs review and avoids repeating the same unchanged request for one game hour. One live refusal and a separate controlled paid shift are native-qualified; unforced hiring and repeated cycles remain required. [Implementation and evidence](employment-encounters.md).
 
 - Movie view now frames nearby participants together, follows travel and holds the last shot at idle. One controlled native voiced sale qualified this composition. Camera collision, low-light readability and sustained video qualification remain open. [Screenshots and evidence](movie-camera.md).

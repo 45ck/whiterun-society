@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T14:22:35.765379+00:00",
+  "run_id": 40201564112,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40201564112",
+  "revision": "20269b420664e9f52681789ab9efb5958baf93af",
+  "conclusion": "success",
+  "platforms": {
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T14:17:52Z",
+      "completed_at": "2026-10-25T14:22:07Z",
+      "python": {
+        "run": 1039,
+        "passed": 1038,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 420,
+        "passed": 420,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "purchase_attention": {
+        "contexts": 45,
+        "maximum_bytes": 8186,
+        "maximum_selection_calls": 3,
+        "fixture_residents": 18,
+        "fixture_suppliers": 17,
+        "all_purchase_alternatives_reachable": 68,
+        "context_byte_limit": 12000,
+        "method": "Exhaustive offline menu traversal plus real SQLite-backed claim and choice tests; not model inference or gameplay."
+      },
+      "papyrus": {
+        "step_status": "success",
+        "compiled_scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "85a0ccdb904114af65468dedd3be6a3e5134fa2d28b3d6a082ced45cf7b30f69",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "0f4e6d4f8b98761ba4c38dba52e346a6dbe2b6d54a65478d253b02e5b21e905c",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    },
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T14:17:52Z",
+      "completed_at": "2026-10-25T14:18:54Z",
+      "python": {
+        "run": 1039,
+        "passed": 1038,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 420,
+        "passed": 420,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "purchase_attention": {
+        "contexts": 45,
+        "maximum_bytes": 8186,
+        "maximum_selection_calls": 3,
+        "fixture_residents": 18,
+        "fixture_suppliers": 17,
+        "all_purchase_alternatives_reachable": 68,
+        "context_byte_limit": 12000,
+        "method": "Exhaustive offline menu traversal plus real SQLite-backed claim and choice tests; not model inference or gameplay."
+      }
+    }
+  },
+  "prior_hosted_failure": {
+    "run_id": 40201285730,
+    "revision": "7933e8a35a622fb897005511431151db3bf5e31b",
+    "url": "https://github.com/45ck/whiterun-society/actions/runs/40201285730",
+    "observed_ubuntu_result": {
+      "run": 1037,
+      "errors": 10,
+      "failures": 0,
+      "skipped": 1
+    },
+    "cause": "Authored work fixtures relied on the removed implicit named employer. Fixtures now register an explicit public employer; no production fallback restored."
+  },
+  "market_policy": {
+    "id": "resident-market-v1",
+    "hash": "559996ebd13e46c4af46846e4ebc9358a160a5a49f44e3a239594240f685ae48",
+    "catalog_hash": "1f7f5d79e976a74ac5e8b2f9752734a759cbaf591b5941ae5cd82d33145ae554",
+    "goods": [
+      {
+        "commodity": "bread",
+        "legacy_retail_capability": "retail_food",
+        "max_quantity": 10,
+        "quantity_choices": [
+          1,
+          2,
+          5,
+          10
+        ],
+        "price_min": 1,
+        "price_max": 100,
+        "price_choices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          15,
+          20,
+          30,
+          50,
+          75,
+          100
+        ],
+        "reserve_mode": "existing_food_policy"
+      },
+      {
+        "commodity": "grain",
+        "legacy_retail_capability": "retail_grain",
+        "max_quantity": 10,
+        "quantity_choices": [
+          1,
+          2,
+          5,
+          10
+        ],
+        "price_min": 1,
+        "price_max": 100,
+        "price_choices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          15,
+          20,
+          30,
+          50,
+          75,
+          100
+        ],
+        "reserve_mode": "seller_choice"
+      }
+    ]
+  },
+  "integrated_cycle": {
+    "suite": "tests/test_generic_market_cycle.py",
+    "method": "Actual public charter and personal recipe knowledge, actual procurement and resident claims, Python saved checkpoints and persistent JavaScript transfer controller. Native actor/form APIs and travel acknowledgements are synthetic.",
+    "exchange": {
+      "commodity": "ore",
+      "quantity": 5,
+      "unit_price": 3,
+      "total_gold": 15
+    },
+    "checks": [
+      "No other-resident private stock in decision context",
+      "Both goods accounts and payment accounts witnessed",
+      "Conserved goods and gold",
+      "Single completed-purchase memory",
+      "No hunger relief or automatic production",
+      "Subsequent owner production opportunity",
+      "Changed listings and unknown skills rejected"
+    ]
+  },
+  "evidence_method": "Completed hosted run metadata and full logs. Counts are per platform, not separate native scenarios.",
+  "local_full_log_sha256": "781b7534067345c6dbca24812113d9da7e8c568b84beb9fa57139a6f386ce44e",
+  "runtime_qualified": false,
+  "native_execution_performed_locally": false,
+  "game_deployment_performed": false,
+  "limits": [
+    "Default enabled goods remain bread and grain; ore and other additional goods are configured test fixtures.",
+    "No Skyrim execution, audible quality, model reasoning quality or human realism is measured by these tests.",
+    "Native issued-effect witnesses are live only. Cold loss holds accounts; no crash-spanning exactly-once guarantee or automatic refund is claimed.",
+    "Generic paid employment, multiple-input recipes, station access and initial skill bootstrapping remain separate work.",
+    "Initially skipped generated-binary test passes after generation; Papyrus hashes are compiler-log reports, not independent artifact verification."
+  ]
+}

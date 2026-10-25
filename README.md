@@ -8,7 +8,9 @@ Residents should work, trade with one another, consume goods, remember events an
 
 ![Resident need, public opportunities, agent choice, heard agreement, verified exchange and consequences](docs/images/generic-market-cycle.png)
 
-*Generated architecture illustration, not gameplay. [Full generation prompt](docs/images/generic-market-cycle.prompt.md). Local integration and hosted validation are being completed; this source has not been installed in Skyrim.*
+*Generated architecture illustration, not gameplay. [Full generation prompt](docs/images/generic-market-cycle.prompt.md). This source has not been installed in Skyrim.*
+
+[Full generic-market validation](https://github.com/45ck/whiterun-society/actions/runs/40201564112) passed on Windows and Ubuntu at revision `20269b4`: **1,039 Python tests per platform (1,038 passed and one initial generated-file skip), 420 JavaScript tests and six generated-plugin readback tests**. The skipped check passed after generation; Windows compiled both Papyrus scripts. An 18-resident fixture keeps all 68 purchase alternatives reachable with a maximum 8,186-byte decision context. A separate integrated fixture exchanged 15 gold for five ore using the actual JavaScript controller with simulated native APIs. [Machine-readable evidence and limits](docs/evidence/generic-market-validation.json).
 
 **Finite resources from scenario data, source implementation:** starting allocations now come from one reviewed manifest, with uniform defaults instead of a privileged NPC branch. The saved program separates available, reserved and settled imports. A native permit is saved before delivery; each resource addition requires its own issued/observed witness. A lost session or witness holds the reservation without replay. This is an external import mechanism, not autonomous production or earned income. [Contract, historical evidence and native qualification still required](docs/founding-resources.md).
 
