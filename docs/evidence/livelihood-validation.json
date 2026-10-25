@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T15:16:56.905132+00:00",
+  "run_id": 40205604026,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40205604026",
+  "revision": "0b934c456d557d14a9b7337df088f11acd878527",
+  "conclusion": "success",
+  "platforms": {
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T15:09:33Z",
+      "completed_at": "2026-10-25T15:10:22Z",
+      "python": {
+        "run": 1148,
+        "passed": 1147,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 450,
+        "passed": 450,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "fresh_livelihood_tests": [
+        "test_explicit_prior_enables_choice_not_a_business_asset_or_work_memory (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_explicit_prior_enables_choice_not_a_business_asset_or_work_memory) ... ok",
+        "test_identity_change_revokes_prior_menu_and_inflight_charter_choice (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_identity_change_revokes_prior_menu_and_inflight_charter_choice) ... ok",
+        "test_real_js_owner_receipt_upgrades_prior_only_after_observed_production (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_real_js_owner_receipt_upgrades_prior_only_after_observed_production) ... ok",
+        "test_replaced_or_missing_identity_cannot_receive_initial_prior (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_replaced_or_missing_identity_cannot_receive_initial_prior) ... ok",
+        "test_saved_charter_cannot_enable_work_for_replaced_or_unidentified_actor (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_saved_charter_cannot_enable_work_for_replaced_or_unidentified_actor) ... ok"
+      ]
+    },
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T15:09:33Z",
+      "completed_at": "2026-10-25T15:13:51Z",
+      "python": {
+        "run": 1148,
+        "passed": 1147,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 450,
+        "passed": 450,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "fresh_livelihood_tests": [
+        "test_explicit_prior_enables_choice_not_a_business_asset_or_work_memory (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_explicit_prior_enables_choice_not_a_business_asset_or_work_memory) ... ok",
+        "test_identity_change_revokes_prior_menu_and_inflight_charter_choice (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_identity_change_revokes_prior_menu_and_inflight_charter_choice) ... ok",
+        "test_real_js_owner_receipt_upgrades_prior_only_after_observed_production (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_real_js_owner_receipt_upgrades_prior_only_after_observed_production) ... ok",
+        "test_replaced_or_missing_identity_cannot_receive_initial_prior (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_replaced_or_missing_identity_cannot_receive_initial_prior) ... ok",
+        "test_saved_charter_cannot_enable_work_for_replaced_or_unidentified_actor (test_fresh_livelihood_integration.FreshLivelihoodIntegrationTests.test_saved_charter_cannot_enable_work_for_replaced_or_unidentified_actor) ... ok"
+      ],
+      "papyrus": {
+        "step_status": "success",
+        "scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "70009676714efa482b907fdd4345bde8b91c0a40262dab04201e5a041f21c705",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "25e5e529b0706a5f497c3128d3c6e33de071db4a6020550202c8ee8c5aac78cb",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    }
+  },
+  "scenario": {
+    "id": "founding-livelihoods-v1",
+    "hash": "265793645cc8981896e253bfd72fa310685ccf180e8cb833105fc3c2c040e4cf",
+    "catalog_hash": "1f7f5d79e976a74ac5e8b2f9752734a759cbaf591b5941ae5cd82d33145ae554",
+    "selection": "ranked_initial_cohort_v1",
+    "rules": [
+      {
+        "id": "bread-apprenticeship",
+        "recipe_id": "bread_recipe",
+        "recipe_hash": "dcbe70560fbaa3c3e0c966da1e883abfd323695b14736e04b18cc781fa6c76cd",
+        "recipient_count": 1
+      }
+    ]
+  },
+  "integration_method": "Fresh SQLite timeline and census, explicit scenario prior, actual daily scheduler and resident-selected charter, real JavaScript owner-attendance and inventory controllers against simulated native APIs, verified settlement and learning. Choices and native world are test fixtures, not live model or game evidence.",
+  "identity_scope": [
+    "Current actor/base binding for census activity admissions, inference results and speech credit",
+    "Published standing assignments pin base identity; native admission, tick and renewal recheck it",
+    "Parallel journeys pin member, command and receipt identity; lost identity holds original leases",
+    "Historical unbound identities are preserved without automatic rebinding"
+  ],
+  "paid_work": {
+    "available": false,
+    "reason": "legacy_paid_execution_unqualified",
+    "scope": "New admissions and replay held; historical records remain readable. Independent owner production uses its own protocol."
+  },
+  "infographic": {
+    "file": "docs/images/livelihood-startup.png",
+    "sha256": "063ba5a643de2a9a4fc0fbd8e25848b253fe154abdccae6924f989d44229bad2",
+    "kind": "Generated system illustration, not gameplay"
+  },
+  "public_gallery": {
+    "url": "https://45ck.github.io/whiterun-society/",
+    "deployment_run_id": 40205603312,
+    "deployment_conclusion": "success",
+    "verification": "Public HTML contains the infographic link; fetched image bytes match the local artifact SHA-256.",
+    "image_bytes": 2636838,
+    "image_sha256": "063ba5a643de2a9a4fc0fbd8e25848b253fe154abdccae6924f989d44229bad2"
+  },
+  "evidence_method": "Completed hosted run metadata and full logs. Counts are per platform; focused suites overlap and are not added.",
+  "full_log_sha256": "2750f6fc21268b7087c8b15841b2545ee96b032d68a4c1631d331f88fa70046a",
+  "runtime_qualified": false,
+  "prior_hosted_failure": {
+    "run_id": 40205024956,
+    "revision": "9f75322787f96319bc6c7f48cc327bc56b06c322",
+    "url": "https://github.com/45ck/whiterun-society/actions/runs/40205024956",
+    "per_platform": {
+      "run": 1144,
+      "failures": 2,
+      "errors": 18,
+      "skipped": 1
+    },
+    "cause": "Incomplete identity/receipt fixture migration and historical market-day demo still attempted unavailable paid work.",
+    "repair": "Fixtures explicitly bind identities and exact receipt pins; the legacy demo rejects new execution before setup, model calls or state writes. No execution safeguards were relaxed."
+  },
+  "native_execution_performed_locally": false,
+  "game_deployment_performed": false,
+  "limits": [
+    "Default background assigns one configured bread-recipe prior; this is not a canonical occupation census.",
+    "A replacement preserving both actor and base identifiers cannot be detected by this identity scheme.",
+    "Legacy unbound saves require explicit reconciliation; census does not certify their prior history.",
+    "No live model reasoning, game movement, audible naturalness, lip sync, human realism or sustained economy measured.",
+    "New paid employment protocol, workstations, multi-input industries and upstream replenishment remain unfinished.",
+    "Native witnesses are live only; holds do not prove release or crash-spanning exactly-once execution."
+  ]
+}

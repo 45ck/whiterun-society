@@ -69,7 +69,9 @@ Follow each opportunity through a stable lineage instead of dividing unrelated a
 
 ## Native qualification still required
 
-The background implementation owner reported nine focused save/identity/prior tests passing. A separate integration owner reported five fresh-livelihood tests passing, including the actual JavaScript owner-effect controller through fake native APIs: a valid production receipt adds verified recipe learning while preserving the authored prior audit. These are offline source tests, not a Skyrim work trial, measured skill or full-suite release result. Historical learning aliases remain readable and do not become newly observed learning merely because they are projected.
+[Full hosted validation](https://github.com/45ck/whiterun-society/actions/runs/40205604026) passed at revision `0b934c4` on Windows and Ubuntu. Per platform: 1,148 Python tests (1,147 passed, one generated-file check initially skipped and subsequently passed), 450 JavaScript tests, six generated plugins and six plugin readback checks. Windows also compiled both Papyrus scripts. Five fresh-livelihood integration tests use the actual JavaScript attendance and owner-effect controllers through simulated native APIs: a validated production receipt adds verified recipe learning while preserving the authored prior audit. Choices are authored test inputs, not live model decisions. [Machine-readable evidence, first failed run and repairs](evidence/livelihood-validation.json).
+
+These are source and build results, not a Skyrim work trial or measured human realism. No new game deployment occurred. Historical learning aliases remain readable and do not become newly observed learning merely because they are projected.
 
 Use a controlled arbitrary-resident fixture to verify that census, optional knowledge assignment, resources and business formation remain separate state changes. Confirm unchanged inventories and no invented work/voice history when the prior is applied. Reload the saved state and compare exact identities, hashes, assignments and provenance.
 
