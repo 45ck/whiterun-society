@@ -22,5 +22,5 @@ test('unknown unloaded and non-person IDs cannot steer follow camera',()=>{
 test('invalid camera parameters cannot partially mutate the current view',()=>{
  const camera=createObserverCamera(),before=camera.status();
  for(const value of [Infinity,NaN,0,4001,'800'])assert.equal(camera.accept({mode:'free',distance:value},[],{}),false);
- assert.deepEqual(camera.status(),before);assert.equal(camera.accept({mode:'free',distance:1200,panX:25000},[],{}),true);camera.reset();assert.equal(camera.status().manual,false);
+ assert.deepEqual(camera.status(),before);assert.equal(camera.accept({mode:'free',distance:1200,panX:25000},[],{}),true);camera.reset();assert.equal(camera.status().manual,true);assert.equal(camera.status().mode,'free');
 });

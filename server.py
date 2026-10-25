@@ -15,6 +15,7 @@ from lineage import TimelineEconomy
 from observer import observer_state, camera_request
 from director_control import DirectorControl
 from doc_assets import documentation_asset
+from dashboard import town_dashboard
 
 
 class LocalServer(HTTPServer):
@@ -79,7 +80,8 @@ def main():
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
                 if self.path=='/observer/state':return self.reply(200,{**observer_state(bridge,world.status()),'director':director.status()})
                 if self.path not in ('/','/observer','/observer/'):return self.reply(404,{'error':'not found'})
-                page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token).encode()
+                page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token)
+                page=page.replace('<script>','<script>\n'+(Path(__file__).parent/'ui/society-dashboard.js').read_text(encoding='utf-8')+'\n',1).encode()
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')
                 self.send_header('Cache-Control','no-store');self.send_header('X-Frame-Options','DENY')
                 self.send_header('Content-Length',str(len(page)));self.end_headers();self.wfile.write(page)
@@ -104,9 +106,7 @@ def main():
                     data=json.loads(self.rfile.read(length))
                     if not isinstance(data,dict):raise ValueError('Expected control object')
                     if self.path=='/observer/director':
-                        if data.get('action')=='stop':return self.reply(202,director.stop())
-                        if data.get('action')!='start':raise ValueError('Unknown society control')
-                        return self.reply(202,director.start(data,bridge,world.status()))
+                        return self.reply(202,director.control(data,bridge,world.status()))
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     if self.path=='/observer/scene-handoff':
                         if director.status()['running']:raise ValueError('Stop the society director before a manual scene handoff')
@@ -140,6 +140,7 @@ def main():
                     if bridge['session']!=session:
                         bridge['command']=None  # Never replay actions across a game load.
                         bridge['observer_camera']=None
+                        bridge['director_control_receipt']=None
                     ack=data.get('ack')
                     if ack is not None and not isinstance(ack,dict): raise ValueError('invalid acknowledgement')
                     if not isinstance(data.get('residents',[]),list): raise ValueError('invalid residents')
@@ -149,6 +150,17 @@ def main():
                     if bridge.get('observer_camera') and (data.get('camera') or {}).get('request_id')==bridge['observer_camera']['request_id']:
                         bridge['observer_camera']=None
                     world.observe(data)
+                    control=data.get('director_control')
+                    if control is not None and not isinstance(control,dict):raise ValueError('Invalid in-game society control')
+                    if control and control.get('id')!=(bridge.get('director_control_receipt') or {}).get('id'):
+                        if not isinstance(control.get('id'),str) or not 1<=len(control['id'])<=128 or control.get('action') not in ('play','pause'):
+                            raise ValueError('Invalid in-game society control')
+                        receipt={'id':control['id'],'action':control['action']}
+                        try:
+                            director.control({'action':control['action']},bridge,world.status())
+                            receipt['status']='accepted'
+                        except ValueError as error:receipt.update(status='rejected',error=str(error))
+                        bridge['director_control_receipt']=receipt
                     if ack:
                         bridge['last_ack']=ack
                         if bridge['command'] and ack.get('id')==bridge['command']['id']:
@@ -156,9 +168,11 @@ def main():
                     with (args.runtime/'bridge-events.jsonl').open('a',encoding='utf-8') as log:
                         log.write(json.dumps({'at':time.time(),'observation':data})+'\n')
                     journal=world.state()
+                    society_status=world.status()
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
-                        'society':world.status(),'director':director.status()}
+                        'society':society_status,'director':director.status(),'director_control_receipt':bridge.get('director_control_receipt'),
+                        'dashboard':town_dashboard(society_status,data)}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):
@@ -167,7 +181,7 @@ def main():
                                 for item in proposals.get('results',[])]
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
-                    self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera')})
+                    self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera'),'director_control_receipt':bridge.get('director_control_receipt')})
                 elif self.path=='/world/bootstrap':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
@@ -238,9 +252,11 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
-                    if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to'): raise ValueError('unknown command')
+                    if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to','test_voice_output'): raise ValueError('unknown command')
                     if (world.agency_busy() or world.conversation_busy() or world.routines_busy()) and data['kind'] in ('prepare_market','walk_to'):
                         raise ValueError('A resident currently owns the task')
+                    if data['kind']=='test_voice_output' and (director.status()['running'] or world.agency_busy() or world.conversation_busy() or world.routines_busy()):
+                        raise ValueError('Pause society and finish the current interaction before the audio check')
                     if data['kind']=='walk_to':
                         if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')
                         if data.get('dynamic') is True:

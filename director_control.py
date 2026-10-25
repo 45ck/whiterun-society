@@ -43,11 +43,13 @@ class DirectorControl:
     def start(self, data, bridge, society):
         if self.status()['running']:
             raise ValueError('The society director is already running')
-        count = data.get('max_events', 6)
+        mode=data.get('mode','sample')
+        if mode not in ('sample','play'):raise ValueError('Choose sample or play mode')
+        count = data.get('max_events', 96 if mode=='play' else 6)
         handoffs=data.get('scene_handoffs',False)
         if type(handoffs) is not bool:raise ValueError('Scene handoffs must be boolean')
-        if type(count) is not int or not 1 <= count <= 12:
-            raise ValueError('Choose 1 to 12 resident events')
+        if type(count) is not int or not 1 <= count <= (96 if mode=='play' else 12):
+            raise ValueError('Choose 1 to 12 sample events or 1 to 96 play-session events')
         if time.time() - (bridge.get('last_seen') or 0) > 10:
             raise ValueError('Game bridge unavailable')
         if not society.get('town') or society.get('error') or society.get('transition') or bridge.get('command'):
@@ -69,7 +71,7 @@ class DirectorControl:
         stop_file = self.runtime/(run_id+'.stop')
         command = [sys.executable, str(Path(__file__).parent/'tools/run_daily_life.py'),
                    '--root', str(self.runtime.parent), '--max-events', str(count),
-                   '--watch-seconds', '600', '--model-config', str(configs[0]),
+                   '--watch-seconds', '3600' if mode=='play' else '600', '--model-config', str(configs[0]),
                    '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--receipt', str(receipt),
                    '--stop-file', str(stop_file)]
         if handoffs:command.append('--scene-handoffs')
@@ -81,10 +83,18 @@ class DirectorControl:
             self.log.close(); self.log = None
             raise
         self.run = {'id': run_id, 'status': 'running', 'max_events': count,
+                    'mode':mode,'session_limit_seconds':3600 if mode=='play' else 600,
                     'scene_handoffs_enabled':handoffs,
                     'maximum_model_calls': MAX_COMBINED_CALLS*count, 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()
+
+    def control(self,data,bridge,society):
+        action=data.get('action')
+        if action in ('stop','pause'):return self.stop()
+        if action=='play':return self.start({**data,'mode':'play','scene_handoffs':data.get('scene_handoffs',True)},bridge,society)
+        if action=='start':return self.start(data,bridge,society)
+        raise ValueError('Unknown society control')
 
     def stop(self):
         if self.run and self.process.poll() is None:

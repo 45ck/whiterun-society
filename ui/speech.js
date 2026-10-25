@@ -11,7 +11,7 @@ window.whiterunSpeak=command=>{
  audio.onplaying=()=>report('playing');
  audio.onended=()=>{report('ended',{playedSeconds:audio.currentTime,volume:audio.volume,muted:audio.muted});speechAudio=null;};
  audio.onerror=()=>report('failed',{error:'Media error '+(audio.error?.code||'unknown')});
- audio.play().catch(error=>report('failed',{error:error.name+': '+error.message}));
+ Promise.resolve().then(()=>applyVoiceOutput(audio)).then(()=>{if(speechId===command.id&&speechAudio===audio)return audio.play();}).catch(error=>report('failed',{error:error.name+': '+error.message}));
 };
 window.drawConversation=()=>{
  const c=state?.society?.conversation,card=document.getElementById('conversation-card');card.hidden=!c;
@@ -29,7 +29,7 @@ window.drawConversation=()=>{
  if(['complete','held'].includes(c.phase)&&activePlan){card.hidden=true;document.getElementById('speech-caption').hidden=true;return;}
  document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const speaking=c.phase==='speaking';
- if(speaking&&!state.camera?.manual){camera='focus';focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}
+ if(speaking&&!state.camera?.manual){focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}
  document.getElementById('conversation-stage').textContent=c.phase==='complete'?(c.outcome||'Both residents heard and remember').replaceAll('_',' '):c.phase==='held'?'Conversation paused':c.phase==='meeting'?'Walking over to talk':c.phase==='releasing'?'Returning to the day':c.phase.includes('propose')?'Language model: forming intentions':c.phase.includes('select')?'Jev: choosing an intention':c.phase==='synthesize'?'Creating a local voice':c.phase==='speaking'?'Speaking · listening':c.phase.replaceAll('_',' ');
  const transcript=document.getElementById('conversation-transcript');transcript.replaceChildren();
  for(const turn of c.turns){const row=document.createElement('div');row.style.marginTop='12px';const name=document.createElement('strong');name.textContent=names[turn.speaker];name.style.color='var(--gold)';const quote=document.createElement('div');quote.textContent=turn.selected.line;row.append(name,quote);transcript.append(row);}

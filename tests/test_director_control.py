@@ -55,3 +55,20 @@ class DirectorControlTests(unittest.TestCase):
     def test_missing_credentials_fails_without_call_or_secret_lookup(self,popen):
         with self.assertRaisesRegex(ValueError,'credential'):self.control.start({},self.bridge,self.society)
         popen.assert_not_called()
+
+    @patch.dict(os.environ,{'TEST_SOCIETY_KEY':'test-placeholder'})
+    @patch('director_control.subprocess.Popen')
+    def test_play_has_explicit_session_limits_and_pause_settles_current_event(self,popen):
+        process=Mock();process.poll.return_value=None;popen.return_value=process
+        result=self.control.control({'action':'play'},self.bridge,self.society)
+        self.assertEqual((result['mode'],result['max_events'],result['session_limit_seconds']),('play',96,3600))
+        self.assertTrue(result['scene_handoffs_enabled'])
+        argv=popen.call_args.args[0]
+        self.assertEqual(argv[argv.index('--watch-seconds')+1],'3600')
+        self.assertEqual(self.control.control({'action':'pause'},self.bridge,self.society)['status'],'stopping')
+        process.kill.assert_not_called()
+        process.terminate.assert_not_called()
+
+    def test_play_rejects_unsupported_limits(self):
+        for value in (97,0,True):
+            with self.assertRaises(ValueError):self.control.control({'action':'play','max_events':value},self.bridge,self.society)

@@ -1,8 +1,8 @@
 function createObserverCamera(){
- let state={mode:'market',id:0,distance:650,yaw:225,elevation:300,panX:24500,panY:-7100,manual:false,request_id:null};
+ let state={mode:'free',id:0,distance:1200,yaw:225,elevation:900,panX:24500,panY:-7100,manual:true,request_id:null};
  return {
   status(){return {...state};},
-  reset(){state.manual=false;state.mode='market';state.request_id=null;},
+  reset(){state.manual=true;state.mode='free';state.request_id=null;},
   accept(message,residents,managed){
    if(!message||!['market','street','trade','focus','free','story'].includes(message.mode))return false;
    if(message.mode==='focus'&&(!Number.isInteger(message.id)||!managed[String(message.id)]||!residents.some(r=>r.id===message.id&&r.isPerson===true)))return false;

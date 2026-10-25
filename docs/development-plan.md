@@ -1,3 +1,7 @@
+# Current direction: RTS-only
+
+As of 25 October 2026, the active product is a city economy/social observer. Native player movement, fighting and activation are disabled; direct player dialogue is deferred. Free camera, selection, follow and movie view are the interaction model. Historical first-person experiments do not define the current scope.
+
 # Living society development plan
 
 Updated 25 October 2026 from Calvin's explicit direction. This plan preserves the full objective: a playable and watchable Whiterun economy and society, with autonomous residents, grounded speech, persistent consequences and an RTS-style observer. Items below are requirements and work in progress, not claims of completion.
@@ -35,7 +39,7 @@ The combined reply choice now removes one serial inference from ordinary replies
 | Personal knowledge | Save-bound acquaintance records; source-labelled names and claims; own observations/memories only in prompts; introductions update only participants who actually hear them | Stranger cannot name/read another resident; delivered introduction updates knowledge; failed audio and old saves do not inherit future knowledge |
 | Dynamic economy | Capability-based sellers/employers; finite resource accounts; connected production; prices, wages and inventories that influence choices | Multiple production/trade cycles, conservation and provenance, unavailable supplier handling, persistence |
 | Natural social life | Dynamic partner choice, consent, introductions, context-sensitive dialogue, subjective appraisal and memory; no forced interaction every time | Different pairings and quiet outcomes; believable economic and non-economic exchanges; consequences visible in observer |
-| RTS observer | Free overview camera, pan/zoom/rotate, picking/highlighting, follow/event navigation, useful inspection panels and overlays, safe return to first person | Actual in-game visual capture of controls and resident selection; camera mode and plan/action distinction visibly correct |
+| RTS observer | Free overview camera, pan/zoom/rotate, picking/highlighting, follow/event navigation, useful inspection panels and overlays, RTS-only control with explicit Play/Pause and movie view | Actual in-game visual capture of controls and resident selection; camera mode and plan/action distinction visibly correct |
 | Demonstration | A self-running, bounded society session that does not require Calvin to manually play; save/resume; narrated system examples | Recorded runtime evidence, verified persistence and a video showing native movement, voices and economic/social consequences |
 
 ## Current boundaries

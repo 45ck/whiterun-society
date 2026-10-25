@@ -9,7 +9,7 @@ function createConversationAttendance(platform,now=Date.now,options={}){
   const pkg=sp.Game.getFormFromFile(0x801+slot*0x10,'WhiterunLanes.esp'),quest=sp.Quest.from(sp.Game.getFormFromFile(0x800+slot*0x10,'WhiterunLanes.esp'));
   if(!a?.is3DLoaded()||!pkg||!quest)return {actor,slot,loaded:false,ownedPackage:null,released:false};
   const current=a.getCurrentPackage(),owned=!!current&&current.getFormID()===pkg.getFormID();
-  return {actor,slot,loaded:true,ownedPackage:owned,released:!owned&&!quest.isRunning()};
+  return {actor,slot,loaded:true,expectedPackage:pkg.getFormID(),ownedPackage:owned,released:!owned&&!quest.isRunning()};
  }
  return {
   reset(){active=null;for(const lane of lanes)lane.reset();},

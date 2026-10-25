@@ -1,0 +1,196 @@
+{
+  "scope": "Isolated native lab, autonomous decisions and synthetic DOM UI checks. No new screenshot or physical listening acceptance.",
+  "runs": [
+    {
+      "id": "society-f26bf68a4d8648fe",
+      "status": "complete",
+      "events": [
+        {
+          "id": "encounter-4916dc2bb7964612a54a",
+          "actor": 108149,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1
+        },
+        {
+          "id": "daily-18-108149",
+          "actor": 108149,
+          "status": "complete",
+          "outcome": "ate_bread",
+          "model_calls": 1
+        },
+        {
+          "id": "encounter-fafb39e0e77d450d9b7b",
+          "actor": 108156,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1
+        }
+      ],
+      "scene_handoffs": []
+    },
+    {
+      "id": "society-e4f61c49945c495a",
+      "status": "stopped",
+      "events": [
+        {
+          "id": "encounter-6133f8f0d6da40dab97c",
+          "actor": 108169,
+          "status": "complete",
+          "outcome": "spoke_brief_refusal",
+          "model_calls": 6
+        },
+        {
+          "id": "daily-45-108169",
+          "actor": 108169,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1
+        },
+        {
+          "id": "daily-27-108167",
+          "actor": 108167,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1,
+          "cohort": "daily-routes-5ca8fd777f1c6324"
+        },
+        {
+          "id": "daily-40-108156",
+          "actor": 108156,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1,
+          "cohort": "daily-routes-5ca8fd777f1c6324"
+        },
+        {
+          "id": "daily-45-1048823",
+          "actor": 1048823,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1,
+          "cohort": "daily-routes-5ca8fd777f1c6324"
+        },
+        {
+          "id": "daily-45-108138",
+          "actor": 108138,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1,
+          "cohort": "daily-routes-5ca8fd777f1c6324"
+        },
+        {
+          "id": "daily-46-225366",
+          "actor": 225366,
+          "status": "held",
+          "outcome": "journey_held",
+          "model_calls": 1,
+          "cohort": "daily-routes-5ca8fd777f1c6324",
+          "continued_other_residents": true
+        },
+        {
+          "id": "encounter-8bc83bc6c81442a397a2",
+          "actor": 108156,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1
+        },
+        {
+          "id": "encounter-784de2b2defe4ba1aaab",
+          "actor": 108169,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1
+        }
+      ],
+      "scene_handoffs": []
+    }
+  ],
+  "tests": {
+    "python": 300,
+    "javascript": 128
+  },
+  "camera": "RTS free overview by default; movie view is opt-in; no tours",
+  "native_player_controls": {
+    "movement": false,
+    "fighting": false,
+    "activate": false
+  },
+  "peak_simultaneous_journeys": 5,
+  "limitations": [
+    "Native packages resume after agent tasks release",
+    "Current initialized population is 29, not every Skyrim resident",
+    "Marketplace absence and one journey failure remain; no successful sale in these runs",
+    "Model latency changes have unit coverage but no matched before/after live negotiation benchmark",
+    "Menu/selection buttons tested in DOM; native mouse acceptance not visually exercised this turn"
+  ],
+  "conversation": {
+    "id": "encounter-6133f8f0d6da40dab97c",
+    "outcome": "spoke_brief_refusal",
+    "turns": [
+      {
+        "file": "rts-night-1.wav",
+        "speaker": "Adrianne Avenicci",
+        "line": "I'm not up for chatting tonight, Idolaf. Good night.",
+        "sha256": "6d68fad426aed8b2f54f646abb87d8be874a3761b479b68f9ad142189acd98f5",
+        "encounter": "RTS society session: a voiced night-time refusal",
+        "source": "Synthesized stock voice used by a native encounter; not a recording of speaker output",
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.367,
+          "facing": [
+            {
+              "actor": 108156,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108169,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-0a54edbf55334caf6fe69786",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 12.1215548607571,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 388,
+            "sum_error_degrees": 23.378491276872182
+          },
+          "playedSeconds": 3.165333,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 3.1653
+      }
+    ]
+  },
+  "audio_check": {
+    "label": "Saved voice sample; not an NPC event",
+    "output": "Yeti headphone output",
+    "seconds": 2.74,
+    "cef_process_peak": 0.2699606418609619,
+    "endpoint_peak": 0.430528461933136,
+    "muted": false,
+    "application_volume": 1,
+    "unchanged_society_fields": {
+      "checkpoint": true,
+      "people": true,
+      "plan": true,
+      "conversation": true,
+      "town": true,
+      "consumptions": true,
+      "production": true,
+      "trades": true
+    },
+    "scope": "Core Audio signal and CEF completion verified; physical listening not confirmed. Windows default changed during diagnosis."
+  },
+  "save_restore": {
+    "name": "WS-RTS-20261025-BA",
+    "checkpoint": 1403,
+    "compared_fields": 17,
+    "all_matched": true
+  }
+}

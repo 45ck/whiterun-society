@@ -7,3 +7,5 @@ bridge-config.json
 **/obj/
 *.esp
 *.pex
+
+node_modules/

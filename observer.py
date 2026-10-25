@@ -5,6 +5,7 @@ from collections import Counter
 from statistics import mean
 from enterprises import production_policy
 from routing import activity_blocker
+from dashboard import town_dashboard
 
 
 def camera_request(data, observation, society):
@@ -58,8 +59,9 @@ def observer_state(bridge,society):
         'scope':'Race is current native descriptive metadata; unloaded races remain unknown. Personality traits are seeded independently of race. No group causal or psychological claims.'}
     return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
+        'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'metrics':metrics,'scene_handoffs':society.get('scene_handoffs',[]),
+        'metrics':metrics,'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':town_dashboard(society,obs),
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),

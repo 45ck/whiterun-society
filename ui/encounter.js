@@ -4,7 +4,7 @@ window.whiterunInspectKey=code=>{
  if(code===65){window.whiterunEnterRts?.();return;}
  const id=[2,3,4].includes(code)?(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)])[code-2]?.id:null;
  if(id){inspectedResident=id;choose('focus',id);window.drawEncounter();}
- if(code===64){inspectedResident=null;tour=true;window.drawEncounter();}
+ if(code===64){inspectedResident=null;choose('story');window.drawEncounter();}
 };
 document.addEventListener('keydown',event=>{const code={'1':2,'2':3,'3':4,'F6':64}[event.key];if(code){event.preventDefault();window.whiterunInspectKey(code);}});
 window.whiterunProject=points=>{
@@ -94,4 +94,4 @@ window.drawEncounter=()=>{
 };
 setInterval(()=>{const c=state?.society?.conversation;if(c&&!['complete','held'].includes(c.phase)){
  const seconds=Math.floor((Date.now()-phaseBegan)/1000);document.getElementById('phase-clock').textContent=seconds+'s in this stage';
-}else document.getElementById('phase-clock').textContent='No model running';},500);
+}else {const p=state?.society?.plan;document.getElementById('phase-clock').textContent=p&&!['complete','held'].includes(p.phase)?'Resident activity · '+p.phase.replaceAll('_',' '):'Last encounter';}},500);

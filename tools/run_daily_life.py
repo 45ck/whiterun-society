@@ -128,8 +128,8 @@ def main():
     parser.add_argument('--social-opportunities',action='store_true',help='Offer nearby encounters between economic events; participation remains a resident choice')
     parser.add_argument('--scene-handoffs',action='store_true',help='Request bounded native scene interruption before resident decisions; scene scripts may run')
     args=parser.parse_args()
-    if not 0<=args.max_events<=24 or not 0<=args.watch_seconds<=600:
-        raise ValueError('Use 0–24 resident events and 0–600 seconds of observation')
+    if not 0<=args.max_events<=96 or not 0<=args.watch_seconds<=3600:
+        raise ValueError('Use 0–96 resident events and 0–3600 seconds of observation')
     if args.max_events and not args.model_config:raise ValueError('An explicit decision model configuration is required')
     if args.social_opportunities and not args.language_config:raise ValueError('Social opportunities require a language configuration')
     runtime=args.root/'runtime'

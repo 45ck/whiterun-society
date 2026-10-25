@@ -134,5 +134,13 @@
     "sha256": "aecce638f53bb14a0872628138555acaa8d2fd6b9c1c645a3601d7d5fdc9bf2e",
     "encounter": "Released resident: a refused bread negotiation",
     "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio"
+  },
+  {
+    "file": "rts-night-1.wav",
+    "speaker": "Adrianne Avenicci",
+    "line": "I'm not up for chatting tonight, Idolaf. Good night.",
+    "sha256": "6d68fad426aed8b2f54f646abb87d8be874a3761b479b68f9ad142189acd98f5",
+    "encounter": "RTS society session: a voiced night-time refusal",
+    "source": "Synthesized stock voice used by a native encounter; not a recording of speaker output"
   }
 ]

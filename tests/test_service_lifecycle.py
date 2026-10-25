@@ -73,6 +73,15 @@ class ServiceLifecycleTests(unittest.TestCase):
                 self.assertIsNone(first.poll())
                 post('/heartbeat',observation)
                 observation['checkpoint']=post('/town/initialize',{'id':'census','seed':'test'})['checkpoint'];post('/heartbeat',observation)
+                observation['director_control']={'id':'pause-from-game','action':'pause'}
+                control_reply=post('/heartbeat',observation)
+                self.assertEqual(control_reply['director_control_receipt']['status'],'accepted')
+                observation['director_control']['action']='play'
+                self.assertEqual(post('/heartbeat',observation)['director_control_receipt']['action'],'pause')
+                observation['director_control']={'id':'play-without-configuration','action':'play'}
+                self.assertEqual(post('/heartbeat',observation)['director_control_receipt']['status'],'rejected')
+                observation.pop('director_control')
+                self.assertEqual(control_reply['presentation']['dashboard']['population'],1)
                 specification={'id':'new-bakery','expected_revision':0,'name':'New bakery','custodian':7,
                     'active':True,'capabilities':['bread_recipe','retail_food'],'production_policy':{'wage_gold':4}}
                 observer_headers={'Origin':origin,'X-Observer-Token':observer_token,'Content-Type':'application/json'}

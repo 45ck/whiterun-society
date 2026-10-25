@@ -33,7 +33,7 @@ function harness(nativeGlobal=false) {
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
   const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock}});
   vm.runInContext(source,context);
-  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:()=>{clock+=2100;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(source,context)};
+  return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(source,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 
@@ -182,4 +182,50 @@ test('release acknowledgements wait for the owned package to actually disappear'
  current=null;h.advance();h.handlers.get('update')();await settle();
  assert.equal(h.requests.at(-1).ack.status,'applied');
  assert.equal(h.requests.at(-1).ack.released,true);
+});
+
+test('consent and thinking retain active cadence while idle towns stay quiet',async()=>{
+ for(const phase of ['choose','consent','reconsider','thinking','economic_speaking']){
+  const h=harness();h.setPresentation({society:{plan:{phase}}});
+  h.handlers.get('update')();await settle();h.advance(349);h.handlers.get('update')();assert.equal(h.requests.length,1);
+  h.advance(1);h.handlers.get('update')();await settle();assert.equal(h.requests.length,2,phase);
+  assert.equal(h.requests[1].transport.cadence_ms,350);
+ }
+ const idle=harness();idle.setPresentation({society:{plan:{phase:'complete'}}});
+ idle.handlers.get('update')();await settle();idle.advance(350);idle.handlers.get('update')();assert.equal(idle.requests.length,1);
+ idle.advance(1650);idle.handlers.get('update')();assert.equal(idle.requests.length,2);
+});
+
+test('checkpoint acknowledgement is expedited once without replay or idle flooding',async()=>{
+ const h=harness();let marker=3,writes=0;
+ h.sp.Game.getFormFromFile=()=>({});
+ h.sp.GlobalVariable={from:()=>({getValue:()=>marker,setValue:v=>{writes++;marker=v;}})};
+ h.setResponse(body=>body.ack?null:{id:'checkpoint-4',kind:'bind_checkpoint',session:body.session,expected:3,next:4});
+ h.handlers.get('update')();await settle();h.advance(20);h.handlers.get('update')();
+ assert.equal(writes,1);assert.equal(h.requests.length,1);
+ h.advance(80);h.handlers.get('update')();h.handlers.get('update')();assert.equal(h.requests.length,2);
+ await settle();assert.equal(h.requests[1].ack.status,'applied');assert.equal(h.requests[1].transport.cadence_ms,100);
+ assert.equal(h.requests[1].transport.previous_request_interval_ms,100);
+ h.advance(100);h.handlers.get('update')();assert.equal(h.requests.length,2);assert.equal(writes,1);
+});
+
+test('checkpoint progress polls quickly even before a native acknowledgement exists',async()=>{
+ const h=harness();h.setPresentation({society:{transition:{next:4},error:null}});
+ h.handlers.get('update')();await settle();h.advance(100);h.handlers.get('update')();await settle();
+ assert.equal(h.requests.length,2);assert.equal(h.requests[1].transport.cadence_ms,100);
+});
+
+test('RTS initialization disables player actions and tolerates unavailable control telemetry',async()=>{
+ const h=harness(),calls=[];h.sp.Game.disablePlayerControls=(...args)=>calls.push(args);
+ h.sp.Game.isMovementControlsEnabled=()=>false;h.sp.Game.isFightingControlsEnabled=()=>{throw Error('unavailable');};
+ h.handlers.get('update')();await settle();
+ assert.deepEqual(calls,[[true,true,true,true,true,false,true,true,0]]);
+ assert.equal(h.requests[0].player_controls.movement,false);assert.equal(h.requests[0].player_controls.fighting,null);
+ h.advance();h.handlers.get('update')();await settle();assert.equal(calls.length,1);
+});
+
+test('in-game play request is carried to service and discarded on game load',async()=>{
+ const h=harness();h.handlers.get('browserMessage')({arguments:[{type:'society-director',action:'play'}]});
+ h.handlers.get('update')();await settle();assert.equal(h.requests[0].director_control.action,'play');
+ h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.advance();h.handlers.get('update')();await settle();assert.equal(h.requests.at(-1).director_control,null);
 });

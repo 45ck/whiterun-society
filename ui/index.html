@@ -30,11 +30,12 @@
  <div class="small" style="margin-top:10px">Residents choose. Refusal changes the outcome.</div>
 </section>
 <aside class="sidebar panel">
- <div class="row"><div><div class="label">The city, right now</div><div class="section-title">People & exchange</div></div><span class="badge">LIVE</span></div>
+ <div class="row"><button id="society-play">Play society</button><button id="society-pause">Pause</button></div><div id="society-state" class="small">Checking simulation</div><div id="audio-state" class="small"></div><label class="small" for="voice-output">NPC voice output</label><select id="voice-output" style="background:#203330;color:inherit;padding:8px;max-width:100%"><option value="">Windows default</option></select><button id="voice-output-test">Test voice output</button><button id="voice-output-choose" hidden>Choose output device</button><div id="voice-output-status" class="small" role="status">Checking audio output</div><div class="small">One play session: up to 96 events or 60 minutes. Pause finishes the current interaction.</div>
+ <div class="row"><div><div class="label">The city, right now</div><div class="section-title">People & exchange</div></div><span id="live-badge" class="badge">WAITING</span></div>
  <div class="row"><div><div class="metric" id="count">—</div><div class="small">actors visible to the game</div></div><div style="text-align:right"><div class="metric" id="trade-count">0</div><div class="small">verified exchanges</div></div></div>
  <svg id="map" style="height:120px" viewBox="0 0 258 95" aria-label="Live actor positions"></svg>
- <div><div class="row"><span class="label">Follow a resident</span><span class="small">Tour residents</span></div><div id="people" style="max-height:235px;overflow:auto"></div></div>
- <div class="divider"></div><div id="routine-panel" hidden><div class="label">Current travel task</div><div id="routine" class="small" style="margin-top:7px"></div></div>
+ <div><div class="row"><span class="label">Follow a resident</span><span class="small">Select and follow</span></div><div id="people" style="max-height:235px;overflow:auto"></div></div>
+ <div class="divider"></div><div id="town-charts"></div><div class="divider"></div><div id="routine-panel" hidden><div class="label">Current travel task</div><div id="routine" class="small" style="margin-top:7px"></div></div>
  <div class="divider"></div>
  <div><div class="label">Latest economic event</div><div id="trade" style="margin-top:10px" class="trade"><div class="empty">Waiting for the trade journal…</div></div></div>
  <div class="divider"></div><div><div class="label">Resident decisions</div><div id="decisions" class="small" style="margin-top:8px">Waiting for an event. No background thinking.</div></div>
@@ -53,34 +54,38 @@
  <div id="speech-speaker" class="eyebrow"></div><div id="speech-line" style="font:21px Georgia,serif;line-height:1.45;margin-top:10px"></div>
 </section>
 <section class="focus-card panel" id="focus-card" hidden><div class="label">Camera follows</div><div class="focus-name" id="focus-name"></div><div class="chips"><span><b id="focus-gold">0</b> gold</span><span><b id="focus-bread">0</b> bread</span></div></section>
-<nav class="camera-bar panel"><div><div class="label">Spectator camera</div><div class="small" id="camera-label">Market overview</div></div><div class="camera-buttons"><button data-camera="story">Follow activity</button><button id="rts-mode">RTS mode</button><button id="tour">Pause tour</button><button data-camera="market" class="active">Market</button><button data-camera="trade">Trade pair</button><button data-camera="street">Street</button></div><div class="small">Click resident to follow<br>Orbit / zoom in live control room</div></nav>
+<nav class="camera-bar panel"><div><div class="label">RTS camera</div><div class="small" id="camera-label">RTS overview</div></div><div class="camera-buttons"><button data-camera="story">Movie view</button><button id="rts-mode" class="active">RTS overview</button><button data-camera="market">Market</button><button data-camera="trade">Trade pair</button><button data-camera="street">Street</button></div><div class="small">Click resident to follow<br>Orbit / zoom in live control room</div></nav>
 <section id="rts-controls" class="panel" hidden style="position:absolute;bottom:112px;left:350px;padding:12px;max-width:480px"><div class="label">RTS camera · F7</div><div class="camera-buttons"><button data-rts="west" aria-label="Pan left">←</button><button data-rts="north" aria-label="Pan forward">↑</button><button data-rts="south" aria-label="Pan back">↓</button><button data-rts="east" aria-label="Pan right">→</button><button data-rts="in">Zoom +</button><button data-rts="out">Zoom −</button><button data-rts="left">Rotate ↶</button><button data-rts="right">Rotate ↷</button></div><div class="small">WASD pan · Q/E rotate · wheel zoom · drag empty space<br>Click a resident marker to inspect without moving the camera.</div></section>
-<script>
-const manualControls=true; // Native mouse delivery is still being qualified on this runtime.
-let state=null,lastUpdate=0,focusId=null,camera='market',tour=true,tourStep=0;
-function tourShots(){return [['market'],...(state?.residents||[]).filter(r=>state?.society?.town?.residents?.[String(r.id)]).slice(0,3).map(r=>['focus',r.id]),['trade'],['street']];}
+<script src="society-dashboard.js"></script><script>
+const manualControls=true; // RTS controls; native input acceptance is separately qualified.
+let state=null,lastUpdate=0,focusId=null,camera='free';
 const names={};
 function send(message){if(window.skyrimPlatform)window.skyrimPlatform.sendMessage(message);}
-function choose(mode,id,automatic=false){if(!automatic){tour=false;inspectedResident=mode==='focus'?id:null;}camera=mode;focusId=id||null;send({type:'society-camera',mode,id:focusId,automatic});draw();}
+function choose(mode,id,automatic=false){if(!automatic){inspectedResident=mode==='focus'?id:null;}camera=mode;focusId=id||null;send({type:'society-camera',mode,id:focusId,automatic});draw();}
 function bind(b,fn){if(!manualControls){b.disabled=true;return;}b.onclick=fn;}
 document.querySelectorAll('[data-camera]').forEach(b=>bind(b,()=>choose(b.dataset.camera)));
-document.getElementById('tour').hidden=!manualControls;
-document.getElementById('tour').onclick=()=>{tour=!tour;if(tour){inspectedResident=null;send({type:'society-camera-release'});}draw();};
+document.getElementById('society-play').onclick=()=>send({type:'society-director',action:'play'});
+document.getElementById('society-pause').onclick=()=>send({type:'society-director',action:'pause'});
 function routeActive(){return state?.movement&& !['held','applied','released'].includes(state.movement.phase);}
-setInterval(()=>{const c=state?.society?.conversation;if(tour&&!routeActive()&&(!c||['complete','held'].includes(c.phase))){const shots=tourShots();tourStep=(tourStep+1)%shots.length;choose(shots[tourStep][0],shots[tourStep][1],true);}},12000);
 function text(id,value){document.getElementById(id).textContent=value;}
-function draw(){if(!state)return;const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
+function residentActivity(id){
+ const c=state.society?.conversation,p=state.society?.plan,active=x=>x&&!['complete','held'].includes(x.phase);
+ if(active(c)&&c.speakers?.includes(id))return c.phase==='speaking'?(c.current?.speaker===id?'Speaking':'Listening'):'Conversation · '+c.phase.replaceAll('_',' ');
+ if(active(p)&&[p.actor,...(p.economic_pair||[])].includes(id))return p.phase.replaceAll('_',' ');
+ const a=state.parallel_routines?.activities?.find(x=>x.actor===id);if(a&&['travelling','walking','requesting'].includes(a.phase))return 'Agent journey · '+(names[a.target]||'chosen destination');
+ const r=state.residents?.find(x=>x.id===id);return !r?'Outside loaded area':r.activity?.scene_id?'Native scene':r.activity?.package_id?'Native routine':'Activity unobserved';
+}
+function draw(){if(!state)return;renderTownCharts(document.getElementById('town-charts'),state.dashboard);const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
  for(const [id,p] of Object.entries(state.society?.people||{}))names[id]=p.profile.name;
  for(const place of state.places||[])names[place.id]=place.name;
  const route=state.movement;
  if(state.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' peak simultaneous journeys observed');
- if(tour&&routeActive()){camera='focus';focusId=route.actor;}
  document.getElementById('routine-panel').hidden=!route||route.phase==='released';
  if(route){const arrived=['applied','arrived','released'].includes(route.phase);text('routine',`${names[route.actor]} → ${names[route.target]} · ${arrived?'Arrived':route.phase==='held'?'Needs a new plan':route.ownedPackage?'Walking under our travel task':'Requesting travel'} · ${Math.round(route.distance||0)} game units ${arrived?'at arrival':'away'}. ${route.origin==='resident_decision'?'Resident-selected destination.':'Test-selected destination.'}`);}
  const thoughts=document.getElementById('decisions');thoughts.replaceChildren();
  const decisions=state.decisions||[];
  if(!decisions.length&&!state.society?.plan)thoughts.textContent='Waiting for an event. No background thinking.';
- const shown=decisions.find(d=>d.actor_id===focusId)||decisions[tourStep%Math.max(decisions.length,1)];
+ const shown=decisions.find(d=>d.actor_id===focusId)||decisions.at(-1);
  if(shown){const row=document.createElement('div');row.style.marginBottom='7px';const name=document.createElement('strong');name.textContent=shown.name+' · '+shown.decision.emotion;const action=document.createElement('div');action.textContent=shown.decision.action_id.replaceAll('_',' ');action.style.color='var(--gold)';const reason=document.createElement('div');reason.textContent=shown.decision.reason;row.append(name,action,reason);thoughts.append(row);}
  if(decisions.length){const note=document.createElement('div');note.textContent='Rumour response · proposals only; actions not executed.';note.style.color='var(--gold)';thoughts.append(note);}
  const society=state.society;
@@ -89,16 +94,20 @@ function draw(){if(!state)return;const actors=state.residents||[],trades=(state.
  if(society){const person=society.people?.[String(focusId||108186)];const note=document.createElement('div');note.style.color='var(--gold)';note.style.marginTop='8px';note.textContent=society.error?'Society paused: '+society.error:`Save checkpoint ${society.checkpoint}${society.transition?' · synchronizing':''} · ${person?.memories?.length||0} remembered events`;thoughts.append(note);}
  const director=state.director||{status:'idle'};text('director-state',`Society ${director.status}${director.max_events?' · '+(director.events_completed||0)+' / '+director.max_events+' events':''}${director.error?' · '+director.error:''}`);
  text('count',actors.length);text('trade-count',state.committedCount||committed.length);text('connection',state.audioDiagnostic?'Connected · AI voices use overlay audio':'Connected to Skyrim · inventories observed live');
- text('tour',tour?'Pause tour':'Start tour');text('notice',tour?'Guided tour · camera changes every 12 seconds':'Manual camera · select a resident');
- text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='free'?'RTS overview · wheel zoom · drag to pan':camera==='trade'?'Encounter overview':camera==='street'?'Whiterun approach':'Market overview');
+ text('notice',director.running?'Simulation playing · select, follow or watch an interaction':'Simulation paused · press Play society to start resident decisions');
+ text('live-badge',director.running?'PLAYING':'PAUSED');
+ text('society-state',(director.running?'Playing':'Paused')+(director.max_events?' · '+(director.events_completed||0)+' / '+director.max_events+' events':'')+(director.error?' · '+director.error:''));document.getElementById('society-play').disabled=!!director.running;document.getElementById('society-pause').disabled=!director.running;
+ text('audio-state',state.speech?.status==='playing'?'NPC voice playing through overlay':state.speech?.status==='failed'?'Voice failed: '+state.speech.error:'NPC voice waiting'+(state.audioEnabled===false?' · Skyrim ambience disabled':''));
+ if(state.director_control_receipt?.status==='rejected')text('society-state',state.director_control_receipt.error);
+ text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='free'?'RTS overview · wheel zoom · drag to pan':camera==='story'?'Movie view · current activity':camera==='trade'?'Encounter overview':camera==='street'?'Whiterun approach':'Market overview');
  if(state.movement?.phase==='walking')text('notice',`${names[state.movement.actor]} → ${names[state.movement.target]} · destination requested`);
  if(state.movement?.phase==='held')text('notice','Route not completed · destination control needs work');
  if(routeActive()&&route.method==='package')text('notice',`${names[route.actor]} → ${names[route.target]} · ${route.ownedPackage?'custom travel task active':'requesting task'}`);
  if(route?.phase==='applied')text('notice','Destination reached · travel task released');
- document.querySelectorAll('[data-camera]').forEach(b=>b.classList.toggle('active',b.dataset.camera===camera));
+ document.querySelectorAll('[data-camera]').forEach(b=>b.classList.toggle('active',b.dataset.camera===camera));document.getElementById('rts-mode').classList.toggle('active',camera==='free');
  const people=document.getElementById('people');people.replaceChildren();
  for(const id of Object.keys(state.society?.town?.residents||{}).map(Number)){const a=actors.find(a=>a.id===id);const b=document.createElement('button');b.className='person'+(focusId===id?' active':'');b.disabled=!a;
-  const icon=document.createElement('span');icon.className='initial';icon.textContent=names[id][0];const label=document.createElement('span');const strong=document.createElement('strong');strong.textContent=names[id];const sub=document.createElement('span');sub.className='small';const person=state.society?.people?.[String(id)],policy=person?.food_policy,loaves=a?.inventory?.bread??0;const reserve=policy?(policy.mode==='household_all'?loaves:Math.min(loaves,policy.reserve_target)):null;sub.textContent=a?`${loaves} bread · ${a.inventory?.grain??0} grain${reserve!==null?' · '+reserve+' reserved / '+(loaves-reserve)+' sale':''} · sim. hunger ${Math.round((person?.needs?.hunger??0)*100)}%`:'Currently off screen';label.append(strong,sub);const amount=document.createElement('span');amount.className='amount';amount.textContent=a?a.inventory?.gold??'—':'—';const unit=document.createElement('small');unit.textContent='GOLD';amount.append(unit);b.append(icon,label,amount);bind(b,()=>choose('focus',id));people.append(b);}
+  const icon=document.createElement('span');icon.className='initial';icon.textContent=names[id][0];const label=document.createElement('span');const strong=document.createElement('strong');strong.textContent=names[id];const sub=document.createElement('span');sub.className='small';const person=state.society?.people?.[String(id)],policy=person?.food_policy,loaves=a?.inventory?.bread??0;const reserve=policy?(policy.mode==='household_all'?loaves:Math.min(loaves,policy.reserve_target)):null;sub.textContent=a?`${loaves} bread · ${a.inventory?.grain??0} grain${reserve!==null?' · '+reserve+' reserved / '+(loaves-reserve)+' sale':''} · sim. hunger ${Math.round((person?.needs?.hunger??0)*100)}%`:'Currently off screen';const activity=document.createElement('span');activity.className='small';activity.style.color='var(--green)';activity.textContent=residentActivity(id);label.append(strong,activity,sub);const amount=document.createElement('span');amount.className='amount';amount.textContent=a?a.inventory?.gold??'—':'—';const unit=document.createElement('small');unit.textContent='GOLD';amount.append(unit);b.append(icon,label,amount);bind(b,()=>choose('focus',id));people.append(b);}
  const chosen=actors.find(a=>a.id===focusId);document.getElementById('focus-card').hidden=!chosen;if(chosen){text('focus-name',chosen.name);text('focus-gold',chosen.inventory?.gold??0);text('focus-bread',chosen.inventory?.bread??0);}
  const latest=trades[trades.length-1],box=document.getElementById('trade');box.replaceChildren();
  if(latest){const title=document.createElement('div');title.className='row';const good=document.createElement('span');good.className='goods';good.textContent=`${latest.quantity} loaf`;const badge=document.createElement('span');badge.className='badge';badge.textContent=latest.status==='committed'?'VERIFIED':latest.status.toUpperCase();title.append(good,badge);const route=document.createElement('div');route.className='trade-path';for(const value of [names[latest.seller]||'Seller','→',names[latest.buyer]||'Buyer']){const el=document.createElement('span');el.textContent=value;if(value==='→')el.className='arrow';route.append(el);}const detail=document.createElement('div');detail.className='small';detail.textContent=latest.status==='committed'?`${latest.cost} gold paid · goods and money checked in-game`:`${latest.cost} gold quoted · exchange not yet verified`;box.append(title,route,detail);
@@ -133,6 +142,6 @@ window.drawTown=()=>{
  text('town-next',pending.length?'Next: '+state.society.people[String(pending[0].actor)].profile.name+' considers food':'No feasible decision queued. No model is running.');
  text('notice','Town review '+daily.sequence+' · '+(state.weather?.label||'Weather unknown'));
 };
-window.whiterunRender=data=>{state=data;if(data.camera?.manual){tour=false;camera=data.camera.mode;focusId=data.camera.id||null;if(camera==='focus')inspectedResident=focusId;else if(camera!=='free')inspectedResident=null;}lastUpdate=Date.now();document.body.classList.remove('stale');draw();window.drawConversation?.();window.drawEncounter?.();window.drawTown?.();};
+window.whiterunRender=data=>{state=data;if(data.camera){camera=data.camera.manual===false?'story':data.camera.mode;focusId=data.camera.id||null;if(camera==='focus')inspectedResident=focusId;else if(camera!=='free')inspectedResident=null;}lastUpdate=Date.now();document.body.classList.remove('stale');draw();window.drawConversation?.();window.drawEncounter?.();window.drawTown?.();if(!data.director?.running)text('notice','Simulation paused · press Play society to start resident decisions');};
 setInterval(()=>{if(lastUpdate&&Date.now()-lastUpdate>7000){document.body.classList.add('stale');text('connection','Connection paused · showing last observation');}},1000);
-</script><script src="speech.js"></script><script src="encounter.js"></script><script src="rts-camera.js"></script><script src="rts-controls.js"></script></body></html>
+</script><script src="voice-output.js"></script><script src="speech.js"></script><script src="encounter.js"></script><script src="rts-camera.js"></script><script src="rts-controls.js"></script></body></html>

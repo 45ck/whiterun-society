@@ -39,6 +39,7 @@ let pending = null;
 let ack = null;
 let busy = false;
 let lastSent = 0;
+let lastAckSent=null;
 let announced = false;
 let observerReady = false;
 let loading = false;
@@ -48,7 +49,8 @@ let lastBindingAttempt = 0;
 let bindingAttempts = 0;
 let residents = [];
 let hud = null;
-let cameraMode='market',cameraActor=0,cameraDirty=true,cursor=true;
+let cameraMode='free',cameraActor=0,cameraDirty=true,cursor=true;
+let directorControl=null,playerControlRequest=null,audioOutput=null;
 let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[];
 let observerKey=null,uiHealth=null;
@@ -65,6 +67,8 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  directorControl=null;playerControlRequest=null;audioOutput=null;
+  lastAckSent=null;
   sceneHandoffs.reset();
   observerCamera.reset();remoteCamera=null;
   endowments.reset();
@@ -93,8 +97,12 @@ function checkpointValue() {
 }
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
+  if(message?.type==='society-director'&&['play','pause'].includes(message.action)){
+    directorControl={id:'control-'+Date.now()+'-'+Math.random().toString(16).slice(2,10),action:message.action};return;
+  }
+  if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null};return;}
   if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30)};return;}
-  if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='market';cameraActor=0;cameraDirty=true;return;}
+  if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='free';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
   if(message.automatic===true){
@@ -283,6 +291,7 @@ on('update', () => {
           global.setValue(command.next);
           if (global.getValue()!==command.next) throw new Error('Checkpoint write not observed');
         }
+        else if (command.kind === 'test_voice_output') {if(!sp.browser)throw Error('Overlay unavailable');sp.browser.executeJavaScript('window.whiterunTestVoice && window.whiterunTestVoice('+JSON.stringify(command.id)+');');}
         else if (command.kind === 'notify') sp.Debug.notification('Whiterun Society: command received from local service');
         else if (command.kind === 'prepare_market') {
           if (checkpointValue()!==0) throw new Error('Demo setup requires a new-world marker');
@@ -309,8 +318,13 @@ on('update', () => {
   }
   const activeConversation=presentation.society?.conversation;
   const activeDelivery=presentation.society?.resource_delivery?.status==='pending';
-  const economicSpeaking=presentation.society?.plan?.phase?.startsWith('economic_');
-  const cadence=activeDelivery?250:(economicSpeaking||activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000);
+  const activePlan=presentation.society?.plan;
+  const residentActive=activePlan&&(!['complete','held'].includes(activePlan.phase)||activePlan.release_required);
+  const ackKey=ack?ack.id+':'+ack.status:null;
+  const protocolProgress=ackKey!==lastAckSent||presentation.society?.transition&&!presentation.society?.error;
+  // Consent and thinking are part of the encounter too. A bound checkpoint
+  // or finished native command must not wait behind the idle town cadence.
+  const cadence=protocolProgress?100:activeDelivery?250:(residentActive||activeConversation&&!['complete','held'].includes(activeConversation.phase)?350:2000);
   if (busy || Date.now()-lastSent<cadence) return;
   const currentSession = session;
   residents = [];
@@ -398,6 +412,12 @@ on('update', () => {
   if (!residents.some(resident=>resident.id===selected)) selected=residents.length?residents[0].id:0;
   if (!observerReady && residents.length) {
     player.setGhost(true);
+    try{
+      if(typeof sp.Game.disablePlayerControls==='function'){
+        sp.Game.disablePlayerControls(true,true,true,true,true,false,true,true,0);
+        playerControlRequest='requested';
+      }else playerControlRequest='api_unavailable';
+    }catch(_){playerControlRequest='request_failed';}
     sp.enableFreeCamera(true);
     sp.setFreeCameraPosition([player.getPositionX(),player.getPositionY(),player.getPositionZ()+240]);
     observerReady=true;
@@ -422,8 +442,15 @@ on('update', () => {
     }
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
+  function controlEnabled(name){try{return typeof sp.Game[name]==='function'?sp.Game[name]():null;}catch(_){return null;}}
   const observation = {
-    ui_health:uiHealth,
+    director_control:directorControl,
+    player_controls:{request:playerControlRequest,
+      movement:controlEnabled('isMovementControlsEnabled'),
+      fighting:controlEnabled('isFightingControlsEnabled'),
+      activate:controlEnabled('isActivateControlsEnabled')},
+    transport:{cadence_ms:cadence,previous_request_interval_ms:lastSent?Date.now()-lastSent:null},
+    ui_health:uiHealth,audio_output:audioOutput,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
@@ -434,11 +461,12 @@ on('update', () => {
     sp.setTextsVisibility('off');
     sp.browser.executeJavaScript('window.whiterunRender && window.whiterunRender('+JSON.stringify({...observation,...presentation})+');');
   }
-  busy=true; lastSent=Date.now();
+  busy=true; lastSent=Date.now();lastAckSent=ackKey;
   client.post('/heartbeat',{body:JSON.stringify(observation),contentType:'application/json',headers:{Authorization:'Bearer '+config.token}})
     .then(response => {
       if (session===currentSession && response.status===200) {
         const result=JSON.parse(response.body);pending=result.command;
+        if(directorControl&&result.director_control_receipt?.id===directorControl.id)directorControl=null;
         if(result.presentation) presentation=result.presentation;
         if(result.observer_camera&&result.observer_camera.request_id!==observerCamera.status().request_id)remoteCamera=result.observer_camera;
       }

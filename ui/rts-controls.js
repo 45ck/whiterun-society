@@ -1,10 +1,10 @@
 const rtsCamera=createRtsCamera();
 let rtsDrag=null,lastRtsSend=0,lastRtsInput='loaded';
-window.whiterunRtsActive=()=>camera==='free'&&!tour;
+window.whiterunRtsActive=()=>camera==='free';
 function rtsMove(action,dx=0,dy=0){
  const view=rtsCamera.step(action,dx,dy);if(!view)return;
  lastRtsInput=action;
- tour=false;camera='free';focusId=null;
+ camera='free';focusId=null;
  send({type:'society-camera',...view});
  document.getElementById('rts-controls').hidden=false;
  text('camera-label','RTS overview · wheel zoom · drag to pan');

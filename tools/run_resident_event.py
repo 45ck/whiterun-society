@@ -45,7 +45,8 @@ def main():
         return result
 
     evidence = {'event_id': args.event_id, 'started_at': time.time(), 'model_calls': 0,
-                'before': request('/state'), 'stages': []}
+                'before': request('/state'), 'stages': [],
+                'polling':{'checkpoint_seconds':.1,'native_wait_seconds':.2,'sleep_after_mutation':False}}
     path = args.runtime/('resident-event-'+hashlib.sha256(args.event_id.encode()).hexdigest()[:12]+'.json')
     def record(stage, state):
         evidence['stages'].append({'at': time.time(), 'phase': stage, 'plan': state['society'].get('plan')})
@@ -62,8 +63,10 @@ def main():
         while time.monotonic() < deadline:
             state = request('/state')
             society = state['society']
+            if state['bridge']['session']!=evidence['before']['bridge']['session']:
+                raise ValueError('Game session changed during the resident event')
             if society['transition']:
-                time.sleep(.5)
+                time.sleep(.1)
                 continue
             if society['error']:
                 raise ValueError(society['error'])
@@ -88,6 +91,7 @@ def main():
                 audio=voice_worker.synthesize(turn['line'],stock_voice(turn['actor'],state['bridge']['observation']))
                 evidence.setdefault('synthesis_timings',[]).append({'act':turn['act'],'seconds':round(time.monotonic()-began,3),'engine_seconds':audio['synthesis_seconds']})
                 request('/agency/audio',{'id':args.event_id,'audio':audio['audio']})
+                continue  # Observe the persisted audio checkpoint without an extra fixed pause.
             elif phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
                 if evidence['model_calls'] >= 5:
                     raise ValueError('Resident event exhausted its five-call decision budget')
@@ -97,7 +101,7 @@ def main():
                 while confirmed['society']['transition']:
                     if time.monotonic() > deadline:
                         raise TimeoutError('Claim checkpoint did not bind')
-                    time.sleep(.5)
+                    time.sleep(.1)
                     confirmed=request('/state')
                 current=confirmed['society'].get('plan')
                 if confirmed['bridge']['session']!=claim['context']['session'] or not current or (current.get('claim') or {}).get('id')!=claim['id']:
@@ -105,9 +109,10 @@ def main():
                 evidence['model_calls'] += 1
                 result = infer(claim['context'], model, key)
                 request('/agency/decision', {'id': args.event_id, 'claim_id': claim['id'], 'result': result})
+                continue  # The next iteration still waits for native checkpoint binding.
             elif phase == 'thinking':
                 raise ValueError('An inference claim already exists; it must not be automatically repeated')
-            time.sleep(.5)
+            time.sleep(.2)
         raise TimeoutError('Resident event exceeded its bounded execution time')
     except Exception as error:
         evidence['status'] = 'held'
