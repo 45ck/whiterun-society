@@ -39,7 +39,10 @@ def wait_settled(request,session=None,*,deadline=None,wave=None,require_idle=Tru
         if session and state['bridge']['session']!=session:raise ValueError('Session changed; do not replay inference')
         if world['error']:raise ValueError('Society has an unresolved error')
         current=None
-        if wave:
+        # A binding checkpoint exposes the previous committed snapshot. The
+        # claimed wave can legitimately be absent or still thinking there.
+        # Session and global errors above remain authoritative while binding.
+        if wave and not world['transition']:
             current=next((w for w in (world.get('town') or {}).get('goal_waves',[]) if w['id']==wave['id']),{})
             if current.get('claim_id')!=wave['claim_id'] or current.get('session')!=wave['session']:
                 raise ValueError('Goal claim changed while awaiting settlement')

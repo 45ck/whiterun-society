@@ -13,6 +13,46 @@ from tools.run_resident_goals import main,settlement_deadline,wait_settled
 
 
 class GoalResultSettlementTests(unittest.TestCase):
+    def wait_with_snapshots(self,states,wave,phase):
+        clock=[0.0];reads=[]
+        def request(route):
+            self.assertEqual(route,'/state');reads.append(route)
+            return states.pop(0)
+        with patch('tools.run_resident_goals.time.monotonic',side_effect=lambda:clock[0]),\
+             patch('tools.run_resident_goals.time.time',return_value=1000),\
+             patch('tools.run_resident_goals.time.sleep',side_effect=lambda n:clock.__setitem__(0,clock[0]+n)):
+            result=wait_settled(request,'a',wave=wave,expected_phase=phase,require_idle=False)
+        return result,reads
+
+    def snapshot(self,waves,transition=None,session='a'):
+        return {'bridge':{'session':session,'last_seen':1000,'command':None},
+                'society':{'error':None,'transition':transition,'unsettled_effect':None,'town':{'goal_waves':waves}}}
+
+    def test_claim_binding_waits_for_new_wave_without_rejecting_previous_snapshot(self):
+        wave={'id':'new','claim_id':'new-claim','session':'a','phase':'thinking'}
+        old={'id':'old','claim_id':'old-claim','session':'a','phase':'complete'}
+        states=[self.snapshot([old],{'checkpoint':2}),self.snapshot([old],{'checkpoint':2}),self.snapshot([wave])]
+        result,reads=self.wait_with_snapshots(states,wave,'thinking')
+        self.assertEqual(len(reads),3);self.assertEqual(result['society']['town']['goal_waves'],[wave])
+
+    def test_result_binding_can_expose_previous_thinking_wave_until_commit(self):
+        wave={'id':'new','claim_id':'new-claim','session':'a','phase':'thinking'}
+        complete={**wave,'phase':'complete'}
+        states=[self.snapshot([wave],{'checkpoint':3}),self.snapshot([complete])]
+        result,reads=self.wait_with_snapshots(states,wave,'complete')
+        self.assertEqual(len(reads),2);self.assertEqual(result['society']['town']['goal_waves'],[complete])
+
+    def test_true_wrong_claim_after_commit_still_fails(self):
+        wave={'id':'new','claim_id':'new-claim','session':'a','phase':'thinking'}
+        wrong={**wave,'claim_id':'other-claim'}
+        with self.assertRaisesRegex(ValueError,'claim changed'):
+            self.wait_with_snapshots([self.snapshot([],{'checkpoint':2}),self.snapshot([wrong])],wave,'thinking')
+
+    def test_session_change_still_fails_during_checkpoint_binding(self):
+        wave={'id':'new','claim_id':'new-claim','session':'a','phase':'thinking'}
+        with self.assertRaisesRegex(ValueError,'Session changed'):
+            self.wait_with_snapshots([self.snapshot([],{'checkpoint':2},session='b')],wave,'thinking')
+
     def exercise(self,expiry=1800,change_session_at=None,post_error=None,busy_until=110):
         clock=[0.0];posts=[];paid=[];clients=[];wave={'id':'wave','claim_id':'claim','session':'a','phase':'thinking',
             'deadline_at':1000+expiry,'members':[{'actor':7,'context':{'options':[{'id':'quiet','effect':'Quiet'}]}}]}
