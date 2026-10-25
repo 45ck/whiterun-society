@@ -1,0 +1,45 @@
+{
+  "ready": false,
+  "gaps": [
+    "Current verified native bread catalog and recipe hashes are required.",
+    "At least two free native owner-work slots are required.",
+    "Two disjoint eligible owners with pending need reviews required; found 0 eligible owners and 0 pending eligible owners. No stock or charters will be created.",
+    "An existing pending social_review with two currently eligible participants disjoint from both owners is required; no invitation or review will be created."
+  ],
+  "selected_owners": [],
+  "eligible_owners": [],
+  "observed_charters": [
+    {
+      "business_id": "business-108149",
+      "owner": 108149,
+      "custodian": 108149,
+      "capabilities": [
+        "bread_recipe",
+        "retail_food"
+      ]
+    },
+    {
+      "business_id": "business-108156",
+      "owner": 108156,
+      "custodian": 108156,
+      "capabilities": [
+        "metalwork_planned"
+      ]
+    }
+  ],
+  "social_pair": null,
+  "social_opportunity": null,
+  "cloud_model_calls": 0,
+  "checkpoint": 3183,
+  "native_received_at": 1792929958.8130867,
+  "owner_work_capability": {
+    "available": null,
+    "capacity": null
+  },
+  "freshness_checked": true,
+  "scope": "Existing loaded state only; no seeded stock, new charter, need review or authored completion.",
+  "executed": false,
+  "mode": "read_only_live",
+  "recorded_at_utc": "2026-10-25T12:07:02.9332500Z",
+  "inspector_revision": "9e960a8160c2fc80a71038fcfad2081bae99c33d"
+}

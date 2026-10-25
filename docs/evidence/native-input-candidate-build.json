@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T12:20:47Z",
+  "run": {
+    "id": 40191256470,
+    "attempt": 1,
+    "url": "https://github.com/45ck/whiterun-society/actions/runs/40191256470",
+    "revision": "9e960a8160c2fc80a71038fcfad2081bae99c33d",
+    "conclusion": "success",
+    "started_at_utc": "2026-10-25T12:00:46Z",
+    "completed_at_utc": "2026-10-25T12:17:18Z"
+  },
+  "artifact": {
+    "id": 12597864227,
+    "name": "native-ui-input-candidate-unqualified-40191256470-1",
+    "archive_bytes": 21258545,
+    "provider_reported_archive_sha256": "6dd146f56ff1717d75a79a37ce65f18539021fa6e49678466af086b99cd9af59",
+    "manifest_entries_verified": 158,
+    "hash_or_size_mismatches": []
+  },
+  "baseline": {
+    "dll_bytes": 1592832,
+    "dll_sha256": "9563d76cd02b7034cc2689c82f7f832449129267db1d23a7199edbf1d373425b",
+    "pdb_bytes": 37457920,
+    "pdb_sha256": "9a74a74bb80ec14fc96c005617cf4a008c740d71dfeea6c941a5072471f5517f",
+    "machine": "0x8664",
+    "pdb_guid": "89a6de1b-c9b2-4a27-a763-c49efa1810bc",
+    "pdb_age": 1,
+    "matching_debug_signature": true
+  },
+  "candidate": {
+    "dll_bytes": 1620480,
+    "dll_sha256": "feaad6153bd47ca89c13498750fb0f7c873d5f9d5c8ec78ef2d475c7978ba824",
+    "pdb_bytes": 38023168,
+    "pdb_sha256": "e718b9bdd2d62f49b978495ed5dc59bebb3da5d0221d0c732039766df5abc391",
+    "machine": "0x8664",
+    "pdb_guid": "01312f5d-58eb-4d16-ba90-b401a6c3cd2f",
+    "pdb_age": 1,
+    "matching_debug_signature": true
+  },
+  "policy_tests": {
+    "execution_environment": "GitHub-hosted windows-2022",
+    "language": "C++20",
+    "checks": 159,
+    "failures": 0,
+    "evidence": "logs/policy-tests-run.log"
+  },
+  "preparation_tests": {
+    "hosted_step": "success",
+    "local_tests_passed": 23
+  },
+  "compiler": {
+    "toolset": "v143",
+    "msvc_version": "14.44.35207",
+    "compiler_sha256": "fe251ef50a1545b1b0835ee17b1e785459712b38d79e45b5c1d3d28970a36619",
+    "observed_dependency_caches": 20,
+    "all_match_expected": true,
+    "verified": true
+  },
+  "licenses": {
+    "count": 14,
+    "files": [
+      "NirnLabUIPlatform-MIT.txt",
+      "vcpkg-MIT.txt",
+      "x64-windows-static-PalSigslot.txt",
+      "x64-windows-static-cef-prebuilt.txt",
+      "x64-windows-static-commonlibsse-ng.txt",
+      "x64-windows-static-directxmath.txt",
+      "x64-windows-static-directxtk.txt",
+      "x64-windows-static-fmt.txt",
+      "x64-windows-static-nlohmann-json.txt",
+      "x64-windows-static-rapidcsv.txt",
+      "x64-windows-static-spdlog.txt",
+      "x64-windows-static-xbyak.txt",
+      "x64-windows-vcpkg-cmake-config.txt",
+      "x64-windows-vcpkg-cmake.txt"
+    ]
+  },
+  "source_patch": {
+    "id": "save-and-opt-in-mouse-v1",
+    "sha256": "0dd87fe7e743b702e461740d28bb4611b095cc3e65dc5b9c59a2f9949cd0d4a1",
+    "reviewed_source_files": 9,
+    "receipt_matches_reviewed_manifest": true,
+    "review_diff_sha256_matches": true,
+    "default_mode": "native",
+    "source_save_compatibility_flag": true
+  },
+  "baseline_isolation": {
+    "baseline_dll_pdb_retained": true,
+    "baseline_cache_retained": true,
+    "output_directories_distinct": true,
+    "byte_identical_rebuild_claimed": false
+  },
+  "nonblocking_findings": [
+    {
+      "kind": "compiler_warning",
+      "code": "C4244",
+      "source": "src/UIPlatform/Hooks/WhiterunMouseRoute.cpp:93",
+      "detail": "Integer loop constants 1, 2, 4 passed to uint8_t button mask; values are representable. No source change or rebuild performed."
+    },
+    {
+      "kind": "metadata_shape",
+      "detail": "result.json candidate_application_patches serialized as a single string; source-patch receipt independently identifies the exact candidate."
+    }
+  ],
+  "runtime_qualified": false,
+  "native_input_fixed": false,
+  "local_native_execution_performed": false,
+  "deployment_performed": false,
+  "remaining_proof": [
+    "Authorized isolated-lab installation with preserved rollback DLL",
+    "Visible mouse/RTS/focus/close/reopen/drag/scale qualification",
+    "Menu saving/loading verification",
+    "Keyboard-route qualification"
+  ]
+}

@@ -16,7 +16,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 *Generated architecture illustration, not gameplay. Depicted crafting is conceptual; native generic production and smelter access remain unqualified. [Image prompt](docs/images/economy-catalog-flow.prompt.md).*
 
-**Native UI build baseline:** [hosted run 40187718701](https://github.com/45ck/whiterun-society/actions/runs/40187718701) compiled successfully as **`compiled-unqualified`**. It has no input correction or save-compatibility fix and has not been deployed. [Build evidence and limits](docs/native-ui-build.md).
+**Native UI candidate:** [hosted run 40191256470](https://github.com/45ck/whiterun-society/actions/runs/40191256470) built the separate unchanged baseline and reviewed saving/focus/mouse-routing candidate. All 159 C++ policy checks passed, all 158 artifact hashes verified, and both DLL/PDB pairs match. Status is **`compiled-unqualified`**: the candidate is not installed and RTS input has not been verified in Skyrim. [Build evidence and limits](docs/native-ui-build.md).
 
 **RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).
 
