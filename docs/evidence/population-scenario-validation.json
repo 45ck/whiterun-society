@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T13:06:40.274590+00:00",
+  "run_id": 40195842462,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40195842462",
+  "revision": "9ef9476b784719866c78df319aab37c5ce3f7947",
+  "conclusion": "success",
+  "platforms": {
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T13:03:03Z",
+      "completed_at": "2026-10-25T13:05:27Z",
+      "python": {
+        "run": 832,
+        "passed": 831,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 300,
+        "passed": 300,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "papyrus": {
+        "step_status": "success",
+        "compiled_scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "2188a402ad8bd35ff259b7f8a6505c6d9505c543295efb17127d1fa4edc1ef92",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "8efb863b5d00891982d04d4cf1d2ee76a6683ae6b34f2fb136a0d169c1be1295",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    },
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T13:03:02Z",
+      "completed_at": "2026-10-25T13:03:45Z",
+      "python": {
+        "run": 832,
+        "passed": 831,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 300,
+        "passed": 300,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      }
+    }
+  },
+  "documentation_deployment": {
+    "run_id": 40195841961,
+    "conclusion": "success",
+    "revision": "9ef9476b784719866c78df319aab37c5ce3f7947"
+  },
+  "local_javascript": {
+    "run": 300,
+    "passed": 300,
+    "failed": 0
+  },
+  "local_full_python": {
+    "status": "stopped_incomplete",
+    "passed_before_stop": 114,
+    "skipped_before_stop": 1,
+    "failures_observed_before_stop": 0,
+    "reason": "Stopped duplicate slow local discovery; complete Windows and Ubuntu hosted suites qualify this revision."
+  },
+  "evidence_method": "Completed hosted run metadata and full logs; counts per platform, not separate independent scenarios.",
+  "local_full_log_sha256": "093d0caca913fd066c0a11cf47f3b4862e53e0d0a518d2a0c5a3bd671e404fd1",
+  "runtime_qualified": false,
+  "native_execution_performed_locally": false,
+  "game_deployment_performed": false,
+  "limits": [
+    "Source tests and compiled plugins do not prove native attendance, audible conversation, RTS controls or human realism.",
+    "One initial generated-binary readback test is skipped before artifacts exist; it passes in the later six-test stage.",
+    "Papyrus hashes are compiler log reports, not independently downloaded artifact verification.",
+    "This change removes implicit population and pairing defaults; authored resource rules and finite economic mechanisms remain."
+  ]
+}

@@ -24,6 +24,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 *Generated system illustration; in-game qualification remains pending. [Full image prompt](docs/images/resident-initialization-flow.prompt.md).*
 
+[Population and conversation validation](https://github.com/45ck/whiterun-society/actions/runs/40195842462) passed on Windows and Ubuntu: 832 Python tests per platform with one initial skip, 300 JavaScript tests and six generated-plugin readback checks. The skipped generated-file test passed after plugin generation; Windows also compiled both Papyrus scripts. [Exact revision and evidence](docs/evidence/population-scenario-validation.json).
+
 **Native UI candidate:** [hosted run 40191256470](https://github.com/45ck/whiterun-society/actions/runs/40191256470) built the separate unchanged baseline and reviewed saving/focus/mouse-routing candidate. All 159 C++ policy checks passed, all 158 artifact hashes verified, and both DLL/PDB pairs match. Status is **`compiled-unqualified`**: the candidate is not installed and RTS input has not been verified in Skyrim. [Build evidence and limits](docs/native-ui-build.md).
 
 **RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).

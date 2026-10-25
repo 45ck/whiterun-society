@@ -59,6 +59,8 @@ Native reload, interrupted approaches, participant disappearance, audio interrup
 
 ## Qualification required
 
+[Full hosted validation](https://github.com/45ck/whiterun-society/actions/runs/40195842462) passed for source revision `9ef9476` on Windows and Ubuntu: **832 Python tests per platform (831 passed, one initial generated-file skip), 300 JavaScript tests, six generated plugins and six plugin-readback checks**. The initially skipped test passed in the later readback stage. Windows also compiled both Papyrus scripts. [Machine-readable validation evidence](evidence/population-scenario-validation.json). These results do not qualify installation or native execution.
+
 Use fresh arbitrary participant IDs in tests; changing their names must not alter eligibility. Verify no-census rejection without a state change or provider call; uniform fresh profile seeding and old-save preservation; unknown/duplicate/stale participants; opportunity expiry; reservations; changed scenario digest or policy; exact duplicate handling; and saved-route holds before cached acknowledgements.
 
 Focused source verification reported **12 new engine/cleanup tests**, **9 dedicated API/CLI entry-point tests** and **3 existing worker tests**, all passing. These are separately reported scopes, not a count of native encounters or a general realism score. Fresh population initialization has its own [test and historical-evidence boundaries](population.md).
