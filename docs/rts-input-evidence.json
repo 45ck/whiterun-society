@@ -1,0 +1,138 @@
+{
+  "scope": "Skyrim-only Computer Use with native bridge telemetry. Automation input qualification, not a human usability test.",
+  "observations": {
+    "before_final_drag": {
+      "camera": {
+        "mode": "free",
+        "id": 0,
+        "distance": 1200,
+        "yaw": 225,
+        "elevation": 900,
+        "panX": 24500,
+        "panY": -7100,
+        "manual": true,
+        "request_id": null,
+        "position": [
+          23651.47265625,
+          -7948.5283203125,
+          -2420
+        ]
+      },
+      "input": {
+        "rts": true,
+        "mode": "free",
+        "last_input": "loaded",
+        "pointer": null,
+        "click": null,
+        "diagnostics": {
+          "counts": {
+            "click": 0,
+            "keydown": 0,
+            "pointerdown": 0,
+            "pointerup": 0,
+            "wheel": 0
+          },
+          "document_focused": true,
+          "last_control_key": null,
+          "last_event_at": null,
+          "visibility": "visible"
+        },
+        "native": {
+          "button_events": 0,
+          "last_control_key": null,
+          "focus_ready": true,
+          "focus_requested": true,
+          "browser_wanted_focus": true
+        }
+      }
+    },
+    "after_final_drag": {
+      "camera": {
+        "mode": "free",
+        "id": 0,
+        "distance": 1200,
+        "yaw": 225,
+        "elevation": 900,
+        "panX": 24500,
+        "panY": -7100,
+        "manual": true,
+        "request_id": null,
+        "position": [
+          23651.47265625,
+          -7948.5283203125,
+          -2420
+        ]
+      },
+      "input": {
+        "rts": true,
+        "mode": "free",
+        "last_input": "loaded",
+        "pointer": null,
+        "click": null,
+        "diagnostics": {
+          "counts": {
+            "click": 0,
+            "keydown": 0,
+            "pointerdown": 0,
+            "pointerup": 0,
+            "wheel": 0
+          },
+          "document_focused": true,
+          "last_control_key": null,
+          "last_event_at": null,
+          "visibility": "visible"
+        },
+        "native": {
+          "button_events": 0,
+          "last_control_key": null,
+          "focus_ready": true,
+          "focus_requested": true,
+          "browser_wanted_focus": true
+        }
+      }
+    }
+  },
+  "earlier_observed_drag": {
+    "scope": "Captured from native telemetry after camera synchronization, before subsequent F8 and missed-release changes; one successful transport observation, not reliable input acceptance.",
+    "before": {
+      "distance": 1200,
+      "elevation": 900,
+      "yaw": 225,
+      "panX": 24500,
+      "panY": -7100
+    },
+    "after": {
+      "distance": 1200,
+      "elevation": 900,
+      "yaw": -135,
+      "panX": 24669.70562748477,
+      "panY": -7269.705627484771,
+      "request_id": "rts-mvncxa04-5mvfua-1"
+    },
+    "dom_counts": {
+      "pointerdown": 1,
+      "pointerup": 1,
+      "click": 1,
+      "keydown": 0,
+      "wheel": 0
+    },
+    "reported_pointerdown": {
+      "x": 0,
+      "y": 0
+    },
+    "reported_click": {
+      "x": 1280,
+      "y": 0
+    }
+  },
+  "conclusion": {
+    "camera_sync": "One native drag preserved orientation, zoom and elevation; unit and DOM integration coverage verifies synchronization and stale acknowledgement handling.",
+    "input_transport": "Unqualified. Later repeat delivered zero DOM input events despite reported focus. Windows pointer placement did not establish matching embedded-browser coordinates.",
+    "f8_and_missed_release": "Regression tested and deployed; native end-to-end keyboard qualification remains open.",
+    "tests": {
+      "javascript_passed": 161,
+      "javascript_seconds": 2.4826103,
+      "python": "Unchanged by this slice; preceding e7a348d result is 329 passing tests."
+    }
+  }
+}

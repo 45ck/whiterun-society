@@ -36,3 +36,7 @@ Checkpoint acknowledgements now use a short polling interval, and consent/thinki
 Persistent agent-owned daily routines, broader production chains, seller availability/opening hours, realistic market prices, political controls, sustained conversation quality, lip sync and native interaction/UI acceptance remain unfinished. Counts of possibilities or completed model calls do not establish human realism.
 
 Save `WS-RTS-20261025-BA` was recorded at checkpoint 1403 and restored with all 17 compared society/inventory fields matching.
+
+## Input qualification follow-up
+
+The camera now synchronizes to its observed pose before gestures, ignores empty drags and rejects stale acknowledgements. Browser F8 release and missed-release recovery are covered by the 161-test JavaScript suite. Native delivery remains intermittent: one drag moved with the correct pose, while a later repeat produced no input events. Full in-game selection and keyboard acceptance remain open. [Detailed evidence](rts-input.md).

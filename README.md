@@ -4,6 +4,8 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).
+
 **RTS controls and charts:** [implementation and runtime qualification](docs/rts-experience.md). Play starts resident decisions; Pause settles the current interaction. Movie view follows current activity, with no automatic tours.
 
 **Resident ownership and voices:** [native continuity qualification](docs/resident-continuity.md): 29 enrolled residents, separate standby/task charts, two completed four-line encounters, and saved policy recovery. Standby and audible output are verified separately from natural dialogue and economic success.

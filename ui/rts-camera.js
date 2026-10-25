@@ -1,10 +1,25 @@
 function createRtsCamera(){
- let view={mode:'free',distance:1800,elevation:2200,yaw:180,panX:24500,panY:-7100};
+ let sequence=0,pending=null,lastObserved=null;
+ const prefix='rts-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)+'-';
+ const bounds={distance:[100,4000],elevation:[40,2500],yaw:[-360,360],panX:[17000,30000],panY:[-15000,1000]};
+ let view={mode:'free',distance:1800,elevation:2200,yaw:-180,panX:24500,panY:-7100};
  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
  return {
   status(){return {...view};},
+  observe(sample){
+   if(!sample||sample.mode!=='free'){pending=null;return false;}
+   const next={mode:'free'};
+   for(const [key,[lo,hi]] of Object.entries(bounds)){
+    if(!Number.isFinite(sample[key])||sample[key]<lo||sample[key]>hi)return false;
+    next[key]=sample[key];
+   }
+   const id=sample.request_id||null;
+   if(String(id).startsWith(prefix)&&id!==prefix+sequence)return false;
+   if(pending&&id!==pending&&(id===lastObserved||id===null||String(id).startsWith(prefix)))return false;
+   next.yaw=((next.yaw+540)%360)-180;view=next;pending=null;lastObserved=id;return true;
+  },
   step(action,dx=0,dy=0){
-   if(!Number.isFinite(dx)||!Number.isFinite(dy))return null;
+   if(!Number.isFinite(dx)||!Number.isFinite(dy)||(action==='drag'&&dx===0&&dy===0))return null;
    const v={...view},angle=v.yaw*Math.PI/180,step=Math.max(80,v.distance/8);
    let across=0,forward=0;
    if(action==='north')forward=step;
@@ -21,7 +36,7 @@ function createRtsCamera(){
    v.panX=clamp(v.panX,17000,30000);v.panY=clamp(v.panY,-15000,1000);
    v.distance=clamp(v.distance,100,4000);v.elevation=clamp(v.elevation,40,2500);
    v.yaw=((v.yaw+540)%360)-180;
-   view=v;return {...v};
+   view=v;pending=prefix+(++sequence);return {...v,request_id:pending};
   }
  };
 }

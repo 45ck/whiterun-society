@@ -8,6 +8,32 @@ function native(){
  for(const script of w.document.scripts)vm.runInContext(script.src?read(path.basename(script.src)):script.textContent,dom.getInternalVMContext());
  return {dom,w,messages,intervals};
 }
+
+test('native RTS gestures use the reported camera and focused browser can release F8',()=>{
+ const {dom,w,messages,intervals}=native();try{
+ w.whiterunRender({residents:[],trades:[],camera:{mode:'free',manual:true,distance:1200,elevation:900,yaw:225,panX:24000,panY:-8000},director:{running:false},dashboard:dashboard()});
+ w.document.body.dispatchEvent(new w.KeyboardEvent('keydown',{key:'d',bubbles:true}));
+ const moved=messages.at(-1);assert.equal(moved.type,'society-camera');assert.equal(moved.yaw,-135);assert.equal(moved.distance,1200);assert.ok(moved.panX<24000);
+ w.document.body.dispatchEvent(new w.KeyboardEvent('keydown',{key:'F8',bubbles:true,cancelable:true}));
+ assert.equal(messages.at(-1).type,'society-ui-focus');assert.equal(messages.at(-1).focused,false);
+ const input=w.document.createElement('input');w.document.body.append(input);
+ input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'d',bubbles:true}));
+ const before=messages.length;for(const i of intervals.filter(x=>x.ms===2000))i.fn();
+ const health=messages.slice(before).find(m=>m.type==='society-ui-health');
+ assert.equal(health.diagnostics.counts.keydown,3);assert.equal(health.diagnostics.last_control_key,'F8','typed text is not retained');
+ }finally{dom.window.close();}
+});
+
+test('a missed pointer release cannot turn later hovering into camera movement',()=>{
+ const {dom,w,messages}=native();try{
+ const event=(name,x,buttons)=>new w.MouseEvent(name,{bubbles:true,clientX:x,clientY:300,button:0,buttons});
+ w.document.body.dispatchEvent(event('pointerdown',300,1));
+ const before=messages.filter(m=>m.type==='society-camera').length;
+ w.document.body.dispatchEvent(event('pointermove',350,0));
+ w.document.body.dispatchEvent(event('pointermove',400,1));
+ assert.equal(messages.filter(m=>m.type==='society-camera').length,before);
+ }finally{dom.window.close();}
+});
 test('native RTS UI sends Play/Pause and follows movie activity only when requested',()=>{
  const {dom,w,messages,intervals}=native();try{
  assert.equal(w.whiterunRtsActive(),true);assert.equal(w.document.getElementById('tour'),null);

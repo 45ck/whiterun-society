@@ -252,3 +252,16 @@ test('browser focus is applied after page readiness across update frames, once p
   assert.equal(focus.at(-1),false,'heartbeat must not steal focus after F8 releases it');
   assert.equal(focus.length,7);
 });
+
+test('focused browser release survives heartbeat and native F8 can restore focus',async()=>{
+ const h=harness(),focus=[];
+ h.sp.setTextsVisibility=()=>{};
+ h.sp.browser={loadUrl:()=>{},setVisible:()=>{},setFocused:v=>focus.push(v),executeJavaScript:()=>{}};
+ h.handlers.get('update')();await settle();
+ h.handlers.get('browserMessage')({arguments:[{type:'society-ui-health',rts:true}]});
+ h.handlers.get('update')();h.handlers.get('update')();
+ h.handlers.get('browserMessage')({arguments:[{type:'society-ui-focus',focused:false}]});
+ assert.equal(focus.at(-1),false);
+ h.handlers.get('update')();assert.equal(focus.at(-1),false);
+ h.handlers.get('buttonEvent')({code:66,isDown:true});assert.equal(focus.at(-1),true);
+});

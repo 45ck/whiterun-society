@@ -57,6 +57,7 @@ let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[],mapProjection=null;
 let observerKey=null,uiHealth=null;
 let browserFocusReady=false;
+let nativeButtonEvents=0,lastNativeControlKey=null;
 const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
@@ -70,7 +71,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
-  browserFocusReady=false;uiHealth=null;
+  browserFocusReady=false;uiHealth=null;nativeButtonEvents=0;lastNativeControlKey=null;
   directorControl=null;playerControlRequest=null;audioOutput=null;
   lastAckSent=null;
   sceneHandoffs.reset();residentControl.reset();lastPresentationAt=0;
@@ -101,11 +102,12 @@ function checkpointValue() {
 }
 on('browserMessage',event=>{
   const message=event.arguments && event.arguments[0];
+  if(message?.type==='society-ui-focus'&&message.focused===false&&sp.browser){cursor=false;sp.browser.setFocused(false);return;}
   if(message?.type==='society-director'&&['play','pause'].includes(message.action)){
     directorControl={id:'control-'+Date.now()+'-'+Math.random().toString(16).slice(2,10),action:message.action};return;
   }
   if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null,selection:message.selection||null};return;}
-  if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30),pointer:message.pointer||null,click:message.click||null};return;}
+  if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30),pointer:message.pointer||null,click:message.click||null,diagnostics:message.diagnostics||null};return;}
   if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='free';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
@@ -119,6 +121,8 @@ on('browserMessage',event=>{
   cameraMode=message.mode;cameraActor=message.id||0;cameraDirty=true;
 });
 on('buttonEvent',event=>{
+  nativeButtonEvents++;
+  if([2,3,4,17,30,31,32,16,18,15,64,65,66].includes(event.code))lastNativeControlKey={code:event.code,down:event.isDown===true};
   if(event.isDown&&[2,3,4,64,65].includes(event.code))observerKey=event.code;
   if (event.code===66 && event.isDown && sp.browser) {cursor=!cursor;sp.browser.setFocused(cursor);}
 });
@@ -483,7 +487,7 @@ on('update', () => {
       activate:controlEnabled('isActivateControlsEnabled')},
     transport:{cadence_ms:cadence,previous_request_interval_ms:lastSent?Date.now()-lastSent:null},
     resident_control:residentControl.status(),
-    ui_health:uiHealth,audio_output:audioOutput,
+    ui_health:uiHealth?{...uiHealth,native:{button_events:nativeButtonEvents,last_control_key:lastNativeControlKey,focus_ready:browserFocusReady===true,focus_requested:cursor,browser_wanted_focus:typeof sp.browser?.isFocused==='function'?sp.browser.isFocused():null}}:null,audio_output:audioOutput,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
