@@ -44,6 +44,12 @@ Generated system illustration — not gameplay
 
 ![Independent lives](images/independent-lives.png)
 
+## Independent owner work
+
+Generated system illustration — not gameplay
+
+![Independent owner work](images/independent-owner-work.png)
+
 ## Intention to consequence
 
 Generated system illustration — not gameplay

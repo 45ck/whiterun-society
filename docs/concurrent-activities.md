@@ -60,4 +60,6 @@ The first native acceptance scenario—two distinct seated residents with separa
 
 Next expansion should follow measured waiting time and resource conflicts: independent self-care, independent owner work, then compatible multi-participant economic events. Actor locks alone are insufficient for shared inventory, business capacity, or contracts; those require resource reservations and atomic settlement before broader concurrency is enabled. No motion or conversation quota should force needless activity merely to make the town look busy.
 
+The next owner-work slice has an [implementation contract and native acceptance plan](independent-owner-work.md): four configured owner jobs use existing Citizens mailboxes, while inventory changes remain serialized. Concurrent owner attendance and production are not yet native-qualified; the rest trial does not establish them.
+
 See the [simulation roadmap](simulation-roadmap.md), [purposeful agency](purposeful-agency.md), and [quantitative goals](society-okrs.md).

@@ -1,6 +1,7 @@
 import copy
 import unittest
 from agency_metrics import account_cashflow,economic_network
+from metrics import simulation_metrics
 
 
 def receipt(id,kind,**fields):
@@ -55,3 +56,37 @@ class AccountCashflowTests(unittest.TestCase):
         m=account_cashflow({'trades':[trade('bool',True,2,3)],'production':[wage]})
         self.assertEqual(m['record_coverage'],{'success':0,'n':2,'percent':0});self.assertEqual(m['accounts'],[])
         self.assertEqual(m['rejected_records'],{'invalid_trade_cash_leg':1,'invalid_wage_cash_leg':1})
+
+    def test_independent_owner_recipe_counts_only_committed_zero_gold_exact_recipe(self):
+        command=receipt('owner-commit','inventory_self_produce_commit',actor=2,
+            before={'owner':{'gold':3,'bread':4,'grain':1}},after={'owner':{'gold':3,'bread':6,'grain':0}})
+        state={'production':[command,copy.deepcopy(command)],'work_jobs':{'attendance':{'phase':'ready','actor':2}}}
+        result=account_cashflow(state);row=result['accounts'][0]
+        self.assertEqual(row['production_events'],1);self.assertEqual(row['net_operating_cashflow'],0)
+        self.assertEqual(row['cash_leg_events'],0);self.assertEqual(result['duplicate_records_excluded'],1)
+        self.assertEqual(result['recognized_record_kinds'],{'inventory_self_produce_commit':1})
+        self.assertIsNone(result['profit'])
+        self.assertEqual(account_cashflow({'work_jobs':state['work_jobs']})['accounts'],[])
+        for label,alter in [('gold',lambda c:c['after']['owner'].update(gold=4)),
+                            ('bread',lambda c:c['after']['owner'].update(bread=7)),
+                            ('grain',lambda c:c['after']['owner'].update(grain=1)),
+                            ('wage',lambda c:c.update(wage_gold=1)),
+                            ('account',lambda c:c.update(custodian=3)),
+                            ('missing',lambda c:c['before']['owner'].pop('grain')),
+                            ('bool',lambda c:c['after']['owner'].update(gold=True))]:
+            with self.subTest(label=label):
+                broken=copy.deepcopy(command);alter(broken['command'])
+                rejected=account_cashflow({'production':[broken]})
+                self.assertEqual(rejected['accounts'],[])
+                self.assertEqual(rejected['rejected_records'],{'invalid_owner_recipe_cash_leg':1})
+
+    def test_simulation_owner_metrics_count_both_committed_protocols_not_attendance(self):
+        legacy=receipt('legacy','inventory_self_produce',actor=2,
+            before={'owner':{'gold':3,'bread':0,'grain':2}},after={'owner':{'gold':3,'bread':2,'grain':1}})
+        modern=receipt('modern','inventory_self_produce_commit',actor=3,
+            before={'owner':{'gold':4,'bread':1,'grain':1}},after={'owner':{'gold':4,'bread':3,'grain':0}})
+        held=copy.deepcopy(modern);held.update(id='held',status='held')
+        economy=simulation_metrics({'production':[legacy,modern,held],
+            'work_jobs':{'attending':{'actor':4,'phase':'attendance_verified'}}})['economy']
+        self.assertEqual(economy['owner_production_batches'],2)
+        self.assertEqual(economy['gold_conservation'],{'success':2,'n':2,'percent':100.0})

@@ -22,6 +22,28 @@ class SaveActivityTests(unittest.TestCase):
         self.assertEqual(saved['activity_jobs']['history'][0]['receipt_hash'], 'hash')
         self.assertFalse(compare_snapshot(saved, snapshot(self.state))['activity_jobs'])
 
+    def test_owner_work_is_saved_separately_and_requires_cleanup(self):
+        projection = {'epoch': 'work-epoch', 'capacity': 4, 'jobs': [], 'history': []}
+        self.state['society']['owner_work_jobs'] = projection
+        self.state['bridge']['observation']['owner_work_jobs'] = {'jobs': [], 'receipts': []}
+        require_settled_activities(self.state)
+        saved = snapshot(self.state)
+        for phase in ('running', 'attendance_verified', 'recipe_committed', 'held'):
+            projection['jobs'] = [{'phase': phase}]
+            with self.assertRaisesRegex(ValueError, 'owner-work leases'):
+                require_settled_activities(self.state)
+        projection['jobs'] = []
+        projection['history'] = [{'release_verified': True, 'receipt_acknowledged': False}]
+        with self.assertRaisesRegex(ValueError, 'history'):
+            require_settled_activities(self.state)
+        projection['history'][0]['receipt_acknowledged'] = True
+        require_settled_activities(self.state)
+        self.assertFalse(compare_snapshot(saved, snapshot(self.state))['owner_work_jobs'])
+        self.assertEqual(saved['owner_work_jobs']['history'], [])
+        self.state['bridge']['observation']['owner_work_jobs']['receipts'] = [{'status': 'released'}]
+        with self.assertRaisesRegex(ValueError, 'receipts'):
+            require_settled_activities(self.state)
+
     def test_active_or_held_unacknowledged_jobs_block_the_probe(self):
         for phase in ('prepared', 'running', 'held', 'complete'):
             for source in ('society', 'native'):

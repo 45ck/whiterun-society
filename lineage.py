@@ -29,12 +29,13 @@ from trade_consent import reserved_sale_consent
 from owner_production import OwnerProduction
 from resident_goals import ResidentGoals
 from activity_jobs import ActivityJobs
+from owner_work_jobs import OwnerWorkJobs
 from activity_leases import activity_conflict
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -106,11 +107,22 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return
         if self.error or not self.active:
             return
+        # A prepared recipe owns the writer until its exact receipt settles.
+        # Do not hide its acknowledgement behind an unrelated conversation.
+        effect = self.active.get('pending')
+        if effect and effect.get('command', {}).get('kind') == 'inventory_self_produce_commit':
+            self.observe_owner_work_recipe(observation)
+            return
         # Long activities tick independently in the bridge. Persist their receipts
         # only between foreground inventory effects; these remain serialized.
         foreground_command = self.speech_command(self.session) or self.agency_command(self.session)
         if not self.active['pending'] and not foreground_command and self.observe_activity_jobs(observation):
             return
+        if not self.active['pending'] and not foreground_command:
+            if self.observe_owner_work_jobs(observation):
+                return
+            if not self.conversation_busy() and not self.agency_busy() and self.prepare_owner_work_recipe(observation):
+                return
         if self.observe_routines(observation):
             return
         if self.conversation_busy():
@@ -247,6 +259,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         activity_command = self.activity_pending_command()
         if activity_command:
             return {**activity_command, 'checkpoint': self.marker}
+        work_command = self.owner_work_pending_command()
+        if work_command:
+            return {**work_command, 'checkpoint': self.marker}
         return None
 
     def state(self):
@@ -259,6 +274,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
                 'activity_jobs': self.activity_status(),
+                'owner_work_jobs': self.owner_work_status(),
                 'scene_handoffs':self.active.get('scene_handoffs',[]) if self.active else [],
                 'metrics':simulation_metrics(self.active),
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),

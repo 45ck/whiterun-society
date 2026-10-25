@@ -6,6 +6,10 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Independent activities, controlled native overlap:** two authored rests and four authored local-voice turns achieved **28.359 cumulative seconds** of verified two-seat/voice overlap, passing the 10-second cumulative target with **zero cloud calls**. The longest continuous interval was **7.375 seconds**. This proves the bounded execution protocol, not autonomous choices or human realism; C1's zero-overlap refusal and obstructed camera remain documented. [Architecture, actual screenshots and limits](docs/concurrent-activities.md) · [C2 evidence](docs/concurrent-rest-controlled-trial.json) · [C1 evidence](docs/concurrent-rest-first-trial.json).
 
+![Independent owner work, rest and conversation architecture](docs/images/independent-owner-work.png)
+
+*Generated design illustration; the workbench animation is conceptual, and independent owner-work execution is not yet native-qualified. [Work-state contract and acceptance plan](docs/independent-owner-work.md) · [Full image prompt](docs/images/independent-owner-work.prompt.md).*
+
 **RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).
 
 **RTS controls and charts:** [implementation and runtime qualification](docs/rts-experience.md). Play starts resident decisions; Pause settles the current interaction. Movie view follows current activity, with no automatic tours.
@@ -32,7 +36,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 69 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 70 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -255,7 +259,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (69)</summary>
+<summary>Browse every finished project image (70)</summary>
 
 ### Concurrent resident lives
 
@@ -298,6 +302,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Independent lives](docs/images/independent-lives.png)
+
+### Independent owner work
+
+Generated system illustration — not gameplay
+
+![Independent owner work](docs/images/independent-owner-work.png)
 
 ### Intention to consequence
 

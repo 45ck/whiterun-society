@@ -10,6 +10,7 @@ GENERATED={'economic-speech-layers.png','resident-enterprise-loop.png','employme
 GENERATED.add('independent-lives-metrics.png')
 GENERATED.add('intention-to-consequence.png')
 GENERATED.add('concurrent-resident-lives.png')
+GENERATED.add('independent-owner-work.png')
 MEASURED={'personal-goals-movement-chart.png','owner-work-fixture-timeline.png'}
 
 def build():

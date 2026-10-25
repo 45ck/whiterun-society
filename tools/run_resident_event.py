@@ -23,33 +23,58 @@ from tools.prepared_speech import PreparedSpeech
 from tools.checkpoint_http import CheckpointHTTP
 
 
-def activity_job_records(society):
-    """Read the public status projection, including fast acknowledged results."""
-    status=society.get('activity_jobs') or {}
+def _job_records(status):
     if isinstance(status.get('jobs'),list):
         return {job['id']:job for job in [*status.get('history',[]),*status['jobs']] if isinstance(job,dict) and isinstance(job.get('id'),str)}
     return {key:job for key,job in status.items() if isinstance(job,dict) and job.get('id')==key}
 
+def activity_job_records(society):
+    """Read public rest status, including fast acknowledged results."""
+    return _job_records(society.get('activity_jobs') or {})
+
+def owner_work_job_records(society):
+    return _job_records(society.get('owner_work_jobs',society.get('work_jobs')) or {})
+
+def delegated_job_completed(job,kind):
+    if job.get('phase')!='complete' or job.get('release_verified') is not True or not job.get('receipt_hash'):return False
+    if kind=='rest':return True
+    settlement=job.get('settlement') or {}
+    return (kind=='owner_production' and not job.get('orphan') and settlement.get('phase')=='committed'
+            and settlement.get('committed_inventory_verified') is True
+            and isinstance(settlement.get('commit_id'),str) and bool(settlement['commit_id'])
+            and settlement.get('production_record_id')==settlement['commit_id'])
+
 
 def delegated_activity_admission(state,event_id,actor,session):
-    """A committed native acceptance frees this worker, never proves recovery."""
+    """A persisted exact native acceptance frees this worker, never proves output."""
     society=state['society'];plan=society.get('plan') or {}
     if state['bridge'].get('session')!=session:raise ValueError('Delegated activity belongs to another game session')
     if society.get('transition'):return None
     if plan.get('id')!=event_id or plan.get('actor')!=actor or plan.get('phase') not in ('delegated','complete'):
         raise ValueError('Delegated activity does not match the current resident plan')
-    job_id=plan.get('activity_job');job=activity_job_records(society).get(job_id)
+    if bool(plan.get('activity_job'))==bool(plan.get('work_job')):
+        raise ValueError('Delegated activity requires one unambiguous job protocol')
+    work=bool(plan.get('work_job'));kind='owner_production' if work else 'rest'
+    job_id=plan['work_job'] if work else plan['activity_job']
+    job=(owner_work_job_records(society) if work else activity_job_records(society)).get(job_id)
     if (not isinstance(job,dict) or job.get('id')!=job_id or job.get('source_plan')!=event_id
-            or job.get('actor')!=actor or job.get('session')!=session):
+            or type(job.get('actor')) is not int or job['actor']!=actor or job.get('session')!=session
+            or job.get('orphan')):
         raise ValueError('Delegated activity lacks a matching saved job')
     if job.get('phase')=='prepared':return None
-    if job.get('phase')=='complete' and job.get('release_verified') is True and job.get('receipt_hash'):
-        return {'activity_job_id':job_id,'activity_phase':'complete','activity_kind':'rest',
-                'admission_verified':True,'completion_confirmed':True}
-    if job.get('phase')!='running' or job.get('receipt_acknowledged'):
-        raise ValueError('Independent activity has no current accepted native admission')
-    return {'activity_job_id':job_id,'activity_phase':'running','activity_kind':'rest',
+    result={'activity_job_id':job_id,'activity_phase':job['phase'],'activity_kind':kind,
             'admission_verified':True,'completion_confirmed':False}
+    if work:result['work_job_id']=job_id
+    if delegated_job_completed(job,kind):return {**result,'completion_confirmed':True}
+    accepted=job.get('phase')=='running'
+    if work and job.get('phase') in ('attendance_verified','recipe_prepared','recipe_committed'):
+        accepted=bool(job.get('attendance_receipt_hash'))
+        if job['phase']=='recipe_committed':
+            settlement=job.get('settlement') or {}
+            accepted=accepted and settlement.get('phase')=='committed' and settlement.get('committed_inventory_verified') is True
+    if not accepted or job.get('receipt_acknowledged'):
+        raise ValueError('Independent activity has no current accepted native admission')
+    return result
 
 
 def main():
@@ -109,6 +134,7 @@ def main():
             if not plan or plan['id'] != args.event_id:
                 raise ValueError('Active plan changed, possibly after loading another save')
             phase = plan['phase']
+            independent_owner=independent_owner or bool(plan.get('activity_job') or plan.get('work_job'))
             if previous != phase:
                 record(phase, state)
                 previous = phase
@@ -126,7 +152,7 @@ def main():
                 # original-terms fallback each. Preparation never plays audio.
                 voice_worker=VoiceWorker(args.runtime.parent,15 if wording else 5,[model.get('key_env'),(wording or {}).get('key_env')])
             if phase in ('complete', 'held') and not plan.get('release_required') and not plan.get('activity_release_required') and plan.get('remembered'):
-                if phase=='complete' and plan.get('activity_job'):
+                if phase=='complete' and (plan.get('activity_job') or plan.get('work_job')):
                     admission=delegated_activity_admission(state,args.event_id,args.actor,evidence['before']['bridge']['session'])
                     if not admission or not admission['completion_confirmed']:raise ValueError('Completed independent activity lacks a verified receipt')
                     evidence.update(admission)

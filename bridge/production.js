@@ -2,7 +2,7 @@
 // Agreed wages and attendance are bounded enterprise policy, never model code.
 // Native handles are acquired on each frame. No automatic resource replenishment.
 function createProductionController(platform,now=Date.now){
- let active=null;
+ let active=null;const ownerCommits=new Map();
  const items={gold:0xf,bread:0x65c97,grain:0x4b0ba};
  const equal=(a,b)=>Object.keys(a).every(r=>b[r]&&Object.keys(items).every(k=>a[r][k]===b[r][k]));
  const clone=x=>JSON.parse(JSON.stringify(x));
@@ -20,9 +20,76 @@ function createProductionController(platform,now=Date.now){
   }catch(_){return false;}
  }
  return {
-  reset(){active=null;},
+  reset(){active=null;ownerCommits.clear();},
   status(){return active?{id:active.id,actor:active.actor,expectedPackage:active.package,ownedPackage:!['complete','held'].includes(active.phase)&&active.attendance?.package_owned===true,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:active.minutes,wageGold:active.wage,attendance:active.attendance||null}:null;},
+  commitOwnerRecipe(c,workJobs){
+   const identityKeys=['job_id','actor','actor_base_id','slot','session','epoch','business_id','business_revision','recipe_id','policy_version','work_minutes'];
+   const identity=Object.fromEntries(identityKeys.map(k=>[k,c[k]]));
+   const signature=JSON.stringify([identity,c.id,c.attendance_token,c.before,c.after]);
+   let record=ownerCommits.get(c.id),authorized=false;
+   const fail=error=>{
+    const noEffects=!record&&workJobs?.attestsNoEffects?.(c)===true;
+    if(authorized||noEffects||record?.signature===signature){if(record)record.phase='held';workJobs?.commitFailed(c,error);}
+    return {done:true,ack:{id:c.id,...identity,commit_id:c.id,attendance_token:c.attendance_token,status:'held',error,
+     effects_issued:record?record.inputIssued===true:noEffects?false:null,no_effects_issued:noEffects,
+     committed_inventory_verified:false,release_verified:false}};
+   };
+   if(c.kind!=='inventory_self_produce_commit'||!workJobs||typeof workJobs.authorizeCommit!=='function')return fail('Independent owner commit authority required');
+   const permit=workJobs.authorizeCommit(c);if(!permit.ok)return fail(permit.error);
+   authorized=true;
+   if(record&&record.signature!==signature)return fail('Owner commit payload changed');
+   if(record?.phase==='held')return fail('Owner recipe is held; do not repeat issued effects');
+   if(record?.receipt)return {done:true,ack:clone(record.receipt)};
+   if(permit.continuation&&!record)return fail('Owner effect witness was lost; inventory states cannot authorize replay');
+   if(!record&&([...ownerCommits.values()].some(other=>other.phase!=='complete')||active&&active.phase!=='complete'&&(active.phase!=='held'||active.sent)))
+    return fail('Another production command owns the inventory writer');
+   if(c.recipe_id!=='bread_recipe'||!c.before||!c.after||[c.before,c.after].some(v=>Object.keys(v).join(',')!=='owner')||
+      [c.before.owner,c.after.owner].some(v=>!v||Object.keys(v).sort().join(',')!=='bread,gold,grain'||Object.values(v).some(n=>!Number.isSafeInteger(n)||n<0))||
+      c.before.owner.grain<1||c.after.owner.gold!==c.before.owner.gold||c.after.owner.grain!==c.before.owner.grain-1||c.after.owner.bread!==c.before.owner.bread+2)
+    return fail('Owner commit must consume one grain, produce two bread and conserve gold');
+   const sp=platform(),actor=sp.Actor.from(sp.Game.getFormEx(c.actor));
+   if(!actor?.is3DLoaded()||actor.isDead()||actor.isChild()||(actor.getActorBase?.()||actor.getBaseObject?.())?.getFormID()!==c.actor_base_id)
+    return fail('Owner commit actor identity unavailable');
+   const forms=Object.fromEntries(Object.entries(items).map(([k,id])=>[k,sp.Game.getFormEx(id)]));
+   if(Object.values(forms).some(f=>!f))return fail('Owner recipe forms unavailable');
+   const actual={owner:Object.fromEntries(Object.entries(forms).map(([k,f])=>[k,actor.getItemCount(f)]))};
+   if(Object.values(actual.owner).some(n=>!Number.isSafeInteger(n)||n<0))return fail('Owner inventory observation invalid');
+   const inputUsed=clone(c.before);inputUsed.owner.grain--;
+   if(!record){
+    // In particular, actual==after is NOT success without this command's own
+    // surviving effect witness. No cold save or unrelated inventory may mint proof.
+    if(!equal(actual,c.before))return fail('Fresh owner input inventory differs; no effects issued');
+    const consumed=workJobs.beginCommit(c);if(!consumed.ok)return fail(consumed.error);
+    record={signature,phase:'committing_input',inputIssued:true,inputObserved:false,outputIssued:false,outputObserved:false,issuedAt:now(),attendance:consumed.attendance};
+    ownerCommits.set(c.id,record);
+    try{actor.removeItem(forms.grain,1,true,null);}catch(_){return fail('Owner grain call failed after permit consumption; reconcile inventory');}
+    return {done:false};
+   }
+   if(equal(actual,c.after)){
+    if(!record.inputIssued||!record.inputObserved||!record.outputIssued)return fail('Owner output exists without this command issuing it');
+    record.outputObserved=true;
+    if(!workJobs.commitVerified(c,actual))return fail('Owner effect proof cannot be attached to current job');
+    record.phase='complete';record.receipt={id:c.id,...identity,commit_id:c.id,attendance_token:c.attendance_token,status:'applied',
+     inventory:actual,effects_issued:true,committed_inventory_verified:true,release_verified:false,mechanism:'native_owner_recipe',animation_verified:false,
+     attendance:record.attendance,effect_witness:{input_issued:true,input_observed:true,output_issued:true,output_observed:true}};
+    return {done:true,ack:clone(record.receipt)};
+   }
+   if(!Number.isFinite(now())||now()<record.issuedAt||now()-record.issuedAt>5000)return fail('Owner recipe effect observation timed out; do not repeat');
+   if(equal(actual,inputUsed)){
+    if(!record.inputIssued)return fail('Owner input changed without a recorded effect');
+    record.inputObserved=true;
+    if(!record.outputIssued){
+     if(!workJobs.commitProgress(c,'committing_output'))return fail('Owner recipe continuation no longer authorized');
+     record.outputIssued=true;record.phase='committing_output';record.issuedAt=now();
+     try{actor.addItem(forms.bread,2,true);}catch(_){return fail('Owner bread call failed after issue; reconcile inventory');}
+    }
+    return {done:false};
+   }
+   if(equal(actual,c.before)&&record.inputIssued&&!record.inputObserved&&!record.outputIssued)return {done:false};
+   return fail('Owner inventory drifted during serialized recipe; reconciliation required');
+  },
   step(c){
+   if([...ownerCommits.values()].some(record=>record.phase!=='complete'))return {done:true,ack:{id:c.id,status:'held',no_effects_issued:true,error:'Independent owner recipe owns the inventory writer'}};
    const sp=platform(),fail=error=>{if(active?.id===c.id)active.phase='held';return {done:true,ack:{id:c.id,status:'held',error,work:this.status(),no_effects_issued:!!active&&active.id===c.id&&!active.sent}};};
    const own=c.kind==='inventory_self_produce',roles=own?['owner']:['worker','employer'],producer=own?'owner':'employer';
    if(!c.before||!c.after||[c.before,c.after].some(v=>Object.keys(v).sort().join(',')!==[...roles].sort().join(','))||!roles.every(r=>c.before[r]&&c.after[r]&&Object.keys(items).every(k=>Number.isInteger(c.before[r][k])&&c.before[r][k]>=0&&Number.isInteger(c.after[r][k])&&c.after[r][k]>=0)))return fail('Invalid production inventory contract');

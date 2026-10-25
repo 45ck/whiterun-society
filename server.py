@@ -136,7 +136,7 @@ def main():
                     native_effect=bool(bridge['command'] or world.active and world.active.get('pending')))
                 if rejected:return self.reply(409,rejected)
                 if self.path=='/service/shutdown':
-                    if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')) or world.activity_status()['jobs']:
+                    if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')) or world.activity_status()['jobs'] or world.owner_work_status()['jobs']:
                         raise ValueError('Settle active society work before restarting the service')
                     bridge['shutdown_requested']=True
                     return self.reply(202,{'status':'stopping','effects_in_flight':False})

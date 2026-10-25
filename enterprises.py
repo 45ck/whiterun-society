@@ -5,6 +5,7 @@ employer still independently decide whether to enter each paid contract.
 """
 import copy
 import re
+from activity_leases import work_account_conflict
 
 DEFAULT_POLICY = {'target_bread': 8, 'wage_gold': 2, 'grain_per_shift': 1,
                   'bread_per_shift': 2, 'work_minutes': 30}
@@ -80,6 +81,9 @@ def apply_enterprise_change(state, event_id, specification, observation, provena
     revision = old.get('revision', 0) if old else 0
     if type(specification['expected_revision']) is not int or specification['expected_revision'] != revision:
         raise ValueError('Stale enterprise revision')
+    if work_account_conflict(state,actors=(owner,(old or {}).get('custodian')),
+                             business_ids=(key,),observation=observation):
+        raise ValueError('Unsettled owner work reserves this enterprise or custodian account')
     if old and any(c['status'] in ('accepted', 'held') for c in old.get('contracts', [])):
         raise ValueError('Unsettled employment contract prevents enterprise changes')
     if not old and len(town.get('businesses', {})) >= 128:

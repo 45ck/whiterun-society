@@ -34,6 +34,8 @@ def owner_work_opportunities(state, observation, actor, *, require_owned=True):
 
 class OwnerProduction:
     def plan_owner_production(self, observation, plan):
+        if (observation.get('owner_work_jobs') or {}).get('available') is True:
+            return self.delegate_owner_work(plan, observation)
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase']!='ready_to_self_work':
             raise ValueError('Owner production requires a current resident decision')

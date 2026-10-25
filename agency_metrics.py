@@ -171,6 +171,19 @@ def account_cashflow(state):
             if not valid_id(actor) or change(c,'owner')!=0:
                 rejected['invalid_owner_cash_leg']+=1;continue
             add(actor,'production_events',1)
+        elif kind=='inventory_self_produce_commit':
+            actor=c.get('actor');before=c.get('before') or {};after=c.get('after') or {}
+            old=before.get('owner') or {};new=after.get('owner') or {}
+            items={'gold','bread','grain'}
+            if not (valid_id(actor) and set(before)=={'owner'} and set(after)=={'owner'}
+                    and all(key not in c or type(c[key]) is int and c[key]==actor for key in ('custodian','account_actor'))
+                    and set(old)==items and set(new)==items
+                    and all(valid_gold(old[k]) and valid_gold(new[k]) for k in items)
+                    and old['grain']>=1 and new['grain']==old['grain']-1
+                    and new['bread']==old['bread']+2 and new['gold']==old['gold']
+                    and ('wage_gold' not in c or type(c['wage_gold']) is int and c['wage_gold']==0)):
+                rejected['invalid_owner_recipe_cash_leg']+=1;continue
+            add(actor,'production_events',1)
         elif kind=='inventory_endowment':
             actor=c.get('actor');grant=(c.get('grant') or {}).get('gold')
             if not valid_id(actor) or not valid_gold(grant) or change(c)!=grant:

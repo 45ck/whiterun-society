@@ -53,6 +53,7 @@ def snapshot(state, inventory_ids=None):
             'conversation': state['society'].get('conversation'),
             'routine_batch': state['society'].get('routine_batch'),
             'activity_jobs': copy.deepcopy(state['society'].get('activity_jobs')),
+            'owner_work_jobs': copy.deepcopy(state['society'].get('owner_work_jobs')),
             'scene_handoffs': state['society'].get('scene_handoffs',[]),
             'town':state['society'].get('town'),
             'inventory': {str(a['id']): a['inventory']
@@ -76,6 +77,18 @@ def compare_snapshot(expected, actual):
 
 def require_settled_activities(state):
     """A terminal phase alone does not prove native lease release and receipt ack."""
+    for container in (state['society'], state['bridge']['observation']):
+        work = container.get('owner_work_jobs')
+        if work is None:
+            continue
+        if not isinstance(work, dict) or any(not isinstance(work.get(key, []), list) for key in ('jobs', 'receipts', 'history')):
+            raise ValueError('Owner-work lease projection is invalid')
+        if work.get('jobs') or work.get('receipts'):
+            raise ValueError('This probe requires owner-work leases and receipts to settle')
+        if any(not isinstance(job, dict) or job.get('receipt_acknowledged') is not True or
+               (job.get('release_verified') is not True and job.get('no_effects_issued') is not True)
+               for job in work.get('history', [])):
+            raise ValueError('Owner-work history lacks verified release or acknowledgement')
     projection = state['society'].get('activity_jobs')
     native = state['bridge']['observation'].get('activity_jobs')
     for value in (projection, native):

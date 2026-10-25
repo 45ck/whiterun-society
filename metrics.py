@@ -62,7 +62,7 @@ def simulation_metrics(state):
     production=[r['command'] for r in state.get('production',[]) if r['status']=='committed']
     conserved=[]
     for c in trades+production:
-        parties=('owner',) if c.get('kind')=='inventory_self_produce' else ('buyer','seller') if 'buyer' in c.get('before',{}) else ('employer','worker')
+        parties=('owner',) if c.get('kind') in ('inventory_self_produce','inventory_self_produce_commit') else ('buyer','seller') if 'buyer' in c.get('before',{}) else ('employer','worker')
         if all(number(c.get(phase,{}).get(p,{}).get('gold')) for phase in ('before','after') for p in parties):
             conserved.append(sum(c['before'][p]['gold'] for p in parties)==sum(c['after'][p]['gold'] for p in parties))
     relations=[r for p in state.get('people',{}).values() for r in p.get('relationships',{}).values()]
@@ -196,7 +196,7 @@ def simulation_metrics(state):
                 'scope':'Retained resident bargaining plans, including fixtures. Offers and accepted terms are not payments; paid prices require committed native inventory receipts.'},
             'grain_procurement_sales':sum(c.get('commodity')=='grain' for c in trades),
             'grain_units_traded':sum(c['quantity'] for c in trades if c.get('commodity')=='grain'),
-            'owner_production_batches':sum(c.get('kind')=='inventory_self_produce' for c in production),
+            'owner_production_batches':sum(c.get('kind') in ('inventory_self_produce','inventory_self_produce_commit') for c in production),
             'negotiations':{'n':len(negotiations),'outcomes':dict(trade_outcomes),
                 'scope':'Retained voiced trade plans, including staged experiments. Sales require committed inventory receipts; refusals are choices, not technical failures.'},
             'household_release_sales':sum(r.get('status')=='committed' and bool(r.get('reserve_release')) for r in state.get('trades',[])),

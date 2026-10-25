@@ -2,6 +2,47 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {JSDOM}=require('jsdom'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'../ui',name),'utf8');
 const dashboard=()=>({control:{agent:1,scene:2,native:3,unknown:1,unloaded:2},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:k==='gold'?7:null,accounts:k==='gold'?2:0,population:9}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{high:1,known:4}])),economy:{committed_sales:2},control_scope:'Observed packages',needs_scope:'Gameplay needs',economy_scope:'Verified events'});
+
+test('owner work labels keep attendance, settlement and cleanup separate',()=>{
+ const {ownerWorkLabel}=require('../ui/society-dashboard.js');
+ assert.equal(ownerWorkLabel({attendance_state:'prepared'}),'Work intention saved · admission pending');
+ assert.equal(ownerWorkLabel({attendance_state:'working'}),'Work attendance in progress');
+ assert.match(ownerWorkLabel({attendance_state:'qualified',settlement_state:'awaiting_commit'}),/Attendance qualified · awaiting inventory commit/);
+ assert.match(ownerWorkLabel({attendance_state:'qualified',settlement_state:'held'}),/Work held · no verified output/);
+ assert.equal(ownerWorkLabel({settlement_state:'committed',cleanup_state:'held'}),'Output verified · release held');
+ assert.equal(ownerWorkLabel({settlement_state:'committed'}),'Output verified · cleanup pending');
+ assert.match(ownerWorkLabel({settlement_state:'unverified'}),/claim unverified/);
+ assert.match(ownerWorkLabel({orphan:true,settlement_state:'committed'}),/release only; no output credited/);
+});
+
+test('owner work charts show configured capacity, missing observations and verified outputs only',()=>{
+ const {dom,w}=native();try{const d=dashboard();d.owner_work={fresh:true,configured_capacity:4,native_capacity:4,leased_jobs:4,native_matched_jobs:1,unmeasured_jobs:3,observed_working:1,awaiting_commit:0,recorded_admissions:4,qualified_attendance:0,committed_jobs:0,released_jobs:0,produced_goods:{},jobs:[{actor:7,actor_name:'<img src=x>',attendance_state:'working',settlement_state:'not_ready',cleanup_state:'reserved',worked_minutes:10,work_minutes:30,attendance_samples:4}]};
+  const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
+  assert.match(root.textContent,/4 \/ 4Reserved work slots/);
+  assert.match(root.textContent,/1 matched \/ 4 leases · 3 unmeasured/);
+  assert.match(root.textContent,/separate from rest and citizen-control slots/);
+  assert.match(root.textContent,/All configured work slots reserved/);
+  assert.match(root.textContent,/10 \/ 30 game min observed attendance · 4 samples/);
+  assert.match(root.textContent,/No verified output counted/);assert.equal(root.querySelector('img'),null);
+  d.owner_work.produced_goods={bread:2};d.owner_work.committed_jobs=1;d.owner_work.jobs[0].settlement_state='committed';d.owner_work.jobs[0].cleanup_state='held';
+  w.renderTownCharts(root,d);assert.match(root.textContent,/Verified output: 2 bread/);assert.match(root.textContent,/Output verified · release held/);
+  d.owner_work.fresh=false;d.owner_work.observed_working=null;w.renderTownCharts(root,d);
+  assert.match(root.textContent,/—Observed attendance/);assert.match(root.textContent,/native work telemetry unavailable or stale/);
+ }finally{dom.window.close();}
+});
+
+test('background owner work appears in inspector even when another resident owns foreground',()=>{
+ const {dom,w}=native();try{
+  const person={profile:{name:'Owner',role:'resident',big_five:{}},needs:{hunger:.2},memories:[],relationships:{}};
+  const job={actor:7,attendance_state:'qualified',settlement_state:'awaiting_commit',cleanup_state:'reserved',worked_minutes:30,work_minutes:30,attendance_samples:8};
+  w.whiterunRender({residents:[{id:7,name:'Owner',isPerson:true,inventory:{gold:2,bread:1}}],trades:[],society:{people:{7:person},town:{residents:{7:{name:'Owner'}}},plan:{id:'foreground',actor:9,phase:'travelling'}},dashboard:{...dashboard(),owner_work:{jobs:[job]}}});
+  w.whiterunInspectKey(2);
+  const text=w.document.getElementById('resident-inspector').textContent;
+  assert.match(text,/Independent owner workAttendance qualified · awaiting inventory commit/);
+  assert.match(text,/settlement: awaiting commit/);
+  assert.doesNotMatch(text,/Output verified/);
+ }finally{dom.window.close();}
+});
 test('resident inspector labels controlled business choices separately from model choices',()=>{
  const {dom,w}=native();try{
  const person={profile:{name:'New resident',role:'resident',big_five:{}},needs:{hunger:.4},memories:[],trust:{},relationships:{}};

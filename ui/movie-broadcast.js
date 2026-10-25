@@ -43,6 +43,10 @@ function movieBroadcastFrames(data){
   value:`${motionMeasured?count(motion.observed_moving):'—'} moving · ${count(spatial.current?.travel_intentions)} intending to travel`,
   detail:spatial.fresh?`${count(spatial.coverage?.usable_percent)}% usable position coverage · ${count(spatial.samples)} samples · standing can be work, talk or rest`:'Telemetry stale · no present activity inferred'});
  const network=data.dashboard?.economic_network;
+ const work=data.dashboard?.owner_work;
+ if(work)frames.push({title:work.fresh?'Owner work · measured stages':'Owner work · native telemetry unavailable',
+  value:`${count(work.observed_working)} observed working · ${count(work.unmeasured_jobs)} unmeasured · ${count(work.awaiting_commit)} awaiting commit`,
+  detail:`${count(work.leased_jobs)}/${count(work.configured_capacity)} work slots reserved · ${count(work.committed_jobs)} linked verified production records; admission and attendance are not output`});
  const activities=data.dashboard?.activity_jobs;
  if(activities){const phases=activities.states||{};
   frames.push({title:activities.fresh?'Concurrent activities':'Concurrent activities · telemetry unavailable',

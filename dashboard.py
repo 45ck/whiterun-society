@@ -1,6 +1,7 @@
 """Operator-wide town charts from observations, never resident knowledge."""
 import math
 from activity_metrics import activity_metrics
+from owner_work_metrics import owner_work_metrics
 
 
 def town_dashboard(society, observation, spatial=None):
@@ -60,6 +61,7 @@ def town_dashboard(society, observation, spatial=None):
     return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,'autonomy':autonomy,
         'spatial':spatial,'agency':metrics.get('agency'),'economic_network':metrics.get('economic_network'),
         'activity_jobs':activities,
+        'owner_work':owner_work_metrics(society,observation),
         'drama':metrics.get('drama'),'quality_goals':metrics.get('quality_goals'),
         'control_scope':'Current observed package ownership, not long-term autonomy or quest compatibility.',
         'stock':stock,'needs':needs,'needs_scope':'Authored simulation needs, not measured human psychology.',

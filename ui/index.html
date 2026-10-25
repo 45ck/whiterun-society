@@ -76,6 +76,7 @@ function text(id,value){document.getElementById(id).textContent=value;}
 function residentActivity(id){
  const c=state.society?.conversation,p=state.society?.plan,active=x=>x&&!['complete','held','delegated'].includes(x.phase);
  if(active(c)&&c.speakers?.includes(id))return c.phase==='speaking'?(c.current?.speaker===id?'Speaking':'Listening'):'Conversation · '+c.phase.replaceAll('_',' ');
+ const ownerWork=state.dashboard?.owner_work?.jobs?.find(job=>job.actor===id);if(ownerWork)return ownerWorkLabel(ownerWork);
  const background=state.dashboard?.activity_jobs?.jobs?.find(job=>job.actor===id);if(background)return activityJobLabel(background);
  if(active(p)&&[p.actor,...(p.economic_pair||[])].includes(id))return p.phase.replaceAll('_',' ');
  const a=state.parallel_routines?.activities?.find(x=>x.actor===id);if(a&&['travelling','walking','requesting'].includes(a.phase))return 'Agent journey · '+(names[a.target]||'chosen destination');

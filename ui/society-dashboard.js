@@ -15,6 +15,19 @@ function activityJobLabel(job){
  if(!job.native_observed)return job.saved_phase==='prepared'?'Awaiting native admission':'Native activity unmeasured';
  return ({accepted:'Admitted · attendance not yet observed',travelling:'Travelling to selected seat',resting:'Seated attendance in progress',releasing:'Releasing native activity',applied:'Native result ready · settlement pending',held:'Native activity held · awaiting reconciliation'})[native]||'Native activity unmeasured';
 }
+function ownerWorkLabel(job){
+ if(job.orphan)return 'Quarantined work · release only; no output credited';
+ if(job.settlement_state==='committed')return 'Output verified · '+(({held:'release held',releasing:'releasing',released:'release verified',acknowledged:'receipt acknowledged'})[job.cleanup_state]||'cleanup pending');
+ if(job.settlement_state==='unverified')return 'Production claim unverified · review required';
+ if(job.settlement_state==='effects_observed')return 'Inventory effects observed · journal confirmation pending';
+ if(['awaiting_commit','committing'].includes(job.settlement_state))return 'Attendance qualified · awaiting inventory commit';
+ if(job.attendance_state==='held'||job.settlement_state==='held')return 'Work held · no verified output';
+ if(job.attendance_state==='qualified')return 'Attendance qualified · no goods yet';
+ if(job.attendance_state==='working')return 'Work attendance in progress';
+ if(job.attendance_state==='acquiring')return 'Admitted · acquiring stationary attendance';
+ if(job.attendance_state==='prepared')return 'Work intention saved · admission pending';
+ return 'Work attendance unmeasured';
+}
 function renderTownCharts(root,data){
  if(!root||!data)return;
  const signature=JSON.stringify(data);if(root.dataset.snapshot===signature)return;root.dataset.snapshot=signature;
@@ -72,6 +85,20 @@ function renderTownCharts(root,data){
   add(evidence,'p',`${shown(a.retained_jobs)} retained jobs · ${shown(a.admission_unknown)} admission histories unknown · ${shown(a.unmatched_native_jobs)} unmatched native jobs.`,'town-chart-note');
   if(number(a.retained_orphans)>0)add(evidence,'p',`${a.retained_orphans} orphan records quarantined for release only; excluded from admissions and recovered rests.`,'town-chart-note');
   add(evidence,'p',a.scope,'town-chart-note');
+ }
+ if(data.owner_work){const work=data.owner_work,panel=section('Independent owner work');
+  metricTiles(panel,[[`${shown(work.leased_jobs)} / ${shown(work.configured_capacity)}`,'Reserved work slots'],[shown(work.observed_working),'Observed attendance'],[shown(work.awaiting_commit),'Awaiting inventory commit']]);
+  add(panel,'p',`${shown(work.native_matched_jobs)} matched / ${shown(work.leased_jobs)} leases · ${shown(work.unmeasured_jobs)} unmeasured. Native capacity ${shown(work.native_capacity)}; this pool is separate from rest and citizen-control slots.`,'town-chart-note');
+  if(!work.fresh)add(panel,'p','Current native work telemetry unavailable or stale. Saved settlement evidence remains separate.','town-chart-note');
+  if(number(work.configured_capacity)>0&&number(work.leased_jobs)>=work.configured_capacity)add(panel,'p','All configured work slots reserved; new work must wait for verified cleanup.','town-chart-note');
+  const evidence=detail('Owner-work attendance, settlement and cleanup');
+  for(const job of work.jobs||[]){const row=add(evidence,'div',undefined,'town-need');add(row,'strong',job.actor_name||`Resident ${job.actor}`);add(row,'div',ownerWorkLabel(job),'town-chart-note');
+   add(row,'div',`Attendance: ${job.attendance_state} · settlement: ${job.settlement_state} · cleanup: ${job.cleanup_state}`.replaceAll('_',' '),'town-chart-note');
+   if(number(job.worked_minutes)!==null)add(row,'div',`${shown(job.worked_minutes)} / ${shown(job.work_minutes)} game min observed attendance · ${shown(job.attendance_samples)} samples`,'town-chart-note');
+  }
+  metricTiles(evidence,[[shown(work.recorded_admissions),'Retained admission acknowledgements'],[shown(work.qualified_attendance),'Retained qualified attendance'],[shown(work.committed_jobs),'Linked verified production records'],[shown(work.released_jobs),'Retained releases verified']]);
+  const outputs=Object.entries(work.produced_goods||{});add(evidence,'p',outputs.length?'Verified output: '+outputs.map(([good,quantity])=>`${quantity} ${good}`).join(' · '):'No verified output counted from linked production receipts.','town-chart-note');
+  add(evidence,'p',work.scope||'Retained work evidence only; admissions are not goods, GDP or profit. Productive animation remains unverified.','town-chart-note');
  }
  if(data.spatial){const s=data.spatial,current=s.current||{},movement=s.movement||{},coverage=s.coverage||{},space=section('Movement over time');
   metricTiles(space,[[shown(current.observed_moving),s.fresh?'Observed moving':'Moving · last sample'],[shown(current.travel_intentions),'Travel intentions']]);
@@ -194,4 +221,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel};
+if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel};

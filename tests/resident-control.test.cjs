@@ -10,10 +10,11 @@ function fixture(){
  const list=()=>{let items=[];return {revert:()=>items=[],addForm:f=>items.push(f),getSize:()=>items.length,getAt:i=>items[i]};};
  const global=()=>{let value=0;return {getValue:()=>value,setValue:n=>value=n};};
  const slots=Array.from({length:128},(_,i)=>{let running=false;return [{isRunning:()=>running,start:()=>{running=true;return true;},stop:()=>{running=false;}},{getFormID:()=>9000+i},list(),list(),global(),global(),global(),global()];});
- const sp={Game:{getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];},getFormEx:id=>id===500?destination:actor},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Actor:{from:f=>f},ObjectReference:{from:f=>f}};
+ const actors=new Map([[7,actor]]);
+ const sp={Game:{getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];},getFormEx:id=>id===500?destination:actors.get(id)},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Actor:{from:f=>f},ObjectReference:{from:f=>f}};
  const controller=createResidentControl(()=>sp,()=>clock),control={enabled:true,assignments:{7:{actor:7,slot:0,mode:'await_decision'}}};
- const f={controller,control,forms:slots[0],slots,actor,destination,sites:[{id:500}],position:n=>x=n,package:n=>current=n,scene:n=>scene=n,loaded:n=>loaded=n,
-  step(fresh=true,foreground=[],ownerWork=null){clock+=1000;controller.tick(control,loaded?[{id:7,isPerson:true}]:[],fresh,foreground,this.sites,ownerWork);},
+ const f={controller,control,forms:slots[0],slots,actor,actors,destination,sites:[{id:500}],position:n=>x=n,package:n=>current=n,scene:n=>scene=n,loaded:n=>loaded=n,
+  step(fresh=true,foreground=[],ownerWork=null){clock+=1000;controller.tick(control,loaded?[...actors.keys()].map(id=>({id,isPerson:true})):[],fresh,foreground,this.sites,ownerWork);},
   status:()=>controller.status().activities[0],
   bind(){slots[0][5].setValue(slots[0][4].getValue());slots[0][6].setValue(1);},
   start(){for(let i=0;i<4;i++)this.step();},
@@ -112,4 +113,17 @@ test('held owner intent releases its override without cancelling the saved goal'
  const f=fixture();f.hold();const work={id:'held-work',actor:7,intent:'owner_production',phase:'ready_to_self_work'};
  f.step(true,[7],work);assert.equal(f.status().work_hold_id,'owner-work-held-work');
  work.phase='held';f.step(true,[],work);assert.equal(f.status().work_hold_id,null);assert.equal(f.forms[0].isRunning(),false);
+});
+
+test('independent owner jobs hold distinct Citizens slots while preserving both saved goals',()=>{
+ const f=fixture();f.actors.set(8,{...f.actor,getFormID:()=>8,getCurrentPackage:()=>({getFormID:()=>9001})});
+ f.control.assignments={7:{actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal-seven'},8:{actor:8,slot:1,mode:'go_to',target:500,goal_id:'goal-eight'}};
+ const saved=JSON.stringify(f.control),holds=[7,8].map((actor,slot)=>({id:'job-'+actor,actor,slot,intent:'owner_production',phase:'working'}));
+ for(let i=0;i<4;i++)f.step(true,[],holds);
+ for(const slot of f.slots.slice(0,2)){slot[5].setValue(slot[4].getValue());slot[6].setValue(1);}f.package(9000);f.step(true,[],holds);
+ const observations=f.controller.status().activities;assert.equal(observations.length,2);
+ for(const actor of [7,8]){const row=observations.find(r=>r.actor===actor);assert.equal(row.target,actor);assert.equal(row.phase,'work_holding');assert.equal(row.work_hold_id,'owner-work-job-'+actor);}
+ assert.equal(JSON.stringify(f.control),saved);const serial=f.slots[1][4].getValue();
+ f.step(true,[],[holds[1]]);assert.equal(f.slots[0][0].isRunning(),false);assert.equal(f.slots[1][4].getValue(),serial);
+ assert.equal(f.controller.status().activities.find(r=>r.actor===8).work_hold_id,'owner-work-job-8');
 });

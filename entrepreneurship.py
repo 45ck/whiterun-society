@@ -7,6 +7,7 @@ import copy
 import hashlib
 from enterprises import CAPABILITIES, apply_enterprise_change
 from routing import activity_blocker
+from activity_leases import activity_conflict,work_account_conflict
 
 
 def knows_bread_recipe(person):
@@ -22,6 +23,7 @@ def learn_bread_recipe(person, event_id):
 
 
 def enterprise_choices(state, observation, actor):
+    if activity_conflict(state,actors=(actor,),observation=observation):return []
     town=state.get('town') or {};person=state.get('people',{}).get(str(actor))
     native=next((a for a in observation.get('residents',[]) if a.get('id')==actor and a.get('isPerson') is True),None)
     if not person or str(actor) not in town.get('residents',{}) or not native or activity_blocker(native):return []
@@ -36,6 +38,7 @@ def enterprise_choices(state, observation, actor):
         if key not in businesses:candidates=[(key,None)]
     result=[]
     for key,b in candidates:
+        if work_account_conflict(state,actors=(actor,),business_ids=(key,),observation=observation):continue
         if b and any(c.get('status') in ('accepted','held') for c in b.get('contracts',[])):continue
         existing=set((b or {}).get('capabilities',[]))
         base={'id':key,'expected_revision':(b or {}).get('revision',0),

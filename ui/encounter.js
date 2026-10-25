@@ -52,6 +52,13 @@ window.drawEncounter=()=>{
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
+ const ownerJob=state.dashboard?.owner_work?.jobs?.find(job=>job.actor===displayResident);
+ if(ownerJob){
+  inspectorText(panel,'Independent owner work','label');inspectorText(panel,ownerWorkLabel(ownerJob));
+  inspectorText(panel,`Attendance: ${ownerJob.attendance_state} · settlement: ${ownerJob.settlement_state} · cleanup: ${ownerJob.cleanup_state}`.replaceAll('_',' '));
+  if(Number.isFinite(ownerJob.worked_minutes))inspectorText(panel,`${ownerJob.worked_minutes} / ${ownerJob.work_minutes??'—'} game minutes attendance · ${ownerJob.attendance_samples??'—'} samples`);
+  inspectorText(panel,'Goods require a linked committed inventory receipt. Productive animation is unverified.');
+ }
  const backgroundJob=state.dashboard?.activity_jobs?.jobs?.find(job=>job.actor===displayResident);
  if(backgroundJob){
   inspectorText(panel,'Independent background activity','label');
