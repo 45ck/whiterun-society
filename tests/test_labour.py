@@ -29,13 +29,13 @@ class LabourTests(unittest.TestCase):
         self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=108149]
         self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
 
-    def test_guard_duty_commitments_and_self_employment_are_not_overridden(self):
+    def test_guards_and_commitments_allow_job_choice_without_self_employment(self):
         self.assertEqual(work_opportunities(self.world.active,self.obs,108149),[])
         self.world.active['town']['residents']['99']['is_guard']=True
-        self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
+        self.assertEqual(len(work_opportunities(self.world.active,self.obs,99)),1)
         self.world.active['town']['residents']['99']['is_guard']=False
         self.world.active['people']['99']['commitments']=[{'kind':'existing obligation'}]
-        self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
+        self.assertEqual(len(work_opportunities(self.world.active,self.obs,99)),1)
 
     def test_scheduled_livelihood_requires_search_offer_and_acceptance(self):
         result=self.review()

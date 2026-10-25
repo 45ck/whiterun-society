@@ -9,6 +9,7 @@ from routing import route_available
 from knowledge import person_view
 from dialogue_context import time_context
 from activity_leases import routine_actors
+from social_followthrough import FOLLOWUPS, followthrough_options, queue_followthrough
 
 SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
 SOCIAL_NOTICE_SECONDS=45
@@ -50,13 +51,13 @@ def social_candidates(state,observation,actor,notice=None):
     own=rows.get(actor);person=people.get(str(actor),{})
     reserved=routine_actors(state)
     if actor in reserved:return []
-    if not own or str(actor) not in town.get('residents',{}) or own.get('isGuard') is not False or person.get('commitments'):
+    if not own or str(actor) not in town.get('residents',{}):
         return []
     result=[]
     recent=set(notice.get('candidates_by_actor',{}).get(str(actor),[])) if valid_social_notice(notice,observation) else set()
     for other,row in rows.items():
         if other in reserved:continue
-        if str(other) not in town['residents'] or str(other) not in people or other==actor or row.get('isGuard') is not False or people[str(other)].get('commitments'):
+        if str(other) not in town['residents'] or str(other) not in people or other==actor:
             continue
         if not route_available(observation,actor,other):continue
         if not same_social_space(own,row):continue
@@ -66,7 +67,7 @@ def social_candidates(state,observation,actor,notice=None):
         result.append({**person_view(state,actor,other),'distance':round(gap,1),
                        'my_relationship':person.get('relationships',{}).get(str(other),{}),
                        'source':'recent proximity notice; currently observed; vision unqualified' if gap>1500 else 'native nearby proximity; vision is not qualified'})
-    return sorted(result,key=lambda r:(r['distance'],r['id']))[:6]
+    return sorted(result,key=lambda r:(r['distance'],r['id']))
 
 
 def social_context(state,c,observation,stage):
@@ -105,10 +106,12 @@ def social_context(state,c,observation,stage):
         context['other']=person_view(state,actor,other)
         context['my_relationship']=person.get('relationships',{}).get(str(other),{})
         context['heard']=[{'line':t['selected']['line'],'status':'heard claim; truth unverified'} for t in heard]
-        context['event']['information']='Privately appraise what you actually heard, using your own personality and memories. Courtesy does not prove friendship or trustworthiness. These are authored simulation feelings, not objective facts about the other person.'
-        context['options']=[{'id':'neutral','effect':'No change in affinity; hearing someone does not automatically make a friend.'}]
+        context['own_inventory']=next((r.get('inventory',{}) for r in observation.get('residents',[]) if r['id']==actor),{})
+        context['event']['information']='Privately appraise what you actually heard, using your own personality and memories. Courtesy does not prove friendship or trustworthiness. These are authored simulation feelings, not objective facts about the other person. If this exchange gives you a reason to reconsider food, rest or work, you may queue an available follow-up review. You can also continue without a new errand; do not manufacture a reason to act.'
+        context['options']=[{'id':'neutral','effect':'Continue without a new errand or affinity change; hearing someone does not automatically make a friend.'}]
         if heard:context['options'] += [{'id':'felt_supported','effect':'Record a small positive subjective affinity change of 0.05.'},
                                        {'id':'felt_annoyed','effect':'Record a small negative subjective affinity change of 0.05.'}]
+        if heard:context['options']+=followthrough_options(state,observation,actor)
     return context
 
 
@@ -136,10 +139,14 @@ def settle_social(state,c,day):
             for event in state.get('town',{}).get('daily',{}).get('queue',[]):
                 if event['id']!=c['id'] and event['actor']==actor and event['kind']=='social_review' and event['status']=='pending':
                     event.update(status='complete',outcome='participated_as_partner',settled_day=day,encounter_id=c['id'])
+        pending=next((e for e in state.get('town',{}).get('daily',{}).get('queue',[])
+                      if e['actor']==actor and e['status']=='pending' and e.get('conversation_followups')),None)
+        if pending:
+            p['agency'].update(state='decision_pending',reason=pending['reason'],event_id=pending['id'])
     c['social_settled']=True
 
 
-def record_appraisal(state,c,stage,decision):
+def record_appraisal(state,c,stage,decision,observation):
     actor=c['initiator'] if stage=='reflect_first' else c['partner']
     other=c['partner'] if actor==c['initiator'] else c['initiator']
     heard=[t for t in c['turns'] if t.get('delivered') and t['listener']==actor]
@@ -147,7 +154,8 @@ def record_appraisal(state,c,stage,decision):
     p=state['people'][str(actor)]
     relation=p.setdefault('relationships',{}).setdefault(str(other),{'familiarity':0,'affinity':0,'heard_turns':0,'appraisals':[]})
     if any(r['event_id']==c['id'] for r in relation['appraisals']):return
-    delta={'neutral':0,'felt_supported':.05,'felt_annoyed':-.05}[decision['action_id']]
+    delta=0 if decision['action_id'] in FOLLOWUPS else {'neutral':0,'felt_supported':.05,'felt_annoyed':-.05}[decision['action_id']]
+    queue_followthrough(state,c,actor,decision['action_id'],observation)
     relation['familiarity']=round(min(1,relation['familiarity']+.05*len(heard)),6)
     relation['affinity']=round(max(-1,min(1,relation['affinity']+delta)),6)
     relation['heard_turns']+=len(heard)

@@ -57,3 +57,14 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(m['resident_plans']['held'],1)
         self.assertEqual(m['resident_plans']['failures_by_category'],{'availability':1})
         self.assertEqual(m['resident_plans']['feasible_options_per_decision']['mean'],2)
+
+
+    def test_followthrough_distinguishes_choice_review_and_actual_outcome(self):
+        state={'conversation':{'id':'chat','mode':'autonomous_social','phase':'complete',
+            'follow_through':[{'event_id':'next','actor':1,'focus':'food'}]},
+            'plans':[{'id':'next','phase':'complete','outcome':'deferred','decisions':[]}]}
+        m=simulation_metrics(state)['conversation_followthrough']
+        self.assertEqual(m['resident_choices'],1)
+        self.assertEqual(m['completed_plans'],1)
+        self.assertEqual(m['outcomes'],{'deferred':1})
+        self.assertNotIn('ate_bread',m['outcomes'])

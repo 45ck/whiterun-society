@@ -67,6 +67,10 @@ def simulation_metrics(state):
     relations=[r for p in state.get('people',{}).values() for r in p.get('relationships',{}).values()]
     plans=state.get('plans',[])
     terminal_plans=[p for p in plans if p['phase'] in ('complete','held')]
+    followups=[f for c in scenes for f in c.get('follow_through',[])]
+    followup_ids={f['event_id'] for f in followups}
+    followup_plans=[p for p in plans if p.get('id') in followup_ids]
+    followup_queue=[e for e in (state.get('town') or {}).get('daily',{}).get('queue',[]) if e['id'] in followup_ids]
     economic_turns=[t for p in plans for t in p.get('economic_turns',[]) if t.get('delivered')]
     option_counts=[len(d['context']['options']) for p in plans for d in p.get('decisions',[]) if isinstance(d.get('context',{}).get('options'),list)]
     total_actions=sum(actions.values())
@@ -89,6 +93,13 @@ def simulation_metrics(state):
             'reply_dispatch_gap_seconds':distribution([n['prepared_at']-p['ended_at'] for c in group for p,n in zip(c.get('turns',[]),c.get('turns',[])[1:]) if number(p.get('ended_at')) and number(n.get('prepared_at'))])}
             for policy in sorted({c.get('reply_policy','separate_choice') for c in scenes})
             for group in [[c for c in scenes if c.get('reply_policy','separate_choice')==policy]]},
+        'conversation_followthrough':{'resident_choices':len(followups),'distinct_reviews':len(followup_ids),
+            'pending':sum(e['status']=='pending' for e in followup_queue),
+            'completed_plans':sum(p['phase']=='complete' for p in followup_plans),
+            'held_plans':sum(p['phase']=='held' for p in followup_plans),
+            'focus':dict(Counter(f['focus'] for f in followups)),
+            'outcomes':dict(Counter(p.get('outcome','unresolved') for p in followup_plans)),
+            'scope':'Traceable resident-chosen reviews after heard speech, not proof that language caused an action or that a promise was fulfilled.'},
         'encounter_scheduling':{'background_cohorts':len(background),'notice_cohorts':len(notices),
             'cohorts_without_notice_telemetry':len(background)-len(notices),
             'captured_directed_pairs':sum(len(ids) for b in notices for ids in b['social_notice']['candidates_by_actor'].values()),

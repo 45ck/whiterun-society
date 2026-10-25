@@ -48,7 +48,7 @@ class RestTests(unittest.TestCase):
         self.obs['rest']['sensors']['99'].update(sit_state=3,furniture=0x8f15b)
         self.assertEqual(len(rest_opportunities(self.world.active,self.obs,99)),1)
         self.world.active['people']['99']['commitments']=[{'kind':'duty'}]
-        self.assertEqual(rest_opportunities(self.world.active,self.obs,99),[])
+        self.assertEqual(len(rest_opportunities(self.world.active,self.obs,99)),1)
 
     def test_preparation_does_not_recover_and_verified_rest_changes_no_inventory(self):
         before=copy.deepcopy(self.obs['residents']);event=self.start()

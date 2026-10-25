@@ -13,9 +13,6 @@ def work_opportunities(state, observation, worker):
     actors = {a['id']: a for a in observation.get('residents', []) if a.get('isPerson') is True}
     if not resident or worker not in actors:
         return []
-    # Guard duty and existing commitments have no verified leave/scheduling path.
-    if resident.get('is_guard') or state['people'][str(worker)].get('commitments'):
-        return []
     opportunities = []
     for business_id, business in sorted(town.get('businesses', {}).items()):
         employer = business['custodian']

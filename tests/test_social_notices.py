@@ -41,14 +41,18 @@ class SocialNoticeTests(unittest.TestCase):
         self.assertEqual(self.world.routine_batch()['social_notice']['consumed_by'],'noticed')
         self.assertNotIn('attendance_evidence',self.world.conversation_status())
 
-    def test_unloaded_committed_or_out_of_reach_people_are_not_preserved(self):
+    def test_notice_preserves_duty_bearing_people_but_not_unloaded_or_out_of_reach(self):
         notice=self.started_notice();state=self.world.active
         for update in ('unloaded','committed','too_far'):
             o=copy.deepcopy(self.obs);s=copy.deepcopy(state)
             if update=='unloaded':o['residents']=[r for r in o['residents'] if r['id']!=501]
             elif update=='committed':s['people']['501']['commitments']=[{'kind':'shift'}]
             else:next(r for r in o['residents'] if r['id']==501)['x']=4000
-            self.assertEqual(social_candidates(s,o,108149,notice),[],update)
+            candidates=social_candidates(s,o,108149,notice)
+            if update=='committed':
+                self.assertEqual([r['id'] for r in candidates],[501])
+                self.assertNotIn('commitments',candidates[0])
+            else:self.assertEqual(candidates,[],update)
 
     def test_expired_other_session_and_future_notices_do_not_expand_range(self):
         notice=self.started_notice();next(r for r in self.obs['residents'] if r['id']==501)['x']=2200

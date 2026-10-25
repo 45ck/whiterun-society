@@ -223,7 +223,7 @@ class Conversation:
                     c['phase']='propose'
                     if decision['action_id']=='close_politely':c.update(end_after_turn=True,end_reason='polite_closure')
             else:
-                record_appraisal(state,c,stage,decision)
+                record_appraisal(state,c,stage,decision,observation)
                 c['phase']='reflect_second' if stage=='reflect_first' else 'complete'
                 if c['phase']=='complete':c['outcome']='spoke_brief_refusal' if c['response']=='decline' else 'social_exchange_completed'
             c['claim']=None

@@ -72,7 +72,7 @@ class PlacesTests(unittest.TestCase):
                 self.start();self.decide('check_market');self.arrive_market(owned,kind)
                 self.assertEqual(self.world.agency_plan()['phase'],'held')
 
-    def test_guards_commitments_missing_sensor_and_out_of_space_are_not_candidates(self):
+    def test_role_and_duties_allow_choice_but_sensor_and_space_are_required(self):
         for change in ('guard','commitment','sensor','space'):
             with self.subTest(change=change):
                 state=copy.deepcopy(self.world.active);obs=copy.deepcopy(self.obs)
@@ -80,7 +80,8 @@ class PlacesTests(unittest.TestCase):
                 if change=='commitment':state['people']['108186']['commitments']=['duty']
                 if change=='sensor':obs.pop('places')
                 if change=='space':obs['places'][0]['eligible_actors']=[]
-                self.assertIsNone(market_opportunity(state,obs,108186))
+                if change in ('guard','commitment'):self.assertIsNotNone(market_opportunity(state,obs,108186))
+                else:self.assertIsNone(market_opportunity(state,obs,108186))
 
     def test_stale_available_place_cannot_validate_new_choice(self):
         self.start();claim=self.world.claim_plan_decision('meal-1',self.obs)['claim'];self.sync()

@@ -7,11 +7,10 @@ BENCHES = {0x8f15c,0xe6c6c,0xe6c6b,0xe6c6a,0x8f15d,0x506f7,0x506f6,0x506f5,0x8f1
 
 
 def rest_opportunities(state, observation, actor):
-    person=state.get('people',{}).get(str(actor),{})
     sensor=(observation.get('rest') or {})
     senses=sensor.get('sensors',{}).get(str(actor),{})
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
-    if not resident or sensor.get('available') is not True or senses.get('sit_available') is not True or senses.get('furniture_reference_available') is not True or person.get('commitments'):
+    if not resident or sensor.get('available') is not True or senses.get('sit_available') is not True or senses.get('furniture_reference_available') is not True:
         return []
     result=[]
     for site in sensor.get('sites',[]):

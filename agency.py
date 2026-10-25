@@ -92,7 +92,9 @@ class Agency:
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
                 'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
         if voiced_trade:plan['voiced_trade']=True
-        if scheduled:plan['scheduled']=True
+        if scheduled:
+            plan['scheduled']=True
+            if event.get('conversation_followups'):plan['conversation_followups']=copy.deepcopy(event['conversation_followups'])
         state.setdefault('plans', []).append(plan)
         if kind == 'work_shift':
             jobs = work_opportunities(state, observation, actor)
@@ -174,24 +176,29 @@ class Agency:
             options += visits()
             sellers=food_sellers(self.active,observation,actor)
             if sellers and inventory['gold'] >= 3 and inventory['bread'] == 0:
-                for i,seller in enumerate(sellers[:6]):
+                for i,seller in enumerate(sellers):
                     action='seek_bread' if i==0 else 'seek_bread_'+str(seller['id'])
                     targets[action]=seller['id']
                     options.append({'id':action,'effect':'Walk to '+seller['name']+', a publicly registered food seller, and offer 3 gold for one loaf. Stock is unknown and they may refuse.'})
             elif inventory['gold'] >= 3 and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
                 options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review':
-                for i, job in enumerate(work_opportunities(self.active, observation, actor)[:6]):
+                for i, job in enumerate(work_opportunities(self.active, observation, actor)):
                     action = 'seek_work' if i == 0 else 'seek_work_' + job['business_id']
                     work_options[action] = job
                     targets[action] = job['employer']
                     terms = job['policy']
                     options.append({'id': action, 'effect': f'Ask {job["employer_name"]} about an advertised {terms["work_minutes"]}-game-minute bread-making shift paying {terms["wage_gold"]} gold. The employer must offer and you must accept. No wage is guaranteed.'})
-            if plan['kind']=='need_review' and person['needs'].get('fatigue',0)>=.6 and rest_opportunities(self.active,observation,actor):
+            if plan['kind']=='need_review' and rest_opportunities(self.active,observation,actor):
                 options.append({'id':'rest_at_bench','effect':'Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.'})
             information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
+        own_followups=[f for f in plan.get('conversation_followups',[]) if f.get('actor')==actor]
+        if own_followups:
+            information+=' You chose this review after a conversation. Consider the recorded focus and heard words, but recheck current resources and duties. A heard claim is not a verified fact or binding promise. You may change your mind.'
         return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
+                'conversation_followups':copy.deepcopy(own_followups),
+                'own_commitments':copy.deepcopy(person.get('commitments',[])),
                 'observed_inventory': copy.deepcopy(inventory),
                 'own_food_allocation': stock,
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},

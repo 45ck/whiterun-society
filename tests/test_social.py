@@ -107,11 +107,11 @@ class SocialTests(unittest.TestCase):
         self.assertEqual(self.world.conversation_status()['phase'],'held')
         self.assertEqual(self.world.active['people']['99']['relationships'],{})
 
-    def test_guards_commitments_unknown_classification_and_distance_excluded(self):
+    def test_guards_and_commitments_allow_choice_but_person_classification_is_required(self):
         self.assertTrue(social_candidates(self.world.active,self.obs,99))
-        self.obs['residents'][2]['isGuard']=True;self.assertFalse(social_candidates(self.world.active,self.obs,99))
+        self.obs['residents'][2]['isGuard']=True;self.assertTrue(social_candidates(self.world.active,self.obs,99))
         self.obs['residents'][2]['isGuard']=False;self.world.active['people']['99']['commitments']=[{'kind':'job'}]
-        self.assertFalse(social_candidates(self.world.active,self.obs,99))
+        self.assertTrue(social_candidates(self.world.active,self.obs,99))
         self.world.active['people']['99']['commitments']=[];self.obs['residents'][2]['isPerson']=None
         self.assertFalse(social_candidates(self.world.active,self.obs,99))
 
