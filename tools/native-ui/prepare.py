@@ -43,6 +43,10 @@ def validate_manifest(manifest):
     vcpkg = manifest['vcpkg']
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', vcpkg['tool_release']):
         raise ValueError('An exact tool release is required')
+    if vcpkg.get('registry_tool_release') != '2023-10-18' or vcpkg['tool_release'] != '2024-10-18':
+        raise ValueError('Unreviewed registry/engine release combination')
+    if not re.fullmatch('[0-9a-f]{40}', vcpkg.get('tool_source_commit', '')):
+        raise ValueError('Exact engine source provenance is required')
     if vcpkg['tool_url'] != f"https://github.com/microsoft/vcpkg-tool/releases/download/{vcpkg['tool_release']}/vcpkg.exe":
         raise ValueError('Unexpected tool URL')
     if not isinstance(vcpkg.get('tool_sha256'), str) or not re.fullmatch('[0-9a-f]{64}', vcpkg['tool_sha256']):
@@ -165,8 +169,8 @@ def prepare(output):
     rows = verify_source(output / 'upstream', proof)
     repairs = apply_dependency_repairs(output / 'vcpkg', manifest['dependency_helper_repairs'])
     metadata = (output / 'vcpkg/scripts/vcpkg-tool-metadata.txt').read_text()
-    if f"VCPKG_TOOL_RELEASE_TAG={manifest['vcpkg']['tool_release']}" not in metadata.splitlines():
-        raise ValueError('Tool release differs from pinned vcpkg source')
+    if f"VCPKG_TOOL_RELEASE_TAG={manifest['vcpkg']['registry_tool_release']}" not in metadata.splitlines():
+        raise ValueError('Registry metadata differs from its independently pinned release')
     spec = manifest['vcpkg']
     receipts.append(download(spec['tool_url'], output / 'vcpkg/vcpkg.exe', spec['tool_sha256']))
     (output / 'vcpkg/.vcpkg-root').touch(exist_ok=True)

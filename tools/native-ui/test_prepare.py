@@ -12,6 +12,9 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('native_ui_prepare', HERE / 'prepare.py')
 prepare = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(prepare)
+compiler_spec = importlib.util.spec_from_file_location('native_ui_compiler_policy', HERE / 'compiler_policy.py')
+compiler_policy = importlib.util.module_from_spec(compiler_spec)
+compiler_spec.loader.exec_module(compiler_policy)
 
 
 class PreparationTests(unittest.TestCase):
@@ -128,6 +131,70 @@ class PreparationTests(unittest.TestCase):
                 repairs[1]['replacements'].append({'old': 'unreviewed', 'new': 'unreviewed'})
             with self.subTest(change=change), self.assertRaises(ValueError):
                 prepare.validate_manifest(manifest)
+
+    def test_registry_and_engine_are_separately_pinned(self):
+        manifest = self.manifest()
+        self.assertEqual(manifest['vcpkg']['registry_tool_release'], '2023-10-18')
+        self.assertEqual(manifest['vcpkg']['tool_release'], '2024-10-18')
+        manifest['vcpkg']['registry_tool_release'] = '2024-10-18'
+        with self.assertRaises(ValueError):
+            prepare.validate_manifest(manifest)
+
+    def test_generated_triplets_preserve_registry_and_select_exact_v143(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'upstream').mkdir()
+            (root / 'vcpkg/triplets').mkdir(parents=True)
+            for name in ['x64-windows-static', 'x64-windows']:
+                (root / f'vcpkg/triplets/{name}.cmake').write_bytes(b'baseline-triplet')
+            rows = compiler_policy.write_triplets(root, '14.44.35207')
+            self.assertEqual(len(rows), 2)
+            for row in rows:
+                self.assertIn('set(VCPKG_PLATFORM_TOOLSET "v143")', row['contents'])
+                self.assertIn('set(VCPKG_PLATFORM_TOOLSET_VERSION "14.44.35207")', row['contents'])
+                self.assertEqual((root / f"vcpkg/triplets/{row['triplet']}.cmake").read_bytes(), b'baseline-triplet')
+            with self.assertRaises(ValueError):
+                compiler_policy.write_triplets(root, '14.44.35207')
+
+    def compiler_fixture(self, directory):
+        root = Path(directory)
+        compiler = root / 'VS/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe'
+        compiler.parent.mkdir(parents=True)
+        compiler.write_bytes(b'fixture-not-executable')
+        caches = []
+        for triplet in ['x64-windows-static', 'x64-windows']:
+            cache = root / f'vcpkg/buildtrees/detect_compiler/{triplet}-rel/CMakeCache.txt'
+            cache.parent.mkdir(parents=True)
+            cache.write_text(f'CMAKE_CXX_COMPILER:FILEPATH={compiler.as_posix()}\nVCPKG_PLATFORM_TOOLSET:UNINITIALIZED=v143\nVCPKG_PLATFORM_TOOLSET_VERSION:STRING=14.44.35207\n')
+            caches.append(cache)
+        return root, compiler, caches
+
+    def test_effective_compiler_audit_accepts_exact_target_and_host(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, compiler, _ = self.compiler_fixture(directory)
+            result = compiler_policy.audit(root, str(compiler), '14.44.35207')
+            self.assertTrue(result['verified'])
+            self.assertTrue(result['accepted'])
+            self.assertEqual(len(result['observed_caches']), 2)
+
+    def test_effective_compiler_audit_rejects_v142_fallback_or_missing_host(self):
+        for mode in ['version', 'toolset', 'missing_host']:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                root, compiler, caches = self.compiler_fixture(directory)
+                if mode == 'missing_host':
+                    caches[1].unlink()
+                elif mode == 'toolset':
+                    caches[1].write_text(caches[1].read_text().replace('v143', 'v142'))
+                else:
+                    caches[0].write_text(caches[0].read_text().replace('14.44.35207', '14.29.30133'))
+                result = compiler_policy.audit(root, str(compiler), '14.44.35207')
+                self.assertFalse(result['accepted'])
+                self.assertFalse(result['verified'])
+
+    def test_old_or_injected_toolset_version_is_rejected(self):
+        for version in ['14.29.30133', 'latest', '14.44.35207\nset(UNREVIEWED ON)']:
+            with self.subTest(version=version), self.assertRaises(ValueError):
+                compiler_policy.version_checked(version)
 
 
 if __name__ == '__main__':

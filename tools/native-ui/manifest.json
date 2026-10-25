@@ -20,13 +20,18 @@
     "archive_url": "https://codeload.github.com/microsoft/vcpkg/zip/8eb57355a4ffb410a2e94c07b4dca2dffbee8e50",
     "archive_sha256": "029cca70c19063086f5ed735f78a1e2adeaf745519a01113b8c4b24476dcad4a",
     "archive_root": "vcpkg-8eb57355a4ffb410a2e94c07b4dca2dffbee8e50",
-    "tool_release": "2023-10-18",
-    "tool_url": "https://github.com/microsoft/vcpkg-tool/releases/download/2023-10-18/vcpkg.exe",
-    "tool_sha256": "ff4f02ba2ceede4b413ee6fa618441b39fe76b81369d334a602d5410c03988ee",
+    "tool_release": "2024-10-18",
+    "tool_url": "https://github.com/microsoft/vcpkg-tool/releases/download/2024-10-18/vcpkg.exe",
+    "tool_sha256": "76d28a9ab2079d26b2d791fb6af73bb217c080a0e439055b4bfb01b758041c0c",
     "triplet": "x64-windows-static",
     "registry_policy": "Exact archive ports and scripts; no floating checkout, updates, or binary cache.",
-    "tool_bytes": 8108992,
-    "tool_provenance": "Exact microsoft/vcpkg-tool release asset read and hashed; never executed locally. Release matches pinned scripts/vcpkg-tool-metadata.txt."
+    "tool_bytes": 8185416,
+    "tool_provenance": "Exact official microsoft/vcpkg-tool2024-10-18 release asset read and hashed; never executed locally. Engine deliberately newer than pinned registry to recognize installed MSVC14.4 as v143.",
+    "registry_tool_release": "2023-10-18",
+    "engine_registry_policy": "Registry scripts/ports remain at8eb57355a4ffb410a2e94c07b4dca2dffbee8e50 with original tool-release metadata2023-10-18. Engine2024-10-18 is separately pinned; do not bootstrap from registry metadata.",
+    "tool_source_commit": "e392d7347fe72dff56e7857f7571c22301237ae6",
+    "tool_selection_source_url": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/e392d7347fe72dff56e7857f7571c22301237ae6/src/vcpkg/visualstudio.cpp",
+    "tool_selection_source_sha256": "dee9d47cec038ccfd36fc5a61572839d6abc6744baba3cecdb45dafec0460ca1"
   },
   "overlays": {
     "commonlibsse-ng": {
@@ -45,7 +50,9 @@
     "generator": "Visual Studio 17 2022",
     "architecture": "x64",
     "cmake_minimum": "3.23",
-    "compiler_policy": "Use existing hosted VS2022 compiler. Record actual image, MSVC and SDK; no installer."
+    "compiler_policy": "Use existing hosted VS2022 compiler. Record actual image, MSVC and SDK; no installer.",
+    "platform_toolset": "v143",
+    "dependency_compiler_policy": "Generate target and host overlay triplets selecting v143 and the exact discovered hosted MSVC version; verify effective CMake dependency compiler caches and hash, refusing v142 or mismatchedversion."
   },
   "reproducibility_limits": [
     "Hosted runner/compiler/SDK servicing is recorded, not immutable.",

@@ -16,6 +16,8 @@ New-Item -ItemType Directory -Path "$root/evidence/logs" -Force | Out-Null
 $logRoot = "$root/evidence/logs"
 $outcome = 'failed'
 $dependencyRepairs = @()
+$compiler = $null
+$msvc = $null
 
 function Invoke-Logged {
     param([string]$Name, [string]$Command, [string[]]$Arguments)
@@ -45,7 +47,9 @@ try {
         powershell = $PSVersionTable.PSVersion.ToString(); python = (& python --version)
         cmake = $cmakeVersion; cmake_sha256 = (Get-FileHash $cmake -Algorithm SHA256).Hash
         visual_studio = $vs; msvc_version = $msvc; compiler_sha256 = (Get-FileHash $compiler -Algorithm SHA256).Hash
+        compiler_selection_scope = 'Discovered/requested compiler; effective dependencies independently audited in effective-dependency-compiler.json'
         vcpkg_commit = $manifest.vcpkg.commit; vcpkg_tool_sha256 = $manifest.vcpkg.tool_sha256
+        vcpkg_engine_release = $manifest.vcpkg.tool_release; vcpkg_registry_tool_release = $manifest.vcpkg.registry_tool_release
         upstream_commit = $manifest.upstream.commit; variant = 'upstream-unchanged'
         dependency_helper_repairs = $dependencyRepairs
         runtime_qualified = $false; byte_identical_rebuild_verified = $false
@@ -56,14 +60,19 @@ try {
     $env:VCPKG_BINARY_SOURCES = 'clear'
     $env:VCPKG_DISABLE_METRICS = '1'
     $env:VCPKG_VISUAL_STUDIO_PATH = $vs.installationPath
+    # Upstream already points VCPKG_OVERLAY_TRIPLETS at this previously absent directory.
+    # These generated build configuration files include the unchanged registry triplets,
+    # then select the same existing v143 compiler for target and host dependencies.
+    Invoke-Logged 'select-triplets' 'python' @("$PSScriptRoot/compiler_policy.py", '--root', $root, '--msvc-version', $msvc, '--create-triplets')
     # No bootstrap script: prepare.py verified the exact tool executable before this first execution.
     Invoke-Logged 'vcpkg-version' "$root/vcpkg/vcpkg.exe" @('version', '--disable-metrics')
-    $configure = @('-S', "$root/upstream", '-B', "$root/build", '-G', 'Visual Studio 17 2022', '-A', 'x64',
+    $configure = @('-S', "$root/upstream", '-B', "$root/build", '-G', 'Visual Studio 17 2022', '-A', 'x64', '-T', "v143,version=$msvc",
         "-DCMAKE_GENERATOR_INSTANCE=$($vs.installationPath)", '-DBUILD_AS_SHARED=ON', "-DOUTPUT_PATH=$root/stage",
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_SHARED_LINKER_FLAGS_RELEASE=/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF')
     # Source remains unchanged. /DEBUG requests a matching linker PDB for the diagnostic artifact.
     $configure | ConvertTo-Json | Set-Content "$root/evidence/configure-arguments.json"
     Invoke-Logged 'configure' $cmake $configure
+    Invoke-Logged 'verify-effective-compiler' 'python' @("$PSScriptRoot/compiler_policy.py", '--root', $root, '--msvc-version', $msvc, '--compiler', $compiler)
     Invoke-Logged 'compile' $cmake @('--build', "$root/build", '--config', 'Release', '--target', 'NirnLabUIPlatform', '--parallel', '4')
     $dll = "$root/stage/Data/NirnLabUIPlatform/NirnLabUIPlatform.dll"
     if (-not (Test-Path -LiteralPath $dll)) { throw 'Expected DLL missing after build' }
@@ -85,6 +94,11 @@ try {
     $outcome = 'compiled-unqualified'
 }
 finally {
+    if ($compiler -and $msvc -and (Test-Path "$root/vcpkg/buildtrees")) {
+        # Preserve effective compiler evidence even when dependency configuration failed.
+        & python "$PSScriptRoot/compiler_policy.py" --root $root --msvc-version $msvc --compiler $compiler --allow-incomplete 2>&1 |
+            Tee-Object -FilePath "$logRoot/effective-compiler-on-exit.log"
+    }
     # Retain failure evidence without uploading dependency executables, game assets, or all environment variables.
     foreach ($pair in @(
         @("$root/build/CMakeCache.txt", 'CMakeCache.txt'),

@@ -8,7 +8,7 @@ The baseline artifact is **not suitable for deployment**. Upstream lacks the lab
 
 After review and publication, run `.github/workflows/native-ui-build.yml` manually from the intended reviewed revision. There are no arbitrary source, command, patch or URL inputs. The workflow uses `windows-2022`, existing Visual Studio 2022 C++ tools and CMake, and refuses an absent compiler instead of installing one. The script also refuses local and self-hosted execution. Its permissions are `contents: read`; checkout credentials are not persisted.
 
-The workflow verifies the preparation tests, downloads and verifies exact inputs, builds only the `NirnLabUIPlatform` target in Release, and retains evidence for 14 days. The build has a 90-minute timeout. It does not run any newly built DLL. `BUILD_AS_SHARED=ON` and x64 static vcpkg dependencies match upstream. `/DEBUG` is an explicit linker option to obtain a matching PDB; `CMAKE_POLICY_VERSION_MINIMUM=3.5` permits older dependency CMake projects when the hosted CMake version requires it. Neither option changes application source. No input or save-compatibility patch is applied.
+The workflow verifies the preparation tests, downloads and verifies exact inputs, builds only the `NirnLabUIPlatform` target in Release, and retains evidence for 14 days. The build has a 90-minute timeout. It does not run any newly built DLL. `BUILD_AS_SHARED=ON` and x64 static vcpkg dependencies match upstream. `/DEBUG` is an explicit linker option to obtain a matching PDB; `CMAKE_POLICY_VERSION_MINIMUM=3.5` permits older dependency CMake projects when the hosted CMake version requires it. Generated host/target overlay triplets include the original registry triplets, then request `v143` and the exact discovered hosted MSVC version. The main project receives the same toolset/version. These are build configuration additions; application source remains unchanged. No input or save-compatibility patch is applied.
 
 The artifact contains, when available:
 
@@ -16,6 +16,7 @@ The artifact contains, when available:
 - The pinned input manifest and all 109 verified upstream file hashes.
 - Build outcome, source revision, runner image/version, Visual Studio details, MSVC version/compiler hash, CMake version/hash, PowerShell/Python versions and exact configure arguments.
 - CMake cache/compiler records including the selected Windows SDK; vcpkg installed package status and generated dependency SBOMs.
+- Generated triplet contents/hashes and an independent audit of effective target/host dependency compiler paths, toolsets and versions. Compiler discovery is explicitly distinguished from actual compiler selection.
 - NirnLab, vcpkg and dependency copyright/license files, including CommonLib and CEF notices.
 - Preparation/configuration/compilation logs and dependency logs. Dependency logs are capped at 100 files and 5 MiB per file; omitted paths are explicitly recorded.
 
@@ -29,7 +30,7 @@ The machine-readable authority is [`tools/native-ui/manifest.json`](../tools/nat
 | --- | --- | --- |
 | NirnLab UI | `c9514ac16434e2edc2bbfb348be2fcdc47e1d6e2` | Source archive SHA-256 `8edbf90e6e42265e57242e986b880b17e8cc54fb1036fe94562f6168fc0e159d`; 109 Git blob hashes verified locally |
 | vcpkg ports/scripts | `8eb57355a4ffb410a2e94c07b4dca2dffbee8e50` | Public tag `2023.10.19`; archive SHA-256 `029cca70c19063086f5ed735f78a1e2adeaf745519a01113b8c4b24476dcad4a` |
-| vcpkg executable | Release `2023-10-18` | SHA-256 `ff4f02ba2ceede4b413ee6fa618441b39fe76b81369d334a602d5410c03988ee`, 8,108,992 bytes; matches pinned source release metadata |
+| vcpkg executable | Release `2024-10-18`, source `e392d7347fe72dff56e7857f7571c22301237ae6` | SHA-256 `76d28a9ab2079d26b2d791fb6af73bb217c080a0e439055b4bfb01b758041c0c`, 8,185,416 bytes; independently pinned newer engine, registry metadata remains `2023-10-18` |
 | CommonLibSSE-NG overlay | `9b7c386d0355e756b4153416a76b0532f755f8de` | Upstream overlay SHA-512 retained and checked by vcpkg |
 | CEF overlay | `141.0.11+g7e73ac4+chromium-141.0.7390.123`, Windows64 | Exact upstream URL and SHA-512 retained and checked by vcpkg |
 | Checkout action | `11bd71901bbe5b1630ceea73d27597364c9af683` | Verified public `v4.2.2` tag |
@@ -47,9 +48,17 @@ The new MSYS2 package was **not downloaded or executed locally**: local TLS vali
 
 [Retry 40186289068](https://github.com/45ck/whiterun-society/actions/runs/40186289068) successfully downloaded the pkgconf 3.0.7 replacement, then failed because the old MSYS acquisition helper automatically requests runtime 3.4.6, also retired from all six mirrors. The second reviewed repair replaces only its URL and SHA-512 with runtime `3.6.10-4`, sourced from [the same pinned Microsoft revision's acquisition helper](https://github.com/microsoft/vcpkg/blob/817892b0ecbc6af994dd6df999c73faf795adbf2/scripts/cmake/vcpkg_acquire_msys.cmake). Original/result helper hashes and exactly one replacement per literal are enforced identically. No new runtime asset was executed locally. The dependency manifest permits exactly these two named helper repairs, rejects duplicates/missing entries, and retains separate application-patch metadata. If another retired dependency prevents the next build, reassess the complete acquisition route before additional piecemeal retries.
 
+### Effective compiler selection
+
+[Run 40186822142](https://github.com/45ck/whiterun-society/actions/runs/40186822142) passed both repaired downloads and built the preceding dependencies. CommonLib then failed on missing C++23 `std::to_underlying`. The hosted image offered MSVC `14.44.35207`, recorded by discovery, but the effective dependency caches and compiler commands selected MSVC `14.29.30133`, toolset `v142`. All 97 downloaded evidence-file hashes verified.
+
+The cause is in the old package-manager executable: its Visual Studio discovery recognizes only 14.1/14.2/14.3 toolset prefixes, skipping 14.4 as unknown. Setting `v143` alone cannot make that executable recognize the installed 14.44 compiler. The independently pinned engine `2024-10-18` [recognizes both 14.3 and 14.4 as v143](https://github.com/microsoft/vcpkg-tool/blob/e392d7347fe72dff56e7857f7571c22301237ae6/src/vcpkg/visualstudio.cpp#L272). Its exact official executable was read and hashed locally, never executed. The original 2023 registry archive, all library versions/checksums and both reviewed helper repairs stay unchanged. The registry's original engine-release metadata is validated separately; it is not rewritten to imply a matching newer registry.
+
+`compiler_policy.py` generates explicit host/target `v143` triplets with the discovered full MSVC version and records their contents/hashes. After configuration, it checks effective dependency CMake caches against that exact compiler executable and requires both host and target detection evidence before compiling Nirn. A v142 fallback, a different compiler/version, or missing detection evidence fails the build. Failure paths retain the available compiler audit without claiming it passed. No local or hosted compiler installer is used. The first successful complete build with this engine/configuration remains unverified.
+
 Selected registry manifests at that exact commit declare fmt 10.1.1, spdlog 1.12.0, directxtk 2023-09-01#1, directxmath 2022-12-12, palsigslot 1.2.2, nlohmann-json 3.11.2, rapidcsv 8.64 and xbyak 6.69. The hosted vcpkg installed-status/SBOM evidence determines the complete resolved graph. No claims about newly resolved packages are inferred from these top-level declarations.
 
-The old vcpkg bootstrap script downloads its executable without a pinned checksum. This pipeline **does not run that script**: `prepare.py` downloads and checks the exact release executable before the hosted worker executes it. The local preparation of this change only read and hashed those public asset bytes; no executable or compiler ran locally.
+The old vcpkg bootstrap script downloads its executable without a pinned checksum. This pipeline **does not run that script**: `prepare.py` downloads and checks the separately pinned engine executable before the hosted worker executes it. The local preparation of this change only read and hashed those public asset bytes; no executable or compiler ran locally.
 
 The hosted image and compiler are serviced externally. Their actual identities are recorded, not immutable. This is a pinned-input, auditable build recipe; **byte-identical rebuilds are not proven**. The first hosted run must establish toolchain/dependency compatibility and availability. There are no invented or unresolved source/dependency archive hashes in the manifest.
 
