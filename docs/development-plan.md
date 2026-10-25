@@ -8,6 +8,8 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Accepted direction
 
+- Movie view now frames nearby participants together, follows travel and holds the last shot at idle. One controlled native voiced sale qualified this composition. Camera collision, low-light readability and sustained video qualification remain open. [Screenshots and evidence](movie-camera.md).
+
 - Native scene ownership can now be interrupted through a save-bound handoff rather than imposing an unconditional wait. Jev still chooses what the released resident does. Scene scripts and other participants can be affected; broad quest compatibility remains unqualified. [Protocol, controls and live evidence](native-scene-handoff.md)
 
 - Actions must follow interactions and arise from resident state. Remove artificial cast, role and scheduling exclusions; expand conversation-to-action commitments and ordinary encounters. Audit quest/scene restrictions against actual engine occupancy rather than treating quest involvement as a permanent exclusion. Physical reachability, mutual consent and accounting remain simulation rules.

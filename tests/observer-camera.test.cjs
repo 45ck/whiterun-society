@@ -1,6 +1,33 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createObserverCamera}=require('../bridge/observer-camera.js');
 const {storyActor}=require('../bridge/observer-camera.js');
+const {movieSubjects,movieFrame}=require('../bridge/observer-camera.js');
+
+test('movie pair remains stable across speaker changes and excludes finished encounters',()=>{
+ const rows=[7,8].map(id=>({id,isPerson:true}));
+ for(const speaker of [7,8])assert.deepEqual(movieSubjects({conversation:{phase:'speaking',speakers:[8,7],current:{speaker}}},rows),[7,8]);
+ for(const phase of ['held','complete'])assert.deepEqual(movieSubjects({plan:{phase,economic_pair:[7,8],actor:7}},rows),[]);
+ assert.deepEqual(movieSubjects({plan:{phase:'travelling',actor:7,economic_pair:[7,99]}},rows),[7]);
+});
+
+test('movie composition frames both residents and keeps the same side when the speaker swaps',()=>{
+ const a={id:7,x:0,y:0,z:0,heading:0},b={id:8,x:200,y:0,z:0,heading:180};
+ const first=movieFrame([a,b],null,[100,-500,200]);
+ assert.deepEqual(first.target,[100,0,80]);assert.deepEqual(first.position,[100,-250,230]);
+ assert.deepEqual(movieFrame([b,a],first,[100,500,200]),first);
+ assert.equal(first.collision,'unverified');
+ const moved=movieFrame([{...a,x:100},{...b,x:300}],first);
+ assert.deepEqual(moved.position,[200,-250,230]);
+});
+
+test('distant pairs follow the lead resident and invalid geometry cannot steer a camera',()=>{
+ const a={id:7,x:0,y:0,z:0,heading:0},b={id:8,x:1000,y:0,z:0,heading:90};
+ const shot=movieFrame([b,a]);assert.equal(shot.kind,'resident');assert.deepEqual(shot.ids,[8]);
+ assert.equal(shot.position[0],1260);assert.equal(shot.position[2],200);
+ assert.equal(movieFrame([]),null);assert.equal(movieFrame([{...a,z:NaN}]),null);
+ assert.ok(movieFrame([a,{...b,x:650}]).offset.every(Number.isFinite));
+ assert.equal(movieFrame([a,{...b,x:651}]).kind,'resident');
+});
 test('activity camera follows current speaker and respects manual override',()=>{
  const camera=createObserverCamera(),rows=[{id:7,isPerson:true},{id:8,isPerson:true}];
  assert.equal(camera.accept({mode:'story',request_id:'story'},rows,{}),true);

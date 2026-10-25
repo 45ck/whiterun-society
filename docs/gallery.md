@@ -140,6 +140,18 @@ Captured game or observer interface — historical prototype
 
 ![Market travel live](images/market-travel-live.png)
 
+## Movie pair receipt fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Movie pair receipt fixture](images/movie-pair-receipt-fixture.jpg)
+
+## Movie pair speaking fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Movie pair speaking fixture](images/movie-pair-speaking-fixture.jpg)
+
 ## Negotiation reconsideration
 
 Captured game or observer interface — historical prototype

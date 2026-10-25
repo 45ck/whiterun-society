@@ -18,9 +18,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Connected input market:** dynamic bakeries can buy grain, negotiate, produce bread and sell it for consumption. A controlled native chain completed both sales, production and a meal, with seven spoken lines and conserved money. The real model trial and its context-size failure are documented separately. [Infographic, screenshot, audio, receipts and limits](docs/grain-market.md).
 
+**Movie camera:** conversations now use a stable pair shot instead of the wide RTS framing. A controlled native four-line negotiation kept both residents visible through a one-loaf, seven-septim sale. [Screenshots, telemetry and remaining collision limits](docs/movie-camera.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 42 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 47 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -229,7 +231,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (45)</summary>
+<summary>Browse every finished project image (47)</summary>
 
 ### Grain market loop
 
@@ -368,6 +370,18 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Market travel live](docs/images/market-travel-live.png)
+
+### Movie pair receipt fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Movie pair receipt fixture](docs/images/movie-pair-receipt-fixture.jpg)
+
+### Movie pair speaking fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Movie pair speaking fixture](docs/images/movie-pair-speaking-fixture.jpg)
 
 ### Negotiation reconsideration
 

@@ -155,6 +155,23 @@ test('camera messages use managed loaded residents and resolve on the update',as
   assert.ok(rotations.flat().every(Number.isFinite));
 });
 
+test('movie view holds an ended shot and manual RTS overrides automatic following',async()=>{
+ const h=harness(),positions=[];
+ h.sp.setFreeCameraPosition=p=>positions.push(Array.from(p));h.sp.setFreeCameraRotation=()=>{};
+ h.actor.getAngleZ=()=>0;h.actor.hasKeyword=()=>true;h.sp.Keyword={from:x=>x};
+ h.sp.Game.getFormEx=id=>id===123?h.actor:id===0x13794?{}:null;
+ const present=phase=>({society:{town:{residents:{'123':{}}},plan:{phase,actor:123}}});
+ h.setPresentation(present('travelling'));h.handlers.get('update')();await settle();
+ h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'story'}]});
+ h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,262,203]);
+ h.setPresentation(present('complete'));h.advance();h.handlers.get('update')();await settle();
+ h.actor.getPositionX=()=>900;h.handlers.get('update')();assert.deepEqual(positions.at(-1),[1,262,203]);
+ h.handlers.get('browserMessage')({arguments:[{type:'society-camera',mode:'free',panX:24000,panY:-7000,yaw:0,distance:1000,elevation:900}]});
+ h.handlers.get('update')();assert.deepEqual(positions.at(-1),[24000,-6000,-2420]);
+ h.setPresentation(present('travelling'));h.advance();h.handlers.get('update')();await settle();h.handlers.get('update')();
+ assert.deepEqual(positions.at(-1),[24000,-6000,-2420]);
+});
+
 test('checkpoint binding compares the actual marker before writing',async()=>{
   const h=harness();let marker=3,writes=0;
   h.sp.Game.getFormFromFile=()=>({});

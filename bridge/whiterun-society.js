@@ -51,7 +51,7 @@ let lastBindingAttempt = 0;
 let bindingAttempts = 0;
 let residents = [];
 let hud = null;
-let cameraMode='free',cameraActor=0,cameraDirty=true,cursor=true;
+let cameraMode='free',cameraActor=0,cameraDirty=true,cursor=true,movieShot=null,cameraFraming=null;
 let directorControl=null,playerControlRequest=null,audioOutput=null;
 let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[],mapProjection=null;
@@ -75,7 +75,7 @@ function reset() {
   directorControl=null;playerControlRequest=null;audioOutput=null;
   lastAckSent=null;
   sceneHandoffs.reset();residentControl.reset();lastPresentationAt=0;
-  observerCamera.reset();remoteCamera=null;
+  observerCamera.reset();remoteCamera=null;movieShot=null;cameraFraming=null;
   endowments.reset();
   speech.reset();conversationAttendance.reset();
   session = Date.now() + '-' + Math.random();
@@ -128,26 +128,44 @@ on('buttonEvent',event=>{
 });
 function updateCamera(player) {
   if (typeof sp.setFreeCameraRotation!=='function') return;
+  const control=observerCamera.status();
   let target=[24500,-7100,-3320],offset=[-650,-850,450];
   if(cameraMode==='street'){target=[20950,-7500,-3540];offset=[-1250,-100,300];}
-  if(cameraMode==='trade'){
+  if(cameraMode==='trade'&&control.manual){
     const pair=tradeCameraActors(presentation.society,residents);
     const a=pair[0]?sp.Actor.from(sp.Game.getFormEx(pair[0])):null,b=pair[1]?sp.Actor.from(sp.Game.getFormEx(pair[1])):null;
     if(a&&b&&a.is3DLoaded()&&b.is3DLoaded()) target=[(a.getPositionX()+b.getPositionX())/2,(a.getPositionY()+b.getPositionY())/2,(a.getPositionZ()+b.getPositionZ())/2+60];
     offset=[-400,-500,280];
   }
-  if(cameraMode==='focus'){
+  if(cameraMode==='focus'&&control.manual){
     const actor=sp.Actor.from(sp.Game.getFormEx(cameraActor));
     if(!actor||!actor.is3DLoaded())return;
     target=[actor.getPositionX(),actor.getPositionY(),actor.getPositionZ()+80];
     const heading=actor.getAngleZ()*Math.PI/180;
     offset=[Math.sin(heading)*140,Math.cos(heading)*140,35];
   }
-  const control=observerCamera.status();
-  if(control.manual||control.mode==='story'){
+  if(control.manual){
+    movieShot=null;cameraFraming=null;
     if(cameraMode==='free')target=[control.panX,control.panY,-3320];
     const yaw=control.yaw*Math.PI/180;
     offset=[Math.sin(yaw)*control.distance,Math.cos(yaw)*control.distance,control.elevation];
+  }
+  if(!control.manual&&control.mode==='story'){
+    let ids=movieSubjects(presentation.society,residents);
+    const lead=storyActor(presentation.society,residents);
+    if(lead&&ids.includes(lead))ids=[lead,...ids.filter(id=>id!==lead)];
+    const rows=[];
+    for(const id of ids){const a=sp.Actor.from(sp.Game.getFormEx(id));if(a&&a.is3DLoaded())rows.push({id,x:a.getPositionX(),y:a.getPositionY(),z:a.getPositionZ(),heading:a.getAngleZ()});}
+    const shot=rows.length===ids.length?movieFrame(rows,movieShot,typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null):null;
+    if(shot){if(shot.key!==movieShot?.key)cameraDirty=true;movieShot=shot;}
+    if(!movieShot){cameraFraming={status:'waiting_for_activity',collision:'unverified'};return;}
+    // Freeze the last composition when the encounter ends; do not chase a
+    // departed speaker or start an unsolicited tour while the director is idle.
+    target=movieShot.target;offset=movieShot.offset;
+    cameraMode=movieShot.kind==='pair'?'trade':'focus';cameraActor=lead||movieShot.ids[0];
+    cameraFraming={profile:movieShot.profile,kind:movieShot.kind,subjects:movieShot.ids,
+      status:shot?'following_activity':'holding_last_shot',distance:Math.hypot(offset[0],offset[1]),
+      elevation:offset[2],target,collision:'unverified'};
   }
   if(cameraMode==='atlas'){target=[control.panX,control.panY,-3320];offset=[0,0,18000];}
   if(cameraMode==='portrait'){
@@ -216,10 +234,6 @@ on('update', () => {
   }
   const view=observerCamera.status();
   if(view.manual){cameraMode=view.mode;cameraActor=view.id;}
-  if(view.mode==='story'){
-    const actor=storyActor(presentation.society,residents);
-    if(actor&&(cameraMode!=='focus'||cameraActor!==actor)){cameraMode='focus';cameraActor=actor;cameraDirty=true;}
-  }
   if(observerReady) updateCamera(player);
   if(observerReady&&sp.Input&&typeof sp.Input.isKeyPressed==='function'){
     for(const code of [2,3,4,64,65]){const down=sp.Input.isKeyPressed(code);if(down&&!observerPressed[code])observerKey=code;observerPressed[code]=down;}
@@ -260,7 +274,6 @@ on('update', () => {
         }
         else if(command.kind==='rest_at_bench'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Rest checkpoint mismatch');
-          if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
           const result=rest.step(command);
           if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
         }
@@ -271,7 +284,7 @@ on('update', () => {
         }
         else if(command.kind==='speak'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Speech checkpoint mismatch');
-          speech.start(command);if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
+          speech.start(command);
           completed.add(command.id);
         }
         else if(command.kind==='conversation_attend'){
@@ -294,7 +307,6 @@ on('update', () => {
         else if (command.kind === 'walk_to') {
           if(parallelRoutines.ownsActor(command.actor)||parallelRoutines.ownsActor(command.target))throw new Error('Background journey owns a meeting participant');
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
-          if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
           movementSource=command.method==='package'?routines:movement;
           const result=movementSource.step(command);
           if(!result.done)pending=command;
@@ -488,7 +500,7 @@ on('update', () => {
     transport:{cadence_ms:cadence,previous_request_interval_ms:lastSent?Date.now()-lastSent:null},
     resident_control:residentControl.status(),
     ui_health:uiHealth?{...uiHealth,native:{button_events:nativeButtonEvents,last_control_key:lastNativeControlKey,focus_ready:browserFocusReady===true,focus_requested:cursor,browser_wanted_focus:typeof sp.browser?.isFocused==='function'?sp.browser.isFocused():null}}:null,audio_output:audioOutput,
-    camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
+    camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,framing:cameraFraming,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},

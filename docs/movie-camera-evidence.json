@@ -1,0 +1,2456 @@
+{
+  "scope": "Controlled native camera and speech qualification. Authored choices, no autonomous-behaviour claim. No new resources granted.",
+  "date": "2026-10-25",
+  "outcome": "bought_bread",
+  "exit_code": 0,
+  "actors": [
+    108170,
+    108149
+  ],
+  "before": {
+    "108170": {
+      "name": "Jon Battle-Born",
+      "inventory": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "108149": {
+      "name": "Carlotta Valentia",
+      "inventory": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    }
+  },
+  "after": {
+    "108170": {
+      "name": "Jon Battle-Born",
+      "inventory": {
+        "gold": 27,
+        "bread": 1,
+        "grain": 0
+      }
+    },
+    "108149": {
+      "name": "Carlotta Valentia",
+      "inventory": {
+        "gold": 109,
+        "bread": 3,
+        "grain": 20
+      }
+    }
+  },
+  "turns": [
+    {
+      "act": "offer",
+      "actor": 108170,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "653703ebc3f86b7990671ad3ab6df4219b4c04b9bb4a6f83190a5b6bb108ace8.wav",
+        "seconds": 2.5153,
+        "sha256": "653703ebc3f86b7990671ad3ab6df4219b4c04b9bb4a6f83190a5b6bb108ace8",
+        "voice": "bm_lewis"
+      },
+      "delivered": true,
+      "delivery_id": "speech-c6af49115190ce0dcbaf8ef9",
+      "ended_at": 1792906932.0332885,
+      "line": "Would you sell me one loaf for 4 gold?",
+      "listener": 108149,
+      "origin_session": "1792906829752-0.2840924607864981",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.643,
+        "facing": [
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-c6af49115190ce0dcbaf8ef9",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 174.29438653395061,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 274,
+          "sum_error_degrees": 174.83715496943
+        },
+        "playedSeconds": 2.515333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792906928.4502087,
+      "resume_phase": "consent",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "seller_counteroffer",
+      "actor": 108149,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "f841ffb281e8821a6e1a97a0b02d98a51dce24443eea7d22ecea505b31fdcb95.wav",
+        "seconds": 3.9833,
+        "sha256": "f841ffb281e8821a6e1a97a0b02d98a51dce24443eea7d22ecea505b31fdcb95",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "delivery_id": "speech-90725bc771842ff66bd17a57",
+      "ended_at": 1792906940.1216705,
+      "line": "I can sell you one loaf for 7 gold. Would that suit you?",
+      "listener": 108170,
+      "origin_session": "1792906829752-0.2840924607864981",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.054,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-90725bc771842ff66bd17a57",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.0007312632255889184,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 418,
+          "sum_error_degrees": 0.3040586166697494
+        },
+        "playedSeconds": 3.983333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792906935.253372,
+      "resume_phase": "reconsider",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "buyer_accept",
+      "actor": 108170,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "456c08949498766dbfffef9784bd11b4df633b13a5639c2df7b659e8118eb8ec.wav",
+        "seconds": 3.094,
+        "sha256": "456c08949498766dbfffef9784bd11b4df633b13a5639c2df7b659e8118eb8ec",
+        "voice": "bm_lewis"
+      },
+      "delivered": true,
+      "delivery_id": "speech-7c046dd845599ca6ce2a3961",
+      "ended_at": 1792906947.00033,
+      "line": "Agreed. I will pay 7 gold for one loaf.",
+      "listener": 108149,
+      "origin_session": "1792906829752-0.2840924607864981",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 3.166,
+        "facing": [
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-7c046dd845599ca6ce2a3961",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.0007312632255889184,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 328,
+          "sum_error_degrees": 0.23528555593543388
+        },
+        "playedSeconds": 3.094,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792906943.1174738,
+      "resume_phase": "ready_to_trade",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "receipt",
+      "actor": 108170,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "c8bda8bd396eb03613f03517ff16571450af52ecda374ed867a12a26510a2500.wav",
+        "seconds": 3.8526,
+        "sha256": "c8bda8bd396eb03613f03517ff16571450af52ecda374ed867a12a26510a2500",
+        "voice": "bm_lewis"
+      },
+      "delivered": true,
+      "delivery_id": "speech-c0b563a52dda7bc8fd2703d6",
+      "ended_at": 1792906955.148819,
+      "line": "Thank you. I have received one loaf and paid 7 gold.",
+      "listener": 108149,
+      "origin_session": "1792906829752-0.2840924607864981",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 3.959,
+        "facing": [
+          {
+            "actor": 108170,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-c0b563a52dda7bc8fd2703d6",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.0007292511643299804,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 406,
+          "sum_error_degrees": 0.2846415960561899
+        },
+        "playedSeconds": 3.852625,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792906949.969087,
+      "resume_phase": "after_purchase",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    }
+  ],
+  "sampled_seconds": 73.156,
+  "samples": [
+    {
+      "at": 1792906899.7615852,
+      "phase": "complete",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "holding_last_shot",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24940.978515625,
+            -6956.0458984375,
+            -3314.09521484375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24989.748046875,
+          -7211.42626953125,
+          -3204.0966796875
+        ]
+      }
+    },
+    {
+      "at": 1792906900.7915814,
+      "phase": "complete",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "holding_last_shot",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24940.978515625,
+            -6956.0458984375,
+            -3314.09521484375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24989.748046875,
+          -7211.42626953125,
+          -3204.0966796875
+        ]
+      }
+    },
+    {
+      "at": 1792906901.8145308,
+      "phase": "complete",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "holding_last_shot",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24940.978515625,
+            -6956.0458984375,
+            -3314.09521484375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24989.748046875,
+          -7211.42626953125,
+          -3204.0966796875
+        ]
+      }
+    },
+    {
+      "at": 1792906903.0249481,
+      "phase": "thinking",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24940.978515625,
+            -6956.0458984375,
+            -3314.096923828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24989.748046875,
+          -7211.42626953125,
+          -3204.0927734375
+        ]
+      }
+    },
+    {
+      "at": 1792906904.047674,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24940.978515625,
+            -6956.0458984375,
+            -3314.099365234375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24989.748046875,
+          -7211.42626953125,
+          -3204.09716796875
+        ]
+      }
+    },
+    {
+      "at": 1792906905.0718732,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 259.99999999999994,
+          "elevation": 110,
+          "target": [
+            24935.072265625,
+            -6923.04833984375,
+            -3316.102294921875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25161.244140625,
+          -6996.89990234375,
+          -3205.364990234375
+        ]
+      }
+    },
+    {
+      "at": 1792906906.088195,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24926.736328125,
+            -6876.7939453125,
+            -3315.840087890625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24925.09765625,
+          -6648.33984375,
+          -3206.306396484375
+        ]
+      }
+    },
+    {
+      "at": 1792906907.1654835,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24915.53515625,
+            -6813.78955078125,
+            -3315.855712890625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24873.470703125,
+          -6574.619140625,
+          -3205.633544921875
+        ]
+      }
+    },
+    {
+      "at": 1792906908.1864743,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24898.810546875,
+            -6713.02490234375,
+            -3319.948974609375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24859.1171875,
+          -6472.9990234375,
+          -3209.563720703125
+        ]
+      }
+    },
+    {
+      "at": 1792906909.204542,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24889.884765625,
+            -6649.880859375,
+            -3324.32421875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24857.37890625,
+          -6407.4287109375,
+          -3212.485107421875
+        ]
+      }
+    },
+    {
+      "at": 1792906910.219033,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24881.3125,
+            -6586.19482421875,
+            -3297.553955078125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24849.96484375,
+          -6341.22998046875,
+          -3189.185546875
+        ]
+      }
+    },
+    {
+      "at": 1792906911.2541678,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24876.2421875,
+            -6545.84033203125,
+            -3274.974609375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24844.759765625,
+          -6297.7109375,
+          -3170.796142578125
+        ]
+      }
+    },
+    {
+      "at": 1792906912.300448,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24868.85546875,
+            -6478.48193359375,
+            -3246.6953125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24837.439453125,
+          -6234.09033203125,
+          -3138.294921875
+        ]
+      }
+    },
+    {
+      "at": 1792906913.3214777,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24863.748046875,
+            -6434.49169921875,
+            -3223.774658203125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24832.39453125,
+          -6188.6142578125,
+          -3118.089599609375
+        ]
+      }
+    },
+    {
+      "at": 1792906914.3600197,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24858.8828125,
+            -6391.58251953125,
+            -3201.3076171875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24827.478515625,
+          -6144.677734375,
+          -3096.463623046875
+        ]
+      }
+    },
+    {
+      "at": 1792906915.387645,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24851.8125,
+            -6326.42333984375,
+            -3168.485107421875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24820.380859375,
+          -6081.93505859375,
+          -3060.17138671875
+        ]
+      }
+    },
+    {
+      "at": 1792906916.4041152,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24847.220703125,
+            -6288.7138671875,
+            -3140.865234375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24815.603515625,
+          -6039.8203125,
+          -3038.626220703125
+        ]
+      }
+    },
+    {
+      "at": 1792906917.4331105,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24839.921875,
+            -6220.26953125,
+            -3110.969970703125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24808.50390625,
+          -5974.61328125,
+          -3004.744140625
+        ]
+      }
+    },
+    {
+      "at": 1792906918.4578357,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24835.072265625,
+            -6177.98486328125,
+            -3086.387939453125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24803.6484375,
+          -5930.79638671875,
+          -2982.228515625
+        ]
+      }
+    },
+    {
+      "at": 1792906919.469949,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24830.2734375,
+            -6135.390625,
+            -3063.110107421875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24798.845703125,
+          -5887.87548828125,
+          -2959.23486328125
+        ]
+      }
+    },
+    {
+      "at": 1792906920.5042002,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24823.326171875,
+            -6072.9951171875,
+            -3028.959228515625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24791.8828125,
+          -5828.18896484375,
+          -2921.66943359375
+        ]
+      }
+    },
+    {
+      "at": 1792906921.5305924,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24818.552734375,
+            -6034.52392578125,
+            -3003.37060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24787.029296875,
+          -5786.26708984375,
+          -2899.800048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906922.5802374,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24811.283203125,
+            -5968.44873046875,
+            -2969.447998046875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24779.861328125,
+          -5723.85791015625,
+          -2862.32861328125
+        ]
+      }
+    },
+    {
+      "at": 1792906923.601313,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24806.390625,
+            -5925.15185546875,
+            -2946.6171875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24775.029296875,
+          -5680.8134765625,
+          -2839.295166015625
+        ]
+      }
+    },
+    {
+      "at": 1792906924.9020875,
+      "phase": "travelling",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24799.478515625,
+            -5861.3486328125,
+            -2915.278076171875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24776.3671875,
+          -5620.1943359375,
+          -2809.17578125
+        ]
+      }
+    },
+    {
+      "at": 1792906925.9533427,
+      "phase": "thinking",
+      "camera": {
+        "mode": "focus",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "resident",
+          "subjects": [
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 260,
+          "elevation": 110,
+          "target": [
+            24790.3046875,
+            -5777.294921875,
+            -2914.68896484375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          24764.0234375,
+          -5536.58203125,
+          -2804.700439453125
+        ]
+      }
+    },
+    {
+      "at": 1792906927.1547475,
+      "phase": "economic_attending",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7119140625,
+            -5687.0888671875,
+            -2925.052978515625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.912109375,
+          -2775.053466796875
+        ]
+      }
+    },
+    {
+      "at": 1792906928.1872206,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7119140625,
+            -5687.0888671875,
+            -2925.0528564453125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.912109375,
+          -2775.053466796875
+        ]
+      }
+    },
+    {
+      "at": 1792906929.2270825,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7119140625,
+            -5687.0888671875,
+            -2925.0528564453125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.912109375,
+          -2775.053466796875
+        ]
+      }
+    },
+    {
+      "at": 1792906930.2610862,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.0491943359375
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.050537109375
+        ]
+      }
+    },
+    {
+      "at": 1792906931.2852173,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.0489501953125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906932.3062642,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.0489501953125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906933.7195053,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906934.7825792,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906935.8370311,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7109375,
+            -5687.089111328125,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9111328125,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906936.8621542,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906937.878912,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906938.93022,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906939.9739819,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906941.0202034,
+      "phase": "reconsider",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906942.0651402,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906943.4232292,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.7099609375,
+            -5687.0888671875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90869140625,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906944.4450107,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906945.472038,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906946.4861283,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906947.808025,
+      "phase": "ready_to_trade",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906948.8622098,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906949.9004593,
+      "phase": "economic_synthesize",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.048828125
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.05029296875
+        ]
+      }
+    },
+    {
+      "at": 1792906950.9237862,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24779.708984375,
+            -5687.088623046875,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.9052734375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906951.9467173,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906953.0024865,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906954.0304313,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906955.0579987,
+      "phase": "economic_speaking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906956.1257982,
+      "phase": "after_purchase",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906957.150379,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.90185546875,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906958.174699,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906959.210177,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906960.2402956,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906961.25199,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906962.2872252,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906963.3405879,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906964.3804586,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906965.401461,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906966.4203608,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906967.4512,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 249.99999999999997,
+          "elevation": 150,
+          "target": [
+            24779.7080078125,
+            -5687.08837890625,
+            -2925.0487060546875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25028.00390625,
+          -5657.8984375,
+          -2775.050048828125
+        ]
+      }
+    },
+    {
+      "at": 1792906968.467595,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24776.9228515625,
+            -5687.71435546875,
+            -2925.04638671875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25026.451171875,
+          -5666.56201171875,
+          -2775.047119140625
+        ]
+      }
+    },
+    {
+      "at": 1792906969.504705,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24776.9228515625,
+            -5687.71435546875,
+            -2925.04638671875
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25026.16015625,
+          -5668.041015625,
+          -2775.047119140625
+        ]
+      }
+    },
+    {
+      "at": 1792906970.5330002,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24776.9228515625,
+            -5687.71435546875,
+            -2925.0465087890625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25026.16015625,
+          -5668.04443359375,
+          -2775.047119140625
+        ]
+      }
+    },
+    {
+      "at": 1792906971.8362586,
+      "phase": "thinking",
+      "camera": {
+        "mode": "trade",
+        "id": 108170,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "following_activity",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24776.9228515625,
+            -5687.71435546875,
+            -2925.0465087890625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25026.16015625,
+          -5668.04443359375,
+          -2775.047119140625
+        ]
+      }
+    },
+    {
+      "at": 1792906972.9180684,
+      "phase": "complete",
+      "camera": {
+        "mode": "trade",
+        "id": 108149,
+        "manual": false,
+        "framing": {
+          "profile": "subject-relative-v1",
+          "kind": "pair",
+          "subjects": [
+            108149,
+            108170
+          ],
+          "status": "holding_last_shot",
+          "distance": 250,
+          "elevation": 150,
+          "target": [
+            24776.9228515625,
+            -5687.71435546875,
+            -2925.0465087890625
+          ],
+          "collision": "unverified"
+        },
+        "position": [
+          25026.16015625,
+          -5668.04443359375,
+          -2775.047119140625
+        ]
+      }
+    }
+  ],
+  "idle_camera": {
+    "mode": "trade",
+    "id": 108149,
+    "distance": 650,
+    "yaw": 225,
+    "elevation": 300,
+    "panX": 24500,
+    "panY": -7100,
+    "manual": false,
+    "request_id": "a822af923d48a1aa",
+    "capture": false,
+    "framing": {
+      "profile": "subject-relative-v1",
+      "kind": "pair",
+      "subjects": [
+        108149,
+        108170
+      ],
+      "status": "holding_last_shot",
+      "distance": 250,
+      "elevation": 150,
+      "target": [
+        24776.9228515625,
+        -5687.71435546875,
+        -2925.0465087890625
+      ],
+      "collision": "unverified"
+    },
+    "position": [
+      25026.16015625,
+      -5668.04443359375,
+      -2775.047119140625
+    ]
+  },
+  "limits": [
+    "Collision/occlusion unverified",
+    "Dark lighting",
+    "Overlay speech, no lip sync",
+    "One controlled encounter is not broad camera qualification"
+  ],
+  "tests": {
+    "javascript_passed": 171
+  },
+  "restore_save": "WS-Camera-20261025-BK",
+  "screenshots": [
+    {
+      "file": "movie-pair-receipt-fixture.jpg",
+      "sha256": "413713ac27d91fc04af63e325af2e0924154cdbfa381d31bb1d786d17d2ba62e"
+    },
+    {
+      "file": "movie-pair-speaking-fixture.jpg",
+      "sha256": "f80c83efca0c0c3306c7734f0b06a3695934872d914b6a23e1873107cde6958a"
+    }
+  ],
+  "restore": {
+    "verified": true,
+    "compared_fields": 17,
+    "checkpoint": 2037
+  },
+  "real_reviews": [
+    {
+      "actor": 108165,
+      "outcome": "deferred"
+    },
+    {
+      "actor": 108170,
+      "outcome": "deferred"
+    }
+  ]
+}
