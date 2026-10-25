@@ -4,6 +4,18 @@ from metrics import simulation_metrics,distribution
 
 
 class MetricsTests(unittest.TestCase):
+    def test_bargaining_prices_separate_bids_asks_and_native_payments(self):
+        plan={'id':'p','phase':'ready_to_trade','pricing_policy':'resident-bargaining-v1','trade_id':'t',
+              'counter_quote_accepted':True,'decisions':[
+                  {'decision':{'action_id':'bid_price_4'},'context':{'price_options':{'bid_price_4':4}}},
+                  {'decision':{'action_id':'ask_price_7'},'context':{'price_options':{'ask_price_7':7}}}]}
+        state={'plans':[plan]}
+        m=simulation_metrics(state)['economy']['bargaining']
+        self.assertEqual(m['buyer_offers']['median'],4);self.assertEqual(m['seller_counteroffers']['median'],7)
+        self.assertEqual(m['accepted_counteroffers'],1);self.assertEqual(m['paid_prices']['n'],0)
+        state['trades']=[{'id':'t','status':'committed','command':{'quantity':1,'cost':7}}]
+        self.assertEqual(simulation_metrics(state)['economy']['bargaining']['paid_prices']['median'],7)
+
     def test_missing_measurement_is_unknown_not_perfect(self):
         m=simulation_metrics({})
         self.assertIsNone(m['encounters']['accepted_chat_completion']['percent'])

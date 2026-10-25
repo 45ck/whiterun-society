@@ -1,0 +1,68 @@
+"""Bounded resident offers; no global prices or private counterparty resources.
+
+The price ladder is an authored search space, not an equilibrium calculation.
+Only the resident's own completed transactions supply historical price evidence.
+"""
+import copy
+from food import allocation
+
+PRICING_POLICY = 'resident-bargaining-v1'
+MAX_ECONOMIC_CALLS = 6
+
+
+def own_prices(person):
+    result = []
+    for memory in person.get('memories', []):
+        quantity, paid = memory.get('bread'), memory.get('gold')
+        if (memory.get('kind') == 'completed_trade' and type(quantity) is int and quantity > 0
+                and type(paid) is int and 0 < paid <= quantity * 100):
+            result.append({'septims_per_loaf': paid / quantity, 'role': memory.get('role'),
+                           'source': 'Own completed trade', 'event_id': memory.get('event_id')})
+    return result[-6:]
+
+
+def price_choices(person, maximum=100, above=0):
+    """Dense low bids, wider higher bids and remembered-price neighbours."""
+    if type(maximum) is not int or type(above) is not int:
+        raise ValueError('Integer price bounds required')
+    cap = min(100, maximum)
+    values = set(range(1, 13)) | {15, 20, 30, 50, 75, 100, cap, above + 1}
+    for record in own_prices(person):
+        anchor = round(record['septims_per_loaf'])
+        values.update((anchor - 1, anchor, anchor + 1))
+    return sorted(v for v in values if above < v <= cap)
+
+
+def quote_valid(state, plan, observation):
+    quote = plan.get('counter_quote')
+    if not quote:
+        return False
+    seller = next((r for r in observation.get('residents', []) if r['id'] == plan['target']), {})
+    inventory = {k: seller.get('inventory', {}).get(k) for k in ('gold', 'bread')}
+    person = state['people'].get(str(plan['target']), {})
+    return (quote['seller'] == plan['target'] and quote['buyer'] == plan['actor']
+            and quote['unit_price'] == plan['unit_price'] and inventory == quote['inventory']
+            and inventory['bread'] > 0 and person.get('food_policy') == quote['policy']
+            and allocation(person, inventory) == quote['allocation'])
+
+
+def record_quote(state, plan, context, price, claim_id):
+    """Internal consent evidence; never put these private fields in buyer prompts."""
+    person = state['people'][str(plan['target'])]
+    stock = context['own_food_allocation']
+    plan['counter_quote'] = {'buyer': plan['actor'], 'seller': plan['target'], 'unit_price': price,
+        'inventory': {k: context['observed_inventory'][k] for k in ('gold', 'bread')},
+        'policy': copy.deepcopy(person.get('food_policy')), 'allocation': copy.deepcopy(stock),
+        'release_reserved': stock['allocated'] and stock['for_sale'] < 1, 'claim_id': claim_id}
+
+
+def accept_quote(state, plan, observation):
+    if not quote_valid(state, plan, observation):
+        raise ValueError('Seller quote changed before buyer acceptance')
+    quote = plan['counter_quote']
+    plan['counter_quote_accepted'] = True
+    if quote['release_reserved']:
+        plan['reserve_release'] = {'plan_id': plan['id'], 'trade_id': plan['trade_id'],
+            'buyer': plan['actor'], 'seller': plan['target'], 'quantity': 1,
+            'unit_price': quote['unit_price'], 'policy': copy.deepcopy(quote['policy']),
+            'inventory': copy.deepcopy(quote['inventory']), 'decision_claim_id': quote['claim_id']}

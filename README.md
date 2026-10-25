@@ -12,9 +12,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Aerial observer and owned production:** actual Whiterun map, seven identity-checked NPC portraits and septim symbols are now in the UI. A native recipe fixture converted owned grain into bread with conserved money; the real model review chose eating first. [Screenshots, evidence and remaining input limits](docs/aerial-observer.md).
 
+**Resident-selected prices:** buyers now choose bids, sellers can counteroffer, and spoken terms are checked against the physical exchange. A real Jev negotiation ended in two refusals; a separate controlled native test exchanged one loaf for 7 septims and was rolled back. [Diagram, screenshot, audio and evidence](docs/bargaining.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 40 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 42 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -223,7 +225,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (40)</summary>
+<summary>Browse every finished project image (42)</summary>
 
 ### Independent lives observed
 
@@ -255,6 +257,12 @@ Generated system illustration — not gameplay
 
 ![Reply is a choice](docs/images/reply-is-a-choice.png)
 
+### Resident bargaining loop
+
+Generated system illustration — not gameplay
+
+![Resident bargaining loop](docs/images/resident-bargaining-loop.png)
+
 ### Voiced trade loop
 
 Generated system illustration — not gameplay
@@ -284,6 +292,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Agent travel in game](docs/images/agent-travel-in-game.jpg)
+
+### Bargaining native fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Bargaining native fixture](docs/images/bargaining-native-fixture.jpg)
 
 ### Conversation closeup
 

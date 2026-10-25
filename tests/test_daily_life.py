@@ -86,7 +86,9 @@ class DailyLifeTests(unittest.TestCase):
         self.obs['ack']={'id':command['id'],'status':'applied','movement':{'hasOwnedPackage':True,
             'aliasesConfirmed':True,'adapter':'papyrus-mailbox','actor':99,'target':108149}}
         self.world.observe(self.obs);self.sync()
-        self.assertEqual(self.world.agency_plan()['phase'],'consent')
+        self.assertEqual(self.world.agency_plan()['phase'],'quote')
+        self.assertEqual(self.world.agency_plan()['offer_round'],0)
+        self.assertIsNone(self.world.active['pending'])  # Arrival has not chosen a price or exchanged goods.
 
     def test_missing_seller_or_unclassified_resident_cannot_gain_router_opportunity(self):
         self.obs['residents'][2]['inventory']['bread']=0

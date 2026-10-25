@@ -5,7 +5,7 @@ import json
 import re
 
 ROOT=Path(__file__).resolve().parents[1]
-GENERATED={'npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
+GENERATED={'resident-bargaining-loop.png','npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
 
 def build():
     images=sorted((ROOT/'docs/images').iterdir(),key=lambda p:(p.name not in GENERATED,p.name))
@@ -14,6 +14,7 @@ def build():
         if image.suffix.lower() not in ('.png','.jpg','.jpeg','.webp'):continue
         title=image.stem.replace('-',' ').capitalize()
         kind='Generated system illustration — not gameplay' if image.name in GENERATED else 'Captured game or observer interface — historical prototype'
+        if 'fixture' in image.stem:kind='Controlled native protocol fixture — authored choices, not autonomous behaviour'
         records.append({'file':image.name,'title':title,'kind':kind})
         cards.append(f'<article><a href="images/{escape(image.name)}"><img loading="lazy" src="images/{escape(image.name)}" alt="{escape(title)}"></a><h2>{escape(title)}</h2><p>{escape(kind)}</p><a href="images/{escape(image.name)}">Open full image</a></article>')
         markdown.extend([f'## {title}',kind,f'![{title}](images/{image.name})'])

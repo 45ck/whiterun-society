@@ -14,9 +14,17 @@ def reserved_sale_consent(state, event_id, buyer, seller, quantity, unit_price, 
     if (plan.get('trade_id')!=event_id or plan.get('actor')!=buyer or plan.get('target')!=seller
             or plan.get('unit_price',3)!=unit_price or quantity!=1):return None
     decisions=plan.get('decisions') or []
-    if not decisions or decisions[-1].get('actor_id')!=seller or decisions[-1].get('decision',{}).get('action_id')!='sell_reserved_bread':return None
+    if not decisions:return None
+    source_decision=decisions[-1]
+    if plan.get('counter_quote_accepted'):
+        quote=plan.get('counter_quote') or {}
+        if (source_decision.get('actor_id')!=buyer or source_decision.get('decision',{}).get('action_id')!='accept_counterprice'
+                or quote.get('inventory')!=inventory or quote.get('release_reserved') is not True):return None
+        source_decision=next((d for d in decisions if d.get('claim_id')==quote.get('claim_id')), {})
+        if source_decision.get('actor_id')!=seller or source_decision.get('decision',{}).get('action_id')!='ask_price_'+str(unit_price):return None
+    elif source_decision.get('actor_id')!=seller or source_decision.get('decision',{}).get('action_id')!='sell_reserved_bread':return None
     expected={'plan_id':agency_plan,'trade_id':event_id,'buyer':buyer,'seller':seller,
               'quantity':1,'unit_price':unit_price,
               'policy':state.get('people',{}).get(str(seller),{}).get('food_policy'),
-              'inventory':inventory,'decision_claim_id':decisions[-1].get('claim_id')}
+              'inventory':inventory,'decision_claim_id':source_decision.get('claim_id')}
     return consent if consent==expected else None

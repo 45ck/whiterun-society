@@ -25,6 +25,11 @@
     "kind": "Generated system illustration \u2014 not gameplay"
   },
   {
+    "file": "resident-bargaining-loop.png",
+    "title": "Resident bargaining loop",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "voiced-trade-loop.png",
     "title": "Voiced trade loop",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -48,6 +53,11 @@
     "file": "agent-travel-in-game.jpg",
     "title": "Agent travel in game",
     "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "bargaining-native-fixture.jpg",
+    "title": "Bargaining native fixture",
+    "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
   },
   {
     "file": "conversation-closeup.jpg",

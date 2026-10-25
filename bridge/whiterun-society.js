@@ -127,7 +127,7 @@ function updateCamera(player) {
   let target=[24500,-7100,-3320],offset=[-650,-850,450];
   if(cameraMode==='street'){target=[20950,-7500,-3540];offset=[-1250,-100,300];}
   if(cameraMode==='trade'){
-    const pair=presentation.society?.conversation?.speakers||residents.filter(r=>r.isPerson===true).slice(0,2).map(r=>r.id);
+    const pair=tradeCameraActors(presentation.society,residents);
     const a=pair[0]?sp.Actor.from(sp.Game.getFormEx(pair[0])):null,b=pair[1]?sp.Actor.from(sp.Game.getFormEx(pair[1])):null;
     if(a&&b&&a.is3DLoaded()&&b.is3DLoaded()) target=[(a.getPositionX()+b.getPositionX())/2,(a.getPositionY()+b.getPositionY())/2,(a.getPositionZ()+b.getPositionZ())/2+60];
     offset=[-400,-500,280];

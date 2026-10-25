@@ -32,7 +32,14 @@ window.drawEncounter=()=>{
  const c=state?.society?.conversation,key=c?c.id+':'+c.turn+':'+c.phase:'idle';
  if(key!==lastEncounterPhase){lastEncounterPhase=key;phaseBegan=Date.now();}
  const timing=document.getElementById('encounter-timing');
- if(c){const t=c.current||c.turns?.at(-1),language=t?.language?.elapsed_seconds,decision=t?.decision?.elapsed_seconds;
+ const economic=state?.society?.plan;
+ timing.textContent='';
+ if(economic?.economic_pair&&!['complete','held'].includes(economic.phase)){
+  const d=economic.decisions?.at(-1),t=economic.economic_speech||economic.economic_turns?.at(-1);
+  const fixture=economic.decisions?.some(row=>String(row.model).includes('fixture'));
+  text('encounter-pipeline',fixture?'Controlled protocol test → spoken terms → game rules':'Resident decisions → spoken terms → game rules');
+  timing.textContent=[Number.isFinite(d?.elapsed_seconds)?'Decision '+d.elapsed_seconds.toFixed(2)+'s':null,t?.audio?'Voice '+t.audio.seconds.toFixed(1)+'s':null].filter(Boolean).join(' · ');
+ }else if(c){text('encounter-pipeline','Language → resident decision → game rules');const t=c.current||c.turns?.at(-1),language=t?.language?.elapsed_seconds,decision=t?.decision?.elapsed_seconds;
   timing.textContent=[language!==undefined?'Language '+language.toFixed(2)+'s':null,decision!==undefined?'Decision '+decision.toFixed(2)+'s':null,t?.audio?'Voice '+t.audio.seconds.toFixed(1)+'s':null].filter(Boolean).join(' · ');}
  if(state?.society?.routine_batch?.phase==='travelling')text('notice','Independent lives · '+(state.parallel_routines?.peak_owned||0)+' peak simultaneous journeys observed');
  const displayResident=inspectedResident||((!c||['complete','held'].includes(c.phase))&&!state?.society?.plan?.economic_speech&&camera==='focus'?focusId:null);

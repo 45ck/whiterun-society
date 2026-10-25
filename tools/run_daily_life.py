@@ -1,7 +1,7 @@
 """Review game-clock needs and optionally run a finite number of queued decisions.
 
 No wall-clock simulation while the game is disconnected. Inference is delegated
-to persisted-claim workers: at most five calls per economic event, 16 per
+to persisted-claim workers: at most six calls per economic event, 16 per
 social encounter when an explicit language configuration is supplied.
 """
 import argparse
@@ -20,6 +20,7 @@ from parallel_routines import select_routine_events
 from routing import activity_blocker
 from scene_handoffs import scene_candidates
 from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
+from bargaining import MAX_ECONOMIC_CALLS
 
 
 def fair_pending(events, social_first=True):
@@ -149,7 +150,7 @@ def main():
         return state
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],
-              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else 5)*args.max_events,'status':'running'}
+              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events,'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')

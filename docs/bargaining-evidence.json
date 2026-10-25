@@ -1,0 +1,563 @@
+{
+  "natural": {
+    "scope": "Operator selected nearest currently feasible pending food review; not a forced sale",
+    "event_id": "daily-71-108164",
+    "pricing_policy": "resident-bargaining-v1",
+    "outcome": "seller_declined",
+    "decisions": [
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "seek_bread",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to Carlotta Valentia, a publicly registered food seller, and choose an affordable bid on arrival. Stock is unknown and they may refuse."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "elapsed_seconds": 4.75,
+        "usage": {
+          "cost": 0.000205632,
+          "input_tokens": 4896,
+          "output_tokens": 129
+        }
+      },
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "bid_price_5",
+          "emotion": "unspecified",
+          "reason": "Selected action: Offer 5 septims for one loaf; pay only if accepted."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "elapsed_seconds": 1.391,
+        "usage": {
+          "cost": 0.000215754,
+          "input_tokens": 5137,
+          "output_tokens": 196
+        }
+      },
+      {
+        "actor_id": 108149,
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "elapsed_seconds": 5.766,
+        "usage": {
+          "cost": 0.000237384,
+          "input_tokens": 5652,
+          "output_tokens": 176
+        }
+      },
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "bid_price_6",
+          "emotion": "unspecified",
+          "reason": "Selected action: Make a final offer of 6 septims for one loaf; pay only if accepted."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "elapsed_seconds": 4.547,
+        "usage": {
+          "cost": 0.00022344,
+          "input_tokens": 5320,
+          "output_tokens": 221
+        }
+      },
+      {
+        "actor_id": 108149,
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "elapsed_seconds": 0.797,
+        "usage": {
+          "cost": 0.000181398,
+          "input_tokens": 4319,
+          "output_tokens": 36
+        }
+      }
+    ],
+    "turns": [
+      {
+        "act": "offer",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Would you sell me one loaf for 5 gold?",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-natural-1.wav",
+          "seconds": 2.3573,
+          "sha256": "163988121fd8e9efdf8c6ea6f625a3655f23483f2c59b52a6e8a6dd8642078b2",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.481,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-a0ddf796b01de72d8e5e675d",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 158.2759981625279,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 264,
+            "sum_error_degrees": 168.9085014816925
+          },
+          "playedSeconds": 2.357333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108164,
+        "line": "No, I will not sell a loaf on those terms.",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-natural-2.wav",
+          "seconds": 2.8393,
+          "sha256": "0f804b4a2c5327ec120fde771d9073200aff230ae80c81902057c82e79e086e4",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.973,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-a2a3c06223f154e43271dd36",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.002356278964498415,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 318,
+            "sum_error_degrees": 0.025268075959729686
+          },
+          "playedSeconds": 2.839333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "counteroffer",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Would 6 gold change your mind? That is my final offer for one loaf.",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-natural-3.wav",
+          "seconds": 4.4253,
+          "sha256": "76d68543ecc639373e06b9a5546f50874fa49fbe54df2be8502599c85aef81ba",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.547,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-885b93c6adf63a2c35f06041",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 8.065699842063623e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 482,
+            "sum_error_degrees": 0.012684968426810883
+          },
+          "playedSeconds": 4.425333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108164,
+        "line": "No, I will not sell a loaf on those terms.",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-natural-4.wav",
+          "seconds": 2.8393,
+          "sha256": "b309d34ee4ea0726aeafc99411955573d98bad6a48724a10881bc87fbc2a53a5",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.929,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-32e5d05b2a987fc850afa524",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 4.141331407936377e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 310,
+            "sum_error_degrees": 0.00810790275522777
+          },
+          "playedSeconds": 2.839333,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "elapsed_seconds": 55.82,
+    "gold_before": {
+      "108164": 34,
+      "108149": 102
+    },
+    "gold_after": {
+      "108164": 34,
+      "108149": 102
+    }
+  },
+  "fixture": {
+    "scope": "Controlled native bargaining fixture; choices are authored, no model inference. Restore BI afterwards.",
+    "event_id": "bargain-counter-fixture-20261025",
+    "pricing_policy": "resident-bargaining-v1",
+    "outcome": "bought_bread",
+    "decisions": [
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "seek_bread",
+          "emotion": "unspecified",
+          "reason": "Explicit native protocol qualification fixture, not autonomous behaviour"
+        },
+        "model": "controlled-native-bargaining-fixture",
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "bid_price_4",
+          "emotion": "unspecified",
+          "reason": "Explicit native protocol qualification fixture, not autonomous behaviour"
+        },
+        "model": "controlled-native-bargaining-fixture",
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108149,
+        "decision": {
+          "action_id": "ask_price_7",
+          "emotion": "unspecified",
+          "reason": "Explicit native protocol qualification fixture, not autonomous behaviour"
+        },
+        "model": "controlled-native-bargaining-fixture",
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "accept_counterprice",
+          "emotion": "unspecified",
+          "reason": "Explicit native protocol qualification fixture, not autonomous behaviour"
+        },
+        "model": "controlled-native-bargaining-fixture",
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "decision": {
+          "action_id": "keep_food",
+          "emotion": "unspecified",
+          "reason": "Explicit native protocol qualification fixture, not autonomous behaviour"
+        },
+        "model": "controlled-native-bargaining-fixture",
+        "elapsed_seconds": null,
+        "usage": {}
+      }
+    ],
+    "turns": [
+      {
+        "act": "offer",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Would you sell me one loaf for 4 gold?",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-fixture-1.wav",
+          "seconds": 2.336,
+          "sha256": "7f2c447d0acbb105825c7be3b895a75db718d7cd7780a730ed8f4f8bcb42d521",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.49,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-dadd72f69fb4b87098ab8569",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 109.15775424986168,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 264,
+            "sum_error_degrees": 109.19893066346776
+          },
+          "playedSeconds": 2.336,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "seller_counteroffer",
+        "actor": 108149,
+        "listener": 108164,
+        "line": "I can sell you one loaf for 7 gold. Would that suit you?",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-fixture-2.wav",
+          "seconds": 3.9733,
+          "sha256": "60e7ea0144a74c995c8df5afa1bbb69da2f8b633512bac20f7d115827d83bd2b",
+          "voice": "bf_alice"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.079,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-2e4a2eb1eb62c3bbca11339e",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 8.88853355718311e-06,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 434,
+            "sum_error_degrees": 0.0022020449505362194
+          },
+          "playedSeconds": 3.973333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "buyer_accept",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Agreed. I will pay 7 gold for one loaf.",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-fixture-3.wav",
+          "seconds": 3.0553,
+          "sha256": "850877aa83e2168d371aae70046a15193bc7bff6196fb2698ac828df89241698",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.113,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-f1f61361a882efa877ca3305",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.018096535471613606,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 336,
+            "sum_error_degrees": 0.0377780776570944
+          },
+          "playedSeconds": 3.055333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "receipt",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Thank you. I have received one loaf and paid 7 gold.",
+        "audio": {
+          "engine": "kokoro-onnx-0.6.1",
+          "file": "bargaining-fixture-4.wav",
+          "seconds": 3.4307,
+          "sha256": "b909cfe653c0e07e5f76b81fdfb706b6d8b8c46feca2d14d9a2adc0055ef3db0",
+          "voice": "bf_emma"
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.515,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-e1feb8aa7b9751e05d667d08",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 4.498232658534107e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 380,
+            "sum_error_degrees": 0.015139520567572617
+          },
+          "playedSeconds": 3.430667,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "elapsed_seconds": 52.8,
+    "gold_before": {
+      "108149": 102,
+      "108164": 34
+    },
+    "gold_after": {
+      "108149": 109,
+      "108164": 27
+    },
+    "trade": {
+      "status": "committed",
+      "command": {
+        "after": {
+          "buyer": {
+            "bread": 1,
+            "gold": 27
+          },
+          "seller": {
+            "bread": 3,
+            "gold": 109
+          }
+        },
+        "before": {
+          "buyer": {
+            "bread": 0,
+            "gold": 34
+          },
+          "seller": {
+            "bread": 4,
+            "gold": 102
+          }
+        },
+        "buyer": 108164,
+        "cost": 7,
+        "id": "meal-bargain-counter-fixture-20261025",
+        "kind": "inventory_trade",
+        "quantity": 1,
+        "seller": 108149
+      },
+      "reserve_release": {
+        "buyer": 108164,
+        "decision_claim_id": "36189959dbc39a72c9c3c397",
+        "inventory": {
+          "bread": 4,
+          "gold": 102
+        },
+        "plan_id": "bargain-counter-fixture-20261025",
+        "policy": {
+          "mode": "household_all",
+          "observed_bread": 5,
+          "reserve_target": 0,
+          "reviewed_day": 1.5014872550964355,
+          "source": "resident selected among authored allocation policies",
+          "source_event": "daily-9-108149"
+        },
+        "quantity": 1,
+        "seller": 108149,
+        "trade_id": "meal-bargain-counter-fixture-20261025",
+        "unit_price": 7
+      }
+    }
+  },
+  "restoration": {
+    "save": "WS-Bargain-20261025-BI",
+    "checkpoint": 2037,
+    "compared_fields": 17,
+    "all_matched": true,
+    "scope": "Controlled fixture rolled back; real model negotiation retained"
+  },
+  "limits": [
+    "Counteroffer sale was controlled, not unforced model behaviour",
+    "No market-clearing equilibrium, replenishing supply chain or new productive recipe",
+    "Body yaw and nearby playback do not verify eye gaze, lip sync or physical speaker audibility",
+    "Camera still needs obstacle avoidance; corrected pair target does not remove occlusion"
+  ]
+}

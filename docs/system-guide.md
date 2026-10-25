@@ -126,3 +126,7 @@ These are proposed next acceptance targets, not measured results:
 Measure model latency and reported cost per settled event, simulation wait time separately, needs satisfied, production/consumption throughput, failed visits, inventory discrepancies and unexplained holds. High activity alone is not success: resting, refusing and silence can be rational outcomes.
 
 [Latest runtime evidence](town-progress.md) · [Video demonstration plan](demo-videos.md) · [Image-generation prompts](infographic-prompts.md)
+
+## Resident-selected prices
+
+Initialized towns now let buyers choose affordable bids and sellers choose acceptance, refusal or a counteroffer. Personal completed trades inform candidate prices; private counterparty resources stay out of prompts. Prices remain a bounded authored search space, not an equilibrium solution. A real Jev trial delivered two bids and two refusals; a controlled native counteroffer sale verified inventory and consent, then restored all 17 save fields. [Architecture, audio, screenshot and limitations](bargaining.md).

@@ -202,5 +202,69 @@
     "sha256": "4603c5a09cc3d5ef81bd56812334ddd0cf538c13f79e989d3d0314ab5790ac1f",
     "encounter": "A household reserve is a choice: offer and refusal",
     "source": "Deterministic economic wording selected by real Jev decisions and spoken by Kokoro; native playback verified, not a recording of game audio."
+  },
+  {
+    "file": "bargaining-natural-1.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Would you sell me one loaf for 5 gold?",
+    "sha256": "163988121fd8e9efdf8c6ea6f625a3655f23483f2c59b52a6e8a6dd8642078b2",
+    "source": "Model-selected terms; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 natural"
+  },
+  {
+    "file": "bargaining-natural-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "0f804b4a2c5327ec120fde771d9073200aff230ae80c81902057c82e79e086e4",
+    "source": "Model-selected terms; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 natural"
+  },
+  {
+    "file": "bargaining-natural-3.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Would 6 gold change your mind? That is my final offer for one loaf.",
+    "sha256": "76d68543ecc639373e06b9a5546f50874fa49fbe54df2be8502599c85aef81ba",
+    "source": "Model-selected terms; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 natural"
+  },
+  {
+    "file": "bargaining-natural-4.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "b309d34ee4ea0726aeafc99411955573d98bad6a48724a10881bc87fbc2a53a5",
+    "source": "Model-selected terms; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 natural"
+  },
+  {
+    "file": "bargaining-fixture-1.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Would you sell me one loaf for 4 gold?",
+    "sha256": "7f2c447d0acbb105825c7be3b895a75db718d7cd7780a730ed8f4f8bcb42d521",
+    "source": "Controlled fixture with authored choices; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 fixture"
+  },
+  {
+    "file": "bargaining-fixture-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I can sell you one loaf for 7 gold. Would that suit you?",
+    "sha256": "60e7ea0144a74c995c8df5afa1bbb69da2f8b633512bac20f7d115827d83bd2b",
+    "source": "Controlled fixture with authored choices; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 fixture"
+  },
+  {
+    "file": "bargaining-fixture-3.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Agreed. I will pay 7 gold for one loaf.",
+    "sha256": "850877aa83e2168d371aae70046a15193bc7bff6196fb2698ac828df89241698",
+    "source": "Controlled fixture with authored choices; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 fixture"
+  },
+  {
+    "file": "bargaining-fixture-4.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Thank you. I have received one loaf and paid 7 gold.",
+    "sha256": "b909cfe653c0e07e5f76b81fdfb706b6d8b8c46feca2d14d9a2adc0055ef3db0",
+    "source": "Controlled fixture with authored choices; generated Kokoro utterance used in native playback, not a recording of game audio",
+    "encounter": "Resident bargaining \u2014 fixture"
   }
 ]

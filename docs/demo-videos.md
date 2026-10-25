@@ -41,3 +41,7 @@ This is the connected browser control room, not the 3D game view. Its old label 
 ## Aerial observer capture set
 
 [Map, portrait and owned-production captures](aerial-observer.md) are available for future edits. The recipe capture must retain its controlled-fixture label; the natural model choice was eating. Use captured portraits as identifiers, not evidence of lip sync. A future livestream needs a completed multihour soak and recovery evidence; no public stream is running.
+
+## Bargaining capture assets
+
+The [resident bargaining milestone](bargaining.md) adds a real model-selected refusal negotiation, eight generated utterance assets, a controlled native sale screenshot and a labelled architecture infographic. These support a future bid → counteroffer → consent → inventory film. No gameplay video or physical game-audio recording was produced for this milestone; the controlled choices must remain labelled in any edit.

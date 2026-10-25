@@ -29,4 +29,12 @@ function storyActor(society,residents){
  const candidate=active(c)?(c.current?.speaker||c.initiator):active(p)?(p.economic_speech?.actor||p.actor):null;
  return residents.some(r=>r.id===candidate&&r.isPerson===true)?candidate:null;
 }
-if(typeof module!=='undefined')module.exports={createObserverCamera,storyActor};
+function tradeCameraActors(society,residents){
+ const pair=society?.plan?.economic_pair;
+ const valid=ids=>Array.isArray(ids)&&ids.length===2&&ids[0]!==ids[1]&&ids.every(id=>residents.some(r=>r.id===id&&r.isPerson===true));
+ if(valid(pair))return pair;
+ const conversation=society?.conversation;
+ if(conversation&&!['complete','held'].includes(conversation.phase)&&valid(conversation.speakers))return conversation.speakers;
+ return [];
+}
+if(typeof module!=='undefined')module.exports={createObserverCamera,storyActor,tradeCameraActors};

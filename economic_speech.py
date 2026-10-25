@@ -13,6 +13,8 @@ class EconomicSpeech:
         lines={
             'offer':(buyer,seller,f'Would you sell me one loaf for {price} gold?'),
             'counteroffer':(buyer,seller,f'Would {price} gold change your mind? That is my final offer for one loaf.'),
+            'seller_counteroffer':(seller,buyer,f'I can sell you one loaf for {price} gold. Would that suit you?'),
+            'buyer_accept':(buyer,seller,f'Agreed. I will pay {price} gold for one loaf.'),
             'accept':(seller,buyer,f'Agreed. One loaf for {price} gold.'),
             'refuse':(seller,buyer,'No, I will not sell a loaf on those terms.'),
             'leave':(buyer,seller,'All right. I will leave it there. Goodbye.'),

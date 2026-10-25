@@ -78,6 +78,16 @@ test('trade chart separates refused offers, active agreements and committed sale
  d.economy.negotiations={n:0,outcomes:{}};w.renderTownCharts(root,d);assert.match(root.textContent,/No retained voiced trade plans/);assert.equal(root.innerHTML.includes('NaN'),false);
  }finally{dom.window.close();}
 });
+
+test('bargaining chart shows proposed prices separately from absent payments',()=>{
+ const {dom,w}=native();try{const d=dashboard();d.economy.negotiations={n:1,outcomes:{active:1}};
+ d.economy.bargaining={plans:1,buyer_offers:{n:2,median:5.5},seller_counteroffers:{n:1,median:7},paid_prices:{n:0,median:null}};
+ const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
+ assert.match(root.textContent,/5\.5Buyer bids · 2/);assert.match(root.textContent,/7Seller asks · 1/);
+ assert.match(root.textContent,/—Paid prices · 0/);assert.match(root.textContent,/verified inventory exchange/);
+ assert.equal(root.textContent.includes('undefined'),false);
+ }finally{dom.window.close();}
+});
 test('ambiguous output labels cannot silently select the wrong speakers',async()=>{
  const {dom,w,messages}=testVoice({devices:[{kind:'audiooutput',deviceId:'a',label:'Realtek front'},{kind:'audiooutput',deviceId:'b',label:'Realtek rear'}]});try{
  await w.whiterunSelectVoiceOutput('ambiguous','Realtek');assert.equal(messages.at(-1).selection.status,'failed');assert.equal(messages.at(-1).selection.reason,'Ambiguous output label');
@@ -138,5 +148,15 @@ test('map selection is keyboard accessible and stale markers cannot send command
 test('native roster presents actual faces and septims with captured map',()=>{
  const {dom,w}=native();try{const m=w.RESIDENT_MEDIA,a=m.portraits['108149'];w.whiterunRender({residents:[{id:108149,name:a.name,baseId:a.baseId,isPerson:true,x:23500,y:-3500,z:-3320,space:m.map.space,inventory:{gold:12,bread:2,grain:1}}],trades:[],society:{people:{'108149':{profile:{name:a.name},needs:{hunger:.2}}},town:{residents:{'108149':{name:a.name}}}},director:{running:false},camera:{mode:'free',manual:true}});
  assert.equal(w.document.querySelectorAll('#people .resident-face image').length,1);assert.match(w.document.querySelector('#people').textContent,/SEPTIMS/);assert.equal(w.document.querySelectorAll('#map image').length,1);assert.equal(w.document.querySelectorAll('#map circle').length,1);
+ }finally{dom.window.close();}
+});
+
+test('economic encounter timing cannot reuse an earlier conversation inference',()=>{
+ const {dom,w}=native();try{
+ w.whiterunRender({residents:[],director:{running:false},society:{people:{},town:{residents:{}},
+  conversation:{id:'old',phase:'complete',turns:[{language:{elapsed_seconds:99},decision:{elapsed_seconds:88}}]},
+  plan:{id:'trade',kind:'meal_time',actor:1,phase:'economic_speaking',economic_pair:[1,2],decisions:[{actor_id:1,model:'controlled-native-fixture',decision:{action_id:'bid_price_4'}}],economic_speech:{actor:1,audio:{seconds:2.5}}}}});
+ assert.equal(w.document.getElementById('encounter-timing').textContent,'Voice 2.5s');
+ assert.match(w.document.getElementById('encounter-pipeline').textContent,/Controlled protocol test/);
  }finally{dom.window.close();}
 });

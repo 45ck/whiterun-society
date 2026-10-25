@@ -42,3 +42,12 @@ test('a retained remote request cannot override later native clicks or replay af
  c.reset();assert.equal(c.acceptRemote(remote,rows,people),false);assert.equal(c.status().capture,false);
  assert.equal(c.acceptRemote({mode:'story',request_id:'remote-two'},rows,people),true);assert.equal(c.status().mode,'story');
 });
+
+test('trade camera uses the negotiated pair instead of stale conversation participants',()=>{
+ const {tradeCameraActors}=require('../bridge/observer-camera.js');
+ const rows=[1,2,3,4].map(id=>({id,isPerson:true}));
+ assert.deepEqual(tradeCameraActors({plan:{economic_pair:[3,4]},conversation:{phase:'complete',speakers:[1,2]}},rows),[3,4]);
+ assert.deepEqual(tradeCameraActors({conversation:{phase:'complete',speakers:[1,2]}},rows),[]);
+ assert.deepEqual(tradeCameraActors({conversation:{phase:'speaking',speakers:[1,2]}},rows),[1,2]);
+ assert.deepEqual(tradeCameraActors({plan:{economic_pair:[3,99]}},rows),[]);
+});

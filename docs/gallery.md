@@ -32,6 +32,12 @@ Generated system illustration — not gameplay
 
 ![Reply is a choice](images/reply-is-a-choice.png)
 
+## Resident bargaining loop
+
+Generated system illustration — not gameplay
+
+![Resident bargaining loop](images/resident-bargaining-loop.png)
+
 ## Voiced trade loop
 
 Generated system illustration — not gameplay
@@ -61,6 +67,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Agent travel in game](images/agent-travel-in-game.jpg)
+
+## Bargaining native fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Bargaining native fixture](images/bargaining-native-fixture.jpg)
 
 ## Conversation closeup
 

@@ -14,6 +14,7 @@ import urllib.request
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from decisions import infer
+from bargaining import MAX_ECONOMIC_CALLS
 from tools.voice_worker import VoiceWorker
 from tools.run_conversation import stock_voice
 
@@ -92,9 +93,9 @@ def main():
                 evidence.setdefault('synthesis_timings',[]).append({'act':turn['act'],'seconds':round(time.monotonic()-began,3),'engine_seconds':audio['synthesis_seconds']})
                 request('/agency/audio',{'id':args.event_id,'audio':audio['audio']})
                 continue  # Observe the persisted audio checkpoint without an extra fixed pause.
-            elif phase in ('choose', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
-                if evidence['model_calls'] >= 5:
-                    raise ValueError('Resident event exhausted its five-call decision budget')
+            elif phase in ('choose', 'quote', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
+                if evidence['model_calls'] >= MAX_ECONOMIC_CALLS:
+                    raise ValueError('Resident event exhausted its bounded decision budget')
                 claim = request('/agency/claim', {'id': args.event_id})['claim']
                 # Wait for the persisted claim's game marker before making the call.
                 confirmed=request('/state')
