@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T12:44:27Z",
+  "run_id": 40193976687,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40193976687",
+  "revision": "d12b075071d7416468cb112d313f993b519a2efc",
+  "conclusion": "success",
+  "platforms": {
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T12:38:10Z",
+      "completed_at": "2026-10-25T12:41:26Z",
+      "python": {
+        "run": 786,
+        "passed": 785,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 296,
+        "passed": 296,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "papyrus": {
+        "step_status": "success",
+        "compiled_scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "091d64c793fffdd12480355c208aa77ae001cc3b6a89ea5d49f39dba5aea8df7",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "67a09fcdfb63ec64d55a417466f2fca7a3a7c1e3b102edad37a5615659bb0e2a",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    },
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T12:38:11Z",
+      "completed_at": "2026-10-25T12:39:03Z",
+      "python": {
+        "run": 786,
+        "passed": 785,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 296,
+        "passed": 296,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "papyrus": {
+        "step_status": "skipped",
+        "compiled_scripts": []
+      }
+    }
+  },
+  "historical_runs": [
+    {
+      "run_id": 40193479151,
+      "url": "https://github.com/45ck/whiterun-society/actions/runs/40193479151",
+      "revision": "559c361857084c4b4acb09dc3bbf3e99b63195be",
+      "conclusion": "failure",
+      "platforms": [
+        "ubuntu",
+        "windows"
+      ],
+      "python_per_platform": {
+        "run": 786,
+        "failures": 5,
+        "errors": 5,
+        "skipped": 1
+      },
+      "failed_tests": [
+        "ERROR: test_receipt_does_not_preempt_conversation_attendance (test_activity_integration.ActivityIntegrationTests.test_receipt_does_not_preempt_conversation_attendance)",
+        "ERROR: test_receipt_does_not_preempt_speech_playback (test_activity_integration.ActivityIntegrationTests.test_receipt_does_not_preempt_speech_playback)",
+        "ERROR: test_speech_delivery_survives_background_arrival_checkpoint (test_background_society.BackgroundSocietyTests.test_speech_delivery_survives_background_arrival_checkpoint)",
+        "ERROR: test_new_people_with_no_legacy_cast_can_choose_and_meet (test_knowledge.DynamicSocialIdentityTests.test_new_people_with_no_legacy_cast_can_choose_and_meet)",
+        "ERROR: test_attendance_arrival_cannot_replace_active_disjoint_speech (test_owner_work_integration.OwnerWorkIntegrationTests.test_attendance_arrival_cannot_replace_active_disjoint_speech)",
+        "FAIL: test_routes_reject_saved_or_native_resident_reservations (test_activity_reservations.ActivityReservationUnitTests.test_routes_reject_saved_or_native_resident_reservations)",
+        "FAIL: test_started_invitation_and_unexecutable_need_are_not_preempted (test_daily_life.DailyLifeTests.test_started_invitation_and_unexecutable_need_are_not_preempted)",
+        "FAIL: test_unsupported_hungry_resident_stays_unmet_without_model_request (test_daily_life.DailyLifeTests.test_unsupported_hungry_resident_stays_unmet_without_model_request)",
+        "FAIL: test_seeds_all_classified_people_without_minting_or_animals (test_population.PopulationTests.test_seeds_all_classified_people_without_minting_or_animals)",
+        "FAIL: test_paid_work_is_committed_only_after_inventory_verification (test_production.ProductionTests.test_paid_work_is_committed_only_after_inventory_verification)"
+      ],
+      "later_js_plugin_checks": "skipped"
+    },
+    {
+      "run_id": 40193616062,
+      "url": "https://github.com/45ck/whiterun-society/actions/runs/40193616062",
+      "revision": "96b4eec0796f495f22dca538c34f9df06ef8f8bb",
+      "conclusion": "failure",
+      "platforms": [
+        "ubuntu",
+        "windows"
+      ],
+      "python_per_platform": {
+        "run": 786,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 1
+      },
+      "failed_tests": [
+        "FAIL: test_routes_reject_saved_or_native_resident_reservations (test_activity_reservations.ActivityReservationUnitTests.test_routes_reject_saved_or_native_resident_reservations)",
+        "FAIL: test_started_invitation_and_unexecutable_need_are_not_preempted (test_daily_life.DailyLifeTests.test_started_invitation_and_unexecutable_need_are_not_preempted)",
+        "FAIL: test_unsupported_hungry_resident_stays_unmet_without_model_request (test_daily_life.DailyLifeTests.test_unsupported_hungry_resident_stays_unmet_without_model_request)",
+        "FAIL: test_seeds_all_classified_people_without_minting_or_animals (test_population.PopulationTests.test_seeds_all_classified_people_without_minting_or_animals)"
+      ],
+      "later_js_plugin_checks": "skipped"
+    }
+  ],
+  "evidence_method": "Read completed hosted run metadata and full logs; compared exact revision and stage outcomes. Counts are per platform, not aggregated independent scenarios.",
+  "local_full_log_sha256": "317302a2066b59f5fc3bca304b3a3cf068052af86b62ac61dc724ceac536c475",
+  "runtime_qualified": false,
+  "native_execution_performed_locally": false,
+  "deployment_performed": false,
+  "limits": [
+    "Hosted tests and compiled staging artifacts do not prove in-game routing, movement, conversations or input.",
+    "Initial Python discovery skips generated-binary readback before plugins exist; that same test passes in the later six-test readback stage on each platform.",
+    "Papyrus compilation runs on Windows only; PEX hashes are compiler log reports, not downloaded artifact verification."
+  ]
+}
