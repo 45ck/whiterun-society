@@ -7,6 +7,7 @@ import test_conversation as conversation_fixtures
 from test_conversation import CANDIDATES, AUDIO
 import test_social as social_fixtures
 from population import person_seed
+from legacy_fixture import author_fixture_identities
 
 
 class IdentityKnowledgeTests(unittest.TestCase):
@@ -114,7 +115,7 @@ class DynamicSocialIdentityTests(unittest.TestCase):
         self.assertTrue(self.world.start_conversation(c['id'],self.obs)['duplicate'])
 
     def test_new_people_with_no_legacy_cast_can_choose_and_meet(self):
-        row = {'id': 501, 'name': 'Tovin the newcomer', 'isPerson': True, 'isGuard': False,
+        row = {'id': 501, 'baseId': 100501, 'name': 'Tovin the newcomer', 'isPerson': True, 'isGuard': False,
                'x': 250, 'y': 0, 'z': 0, 'inventory': {'gold': 9, 'bread': 1, 'grain': 0}}
         self.world.active['people']['501'] = person_seed(row, 'new-cast', self.obs['gameDays'])
         self.world.active['people'] = {k: v for k, v in self.world.active['people'].items() if k in ('99', '501')}
@@ -122,6 +123,9 @@ class DynamicSocialIdentityTests(unittest.TestCase):
         town['residents'] = {'99': town['residents']['99'], '501': {'id': 501, 'name': row['name'], 'is_guard': False, 'observed_game_day': self.obs['gameDays']}}
         town['businesses'] = {}
         self.obs['residents'] = [r for r in self.obs['residents'] if r['id'] == 99] + [row]
+        # Explicit authored cast identity is not knowledge of another person's name.
+        author_fixture_identities(self.world.active, self.obs, actor_ids=[501], event_id='new-cast-identity')
+        self.assertFalse(person_view(self.world.active, 99, 501)['name_known'])
         self.begin()
         context = self.decide('approach_501')
         self.assertNotIn('Tovin', json.dumps(context))

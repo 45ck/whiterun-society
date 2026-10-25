@@ -1,5 +1,8 @@
 """Run one finite market-day scenario, with save-bound stages and no automatic retries.
 
+Execution is currently disabled: this historical scenario requires the unqualified
+legacy paid-work protocol. The readiness check runs before launch or setup effects.
+
 Uses a ready lab game, or launches it if no lab bridge is connected. A fresh world
 gets explicitly prepared demo bread and an observed census; existing managed saves are not
 reset or replenished. Fresh census creates no business: this historical authored
@@ -20,6 +23,7 @@ import urllib.request
 SOURCE=Path(__file__).resolve().parents[1]
 if str(SOURCE) not in sys.path:sys.path.insert(0,str(SOURCE))
 from tools.authored_population import initialize_fresh_population, validate_participants, validate_market_contract
+from paid_work_policy import paid_work_capability, PAID_WORK_BLOCK_REASON
 
 
 def main():
@@ -29,6 +33,8 @@ def main():
     parser.add_argument('--model-config',type=Path,required=True)
     parser.add_argument('--audio-diagnostic',action='store_true')
     args=parser.parse_args();runtime=args.root/'runtime'
+    if not paid_work_capability()['available']:
+        raise ValueError(PAID_WORK_BLOCK_REASON + ': market-day execution is unavailable; no game launch, setup, or inference attempted')
     config_path=runtime/'bridge-config.json'
     def config():return json.loads(config_path.read_text())
     def request(route,data=None,*,session=None):

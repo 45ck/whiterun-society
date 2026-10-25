@@ -13,18 +13,20 @@ from context_window import (bounded_economic_context, encoded_size, purchase_att
 from lineage import TimelineEconomy
 from population import person_seed
 from procurement import input_procurement, PINS
+from legacy_fixture import author_fixture_identities
 
 
 class PurchaseAttentionTests(unittest.TestCase):
     def setUp(self):
         fixtures.GenericProcurementTests.setUp(self)
         for actor in range(9,25):
-            row=copy.deepcopy(self.obs['residents'][1]);row.update(id=actor,x=100+actor)
+            row=copy.deepcopy(self.obs['residents'][1]);row.update(id=actor,baseId=1000+actor,x=100+actor)
             self.obs['residents'].append(row);self.state['people'][str(actor)]=person_seed(row,'fixture',1)
-            self.state['town']['residents'][str(actor)]={}
+            self.state['town']['residents'][str(actor)]={'id':actor}
             self.state['town']['businesses']['supply-'+str(actor)]={'owner':actor,'custodian':actor,'revision':3,
                 'capabilities':['retail_goods'],'sale_commodities':['ore']}
         self.obs.update(session='offline-attention',gameDays=1,economy_catalog=native_catalog(),ready=True,checkpoint=0)
+        author_fixture_identities(self.state,self.obs,event_id='purchase-attention-fixture')
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.world=TimelineEconomy(Path(self.temp.name)/'timeline.sqlite');self.addCleanup(self.world.db.close)
         self.world.observe(self.obs);self.world.bootstrap(self.obs);self.bind()

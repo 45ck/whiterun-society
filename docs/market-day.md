@@ -1,5 +1,7 @@
 # A finite market day
 
+**Historical demo, currently unavailable:** this sequence depends on the legacy paid-work executor, which is held after an attendance/payment witness audit. New starts are rejected before checkpoint or model work; the CLI exits before contacting or launching the game. The commands and observations below document the earlier experiment, not a current runnable qualification. See the [replacement protocol](paid-employment-protocol.md).
+
 This scenario connects four existing resident events: a paid-work opportunity,
 Carlotta's household stock review, Ysolda's meal and Carlotta's meal. The sequence
 offers opportunities; it does not prescribe acceptance, sale or consumption.

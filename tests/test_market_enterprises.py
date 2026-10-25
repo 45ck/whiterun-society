@@ -7,12 +7,15 @@ import economy_catalog
 import market_policy
 from enterprises import apply_enterprise_change, executable_capabilities
 from test_market_policy import fourth_catalog
+from legacy_fixture import author_fixture_identities
 
 
 class MarketEnterpriseTests(unittest.TestCase):
     def setUp(self):
         self.state={'town':{'residents':{'99':{'id':99}},'businesses':{}},'people':{'99':{}}}
-        self.observation={'residents':[{'id':99,'isPerson':True}], 'gameDays':1}
+        self.observation={'ready':True,'session':'market-enterprise-fixture','checkpoint':1,
+                          'residents':[{'id':99,'baseId':1099,'isPerson':True}], 'gameDays':1}
+        author_fixture_identities(self.state,self.observation,event_id='market-enterprise-fixture')
         self.spec={'id':'shop','expected_revision':0,'name':'Resident shop','custodian':99,
                    'capabilities':['retail_goods'],'sale_commodities':['grain'],'active':True}
 

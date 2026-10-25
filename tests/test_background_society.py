@@ -36,7 +36,7 @@ class BackgroundSocietyTests(unittest.TestCase):
         author_fixture_identities(self.world.active,self.obs,[501])
 
     def finish_background(self,verified=True):
-        receipts=[{'id':j['id'],'slot':j['slot'],'status':'applied','release_verified':verified,'seller_nearby':False,
+        receipts=[{'id':j['id'],'slot':j['slot'],'actor_base_id':j['actor_base_id'],'status':'applied','release_verified':verified,'seller_nearby':False,
             'movement':{'actor':j['actor'],'target':MARKET,'target_kind':'place','distance':200,'aliasesConfirmed':True,
                         'hasOwnedPackage':True,'adapter':'papyrus-mailbox'}} for j in self.jobs]
         self.obs['parallel_routines']['result']={'id':'cohort','status':'applied','routines':receipts}

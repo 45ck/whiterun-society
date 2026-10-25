@@ -1,6 +1,7 @@
 """Finite scenario coordination stored in the same immutable save checkpoints."""
 import copy
 import re
+from paid_work_policy import paid_work_capability, PAID_WORK_BLOCK_REASON
 
 STAGES = [('work',108186,'work_shift',2), ('stock',108149,'stock_review',1),
           ('buyer_meal',108186,'meal_time',5), ('seller_meal',108149,'meal_time',1)]
@@ -26,7 +27,8 @@ def inventories(observation):
 class MarketDay:
     def scenario_status(self):
         scenario=self.active.get('market_day') if self.active else None
-        return {**copy.deepcopy(scenario),'next_event':event_for(scenario)} if scenario else None
+        return {**copy.deepcopy(scenario),'next_event':event_for(scenario),
+                'execution_capability':paid_work_capability()} if scenario else None
 
     def start_market_day(self, scenario_id, observation):
         self._agency_guard(observation)
@@ -43,6 +45,8 @@ class MarketDay:
         participants={actor for _,actor,_,_ in STAGES}
         if any(str(actor) not in self.active.get('people',{}) for actor in participants):
             raise ValueError('Initialize every authored market-day participant before starting the scenario')
+        if not paid_work_capability()['available']:
+            raise ValueError(PAID_WORK_BLOCK_REASON + ': this authored market day requires unavailable paid production; no scenario started')
         baseline=inventories(observation)
         state=copy.deepcopy(self.active)
         if prior:state.setdefault('market_day_history',[]).append(copy.deepcopy(prior))

@@ -1,5 +1,7 @@
 # Employment becomes a visible encounter
 
+**Historical encounter implementation:** new paid opportunities and execution are currently held after the legacy attendance/payment witness audit. These screenshots and trials remain historical evidence; stronger employment execution must be implemented and qualified before this loop is enabled again. [Audit and replacement requirements](paid-employment-protocol.md).
+
 Voiced job searches now happen face to face. A resident chooses a public opportunity, approaches its employer, asks aloud, and waits to hear an offer or refusal. The employer and worker choose separately. A contract is recorded only after completed nearby acceptance speech; inventory verification, not dialogue, establishes wages and production.
 
 ![Employment choices, speech, work and verification](images/employment-encounter-loop.png)

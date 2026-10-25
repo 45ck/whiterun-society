@@ -100,12 +100,26 @@ class EndowmentTests(unittest.TestCase):
         self.assertEqual(self.world.active['pending']['status'],'held')
         self.assertEqual(self.world.active['town']['resource_program']['grants'],{})
 
-    def test_checkpoint_pinned_unloaded_observation_preserves_identity(self):
+    def test_admitted_delivery_can_settle_from_checkpoint_pinned_accounting_after_unload(self):
+        # Admission and native arm see the qualified actor. Only the later
+        # receipt is reconciled from accounting after the delivered actor unloads.
+        command=self.arm()
+        actor=self.obs['residents'].pop(2);actor['loaded']=False
+        actor['inventory']=command['after'].copy()
+        self.obs['inventory_observations']=[actor];self.obs['inventory_checkpoint']=self.obs['checkpoint']
+        self.obs['ack']=resource_ack(command);self.world.observe(self.obs);self.sync()
+        record=self.world.active['town']['resource_program']['grants']['99']
+        self.assertEqual(record['status'],'committed')
+        self.assertEqual(record['command']['actor_base_id'],actor['baseId'])
+        self.assertEqual(record['evidence']['ack']['actor_base_id'],actor['baseId'])
+        self.assertNotIn(99,[a['id'] for a in self.obs['residents']])
+
+    def test_unloaded_accounting_cannot_authorize_initial_resource_admission(self):
         actor=self.obs['residents'].pop(2);actor['loaded']=False
         self.obs['inventory_observations']=[actor];self.obs['inventory_checkpoint']=self.obs['checkpoint']
-        self.deliver()
-        self.assertIn('99',self.world.active['town']['resource_program']['grants'])
-        self.assertNotIn(99,[a['id'] for a in self.obs['residents']])
+        with self.assertRaisesRegex(ValueError,'independent activity'):self.plan()
+        self.assertIsNone(self.world.active['pending'])
+        self.assertNotIn('resource_program',self.world.active['town'])
 
     def test_legacy_program_remains_readable_but_new_api_cannot_migrate_or_allocate(self):
         legacy={'id':'founding-resources-v1','capacity':{'gold':1000,'bread':100,'grain':100},

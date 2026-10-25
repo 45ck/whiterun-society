@@ -1,8 +1,10 @@
 # Paid production in Whiterun
 
+**Historical evidence:** current source disables this legacy executor. Its receipt protocol lacks sufficient attendance and payment witnesses for safe replay and ongoing qualification. The observations below remain part of the experiment's history, but do not qualify the replacement protocol or authorize current execution. [Audit and required replacement](paid-employment-protocol.md).
+
 This page records the original fixed-term experiment. [Dynamic enterprises](enterprises.md) now support changing custodians, wages, shift durations, stock targets and business closure; existing saves retain their original terms until edited.
 
-**Verified in the live game:** Carlotta offered the contract and Ysolda accepted.
+**Recorded in the historical live trial:** Carlotta offered the contract and Ysolda accepted.
 Thirty game minutes of qualified attendance produced two loaves and paid two gold.
 Both before/after Skyrim saves restored the corresponding economic state.
 

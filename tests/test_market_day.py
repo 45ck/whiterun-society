@@ -1,7 +1,10 @@
 import copy
 import unittest
+from unittest.mock import patch
 import test_food
 from test_production import register_authored_employer
+import test_labour
+from market_day import inventories
 
 
 class MarketDayTests(unittest.TestCase):
@@ -14,7 +17,44 @@ class MarketDayTests(unittest.TestCase):
     decide=test_food.FoodTests.decide
 
     def start(self,name='day'):
-        self.world.start_market_day(name,self.obs);self.sync()
+        """Explicit archived queue for coordinator tests, not new demo admission."""
+        state=copy.deepcopy(self.world.active)
+        if state.get('market_day'):
+            state.setdefault('market_day_history',[]).append(copy.deepcopy(state['market_day']))
+        state['market_day']={'id':name,'status':'running','cursor':0,'results':[],
+            'baseline':inventories(self.obs),
+            'initial_counts':{k:len(state.get(k,[])) for k in ('trades','production','consumptions')},
+            'max_calls':9,'calls_observed':0,
+            'source':'Explicit archived market-day test fixture; no new paid admission'}
+        self.world._write(state,'Authored archived market-day queue fixture');self.sync()
+
+    def test_new_scenario_rejects_unqualified_paid_protocol_without_checkpoint(self):
+        before=copy.deepcopy(self.world.active)
+        count=self.world.db.execute('SELECT COUNT(*) FROM checkpoints').fetchone()[0]
+        with self.assertRaisesRegex(ValueError,'legacy_paid_execution_unqualified'):
+            self.world.start_market_day('new-day',self.obs)
+        self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
+        self.assertEqual(self.world.db.execute('SELECT COUNT(*) FROM checkpoints').fetchone()[0],count)
+
+    def test_existing_running_scenario_is_readable_and_idempotent_but_not_executable(self):
+        self.start();before=copy.deepcopy(self.world.active)
+        result=self.world.start_market_day('day',self.obs)
+        self.assertTrue(result['duplicate'])
+        self.assertEqual(result['scenario']['status'],'running')
+        self.assertEqual(result['scenario']['next_event']['kind'],'work_shift')
+        self.assertFalse(result['scenario']['execution_capability']['available'])
+        self.assertEqual(result['scenario']['execution_capability']['reason'],'legacy_paid_execution_unqualified')
+        self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
+
+    def test_cli_rejects_before_config_access_network_launch_or_model_work(self):
+        from tools import run_market_day
+        with patch('sys.argv',['market-day','--root','unused','--id','day','--model-config','unused.json']), \
+                patch.object(run_market_day.Path,'read_text',side_effect=AssertionError('No config reads')) as read, \
+                patch.object(run_market_day.urllib.request,'urlopen',side_effect=AssertionError('No network')) as network, \
+                patch.object(run_market_day.subprocess,'run',side_effect=AssertionError('No launch')) as launch:
+            with self.assertRaisesRegex(ValueError,'legacy_paid_execution_unqualified'):
+                run_market_day.main()
+            read.assert_not_called();network.assert_not_called();launch.assert_not_called()
 
     def test_uninitialized_participants_cannot_create_a_running_scenario(self):
         for people in ({},{'108186':copy.deepcopy(self.world.active['people']['108186'])}):
@@ -30,7 +70,10 @@ class MarketDayTests(unittest.TestCase):
 
     def stage(self):
         event=self.world.scenario_status()['next_event']
-        self.world.begin_plan(event['id'],self.obs,event['actor'],event['kind']);self.sync()
+        if event['kind']=='work_shift':
+            test_labour.LabourTests.archive_plan(self,event['id'],actor=event['actor'],business_id='fixture-employer')
+        else:
+            self.world.begin_plan(event['id'],self.obs,event['actor'],event['kind']);self.sync()
         self.decide('reserve_one' if event['kind']=='stock_review' else 'defer',event['id'])
         self.world.advance_market_day(self.world.scenario_status()['id'],event['id'],self.obs);self.sync()
         return event
@@ -81,7 +124,7 @@ class MarketDayTests(unittest.TestCase):
 
     def test_held_decision_stops_the_sequence_without_repeating_inference(self):
         self.start()
-        self.world.begin_plan('day-work',self.obs,108186,'work_shift');self.sync()
+        test_labour.LabourTests.archive_plan(self,'day-work',actor=108186,business_id='fixture-employer')
         self.world.hold_plan('day-work','fixture unavailable',self.obs);self.sync()
         self.world.advance_market_day('day','day-work',self.obs);self.sync()
         self.assertEqual(self.world.scenario_status()['status'],'held')
