@@ -13,7 +13,7 @@ import urllib.request
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from decisions import infer
-from social import social_candidates
+from social import social_candidates,valid_social_notice
 
 
 def settle_social_child(process, encounter_id, request, reason):
@@ -85,13 +85,18 @@ def main():
             s=settled();current=s['society']['routine_batch'];native=s['bridge']['observation'].get('parallel_routines',{})
             if not current or current['id']!=args.id:raise ValueError('Background cohort changed; retain only this worker receipt')
             evidence['samples'].append({'at':time.time(),'native':native});record()
+            notice=current.get('social_notice')
+            recent=valid_social_notice(notice,s['bridge']['observation']) and not notice.get('consumed_by')
             if (args.social_during_travel and social_id is None and current.get('launched') and current['phase']=='travelling'
-                    and any(social_candidates(s['society'],s['bridge']['observation'],int(a)) for a in s['society']['town']['residents'])):
+                    and any(social_candidates(s['society'],s['bridge']['observation'],int(a),notice if recent else None) for a in s['society']['town']['residents'])):
                 social_id='overlap-'+uuid.uuid4().hex[:20]
-                social_process=subprocess.Popen([sys.executable,str(Path(__file__).with_name('run_conversation.py')),
-                    '--root',str(args.root),'--id',social_id,'--decision-config',str(args.model_config),'--language-config',str(args.language_config)],
+                command=[sys.executable,str(Path(__file__).with_name('run_conversation.py')),
+                    '--root',str(args.root),'--id',social_id,'--decision-config',str(args.model_config),'--language-config',str(args.language_config)]
+                if recent:command+=['--opportunity-batch',args.id]
+                social_process=subprocess.Popen(command,
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
-                evidence['social_event']={'id':social_id,'pid':social_process.pid,'status':'started','maximum_model_calls':21};record()
+                evidence['social_event']={'id':social_id,'pid':social_process.pid,'status':'started','maximum_model_calls':21,
+                    'recent_notice_used':recent,'notice_to_dispatch_seconds':round(time.time()-notice['captured_at'],3) if recent else None};record()
                 deadline=max(deadline,time.monotonic()+660)
             if social_process and social_process.poll() is not None and evidence['social_event']['status']=='started':
                 c=s['society'].get('conversation') or {}

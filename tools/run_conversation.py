@@ -26,6 +26,7 @@ def main():
     p.add_argument('--language-config',type=Path,required=True);p.add_argument('--decision-config',type=Path,required=True)
     p.add_argument('--actor',type=int,help='Run an existing scheduled social opportunity for this resident')
     p.add_argument('--max-turns',type=int,choices=range(2,7),default=6)
+    p.add_argument('--opportunity-batch',help='Consume a recent proximity notice from this background cohort')
     args=p.parse_args();runtime=args.root/'runtime';bridge=json.loads((runtime/'bridge-config.json').read_text())
     models={stage:json.loads(path.read_text()) for stage,path in [('propose',args.language_config),('select',args.decision_config)]}
     keys={stage:os.environ[c['key_env']] if c.get('key_env') else Path(c['key_file']).read_text().strip() for stage,c in models.items()}
@@ -49,7 +50,8 @@ def main():
         raise TimeoutError('Checkpoint did not settle')
     def record():path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     evidence['before']=stable()
-    started=req('/conversation/start',{'id':args.id,'max_turns':args.max_turns,**({'actor':args.actor} if args.actor is not None else {})})
+    started=req('/conversation/start',{'id':args.id,'max_turns':args.max_turns,**({'actor':args.actor} if args.actor is not None else {}),
+                **({'opportunity_batch':args.opportunity_batch} if args.opportunity_batch else {})})
     if started.get('duplicate'):
         print(json.dumps({'duplicate':True,'phase':started['conversation']['phase'],'model_calls':0}));return
     previous=None;voice_worker=None

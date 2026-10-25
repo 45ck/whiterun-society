@@ -72,7 +72,7 @@ def main():
                 asset=documentation_asset(Path(__file__).parent,self.path)
                 if asset is None:return self.reply(404,{'error':'not found'})
                 kind,body=asset;self.send_response(200);self.send_header('Content-Type',kind)
-                self.send_header('Content-Security-Policy',"default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'")
+                self.send_header('Content-Security-Policy',"default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; base-uri 'none'")
                 self.send_header('X-Frame-Options','DENY');self.send_header('Content-Length',str(len(body)))
                 self.end_headers();self.wfile.write(body);return
             if self.path=='/' or self.path.startswith('/observer'):
@@ -195,7 +195,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'))
+                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'),data.get('opportunity_batch'))
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':

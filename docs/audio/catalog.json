@@ -1,0 +1,23 @@
+[
+  {
+    "file": "overlap-c-1.wav",
+    "speaker": "Adrianne Avenicci",
+    "line": "Morning, Idolaf. Pleasant day to be up early.",
+    "sha256": "a0cbc07d6a4edc5371b4422e7e02d3c9e8fca694f5d46695c97279717333ab17",
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+  },
+  {
+    "file": "overlap-c-2.wav",
+    "speaker": "Idolaf Battle-Born",
+    "line": "It is a nice morning, Adrianne. I've been up since dawn.",
+    "sha256": "44664a18eacf0e29ee8b78f3a811ee7fd6b966bd315a8c7ce85ed52912f38c40",
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+  },
+  {
+    "file": "overlap-c-3.wav",
+    "speaker": "Adrianne Avenicci",
+    "line": "That's a solid start to the day. I'll leave you to it then.",
+    "sha256": "98b5c852a7ab3c85d5e00c49fbdf3a953a0fe5c670f2394fe4e72883c06004b2",
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+  }
+]

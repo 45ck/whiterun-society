@@ -1,0 +1,275 @@
+{
+  "trial": "background-20261025-c",
+  "cohort_status": "held",
+  "concurrency": {
+    "attendance_overlap_samples": 2558,
+    "overlap_samples": 0,
+    "peak_owned": 1,
+    "speech_overlap_samples": 591
+  },
+  "release_verified": true,
+  "decision_calls": 2,
+  "social_calls": {
+    "propose": 3,
+    "select": 3,
+    "social": 6
+  },
+  "total_model_calls": 14,
+  "reported_cost_usd": 0.001766578,
+  "inventory_accounts_compared": 29,
+  "inventory_unchanged": true,
+  "members": [
+    {
+      "actor": 108138,
+      "choice": "check_market",
+      "outcome": "market_seller_not_observed",
+      "status": "applied",
+      "error": null,
+      "release_verified": true,
+      "movement": {
+        "actor": 108138,
+        "target": 179739,
+        "distance": 248.72962276594944,
+        "startDistance": 3967.1715620228492,
+        "hasOwnedPackage": true,
+        "aliasesConfirmed": true,
+        "expectedPackage": 150996993,
+        "enginePackage": 595194
+      }
+    },
+    {
+      "actor": 108162,
+      "choice": "check_market",
+      "outcome": "journey_held",
+      "status": "held",
+      "error": "Papyrus route timed out",
+      "release_verified": true,
+      "movement": {
+        "actor": 108162,
+        "target": 179739,
+        "distance": 4483.206621825963,
+        "startDistance": 4483.206621825963,
+        "hasOwnedPackage": false,
+        "aliasesConfirmed": true,
+        "expectedPackage": 150997009,
+        "enginePackage": 237916
+      }
+    }
+  ],
+  "conversation": {
+    "id": "overlap-8b083ae0f54744ab928a",
+    "speakers": [
+      108156,
+      108169
+    ],
+    "phase": "complete",
+    "outcome": "social_exchange_completed",
+    "notice_to_start_seconds": 11.895,
+    "approach_source": "native nearby proximity; vision is not qualified",
+    "approach_distance": 126.0,
+    "duration_seconds": 60.948,
+    "release_evidence": {
+      "attendance": {
+        "id": "attend-overlap-8b083ae0f54744ab928a",
+        "participants": [
+          {
+            "actor": 108156,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 6
+          },
+          {
+            "actor": 108169,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 7
+          }
+        ],
+        "phase": "released"
+      },
+      "id": "release-chat-overlap-8b083ae0f54744ab928a",
+      "released": true,
+      "status": "applied"
+    },
+    "turns": [
+      {
+        "speaker": 108156,
+        "name": "Adrianne Avenicci",
+        "line": "Morning, Idolaf. Pleasant day to be up early.",
+        "delivered": true,
+        "audio": {
+          "file": "overlap-c-1.wav",
+          "sha256": "a0cbc07d6a4edc5371b4422e7e02d3c9e8fca694f5d46695c97279717333ab17",
+          "seconds": 2.9553
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.096,
+          "facing": [
+            {
+              "actor": 108156,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108169,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-a73b0ed1f017ee54839ac21b",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 5.179341934710692,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 356,
+            "sum_error_degrees": 29.503221258637268
+          },
+          "playedSeconds": 2.955292,
+          "status": "ended",
+          "volume": 1
+        },
+        "prepared_at": 1792888357.6401377,
+        "ended_at": 1792888361.7295458
+      },
+      {
+        "speaker": 108169,
+        "name": "Idolaf Battle-Born",
+        "line": "It is a nice morning, Adrianne. I've been up since dawn.",
+        "delivered": true,
+        "audio": {
+          "file": "overlap-c-2.wav",
+          "sha256": "44664a18eacf0e29ee8b78f3a811ee7fd6b966bd315a8c7ce85ed52912f38c40",
+          "seconds": 3.8653
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.964,
+          "facing": [
+            {
+              "actor": 108169,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108156,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-eb31b9bd30071a842af782f9",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.06726041041292774,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 458,
+            "sum_error_degrees": 26.896781785930102
+          },
+          "playedSeconds": 3.865333,
+          "status": "ended",
+          "volume": 1
+        },
+        "prepared_at": 1792888372.3169231,
+        "ended_at": 1792888377.1856213
+      },
+      {
+        "speaker": 108156,
+        "name": "Adrianne Avenicci",
+        "line": "That's a solid start to the day. I'll leave you to it then.",
+        "delivered": true,
+        "audio": {
+          "file": "overlap-c-3.wav",
+          "sha256": "98b5c852a7ab3c85d5e00c49fbdf3a953a0fe5c670f2394fe4e72883c06004b2",
+          "seconds": 3.272
+        },
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.368,
+          "facing": [
+            {
+              "actor": 108156,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108169,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-fb930fb8b6a1e3e82d702f28",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.07177267346435201,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 388,
+            "sum_error_degrees": 24.14951911482683
+          },
+          "playedSeconds": 3.271958,
+          "status": "ended",
+          "volume": 1
+        },
+        "prepared_at": 1792888386.5749145,
+        "ended_at": 1792888390.6077237
+      }
+    ],
+    "synthesis_timings": [
+      {
+        "turn": 0,
+        "seconds": 1.234,
+        "engine_seconds": 1.234
+      },
+      {
+        "turn": 1,
+        "seconds": 1.266,
+        "engine_seconds": 1.266
+      },
+      {
+        "turn": 2,
+        "seconds": 1.094,
+        "engine_seconds": 1.094
+      }
+    ],
+    "voice_load_seconds": 6.718,
+    "reply_dispatch_gaps_seconds": [
+      10.587,
+      9.389
+    ]
+  },
+  "save_restore": {
+    "name": "WS-Overlap-20261025-AV",
+    "checkpoint": 1001,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "limits": [
+    "One active traveller overlapped a voiced encounter; six travellers plus one pair are not qualified.",
+    "Ahlam never acquired the native route package and timed out; the mixed cohort remains held.",
+    "The selected pair was 126 units apart when chosen; this does not qualify the extended-range notice branch or prove a causal scheduling improvement.",
+    "Overlap counters are correlated engine update samples, not independent samples or acoustic timestamps.",
+    "The waking-time claim lacks explicit support in supplied context; human realism is unscored.",
+    "Voice samples are generated utterance assets used by playback, not an audio recording of Skyrim."
+  ]
+}

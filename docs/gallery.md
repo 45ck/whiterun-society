@@ -2,6 +2,12 @@
 
 All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.
 
+## Independent lives observed
+
+Generated system illustration — not gameplay
+
+![Independent lives observed](images/independent-lives-observed.png)
+
 ## Independent lives
 
 Generated system illustration — not gameplay

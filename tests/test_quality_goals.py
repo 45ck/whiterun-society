@@ -49,5 +49,9 @@ class QualityGoalTests(unittest.TestCase):
             (root/'docs/images/test.png').write_bytes(b'public-image');(root/'private.env').write_text('private')
             self.assertEqual(documentation_asset(root,'/docs/')[1],b'Gallery')
             self.assertEqual(documentation_asset(root,'/docs/images/test.png')[1],b'public-image')
+            (root/'docs/audio').mkdir();(root/'docs/audio/line.wav').write_bytes(b'public-audio')
+            self.assertEqual(documentation_asset(root,'/docs/audio/line.wav'),('audio/wav',b'public-audio'))
+            self.assertIsNone(documentation_asset(root,'/docs/audio/../../private.env'))
+            self.assertIsNone(documentation_asset(root,'/docs/audio/catalog.json'))
             for route in ('/docs/../private.env','/docs/images/../../private.env','/docs/images/%2e%2e/private.env','/docs/images/x.svg','/docs/images/missing.png'):
                 self.assertIsNone(documentation_asset(root,route))

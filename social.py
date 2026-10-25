@@ -4,15 +4,47 @@ Proximity is an engine observation, not qualified vision. No private partner
 needs, traits, inventories or memories are exposed to another resident.
 """
 import math
+import time
 from routing import route_available
 from knowledge import person_view
 from dialogue_context import time_context
 from activity_leases import routine_actors
 
 SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
+SOCIAL_NOTICE_SECONDS=45
+SOCIAL_NOTICE_RANGE=3000
 
 
-def social_candidates(state,observation,actor):
+def valid_social_notice(notice,observation):
+    if not isinstance(notice,dict) or notice.get('session')!=observation.get('session'):return False
+    captured=notice.get('captured_at')
+    return (type(captured) in (int,float) and math.isfinite(captured)
+            and 0<=time.time()-captured<=SOCIAL_NOTICE_SECONDS)
+
+
+def capture_social_notice(state,observation):
+    """Remember a short-lived opportunity, not an agreement or a vision claim."""
+    candidates={}
+    for actor in (state.get('town') or {}).get('residents',{}):
+        nearby=social_candidates(state,observation,int(actor))
+        if nearby:candidates[str(actor)]=[p['id'] for p in nearby]
+    return {'session':observation['session'],'captured_at':time.time(),
+            'candidates_by_actor':candidates,'source':'native proximity opportunity; vision unqualified'}
+
+
+def same_social_space(first,second):
+    # Legacy fixtures predate this telemetry; current native observations always
+    # include the field and fail closed when spatial identity is unavailable.
+    if 'space' not in first and 'space' not in second:return True
+    a=first.get('space');b=second.get('space')
+    if not isinstance(a,dict) or not isinstance(b,dict):return False
+    if a.get('interior') is True and b.get('interior') is True:
+        return type(a.get('cell')) is int and a['cell']>0 and a['cell']==b.get('cell')
+    return (a.get('interior') is False and b.get('interior') is False and
+            type(a.get('world')) is int and a['world']>0 and a['world']==b.get('world'))
+
+
+def social_candidates(state,observation,actor,notice=None):
     people=state.get('people',{});town=state.get('town') or {}
     rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     own=rows.get(actor);person=people.get(str(actor),{})
@@ -21,17 +53,19 @@ def social_candidates(state,observation,actor):
     if not own or str(actor) not in town.get('residents',{}) or own.get('isGuard') is not False or person.get('commitments'):
         return []
     result=[]
+    recent=set(notice.get('candidates_by_actor',{}).get(str(actor),[])) if valid_social_notice(notice,observation) else set()
     for other,row in rows.items():
         if other in reserved:continue
         if str(other) not in town['residents'] or str(other) not in people or other==actor or row.get('isGuard') is not False or people[str(other)].get('commitments'):
             continue
         if not route_available(observation,actor,other):continue
+        if not same_social_space(own,row):continue
         try:gap=math.dist([own[k] for k in ('x','y','z')],[row[k] for k in ('x','y','z')])
         except (TypeError,ValueError,KeyError):continue
-        if not math.isfinite(gap) or gap>1500:continue
+        if not math.isfinite(gap) or gap>(SOCIAL_NOTICE_RANGE if other in recent else 1500):continue
         result.append({**person_view(state,actor,other),'distance':round(gap,1),
                        'my_relationship':person.get('relationships',{}).get(str(other),{}),
-                       'source':'native nearby proximity; vision is not qualified'})
+                       'source':'recent proximity notice; currently observed; vision unqualified' if gap>1500 else 'native nearby proximity; vision is not qualified'})
     return sorted(result,key=lambda r:(r['distance'],r['id']))[:6]
 
 
@@ -44,9 +78,9 @@ def social_context(state,c,observation,stage):
              'memories':person['memories'][-8:],'trust':person.get('trust',{}),
              'event':{'id':c['id'],'kind':stage},'options':[]}
     if stage=='choose_partner':
-        candidates=social_candidates(state,observation,actor)
+        candidates=social_candidates(state,observation,actor,c.get('social_notice'))
         context['nearby_candidates']=candidates
-        context['event']['information']='Choose a nearby person to approach for a short social exchange, or continue quietly. A meeting does not guarantee conversation. Consider your own fatigue, needs and commitments. Do not assume the other person wants to talk.'
+        context['event']['information']='Choose a nearby or recently noticed person to approach for a short social exchange, or continue quietly. A recent proximity notice is not a conversation, invitation or agreement. A meeting does not guarantee conversation. Consider your own fatigue, needs and commitments. Do not assume the other person wants to talk.'
         context['options']=[{'id':'defer','effect':'Continue quietly; no approach or speech.'}]+[
             {'id':'approach_'+str(r['id']),'effect':'Approach '+r['name']+' and let them choose whether to chat.'} for r in candidates]
     elif stage=='respond':

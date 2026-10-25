@@ -314,15 +314,18 @@ on('update', () => {
       if (typeof resident.getItemCount==='function') {
         for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
       }
-      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null;
+      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null,space=null;
       try{if(typeof resident.getRace==='function'){const nativeRace=resident.getRace();if(nativeRace){const label=typeof nativeRace.getName==='function'?nativeRace.getName():null;race={id:nativeRace.getFormID(),name:typeof label==='string'&&label?label.slice(0,80):null,source:'native Skyrim race; descriptive game metadata only'};}}}catch(_){}
       try{const raw=resident.getActorBase?.()||resident.getBaseObject?.();const base=raw&&sp.ActorBase?.from(raw);if(base&&typeof base.getSex==='function')voiceSex=base.getSex();}catch(_){}
       try{if(sp.Keyword&&typeof resident.hasKeyword==='function'){
         const keyword=sp.Keyword.from(sp.Game.getFormEx(0x13794));if(keyword)isPerson=resident.hasKeyword(keyword);
       }}catch(_){}
       try{if(typeof resident.isGuard==='function')isGuard=resident.isGuard();}catch(_){}
-      try{const ownCell=resident.getParentCell();if(ownCell&&typeof ownCell.isInterior==='function')outdoors=!ownCell.isInterior();}catch(_){}
-      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,
+      try{const ownCell=resident.getParentCell();if(ownCell&&typeof ownCell.isInterior==='function'){
+        const interior=ownCell.isInterior(),world=resident.getWorldSpace?.();outdoors=!interior;
+        space={cell:ownCell.getFormID(),interior,world:world?world.getFormID():null};
+      }}catch(_){}
+      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,space,
         classificationSource:isPerson===null?'unavailable':'native ActorTypeNPC keyword; child/dead filters applied',
         x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
     }

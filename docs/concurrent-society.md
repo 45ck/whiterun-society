@@ -1,8 +1,8 @@
 # Independent lives in a shared town
 
-The town should continue around an encounter. The new background protocol lets up to six residents travel while one disjoint pair uses the conversation channel. The code and integration tests cover that overlap. **The first live trial qualified one background journey and a voluntary deferral, with no eligible conversation pair; simultaneous native travel and speech remain unverified.**
+The town should continue around an encounter. The background protocol lets up to six residents travel while one disjoint pair uses the conversation channel. **A subsequent live trial observed Amren travelling while Adrianne and Idolaf completed three voiced turns. Ahlam's separate route failed to acquire its package and timed out.** One concurrent traveller and one encounter are qualified; the six-traveller capacity and broad continuous society are not.
 
-![Generated architecture illustration, not a gameplay screenshot](images/independent-lives.png)
+![Generated architecture illustration, not a gameplay screenshot](images/independent-lives-observed.png)
 
 ## Ownership and the three decision layers
 
@@ -47,4 +47,18 @@ This exposes a scheduling limitation: observing a nearby pair before claiming tr
 
 ## What remains
 
-Next qualification must observe owned travel packages and disjoint attendance packages while native audio reports playing, then verify both independent releases and save/load. Persistent resident plans, indoor destinations, multiple conversation channels, resumable work, household schedules and a continuously populated town are still unfinished. Released NPCs can resume vanilla routines. Broad autonomy needs those executable activities and scheduling mechanisms; removing bounds alone would not provide them.
+Next qualification must repeat the observed overlap across more actors, explain and address failed package acquisition, and exercise six travel slots with a conversation. Persistent resident plans, indoor destinations, multiple conversation channels, resumable work, household schedules and a continuously populated town are still unfinished. Released NPCs can resume vanilla routines. Broad autonomy needs those executable activities and scheduling mechanisms; removing bounds alone would not provide them.
+
+## Recent notices and the first observed overlap
+
+Background cohorts now save the disjoint nearby candidates observed before travel decisions are prepared. For 45 wall-clock seconds in the same game session, those particular people can remain approach options up to 3,000 game units away, provided they are still loaded, uncommitted, unreserved and in the same native coordinate space. Ordinary proximity opportunities retain their 1,500-unit radius. These are authored scheduling bounds, not validated human perception. Neither a notice nor its consumption creates an acquaintance, shared memory, invitation or agreement. Jev may still defer; a partner still chooses whether to chat after an actual approach.
+
+Current native observations include interior-cell/exterior-world identity. Proximity does not compare coordinates across different interiors or worlds. A notice cannot resurrect an unloaded actor, survive a changed game session, or be consumed by two encounters. Only the selected initiator's noticed candidate list enters the conversation record and model context. Lost or expired options are revalidated before execution.
+
+Trial `background-20261025-c` used two Jev travel decisions and twelve conversation calls, with **US$0.001766578 reported** across retained results. Amren completed his market journey but found no seller. Ahlam never owned his expected package and timed out; both travel slots released. Adrianne chose to approach Idolaf, who chose to chat; the conversation ended politely after three delivered turns and released both attendance slots. Native telemetry recorded **2,558 travel/attendance frames and 591 travel/speech frames**. These correlated update counts are not durations or acoustic timestamps. [Compact receipt, transcript and failure](evidence/observed-overlap.json)
+
+The notice was consumed 11.895 seconds after capture. The chosen speakers were already 126 units apart, so this trial does **not** exercise the extended-range branch or establish that notices caused the successful overlap. It does qualify the integrated disjoint travel/attendance/overlay-speech path. All 29 compared inventories were unchanged. Save `WS-Overlap-20261025-AV`, checkpoint 1001, restored all 16 compared fields after completion; mid-overlap save/load remains unqualified.
+
+The encounter took 60.948 seconds. Warm synthesis took 1.234, 1.266 and 1.094 seconds, but the two reply dispatch gaps were **10.587 and 9.389 seconds**. The selected waking-time claim, “I've been up since dawn,” lacks explicit support in the supplied context. Thus the successful execution does not establish human realism or adequate dialogue grounding. [Listen to the three generated utterance assets](https://45ck.github.io/whiterun-society/#voice-example); these are not a recording of the game's audio output.
+
+The observer exposes notices consumed, terminal unused notices, notice-to-start timing and the fraction of background cohorts with observed speech overlap. The previous two zero-overlap trials remain in the denominator: this lineage has one observed overlap among three terminal background cohorts. Local validation passed 253 Python and 106 JavaScript tests; seven focused documentation/service tests passed after adding the audio gallery.

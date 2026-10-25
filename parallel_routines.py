@@ -1,7 +1,7 @@
 """Finite cohorts of independent decisions and native travel leases.
 
-Only journeys run concurrently here. Inventory settlement and speech retain
-their existing single-event protocol. A cohort is not a claim of a full city.
+Background journeys can overlap one disjoint conversation. Inventory settlement
+retains its single-event protocol. A cohort is not a claim of a full city.
 """
 import copy
 import math
@@ -11,6 +11,7 @@ from decisions import validate_decision
 from places import MARKET, market_opportunity
 from routing import route_available
 from opportunities import food_sellers
+from social import capture_social_notice
 
 
 def select_routine_events(state, observation, events, limit=8):
@@ -76,6 +77,7 @@ class ParallelRoutines:
             event['status']='started';person['agency'].update(state='deciding',reason='Independent food-search decision',event_id=event_id)
         batch={'id':batch_id,'session':self.session,'phase':'thinking','claim_id':secrets.token_hex(12),'members':members,'background':background}
         state.setdefault('routine_batches',[]).append(batch)
+        if background:batch['social_notice']=capture_social_notice(state,observation)
         return {'checkpoint':self._write(state,'independent resident decisions claimed before inference'),'batch':batch}
 
     def finish_routines(self, batch_id, claim_id, results, observation):

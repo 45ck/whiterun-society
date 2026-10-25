@@ -6,7 +6,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 28 finished images](docs/gallery.md) · [gallery website](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 29 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -30,13 +30,13 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 ### Independent lives around a conversation
 
-![Independent lives, shared world: resident knowledge and needs feed Jev and language models, deterministic rules allocate travel and conversation, and Skyrim executes the result](docs/images/independent-lives.png)
+![Independent lives, shared world: resident knowledge and needs feed Jev and language models, deterministic rules allocate travel and conversation, and Skyrim executes the result](docs/images/independent-lives-observed.png)
 
-*Generated architecture infographic. Live travel-and-speech overlap remains unverified.*
+*Generated architecture infographic. One live overlap is observed; full independent daily lives remain unfinished. The earlier illustration is retained in the gallery.*
 
 Background travel now has six native slots, leaving two for one disjoint conversation. Actor reservations prevent a traveller from also being selected as a speaker; arrival receipts preserve another encounter's pending speech. The observer reports travel/attendance and travel/speech overlap separately. Current businesses provide seller IDs dynamically.
 
-The first live trial completed Idolaf's market journey while Adrianne chose to defer. All 29 compared inventories stayed unchanged. No eligible conversation pair was available, so simultaneous native travel and speech are **not yet qualified**. [Architecture, infographic and honest evidence](docs/concurrent-society.md).
+**Observed in Skyrim:** Adrianne and Idolaf completed three voiced turns while Amren travelled. Native telemetry recorded 591 travel/speech overlap frames and verified independent release. Ahlam's separate route never acquired its package and timed out; that failure remains counted. All 29 compared inventories stayed unchanged. [Listen to the generated utterances](https://45ck.github.io/whiterun-society/#voice-example) · [Architecture, receipts and limitations](docs/concurrent-society.md).
 
 ### Conversations in an established town
 
@@ -205,7 +205,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (28)</summary>
+<summary>Browse every finished project image (29)</summary>
+
+### Independent lives observed
+
+Generated system illustration — not gameplay
+
+![Independent lives observed](docs/images/independent-lives-observed.png)
 
 ### Independent lives
 

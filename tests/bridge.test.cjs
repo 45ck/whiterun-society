@@ -44,6 +44,15 @@ test('heartbeat is built from observed game state',async()=>{
   assert.equal(h.requests[0].selected.id,123);
 });
 
+test('social coordinates include native cell and world identity',async()=>{
+  const h=harness();h.cell.isInterior=()=>false;h.actor.getParentCell=()=>h.cell;
+  h.actor.getWorldSpace=()=>({getFormID:()=>77});
+  h.handlers.get('update')();await settle();
+  assert.deepEqual(JSON.parse(JSON.stringify(h.requests[0].residents[0].space)),{cell:107135,interior:false,world:77});
+  h.actor.getParentCell=()=>null;h.advance();h.handlers.get('update')();await settle();
+  assert.equal(h.requests.at(-1).residents[0].space,null);
+});
+
 test('accounting observations do not turn an unloaded actor into a visible resident',async()=>{
   const h=harness();
   h.actor.hasKeyword=()=>true;h.actor.getItemCount=()=>2;

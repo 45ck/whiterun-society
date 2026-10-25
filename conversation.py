@@ -12,7 +12,7 @@ from agency import distance
 from decisions import validate_decision
 from routing import dynamic_route
 from knowledge import person_view, record_heard_identity
-from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal
+from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal,valid_social_notice
 from dialogue_context import dialogue_frame,validate_situated_candidates
 from activity_leases import background_social_ready,routine_actors
 
@@ -46,7 +46,7 @@ class Conversation:
         c = self.conversation_status()
         return bool(c and c['phase'] not in ('complete', 'held'))
 
-    def start_conversation(self, event_id, observation, actor=None, max_turns=None):
+    def start_conversation(self, event_id, observation, actor=None, max_turns=None, opportunity_batch=None):
         self._agency_guard(observation,allow_routines=background_social_ready(self.active))
         if max_turns is not None and (type(max_turns) is not int or not 2<=max_turns<=6):
             raise ValueError('Conversation turn limit must be an integer from 2 to 6')
@@ -63,9 +63,17 @@ class Conversation:
         if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
             raise ValueError('Another resident event is active')
         offered = actor is None and bool(self.active.get('town'))
+        notice=None
+        if opportunity_batch is not None:
+            batch=self.routine_batch()
+            if not offered or not batch or batch['id']!=opportunity_batch or not batch.get('background'):
+                raise ValueError('A current background opportunity is required')
+            notice=batch.get('social_notice')
+            if not valid_social_notice(notice,observation) or notice.get('consumed_by'):
+                raise ValueError('Social notice expired, changed session or was already consumed')
         if offered:
             eligible=[int(key) for key in self.active['town']['residents']
-                      if social_candidates(self.active,observation,int(key))]
+                      if social_candidates(self.active,observation,int(key),notice)]
             if not eligible:raise ValueError('No qualified nearby social participants remain')
             # The operator offers an opportunity, never a required conversation.
             # The resident still chooses a partner or defers, and the partner consents.
@@ -102,6 +110,12 @@ class Conversation:
                 speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
             if offered:state['conversation']['source']='Operator offered opportunity; current residents choose partner, consent, speech and appraisal'
+            if notice:
+                state['routine_batches'][-1]['social_notice']['consumed_by']=event_id
+                state['conversation']['social_notice']={**copy.deepcopy(notice),
+                    'candidates_by_actor':{str(actor):notice['candidates_by_actor'].get(str(actor),[])}}
+                state['conversation']['opportunity_batch']=opportunity_batch
+                state['conversation']['notice_to_start_seconds']=round(time.time()-notice['captured_at'],3)
         return {'checkpoint': self._write(state, 'conversation encounter started')}
 
     def _social_day(self, observation):
@@ -182,6 +196,8 @@ class Conversation:
                 if decision['action_id']=='defer':c.update(phase='complete',outcome='continued_quietly')
                 else:
                     partner=int(decision['action_id'].split('_')[-1]);c.update(partner=partner,speakers=[c['initiator'],partner],phase='meeting')
+                    chosen=next(p for p in context['nearby_candidates'] if p['id']==partner)
+                    c.update(approach_source=chosen['source'],approach_distance=chosen['distance'])
                     state['people'][str(c['initiator'])]['agency'].update(state='approaching_resident',reason='Chose to approach '+person_view(state,c['initiator'],partner)['name'])
             elif stage=='respond':
                 c['response']=decision['action_id'];c['phase']='propose'

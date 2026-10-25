@@ -74,8 +74,23 @@ def simulation_metrics(state):
     interrupted=[c for c in terminal if c.get('interruption')]
     natural_chats=[c for c in chats if not c.get('interruption')]
     stop_reports=[c['release_evidence']['speechStop'] for c in interrupted if c.get('release_evidence',{}).get('speechStop')]
+    background=[b for b in state.get('routine_batches',[]) if b.get('background') and
+        not any(str(m.get('result',{}).get('model','')).startswith(('test','deterministic-integration-fixture')) for m in b.get('members',[]))]
+    finished_background=[b for b in background if b['phase'] in ('complete','held')]
+    notices=[b for b in background if b.get('social_notice')]
+    noticed_scenes=[c for c in scenes if c.get('social_notice')]
     result={
         'scope':'Current save lineage and retained encounter history. Not lifetime telemetry or a representative population study.',
+        'encounter_scheduling':{'background_cohorts':len(background),'notice_cohorts':len(notices),
+            'cohorts_without_notice_telemetry':len(background)-len(notices),
+            'captured_directed_pairs':sum(len(ids) for b in notices for ids in b['social_notice']['candidates_by_actor'].values()),
+            'notices_consumed':sum(bool(b['social_notice'].get('consumed_by')) for b in notices),
+            'terminal_notices_without_encounter':sum(b['phase'] in ('complete','held') and bool(b['social_notice']['candidates_by_actor']) and not b['social_notice'].get('consumed_by') for b in notices),
+            'notice_to_start_seconds':distribution([c.get('notice_to_start_seconds') for c in noticed_scenes]),
+            'recent_notice_approaches':sum(str(c.get('approach_source','')).startswith('recent proximity') for c in noticed_scenes),
+            'travel_attendance_overlap':rate(sum(b.get('concurrency',{}).get('attendance_overlap_samples',0)>0 for b in finished_background),len(finished_background)),
+            'travel_speech_overlap':rate(sum(b.get('concurrency',{}).get('speech_overlap_samples',0)>0 for b in finished_background),len(finished_background)),
+            'scope':'Captured proximity notices are opportunities, not consent, perception validation or completed encounters. Overlap is native frame evidence, not a realism score.'},
         'encounters':{'eligible':len(scenes),'excluded_fixtures':sum(fixture(c) for c in history),
             'legacy_authored':sum(c.get('mode')!='autonomous_social' for c in history),
             'in_progress':len(scenes)-len(terminal),'completed':sum(c['phase']=='complete' for c in terminal),
