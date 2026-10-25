@@ -378,5 +378,21 @@
     "sha256": "c708ac25c7ad3b506dc80d0b249a663e83e729b785e9f9715791d4bf85fc0326",
     "source": "Controlled native employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
     "encounter": "Employment \u2014 fixture"
+  },
+  {
+    "file": "enterprise-natural-second-1.wav",
+    "speaker": "Ysolda",
+    "line": "Are you hiring for that 10-minute bread-making shift?",
+    "sha256": "b1725983ca5396ce59c18451915ba9bf0d87ed1b0734bd77878cef6d72b53a7f",
+    "source": "Model-selected employment choice; deterministic terms voiced by Kokoro. Synthesized clip used in game, not a recording of system output.",
+    "encounter": "Livelihood choices \u2014 paid work rather than registration"
+  },
+  {
+    "file": "enterprise-natural-second-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I am not offering you a shift right now.",
+    "sha256": "53e2b6a984dc6dc049798b42c339a839c8d969bd500b8075b4ad78bbb69dbe13",
+    "source": "Model-selected employment choice; deterministic terms voiced by Kokoro. Synthesized clip used in game, not a recording of system output.",
+    "encounter": "Livelihood choices \u2014 paid work rather than registration"
   }
 ]

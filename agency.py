@@ -22,6 +22,7 @@ from owner_production import owner_work_opportunities
 from procurement import grain_procurement
 from bargaining import PRICING_POLICY, own_prices, price_choices, record_quote, accept_quote, quote_valid
 from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_MINUTES
+from entrepreneurship import enterprise_choices, apply_resident_enterprise, knows_bread_recipe
 
 TERMINAL = ('complete', 'held')
 
@@ -136,6 +137,7 @@ class Agency:
         targets = {}
         work_options = {}
         price_options = {}
+        business_options = {}
         if plan['phase'] in ('job_offer', 'job_accept'):
             current_work_terms(self.active, plan)
         policy = plan_work_policy(plan)
@@ -232,6 +234,9 @@ class Agency:
                 purpose='choose an affordable bid for a loaf' if bargaining else 'offer 3 gold for a loaf'
                 options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, '+purpose+'; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review':
+                for option in enterprise_choices(self.active,observation,actor):
+                    business_options[option['id']]=option['specification']
+                    options.append({'id':option['id'],'effect':option['effect']})
                 for supplier in grain_procurement(self.active,observation,actor):
                     action='procure_grain_'+str(supplier['id']);targets[action]=supplier['id']
                     work_options[action]=supplier['own_businesses']
@@ -263,7 +268,9 @@ class Agency:
                 'own_price_history':own_prices(person,commodity), 'commodity':commodity, 'price_options':price_options,
                 'memories': person['memories'][-8:], 'trust': person['trust'],
                 'my_relationships':person.get('relationships',{}), 'option_targets':targets,
-                'work_options':work_options, 'options': options}
+                'work_options':work_options, 'enterprise_options':business_options,
+                'own_recipe_knowledge':{'bread':knows_bread_recipe(person),'source':'Own verified production participation; authored learning rule'},
+                'options': options}
 
     def _resident_perception(self, observation, actor):
         sensor = observation.get('perception', {}).get(str(actor), {})
@@ -303,6 +310,8 @@ class Agency:
             raise ValueError('The chosen employment terms changed while deciding')
         if current.get('price_options',{}).get(chosen)!=claim['context'].get('price_options',{}).get(chosen):
             raise ValueError('The chosen price changed while deciding')
+        if current.get('enterprise_options',{}).get(chosen)!=claim['context'].get('enterprise_options',{}).get(chosen):
+            raise ValueError('The chosen enterprise revision changed while deciding')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
         if plan.get('commodity','bread')=='bread' and (chosen in ('sell_bread','sell_reserved_bread') or chosen.startswith('ask_price_')) and current['own_food_allocation']!=claim['context']['own_food_allocation']:
@@ -316,7 +325,9 @@ class Agency:
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action == 'check_market':
+        if action in current['enterprise_options']:
+            apply_resident_enterprise(state,updated,current['enterprise_options'][action],observation)
+        elif action == 'check_market':
             site=market_opportunity(self.active,observation,updated['actor'])
             if not site:raise ValueError('The known public destination is no longer executable')
             updated.update(phase='travelling',target=MARKET,target_kind='place',destination=site,

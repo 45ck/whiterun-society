@@ -45,7 +45,7 @@ class DailyLifeTests(unittest.TestCase):
         self.world.begin_plan(e['id'],self.obs,99,'need_review');self.sync()
         self.assertEqual(self.world.active['people']['99']['needs']['hunger'],hunger)
         context=self.world.claim_plan_decision(e['id'],self.obs)['claim']['context']
-        self.assertEqual({o['id'] for o in context['options']},{'defer','eat_bread'})
+        self.assertEqual({o['id'] for o in context['options']},{'defer','eat_bread','offer_food_trade_resident-99'})
 
     def test_unsupported_hungry_resident_stays_unmet_without_model_request(self):
         self.obs['residents'][2]['inventory']['bread']=0
@@ -124,6 +124,8 @@ class DailyLifeTests(unittest.TestCase):
         self.assertEqual(self.world.active['people']['99']['memories'],[])
 
     def test_quiet_review_makes_no_events_and_clock_reversal_is_rejected(self):
+        self.world.active['town']['businesses']={}
+        for actor in self.obs['residents']:actor['inventory'].update(bread=0,grain=0)
         self.assertEqual(self.review()['new_events'],[])
         self.obs['gameDays']-=1
         with self.assertRaisesRegex(ValueError,'backwards'):self.world.review_population(self.obs)
@@ -143,6 +145,8 @@ class DailyLifeTests(unittest.TestCase):
 
     def queued_social(self, status='pending'):
         self.review()
+        # Replace the unstarted livelihood review with this encounter fixture.
+        self.world.active['town']['daily']['queue']=[e for e in self.world.active['town']['daily']['queue'] if e['actor']!=99]
         self.world.active['town']['daily']['queue'].append({'id':'old-social', 'actor':99,
             'kind':'social_review','status':status,'priority':.45,'created_day':self.obs['gameDays'],
             'reason':'A previously available conversation'})

@@ -33,7 +33,7 @@ function renderTownCharts(root,data){
  for(const [key,label] of [['hunger','Hungry'],['fatigue','Tired'],['social_contact','Seeking company']]){const value=data.needs[key],item=add(needs,'div',undefined,'town-need'),line=add(item,'div',undefined,'town-need-label');add(line,'span',label);add(line,'span',value.known?`${value.high} / ${value.known}`:'Unknown');const track=add(item,'div',undefined,'town-need-track');track.setAttribute('role','meter');track.setAttribute('aria-label',label);track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(value.known||1));track.setAttribute('aria-valuenow',String(value.high));add(track,'div',undefined,'town-need-fill').style.width=(value.known?value.high/value.known*100:0)+'%';}
  add(needs,'p',data.needs_scope,'town-chart-note');
  const flow=section('Economy in this save'),tiles=add(flow,'div',undefined,'town-flow');
- for(const [key,label] of [['committed_sales','Completed sales'],['committed_production','Production shifts'],['committed_meals','Meals eaten'],['active_enterprises','Open businesses']]){const tile=add(tiles,'div');add(tile,'strong',data.economy[key]??'—');add(tile,'span',label);}
+ for(const [key,label] of [['committed_sales','Completed sales'],['committed_production','Production shifts'],['committed_meals','Meals eaten'],['active_enterprises','Open businesses'],['resident_enterprise_changes','Resident business decisions'],['operator_enterprise_changes','Operator charter edits']]){const tile=add(tiles,'div');add(tile,'strong',data.economy[key]??'—');add(tile,'span',label);}
  add(flow,'p',data.economy_scope,'town-chart-note');
  const negotiation=data.economy.negotiations;
  if(negotiation){

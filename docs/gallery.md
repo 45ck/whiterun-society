@@ -50,6 +50,12 @@ Generated system illustration — not gameplay
 
 ![Resident bargaining loop](images/resident-bargaining-loop.png)
 
+## Resident enterprise loop
+
+Generated system illustration — not gameplay
+
+![Resident enterprise loop](images/resident-enterprise-loop.png)
+
 ## Voiced trade loop
 
 Generated system illustration — not gameplay
@@ -103,6 +109,18 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 Captured game or observer interface — historical prototype
 
 ![Employment refusal native](images/employment-refusal-native.jpg)
+
+## Enterprise livelihood choice native
+
+Captured game or observer interface — historical prototype
+
+![Enterprise livelihood choice native](images/enterprise-livelihood-choice-native.jpg)
+
+## Enterprise registration fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Enterprise registration fixture](images/enterprise-registration-fixture.jpg)
 
 ## Food consumption restored
 

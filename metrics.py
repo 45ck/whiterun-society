@@ -195,6 +195,8 @@ def simulation_metrics(state):
             'gold_conservation':rate(sum(conserved),len(conserved)),
             'distinct_observed_sale_prices':len({c['cost']/c['quantity'] for c in trades if c.get('quantity',0)>0}),
             'active_enterprises':sum(b.get('active',True) for b in state.get('town',{}).get('businesses',{}).values()),
+            'resident_enterprise_changes':sum('actor' in e and 'plan_id' in e for e in state.get('town',{}).get('enterprise_events',[])),
+            'operator_enterprise_changes':sum('actor' not in e for e in state.get('town',{}).get('enterprise_events',[])),
             'supported_production_recipes':1,'supported_sale_goods':2,'supported_supply_chain_transforms':1,
             'pricing':'Residents choose bids and counteroffers from bounded price options using personal history; legacy fixtures retain 3/5 offers. No market-clearing equilibrium is claimed.',
             'scope':'Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour.'},

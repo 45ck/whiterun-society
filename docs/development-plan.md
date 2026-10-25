@@ -80,3 +80,10 @@ Initialized towns now let buyers choose affordable bids and sellers choose accep
 Current charters can advertise grain supply. Bakery shortfalls offer procurement using personal stock and public suppliers, with grain-specific bargaining, voice, native transfers and price memory. A controlled three-resident native chain completed grain purchase, owned production, bread sale and consumption, with seven spoken lines and conserved money; all 17 save fields restored. A real model chose bread instead and exposed duplicated decision context, now repaired and provider-qualified. [Illustration, audio and receipts](grain-market.md).
 
 Next: qualify repeated unforced supply-chain choices, farming and replenishment, meaningful productive/rest routines and natural dialogue. RTS remains the sole current interaction mode; observer camera obstruction and native input delivery remain open. A continuous livestream still needs bounded-cost operation, durable recovery and recorded audio/video qualification.
+
+
+## Resident enterprise formation
+
+Residents now consider food/grain retail, verified bread-recipe registration, closure and reopening in their ordinary needs review. The shared validator checks ownership, revisions, stock and outstanding contracts; registration creates no native assets. Two unforced reviews preferred eating and paid work. A controlled new charter survived native reload and pre-trial rollback, with all 17 fields matching both times. [Implementation, screenshots, data model and evidence](entrepreneurship.md).
+
+Next acceptance: unforced enterprise formation and repeated supply-chain choices, productive locations and farming, natural business dialogue, fatigue/rest recovery, reliable native RTS controls, and recorded long-run observation. The current three executable service capabilities do not establish a full economy.

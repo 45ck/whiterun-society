@@ -83,8 +83,8 @@ class EnterpriseTests(unittest.TestCase):
             with self.subTest(field=field,value=value),self.assertRaises(ValueError):
                 self.configure(spec={**self.spec,field:value})
             self.assertIsNone(self.world.transition)
-        self.obs['residents'][0]['isGuard']=True
-        with self.assertRaisesRegex(ValueError,'civilian'):self.configure()
+        self.obs['residents'][0]['isPerson']=False
+        with self.assertRaisesRegex(ValueError,'initialized adult'):self.configure()
         self.assertEqual(before,self.world.active)
 
     def test_accepted_custom_wage_flows_to_native_contract_receipt_and_memories(self):
@@ -100,6 +100,7 @@ class EnterpriseTests(unittest.TestCase):
         self.assertEqual(self.world.active['town']['businesses']['mill-bakery']['contracts'][0]['status'],'completed')
         memory=next(m for m in self.world.active['people']['8']['memories'] if m['kind']=='paid_work')
         self.assertEqual((memory['gold'],memory['work_minutes']),(4,10))
+        self.assertEqual(self.world.active['people']['8']['known_recipes']['bread']['source'],'verified_native_production')
 
     def test_work_policy_change_cannot_silently_change_offer_or_pending_inference(self):
         self.configure()
@@ -122,6 +123,7 @@ class EnterpriseTests(unittest.TestCase):
         self.assertEqual(self.world.active['town']['businesses']['mill-bakery']['contracts'][0]['status'],'ended')
         self.assertEqual(self.world.active['people']['8']['memories'][-1]['kind'],'interrupted_work')
         self.assertEqual(self.world.active['people']['7']['memories'][-1]['gold_paid'],0)
+        self.assertNotIn('known_recipes',self.world.active['people']['8'])
         self.obs['ack']={'id':'release-shift','status':'applied'};self.world.observe(self.obs);self.sync()
         self.assertFalse(self.world.agency_busy())
 

@@ -3,6 +3,7 @@ import copy
 import math
 from enterprises import production_policy
 from routing import activity_blocker
+from entrepreneurship import learn_bread_recipe
 
 
 def owner_work_opportunities(state, observation, actor):
@@ -59,6 +60,7 @@ class OwnerProduction:
             record['status']='committed';state.setdefault('production',[]).append(record);state['pending']=None
             plan.update(phase='complete',outcome='owner_work_completed')
             person=state['people'][str(command['actor'])]
+            learn_bread_recipe(person,pending['id'])
             person['memories']=(person['memories']+[{'event_id':command['id'],'kind':'owner_work',
                 'business_id':record['business_id'],'grain_used':1,'bread_made':2,'gold_paid':0,
                 'work_minutes':command['work_minutes'],

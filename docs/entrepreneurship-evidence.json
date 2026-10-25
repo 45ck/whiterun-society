@@ -1,0 +1,393 @@
+{
+  "natural": {
+    "selection": "Operator selected queued resident with most carried grain and feasible business options; no forced business choice",
+    "actor": 108149,
+    "name": "Carlotta Valentia",
+    "phase": "complete",
+    "outcome": "ate_bread",
+    "decisions": [
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "eat_bread",
+          "emotion": "unspecified",
+          "reason": "Selected action: Consume one carried loaf now; it leaves inventory and reduces your simulated hunger."
+        },
+        "elapsed_seconds": 1.297,
+        "usage": {
+          "cost": 0.000204498,
+          "input_tokens": 4869,
+          "output_tokens": 129
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "available_actions": [
+          "defer",
+          "eat_bread",
+          "visit_person_108138",
+          "visit_person_108164",
+          "close_enterprise_business-108149",
+          "offer_grain_trade_business-108149",
+          "work_own_business-108149",
+          "rest_at_bench"
+        ],
+        "own_recipe_knowledge": {
+          "bread": false,
+          "source": "Own verified production participation; authored learning rule"
+        }
+      }
+    ],
+    "reported_model_cost": 0.000204498,
+    "balances_before": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 102,
+        "bread": 3,
+        "grain": 20
+      }
+    },
+    "turns": [],
+    "charter_events": [],
+    "checkpoint": 2237,
+    "sampled_worker_seconds": 11.625
+  },
+  "natural-second": {
+    "selection": "Operator selected queued resident with most carried grain and feasible business options; no forced business choice",
+    "actor": 108186,
+    "name": "Ysolda",
+    "phase": "complete",
+    "outcome": "employer_declined",
+    "decisions": [
+      {
+        "actor_id": 108186,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_work",
+          "emotion": "unspecified",
+          "reason": "Selected action: Ask Carlotta Valentia about an advertised 10-game-minute bread-making shift paying 4 gold. The employer must offer and you must accept. No wage is guaranteed."
+        },
+        "elapsed_seconds": 2.579,
+        "usage": {
+          "cost": 0.000200256,
+          "input_tokens": 4768,
+          "output_tokens": 133
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "available_actions": [
+          "defer",
+          "visit_person_843123",
+          "visit_person_225409",
+          "visit_person_225408",
+          "visit_person_1048823",
+          "seek_bread",
+          "register_bakery_resident-108186",
+          "seek_work",
+          "rest_at_bench"
+        ],
+        "own_recipe_knowledge": {
+          "bread": true,
+          "source": "Own verified production participation; authored learning rule"
+        }
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "defer",
+          "emotion": "unspecified",
+          "reason": "Selected action: Do not offer this job; keep your resources."
+        },
+        "elapsed_seconds": 1.86,
+        "usage": {
+          "cost": 0.000175728,
+          "input_tokens": 4184,
+          "output_tokens": 34
+        },
+        "rationale_kind": "authored_action_label_not_dialogue",
+        "available_actions": [
+          "defer",
+          "offer_shift"
+        ],
+        "own_recipe_knowledge": {
+          "bread": false,
+          "source": "Own verified production participation; authored learning rule"
+        }
+      }
+    ],
+    "reported_model_cost": 0.000375984,
+    "balances_before": {
+      "108149": {
+        "gold": 102,
+        "bread": 3,
+        "grain": 20
+      },
+      "108186": {
+        "gold": 32,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 102,
+        "bread": 3,
+        "grain": 20
+      },
+      "108186": {
+        "gold": 32,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "turns": [
+      {
+        "act": "work_request",
+        "actor": 108186,
+        "listener": 108149,
+        "line": "Are you hiring for that 10-minute bread-making shift?",
+        "audio_file": "enterprise-natural-second-1.wav",
+        "seconds": 2.912,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.054,
+          "facing": [
+            {
+              "actor": 108186,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-635c22b2a6d22f7373bf1b37",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 154.782265345032,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 310,
+            "sum_error_degrees": 167.37344745392033
+          },
+          "playedSeconds": 2.912,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "act": "work_unavailable",
+        "actor": 108149,
+        "listener": 108186,
+        "line": "I am not offering you a shift right now.",
+        "audio_file": "enterprise-natural-second-2.wav",
+        "seconds": 2.6627,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.762,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108186,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-af6fa85546a333fc95d5214d",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.04121954160757468,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 286,
+            "sum_error_degrees": 0.19744515513787064
+          },
+          "playedSeconds": 2.662667,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "charter_events": [],
+    "checkpoint": 2251,
+    "sampled_worker_seconds": 98.073
+  },
+  "fixture": {
+    "selection": {
+      "actor": 108196,
+      "event": "daily-27-108196",
+      "action": "offer_food_trade_resident-108196"
+    },
+    "actor": 108196,
+    "name": "Nazeem",
+    "phase": "complete",
+    "outcome": "enterprise_registered",
+    "decisions": [
+      {
+        "actor_id": 108196,
+        "model": "controlled-enterprise-fixture",
+        "decision": {
+          "action_id": "offer_food_trade_resident-108196",
+          "emotion": "calm",
+          "reason": "Authored registration protocol qualification"
+        },
+        "elapsed_seconds": null,
+        "usage": {},
+        "rationale_kind": "test_fixture",
+        "available_actions": [
+          "defer",
+          "eat_bread",
+          "visit_person_108160",
+          "visit_person_108197",
+          "offer_food_trade_resident-108196",
+          "seek_work",
+          "rest_at_bench"
+        ],
+        "own_recipe_knowledge": {
+          "bread": false,
+          "source": "Own verified production participation; authored learning rule"
+        }
+      }
+    ],
+    "reported_model_cost": 0,
+    "balances_before": {
+      "108196": {
+        "gold": 54,
+        "bread": 1,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108196": {
+        "gold": 54,
+        "bread": 1,
+        "grain": 0
+      }
+    },
+    "turns": [],
+    "charter_events": [
+      {
+        "actor": 108196,
+        "custodian": 108196,
+        "decision_claim_id": "96e5eff2fb6313fba34e5621",
+        "game_day": 9.349492073059082,
+        "id": "resident-enterprise-2589d50f69366ea7a7b79516",
+        "inventory_effect": "none",
+        "plan_id": "daily-27-108196",
+        "previous_custodian": null,
+        "request": {
+          "active": true,
+          "capabilities": [
+            "retail_food"
+          ],
+          "custodian": 108196,
+          "expected_revision": 0,
+          "id": "resident-108196",
+          "name": "Nazeem provisions",
+          "production_policy": {}
+        },
+        "revision": 1,
+        "source": "Resident-selected public charter; existing personal inventory only"
+      }
+    ],
+    "checkpoint": 2255,
+    "business": {
+      "active": true,
+      "capabilities": [
+        "retail_food"
+      ],
+      "contracts": [],
+      "costs": {},
+      "custodian": 108196,
+      "id": "resident-108196",
+      "name": "Nazeem provisions",
+      "owner": 108196,
+      "production_policy": {
+        "bread_per_shift": 2,
+        "grain_per_shift": 1,
+        "target_bread": 8,
+        "wage_gold": 2,
+        "work_minutes": 30
+      },
+      "provenance": "Resident-selected public charter; existing personal inventory only",
+      "resource_account": "native-inventory:108196",
+      "revision": 1,
+      "separate_legal_cash_account": false,
+      "workers": []
+    },
+    "scope": "Controlled resident-protocol choice; not autonomous business formation",
+    "publicly_discoverable_by": [
+      225358,
+      182567,
+      108169,
+      108156,
+      229976,
+      225403,
+      108160,
+      108197,
+      108185,
+      108140,
+      1048823,
+      108164,
+      108138,
+      108170,
+      225404,
+      182543,
+      108149,
+      108186,
+      108165,
+      108191,
+      843123,
+      108162,
+      225409,
+      225408,
+      225386,
+      225392,
+      225368,
+      108163,
+      225366,
+      108179,
+      225390,
+      225355
+    ]
+  },
+  "resume": {
+    "save": "WS-Enterprise-20261025-BN",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "restore": {
+    "save": "WS-Enterprise-20261025-BM",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "limits": [
+    "Two unforced reviews chose immediate needs or employment, not enterprise formation.",
+    "Registration was a controlled native protocol test. Expansion, closure and reopening have unit coverage only in this qualification.",
+    "Three executable capability types. No business property purchase, autonomous farming, equipment or firm accounting.",
+    "Recipe learning after verified production is an authored simulation rule, not measured human skill.",
+    "No newly registered business sale was qualified in this trial. No physical listening check or lip sync."
+  ],
+  "qualification_metrics": {
+    "unforced_review_count": 2,
+    "unforced_enterprise_changes": 0,
+    "controlled_registration_count": 1,
+    "native_resume_fields_matched": 17,
+    "native_rollback_fields_matched": 17,
+    "speech_turns_completed": 2,
+    "scope": "This bounded qualification only; no claim about long-run economics or human realism"
+  }
+}

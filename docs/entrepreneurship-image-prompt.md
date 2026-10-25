@@ -1,0 +1,5 @@
+# Resident livelihood illustration
+
+Generated with the built-in image generation tool. Explanatory artwork, not gameplay or evidence of autonomous success.
+
+Prompt: a landscape 16:9 editorial infographic for Whiterun Society, with medieval Nordic residents, bread, grain sacks, ledgers and coins in charcoal, forest green and aged gold. Title: “Residents choose a livelihood”. Subtitle: “Whiterun Society · Design illustration, not gameplay”. Five numbered cards: Observe — Own stock, needs and memories; Consider — Eat · work · trade · register · wait; Choose — Jev selects an available intention; Validate — Code checks ownership and commitments; Remember — Save the verified outcome. An inset states “A charter advertises a service” and “It creates no goods, money or building.” A lower band “Later choices” shows Buy inputs, Produce bread and Negotiate a sale as separate possibilities, not a guaranteed sequence. Footer: “Current services: food retail · grain retail · bread recipe”. No profit figures, lip-sync claims, farming, legal companies or magical resources.

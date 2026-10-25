@@ -2,6 +2,18 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {JSDOM}=require('jsdom'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'../ui',name),'utf8');
 const dashboard=()=>({control:{agent:1,scene:2,native:3,unknown:1,unloaded:2},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:k==='gold'?7:null,accounts:k==='gold'?2:0,population:9}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{high:1,known:4}])),economy:{committed_sales:2},control_scope:'Observed packages',needs_scope:'Gameplay needs',economy_scope:'Verified events'});
+test('resident inspector labels controlled business choices separately from model choices',()=>{
+ const {dom,w}=native();try{
+ const person={profile:{name:'New resident',role:'resident',big_five:{}},needs:{hunger:.4},memories:[],trust:{},relationships:{}};
+ const plan={id:'business',actor:7,phase:'complete',outcome:'enterprise_registered',enterprise_change:{business_id:'resident-7',revision:1},decisions:[{model:'controlled-enterprise-fixture',decision:{action_id:'offer_food_trade_resident-7'}}]};
+ const data={residents:[{id:7,name:'New resident',isPerson:true,inventory:{gold:2,bread:1,grain:0}}],trades:[],director:{running:false},society:{plan,people:{'7':person},town:{residents:{'7':{name:'New resident'}}}}};
+ w.whiterunRender(data);w.whiterunInspectKey(2);
+ assert.match(w.document.getElementById('resident-inspector').textContent,/Business integration test/);
+ assert.match(w.document.getElementById('resident-inspector').textContent,/enterprise registered/);
+ plan.decisions=[{model:'real-decision-model',decision:{action_id:'offer_food_trade_resident-7'}}];w.whiterunRender(data);
+ assert.match(w.document.getElementById('resident-inspector').textContent,/Own business decision/);
+ }finally{dom.window.close();}
+});
 function native(){
  const dom=new JSDOM(read('index.html'),{runScripts:'outside-only',url:'https://local.invalid/'}),w=dom.window,messages=[],intervals=[];
  w.setInterval=(fn,ms)=>{intervals.push({fn,ms});return intervals.length;};w.skyrimPlatform={sendMessage:m=>messages.push(m)};

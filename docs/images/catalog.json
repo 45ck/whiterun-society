@@ -40,6 +40,11 @@
     "kind": "Generated system illustration \u2014 not gameplay"
   },
   {
+    "file": "resident-enterprise-loop.png",
+    "title": "Resident enterprise loop",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "voiced-trade-loop.png",
     "title": "Voiced trade loop",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -83,6 +88,16 @@
     "file": "employment-refusal-native.jpg",
     "title": "Employment refusal native",
     "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "enterprise-livelihood-choice-native.jpg",
+    "title": "Enterprise livelihood choice native",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "enterprise-registration-fixture.jpg",
+    "title": "Enterprise registration fixture",
+    "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
   },
   {
     "file": "food-consumption-restored.jpg",

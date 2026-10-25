@@ -4,7 +4,7 @@ Voiced job searches now happen face to face. A resident chooses a public opportu
 
 ![Employment choices, speech, work and verification](images/employment-encounter-loop.png)
 
-Generated explanatory illustration, not gameplay. The noticeboard and productive artwork are metaphors: public jobs currently come from operator-authored enterprise charters, and crafting animation remains unfinished. [Built-in image generation prompts](employment-image-prompt.md).
+Generated explanatory illustration, not gameplay. The noticeboard and productive artwork are metaphors: public jobs in this qualification came from operator-authored enterprise charters; [resident charter choices](entrepreneurship.md) were added afterward, and crafting animation remains unfinished. [Built-in image generation prompts](employment-image-prompt.md).
 
 ## Live model choice
 

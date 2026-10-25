@@ -42,9 +42,11 @@ class OwnerProductionTests(unittest.TestCase):
         self.assertEqual(self.world.agency_plan()['outcome'],'owner_work_completed')
         self.assertEqual(self.world.active['people']['99']['food_policy'],self.policy)
         self.assertEqual(self.world.active['people']['99']['needs']['hunger'],.9)
+        self.assertEqual(self.world.active['people']['99']['known_recipes']['bread']['source'],'verified_native_production')
         metrics=simulation_metrics(self.world.active)['economy'];self.assertEqual(metrics['owner_production_batches'],1);self.assertEqual(metrics['gold_conservation']['percent'],100)
         self.world.observe({**before,'session':'previous-owner-save'})
         self.assertEqual(self.world.status()['production'],[])
+        self.assertNotIn('known_recipes',self.world.active['people']['99'])
 
     def test_owner_cannot_work_other_accounts_missing_grain_or_unowned_package(self):
         self.assertEqual(len(owner_work_opportunities(self.world.active,self.obs,99)),1)

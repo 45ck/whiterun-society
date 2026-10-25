@@ -1,5 +1,6 @@
 """A finite, explicitly authored paid bread-making contract in the physical world."""
 import copy
+from entrepreneurship import learn_bread_recipe
 from labour import settle_contract
 from enterprises import plan_work_policy, current_work_terms
 
@@ -85,6 +86,7 @@ class Production:
                 self.queue_trade_speech(state,state['plans'][-1],'work_receipt')
             for role, other in [('worker', 'employer'), ('employer', 'worker')]:
                 person = state['people'][str(command[role])]
+                learn_bread_recipe(person,pending['id'])
                 person['memories'].append({'event_id': pending['id'], 'kind': 'paid_work',
                     'role': role, 'other': command[other], 'gold': command.get('wage_gold', 2),
                     'work_minutes': command['work_minutes'], 'grain_used': 1, 'bread_made': 2,

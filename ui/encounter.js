@@ -52,6 +52,11 @@ window.drawEncounter=()=>{
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
+ if(plan?.actor===displayResident&&plan.enterprise_change){
+  inspectorText(panel,plan.decisions?.some(d=>String(d.model).includes('fixture'))?'Business integration test':'Own business decision','label');
+  inspectorText(panel,(plan.outcome||plan.phase).replaceAll('_',' '));
+  inspectorText(panel,'Services updated · goods and money stay in the resident’s inventory');
+ }
  if(plan?.actor===displayResident&&(plan.kind==='work_shift'||plan.work_terms||plan.own_work_terms)){
   const owner=!!plan.own_work_terms,terms=plan.own_work_terms?.policy||plan.work_terms?.policy||{wage_gold:2,work_minutes:30};
   inspectorText(panel,plan.decisions?.some(d=>d.rationale_kind==='test_fixture')?'Employment integration test':owner?'Owner production':'Employment decisions','label');

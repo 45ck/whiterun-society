@@ -129,7 +129,9 @@ class LabourTests(unittest.TestCase):
         settled=next(e for e in self.world.active['town']['daily']['queue'] if e['id']==event['id'])
         self.assertEqual(settled['status'],'complete')
         self.review(1)
-        self.assertFalse(any(e['actor']==108149 and e['status']=='pending' for e in self.world.active['town']['daily']['queue']))
+        self.assertFalse(any(e['actor']==108149 and e['status']=='pending' and e['kind']=='stock_review' for e in self.world.active['town']['daily']['queue']))
+        livelihood=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==108149 and e['status']=='pending')
+        self.assertEqual(livelihood['kind'],'need_review')  # A livelihood choice is distinct from repeating reserve allocation.
         self.review(3)
         self.assertTrue(any(e['actor']==108149 and e['status']=='pending' for e in self.world.active['town']['daily']['queue']))
 
