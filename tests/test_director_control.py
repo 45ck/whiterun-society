@@ -21,12 +21,14 @@ class DirectorControlTests(unittest.TestCase):
     @patch('director_control.subprocess.Popen')
     def test_single_owner_bounded_process_and_graceful_stop(self,popen):
         process=Mock();process.poll.return_value=None;popen.return_value=process
-        result=self.control.start({'max_events':2},self.bridge,self.society)
+        result=self.control.start({'max_events':2,'scene_handoffs':True},self.bridge,self.society)
         self.assertTrue(result['running']);self.assertEqual(result['maximum_model_calls'],32)
         self.assertNotIn('receipt',result);self.assertNotIn('stop_file',result)
         argv=popen.call_args.args[0];self.assertNotIn('test-placeholder',' '.join(argv))
         self.assertIn('--social-opportunities',argv)
         self.assertIn('--parallel-journeys',argv)
+        self.assertIn('--scene-handoffs',argv)
+        self.assertTrue(result['scene_handoffs_enabled'])
         with self.assertRaises(ValueError):self.control.start({},self.bridge,self.society)
         self.control.stop();self.assertTrue(Path(self.control.run['stop_file']).exists())
         process.terminate.assert_not_called();process.kill.assert_not_called()

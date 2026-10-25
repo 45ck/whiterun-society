@@ -1,5 +1,7 @@
 # Residents can be occupied, without stopping the town
 
+**Update:** explicit agent-priority mode can now request a verified handoff from a native scene. The passive occupancy checks described below remain active before and after that handoff. [Current scene-control protocol](native-scene-handoff.md)
+
 An agent's intention is not ownership of an NPC's body. Skyrim may already have that resident in a scene, combat or a sleep transition. The scheduler now observes those conditions before offering new travel or social opportunities, and checks again before accepting a travel decision and while acquiring/executing its native package.
 
 The bridge reads `ObjectReference.GetCurrentScene`, `Actor.IsInCombat`, `Actor.GetSleepState` and the current package. The owned SKSE source files document the first three APIs; the live lab also returned all four fields. Scene ID zero means no current scene. A failed or missing native API returns unknown, never a fabricated zero. Current bridge observations always include the activity object; legacy observations without the entire object retain the older protocol behavior.

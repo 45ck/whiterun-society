@@ -102,5 +102,37 @@
     "sha256": "8b9973f3fd81a4156b690ec2b18d0ad1898b782ad16b43fb5526d913fa2034f1",
     "encounter": "Guard and Idolaf \u00b7 linked resident plans",
     "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "scene-handoff-a-1.wav",
+    "speaker": "Heimskr",
+    "line": "Would you sell me one loaf for 3 gold?",
+    "sha256": "3264f595e7a1890ac44c81ede133c83e4ac5c7118af06b394c9bc4ec723e9f44",
+    "encounter": "Released resident: a refused bread negotiation",
+    "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio"
+  },
+  {
+    "file": "scene-handoff-a-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "c05c5bab0b1a1ff848db2862075cf4c326cffc0c7005f6dc67ba9859230ed6fb",
+    "encounter": "Released resident: a refused bread negotiation",
+    "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio"
+  },
+  {
+    "file": "scene-handoff-a-3.wav",
+    "speaker": "Heimskr",
+    "line": "Would 5 gold change your mind? That is my final offer for one loaf.",
+    "sha256": "ae0528d1c8c8d38491777c17cab6986fda4a365994d5094c0296d32065ba59ce",
+    "encounter": "Released resident: a refused bread negotiation",
+    "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio"
+  },
+  {
+    "file": "scene-handoff-a-4.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "aecce638f53bb14a0872628138555acaa8d2fd6b9c1c645a3601d7d5fdc9bf2e",
+    "encounter": "Released resident: a refused bread negotiation",
+    "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio"
   }
 ]

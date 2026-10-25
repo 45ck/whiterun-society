@@ -44,6 +44,8 @@ class DirectorControl:
         if self.status()['running']:
             raise ValueError('The society director is already running')
         count = data.get('max_events', 6)
+        handoffs=data.get('scene_handoffs',False)
+        if type(handoffs) is not bool:raise ValueError('Scene handoffs must be boolean')
         if type(count) is not int or not 1 <= count <= 12:
             raise ValueError('Choose 1 to 12 resident events')
         if time.time() - (bridge.get('last_seen') or 0) > 10:
@@ -70,6 +72,7 @@ class DirectorControl:
                    '--watch-seconds', '600', '--model-config', str(configs[0]),
                    '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--receipt', str(receipt),
                    '--stop-file', str(stop_file)]
+        if handoffs:command.append('--scene-handoffs')
         self.log = (self.runtime/(run_id+'.log')).open('w', encoding='utf-8')
         try:
             self.process = subprocess.Popen(command, stdout=self.log, stderr=self.log,
@@ -78,6 +81,7 @@ class DirectorControl:
             self.log.close(); self.log = None
             raise
         self.run = {'id': run_id, 'status': 'running', 'max_events': count,
+                    'scene_handoffs_enabled':handoffs,
                     'maximum_model_calls': MAX_COMBINED_CALLS*count, 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()

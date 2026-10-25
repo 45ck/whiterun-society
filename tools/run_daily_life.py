@@ -18,6 +18,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from social import social_candidates
 from parallel_routines import select_routine_events
 from routing import activity_blocker
+from scene_handoffs import scene_candidates
 from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 
 
@@ -125,6 +126,7 @@ def main():
     parser.add_argument('--receipt',type=Path)
     parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
     parser.add_argument('--social-opportunities',action='store_true',help='Offer nearby encounters between economic events; participation remains a resident choice')
+    parser.add_argument('--scene-handoffs',action='store_true',help='Request bounded native scene interruption before resident decisions; scene scripts may run')
     args=parser.parse_args()
     if not 0<=args.max_events<=24 or not 0<=args.watch_seconds<=600:
         raise ValueError('Use 0–24 resident events and 0–600 seconds of observation')
@@ -146,7 +148,7 @@ def main():
         if state['society']['error']:raise ValueError(state['society']['error'])
         return state
     before=fresh();session=before['bridge']['session']
-    evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],
+    evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],
               'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else 5)*args.max_events,'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
@@ -159,6 +161,19 @@ def main():
             if state['bridge']['session']!=session:raise ValueError('Save/session changed; director stopped')
             if state['society']['transition'] or state['bridge']['command']:
                 raise ValueError('Finish the pending native/checkpoint command before running the director')
+            candidates=scene_candidates(state['society'],state['bridge']['observation']) if args.scene_handoffs else []
+            if candidates and len(evidence['scene_handoffs'])<args.max_events:
+                resident=candidates[0];handoff_id='scene-'+uuid.uuid4().hex[:20]
+                request('/town/scene-handoff',{'id':handoff_id,'actor':resident['id'],'scene_id':resident['activity']['scene_id']})
+                handoff_deadline=time.monotonic()+45
+                while True:
+                    state=fresh()
+                    if state['bridge']['session']!=session:raise ValueError('Save/session changed during scene handoff')
+                    handoff=next((h for h in state['society'].get('scene_handoffs',[]) if h['id']==handoff_id),None)
+                    if handoff and handoff['status']!='pending' and not state['society']['transition']:
+                        evidence['scene_handoffs'].append(handoff);record();break
+                    if time.monotonic()>handoff_deadline:raise TimeoutError('Scene handoff did not settle; no automatic retry')
+                    time.sleep(.2)
             result=request('/town/review',{'source':'bounded_director'})
             if not result.get('duplicate'):evidence['reviews'].append(result);record()
             bind_deadline=time.monotonic()+30

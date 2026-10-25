@@ -4,6 +4,8 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Accepted direction
 
+- Native scene ownership can now be interrupted through a save-bound handoff rather than imposing an unconditional wait. Jev still chooses what the released resident does. Scene scripts and other participants can be affected; broad quest compatibility remains unqualified. [Protocol, controls and live evidence](native-scene-handoff.md)
+
 - Actions must follow interactions and arise from resident state. Remove artificial cast, role and scheduling exclusions; expand conversation-to-action commitments and ordinary encounters. Audit quest/scene restrictions against actual engine occupancy rather than treating quest involvement as a permanent exclusion. Physical reachability, mutual consent and accounting remain simulation rules.
 
 - Make the town feel established and continuously inhabited. Existing neighbours should recognize each other; new arrivals need their own knowledge history. An explicit scenario background now supplies initial acquaintance without fake conversations or automatic friendship. [Implementation and live limits](situated-dialogue.md)

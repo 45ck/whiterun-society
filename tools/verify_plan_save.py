@@ -50,6 +50,7 @@ def snapshot(state, inventory_ids=None):
             'market_day': state['society'].get('market_day'),
             'conversation': state['society'].get('conversation'),
             'routine_batch': state['society'].get('routine_batch'),
+            'scene_handoffs': state['society'].get('scene_handoffs',[]),
             'town':state['society'].get('town'),
             'inventory': {str(a['id']): a['inventory']
                 for a in state['bridge']['observation']['residents']

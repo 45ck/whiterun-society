@@ -169,6 +169,16 @@ def simulation_metrics(state):
         'realism':{'human_dialogue_rating':None,'psychological_validity':None,'economic_realism_rating':None,
             'interoperability_score':None,
             'reason':'No calibrated human ratings or interoperability benchmark. Completion, entropy and feature counts are not realism scores.'}}
+    handoffs=state.get('scene_handoffs',[])
+    settled=[h for h in handoffs if h['status']!='pending']
+    result['scene_handoffs']={'requested':len(handoffs),'pending':len(handoffs)-len(settled),
+        'plans_started':sum(bool(h.get('resumed_by')) for h in handoffs),
+        'resumed_plan_outcomes':dict(Counter(p.get('outcome') or p['phase'] for p in state.get('plans',[]) if p.get('scene_handoff'))),
+        'verified_release':rate(sum(h['status']=='released' for h in settled),len(settled)),
+        'outcomes':dict(Counter(h.get('outcome','pending') for h in handoffs)),
+        'release_seconds':distribution((h.get('receipt') or {}).get('elapsed_ms',0)/1000
+            for h in settled if number((h.get('receipt') or {}).get('elapsed_ms'))),
+        'scope':'Native scene release only. Not quest compatibility, successful agent action, or psychological realism.'}
     result['relationships']=relationship_metrics(state.get('people',{}))
     result['dialogue_analysis']=dialogue_metrics(scenes)
     result['quality_goals']=quality_goals(result)

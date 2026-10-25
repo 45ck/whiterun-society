@@ -91,6 +91,11 @@ class Agency:
         plan = {'id': event_id, 'kind': kind, 'actor': actor, 'phase': 'allocate' if kind=='stock_review' else 'choose',
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
                 'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
+        handoff=next((h for h in reversed(state.get('scene_handoffs',[]))
+                      if h['actor']==actor and h['status']=='released' and not h.get('resumed_by')),None)
+        if handoff:
+            plan['scene_handoff']={'id':handoff['id'],'scene_id':handoff['scene_id']}
+            handoff['resumed_by']=event_id
         if voiced_trade:plan['voiced_trade']=True
         if scheduled:
             plan['scheduled']=True

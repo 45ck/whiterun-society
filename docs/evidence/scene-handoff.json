@@ -1,0 +1,366 @@
+{
+  "source": "Native isolated-lab handoff and resident worker receipts; not a gameplay recording",
+  "handoff": {
+    "actor": 108162,
+    "created_day": 6.525883197784424,
+    "id": "scene-native-20261025-a",
+    "kind": "scene_handoff",
+    "observed_participants": [
+      108162
+    ],
+    "outcome": "scene_released",
+    "receipt": {
+      "actor": 108162,
+      "elapsed_ms": 261,
+      "id": "scene-native-20261025-a",
+      "owning_quest": 237914,
+      "reason": "scene_released",
+      "release_observed": true,
+      "scene_id": 237915,
+      "status": "applied",
+      "stop_called": true
+    },
+    "resumed_by": "daily-33-108162",
+    "scene_id": 237915,
+    "session": "1792893870376-0.39185507777335205",
+    "settled_day": 6.527556896209717,
+    "status": "released"
+  },
+  "resident": {
+    "actor": 108162,
+    "name": "Heimskr"
+  },
+  "plan": {
+    "id": "daily-33-108162",
+    "scene_handoff": {
+      "id": "scene-native-20261025-a",
+      "scene_id": 237915
+    },
+    "phase": "complete",
+    "outcome": "seller_declined",
+    "intent": "seek_bread",
+    "target": 108149,
+    "travel": {
+      "id": "travel-daily-33-108162",
+      "movement": {
+        "acquisitionAt": 1792893984825,
+        "activity": {
+          "in_combat": false,
+          "package_id": 117442561,
+          "scene_id": 0,
+          "sleep_state": 0
+        },
+        "actor": 108162,
+        "adapter": "papyrus-mailbox",
+        "aliasesConfirmed": true,
+        "at": 1792893984032,
+        "distance": 249.82358330610097,
+        "dynamic": true,
+        "enginePackage": 117442561,
+        "expectedPackage": 117442561,
+        "hasOwnedPackage": true,
+        "id": "travel-daily-33-108162",
+        "mailboxAt": 1792893984045,
+        "method": "package",
+        "origin": "resident_decision",
+        "ownedPackage": true,
+        "phase": "arrived",
+        "serial": 28,
+        "startAt": 1792893984063,
+        "startComplete": true,
+        "startDistance": 4083.423304800495,
+        "startResult": true,
+        "target": 108149,
+        "target_kind": "resident"
+      },
+      "status": "applied"
+    },
+    "economic_release": {
+      "attendance": {
+        "id": "economic-attend-daily-33-108162",
+        "participants": [
+          {
+            "actor": 108162,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 6
+          },
+          {
+            "actor": 108149,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 7
+          }
+        ],
+        "phase": "released"
+      },
+      "id": "release-daily-33-108162",
+      "released": true,
+      "status": "applied"
+    },
+    "remembered": true
+  },
+  "decisions": [
+    {
+      "actor": 108162,
+      "action": "seek_bread",
+      "model": "typesafe/jev-1.14-20261014",
+      "elapsed_seconds": 0.953,
+      "usage": {
+        "cost": 0.000172368,
+        "input_tokens": 4104,
+        "output_tokens": 99
+      }
+    },
+    {
+      "actor": 108149,
+      "action": "decline",
+      "model": "typesafe/jev-1.14-20261014",
+      "elapsed_seconds": 0.735,
+      "usage": {
+        "cost": 0.000171906,
+        "input_tokens": 4093,
+        "output_tokens": 26
+      }
+    },
+    {
+      "actor": 108162,
+      "action": "raise_offer",
+      "model": "typesafe/jev-1.14-20261014",
+      "elapsed_seconds": 0.641,
+      "usage": {
+        "cost": 0.000194796,
+        "input_tokens": 4638,
+        "output_tokens": 171
+      }
+    },
+    {
+      "actor": 108149,
+      "action": "decline",
+      "model": "typesafe/jev-1.14-20261014",
+      "elapsed_seconds": 0.579,
+      "usage": {
+        "cost": 0.000172158,
+        "input_tokens": 4099,
+        "output_tokens": 26
+      }
+    }
+  ],
+  "model_calls": 4,
+  "reported_cost_usd": 0.000711228,
+  "turns": [
+    {
+      "file": "scene-handoff-a-1.wav",
+      "speaker": "Heimskr",
+      "line": "Would you sell me one loaf for 3 gold?",
+      "sha256": "3264f595e7a1890ac44c81ede133c83e4ac5c7118af06b394c9bc4ec723e9f44",
+      "encounter": "Released resident: a refused bread negotiation",
+      "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio",
+      "act": "offer",
+      "actor": 108162,
+      "listener": 108149,
+      "delivered": true,
+      "audio_seconds": 2.74,
+      "prepared_at": 1792894048.0573015,
+      "ended_at": 1792894052.0006287,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.852,
+        "facing": [
+          {
+            "actor": 108162,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-6382181bb1414b1ad8f02f44",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 179.739909277263,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 312,
+          "sum_error_degrees": 8109.267798843774
+        },
+        "playedSeconds": 2.74,
+        "status": "ended",
+        "volume": 1
+      }
+    },
+    {
+      "file": "scene-handoff-a-2.wav",
+      "speaker": "Carlotta Valentia",
+      "line": "No, I will not sell a loaf on those terms.",
+      "sha256": "c05c5bab0b1a1ff848db2862075cf4c326cffc0c7005f6dc67ba9859230ed6fb",
+      "encounter": "Released resident: a refused bread negotiation",
+      "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio",
+      "act": "refuse",
+      "actor": 108149,
+      "listener": 108162,
+      "delivered": true,
+      "audio_seconds": 2.8393,
+      "prepared_at": 1792894062.0323205,
+      "ended_at": 1792894065.8621187,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.942,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108162,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-6d5eed0b6afe220f9ad5817b",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 45.33711043024573,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 294,
+          "sum_error_degrees": 90.73756565151143
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      }
+    },
+    {
+      "file": "scene-handoff-a-3.wav",
+      "speaker": "Heimskr",
+      "line": "Would 5 gold change your mind? That is my final offer for one loaf.",
+      "sha256": "ae0528d1c8c8d38491777c17cab6986fda4a365994d5094c0296d32065ba59ce",
+      "encounter": "Released resident: a refused bread negotiation",
+      "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio",
+      "act": "counteroffer",
+      "actor": 108162,
+      "listener": 108149,
+      "delivered": true,
+      "audio_seconds": 4.788,
+      "prepared_at": 1792894077.0176322,
+      "ended_at": 1792894083.003396,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.904,
+        "facing": [
+          {
+            "actor": 108162,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-4e6f7f2fa0d26126457e8295",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 8.755750340436293,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 534,
+          "sum_error_degrees": 4539.642489326392
+        },
+        "playedSeconds": 4.788,
+        "status": "ended",
+        "volume": 1
+      }
+    },
+    {
+      "file": "scene-handoff-a-4.wav",
+      "speaker": "Carlotta Valentia",
+      "line": "No, I will not sell a loaf on those terms.",
+      "sha256": "aecce638f53bb14a0872628138555acaa8d2fd6b9c1c645a3601d7d5fdc9bf2e",
+      "encounter": "Released resident: a refused bread negotiation",
+      "source": "Kokoro utterance used by the native attended negotiation; decision-driven terms, not recorded game audio",
+      "act": "refuse",
+      "actor": 108149,
+      "listener": 108162,
+      "delivered": true,
+      "audio_seconds": 2.8393,
+      "prepared_at": 1792894092.709344,
+      "ended_at": 1792894096.4905386,
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.94,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108162,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-26150c93a5f4dbadb02a82eb",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 8.752999129651812,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 322,
+          "sum_error_degrees": 18.36500675833088
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      }
+    }
+  ],
+  "reply_dispatch_gaps_seconds": [
+    10.032,
+    11.156,
+    9.706
+  ],
+  "inventory_accounts_compared": 29,
+  "inventory_scope": "Only accounts observed before and after, not a whole-town conservation claim",
+  "inventory_changes": [],
+  "new_trades": 0,
+  "save": {
+    "name": "WS-SceneHandoff-20261025-AZ",
+    "checkpoint": 1323,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "scene_handoffs": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "limitations": [
+    "One native scene and one resident plan; no general quest compatibility claim",
+    "Stopping a scene may run scripts and affect unobserved participants",
+    "Terms and refusal text are deterministic; Jev chooses actions; no free-form language calls in this trial",
+    "Voice clips are synthesized assets used in confirmed playback, not recordings of game output",
+    "No new screenshot, video, eye-gaze or lip-sync validation"
+  ]
+}

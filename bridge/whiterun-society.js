@@ -12,6 +12,8 @@ const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __PAPYRUS_ROUTER_FACTORY__
+__SCENE_HANDOFF_FACTORY__
+const sceneHandoffs=createSceneHandoffController(()=>sp);
 __PLACE_FACTORY__
 __REST_FACTORY__
 const rest=createRestController(()=>sp);
@@ -63,6 +65,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  sceneHandoffs.reset();
   observerCamera.reset();remoteCamera=null;
   endowments.reset();
   speech.reset();conversationAttendance.reset();
@@ -228,6 +231,11 @@ on('update', () => {
           const result=rest.step(command);
           if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
         }
+        else if(command.kind==='scene_handoff'){
+          if(checkpointValue()!==command.checkpoint)throw new Error('Scene handoff checkpoint mismatch');
+          const result=sceneHandoffs.step(command);
+          if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
+        }
         else if(command.kind==='speak'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Speech checkpoint mismatch');
           speech.start(command);if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
@@ -295,7 +303,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }

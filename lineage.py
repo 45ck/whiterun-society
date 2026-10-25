@@ -23,11 +23,12 @@ from parallel_routines import ParallelRoutines
 from metrics import simulation_metrics
 from enterprises import Enterprises
 from economic_speech import EconomicSpeech
+from scene_handoffs import SceneHandoffs
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -110,6 +111,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         pending = self.active['pending']
         if pending['status'] != 'pending':
             self._agency_observe(observation)
+            return
+        if pending['command']['kind'] == 'scene_handoff':
+            self.observe_scene_handoff(observation)
             return
         if pending['command']['kind'] == 'inventory_consume':
             self.observe_consumption(observation)
@@ -222,6 +226,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
 
     def status(self):
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                'scene_handoffs':self.active.get('scene_handoffs',[]) if self.active else [],
                 'metrics':simulation_metrics(self.active),
                 'people': self.active['people'] if self.active else {}, 'plan': self.agency_plan(),
                 'routine_batch': self.routine_batch(),

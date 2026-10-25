@@ -94,7 +94,7 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
-            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director','/observer/conversation'):
+            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director','/observer/conversation','/observer/scene-handoff'):
                 origin=f'http://127.0.0.1:{args.port}'
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
                     return self.reply(403,{'error':'Same-origin observer control required'})
@@ -108,6 +108,10 @@ def main():
                         if data.get('action')!='start':raise ValueError('Unknown society control')
                         return self.reply(202,director.start(data,bridge,world.status()))
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if self.path=='/observer/scene-handoff':
+                        if director.status()['running']:raise ValueError('Stop the society director before a manual scene handoff')
+                        if bridge['command']:raise ValueError('Another command is pending')
+                        return self.reply(202,world.request_scene_handoff(data['id'],data['actor'],data['scene_id'],bridge['observation']))
                     if self.path=='/observer/conversation':
                         if data.get('action')!='interrupt':raise ValueError('Unknown conversation control')
                         return self.reply(202,world.interrupt_conversation(data['id'],bridge['observation']))
@@ -180,11 +184,12 @@ def main():
                     result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
                         data.get('quantity',1),data.get('unit_price',3))
                     self.reply(202,result)
-                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background'):
+                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background','/town/scene-handoff'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
-                    if self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
+                    if self.path=='/town/scene-handoff':result=world.request_scene_handoff(data['id'],data['actor'],data['scene_id'],bridge['observation'])
+                    elif self.path=='/town/endow':result=world.plan_endowment(data['actor'],bridge['observation'])
                     elif self.path=='/town/social-background':result=world.establish_social_background(data['id'],data['cohort'],bridge['observation'])
                     elif self.path=='/town/enterprise':result=world.configure_enterprise(data['id'],data['enterprise'],bridge['observation'])
                     elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
