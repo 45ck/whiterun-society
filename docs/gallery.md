@@ -26,6 +26,12 @@ Generated system illustration — not gameplay
 
 ![Personal knowledge loop](images/personal-knowledge-loop.png)
 
+## Reply is a choice
+
+Generated system illustration — not gameplay
+
+![Reply is a choice](images/reply-is-a-choice.png)
+
 ## Voiced trade loop
 
 Generated system illustration — not gameplay

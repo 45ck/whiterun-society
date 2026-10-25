@@ -6,7 +6,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 29 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 30 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -29,6 +29,12 @@ The language role can use a small, inexpensive model; it does not require fronti
 Residents now wait around observed Skyrim scenes, combat and sleep transitions. Released route failures can be isolated so other residents continue; uncertain effects still stop the run. [Scheduling behavior and evidence](docs/scene-aware-scheduling.md).
 
 ## Examples from the running prototype
+
+### Choosing a reply or ending
+
+![Language alternatives, Jev choice, deterministic playback and heard memory](docs/images/reply-is-a-choice.png)
+
+*Generated architecture illustration, not gameplay. Language proposes alternatives; Jev chooses whether to reply, end politely or leave quietly; deterministic game logic handles validation, voice playback and confirmed speech memory.* [Image prompt and provenance](docs/images/reply-is-a-choice.prompt.md).
 
 ### Independent lives around a conversation
 
@@ -207,7 +213,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (29)</summary>
+<summary>Browse every finished project image (30)</summary>
 
 ### Independent lives observed
 
@@ -232,6 +238,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Personal knowledge loop](docs/images/personal-knowledge-loop.png)
+
+### Reply is a choice
+
+Generated system illustration — not gameplay
+
+![Reply is a choice](docs/images/reply-is-a-choice.png)
 
 ### Voiced trade loop
 
