@@ -2,6 +2,8 @@
 
 ## Independent employer activity during paid attendance
 
+**Source qualification, 26 October 2026:** [hosted run 40210392239](https://github.com/45ck/whiterun-society/actions/runs/40210392239) passed at `a65d957` on Windows and Ubuntu. Per platform: 1,280 Python tests (1,279 passed, one generated-file check initially skipped and subsequently passed), 504 JavaScript tests and six plugin readback checks. Windows compiled both Papyrus scripts. Four new concurrency interoperability cases and six retained paid-work interoperability cases passed with simulated native APIs. [Exact evidence and limits](evidence/employment-concurrency-validation.json). No new game deployment occurred.
+
 The current source separates financial reservations from physical attendance. A qualified employer can walk or socialise while the hired worker retains the exact attendance lease; both entire inventories and the contracted business remain protected until verified settlement and release. Prepared jobs, overlapping activity owners, cold/held records and changed identities keep conservative admission checks. The observer reports actual paired attendance/movement/conversation intervals separately from eligibility. [Contract and acceptance limits](employment-concurrency.md).
 
 Qualification must cover actual controller interoperability and failure cases before publication, followed by a controlled native trial when game access resumes. Paired job-seconds are not unique wall time or audible-speech duration. Global foreground settlement, whole-account exclusivity, finite slots and loaded-identity requirements remain. This is a concurrency milestone toward independent lives, not completion of the city simulation.

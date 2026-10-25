@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T16:14:47.198991+00:00",
+  "run_id": 40210392239,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40210392239",
+  "revision": "a65d95753dc4e93cb1bc39fbeb2014998fd0e4c8",
+  "conclusion": "success",
+  "platforms": {
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T16:10:19Z",
+      "completed_at": "2026-10-25T16:11:33Z",
+      "python": {
+        "run": 1280,
+        "passed": 1279,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 504,
+        "passed": 504,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "targeted_suites": {
+        "test_employment_concurrency_integration": [
+          "test_employer_identity_replacement_restores_conservative_physical_hold (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_employer_identity_replacement_restores_conservative_physical_hold) ... ok",
+          "test_employer_moves_and_chats_while_employee_attends_then_both_wage_legs_settle (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_employer_moves_and_chats_while_employee_attends_then_both_wage_legs_settle) ... ok",
+          "test_prepared_paid_admission_allows_employer_physical_activity_without_account_conflict (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_prepared_paid_admission_allows_employer_physical_activity_without_account_conflict) ... ok",
+          "test_worker_unloads_during_employer_social_activity_holds_without_economic_effects (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_worker_unloads_during_employer_social_activity_holds_without_economic_effects) ... ok"
+        ],
+        "test_employment_concurrency_metrics": [
+          "test_account_reservations_do_not_imply_employer_physical_restriction (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_account_reservations_do_not_imply_employer_physical_restriction) ... ok",
+          "test_changed_attendance_participants_with_reused_id_are_not_the_same_conversation (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_changed_attendance_participants_with_reused_id_are_not_the_same_conversation) ... ok",
+          "test_changed_lease_serial_excludes_interval (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_changed_lease_serial_excludes_interval) ... ok",
+          "test_different_conversations_do_not_fabricate_continuous_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_different_conversations_do_not_fabricate_continuous_overlap) ... ok",
+          "test_first_snapshot_is_not_observed_overlap_or_measured_zero (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_first_snapshot_is_not_observed_overlap_or_measured_zero) ... ok",
+          "test_gap_and_teleport_are_excluded_instead_of_counted_as_activity (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_gap_and_teleport_are_excluded_instead_of_counted_as_activity) ... ok",
+          "test_held_timeline_cannot_report_current_eligibility_or_sample_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_held_timeline_cannot_report_current_eligibility_or_sample_overlap) ... ok",
+          "test_invalid_sampling_policy_and_clock_are_rejected (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_invalid_sampling_policy_and_clock_are_rejected) ... ok",
+          "test_malformed_native_attendance_and_missing_session_do_not_crash_or_create_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_malformed_native_attendance_and_missing_session_do_not_crash_or_create_overlap) ... ok",
+          "test_missing_conversation_telemetry_is_not_zero_conversation (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_missing_conversation_telemetry_is_not_zero_conversation) ... ok",
+          "test_movement_requires_two_exact_attendance_samples_and_displacement (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_movement_requires_two_exact_attendance_samples_and_displacement) ... ok",
+          "test_no_attendance_progress_is_not_measured_simultaneous_activity (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_no_attendance_progress_is_not_measured_simultaneous_activity) ... ok",
+          "test_other_activity_reservation_is_not_subtracted_when_employer_is_freed_from_paid_hold (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_other_activity_reservation_is_not_subtracted_when_employer_is_freed_from_paid_hold) ... ok",
+          "test_owned_conversation_attendance_requires_same_identity_at_both_endpoints (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_owned_conversation_attendance_requires_same_identity_at_both_endpoints) ... ok",
+          "test_repeated_sample_cannot_double_count_and_stale_snapshot_masks_current_fields (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_repeated_sample_cannot_double_count_and_stale_snapshot_masks_current_fields) ... ok",
+          "test_replaced_or_unloaded_employer_has_unknown_activity_and_no_movement_credit (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_replaced_or_unloaded_employer_has_unknown_activity_and_no_movement_credit) ... ok",
+          "test_rolloff_removes_old_intervals_without_pretending_lifetime_counts (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_rolloff_removes_old_intervals_without_pretending_lifetime_counts) ... ok",
+          "test_same_job_id_with_different_frozen_contract_cannot_pair (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_same_job_id_with_different_frozen_contract_cannot_pair) ... ok",
+          "test_session_epoch_checkpoint_and_clock_rollback_reset_ephemeral_history (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_session_epoch_checkpoint_and_clock_rollback_reset_ephemeral_history) ... ok",
+          "test_snapshot_and_sampler_do_not_mutate_saved_state_or_expose_private_accounts (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_snapshot_and_sampler_do_not_mutate_saved_state_or_expose_private_accounts) ... ok",
+          "test_stationary_employer_is_measured_zero_movement_not_unknown (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_stationary_employer_is_measured_zero_movement_not_unknown) ... ok",
+          "test_worker_native_phase_without_exact_package_does_not_prove_attendance (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_worker_native_phase_without_exact_package_does_not_prove_attendance) ... ok"
+        ],
+        "test_paid_employment_integration": [
+          "test_cold_controller_loses_permit_without_reconstructing_existing_input_debit (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_cold_controller_loses_permit_without_reconstructing_existing_input_debit) ... ok",
+          "test_generic_job_attendance_effects_wages_learning_and_replay (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_generic_job_attendance_effects_wages_learning_and_replay) ... ok",
+          "test_native_blocked_start_holds_service_instead_of_retrying_admission (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_native_blocked_start_holds_service_instead_of_retrying_admission) ... ok",
+          "test_partial_wage_is_visible_held_and_does_not_teach_recipe (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_partial_wage_is_visible_held_and_does_not_teach_recipe) ... ok",
+          "test_replaced_employer_before_first_effect_cannot_spend (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_replaced_employer_before_first_effect_cannot_spend) ... ok",
+          "test_reset_after_issued_input_cannot_replay_or_award_output (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_reset_after_issued_input_cannot_replay_or_award_output) ... ok"
+        ],
+        "test_employer_economic_exclusion": [
+          "test_consumption_supply_and_owner_effect_builders_reject_before_writing (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_consumption_supply_and_owner_effect_builders_reject_before_writing) ... ok",
+          "test_direct_resource_import_rejects_only_reserved_employer_account (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_direct_resource_import_rejects_only_reserved_employer_account) ... ok",
+          "test_direct_trade_rejects_mobile_employer_account_in_either_role (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_direct_trade_rejects_mobile_employer_account_in_either_role) ... ok",
+          "test_eat_choice_claimed_before_reservation_cannot_spend_after_it (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_eat_choice_claimed_before_reservation_cannot_spend_after_it) ... ok",
+          "test_employer_can_move_socialise_rest_but_neither_party_can_spend (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_employer_can_move_socialise_rest_but_neither_party_can_spend) ... ok",
+          "test_seller_buyer_procurement_and_both_paid_roles_exclude_reserved_account (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_seller_buyer_procurement_and_both_paid_roles_exclude_reserved_account) ... ok"
+        ],
+        "test_paid_work_reservations": [
+          "test_cleanup_requires_all_three_proofs (test_paid_work_reservations.PaidWorkReservationTests.test_cleanup_requires_all_three_proofs) ... ok",
+          "test_current_employer_can_move_and_socialize_while_both_purses_stay_reserved (test_paid_work_reservations.PaidWorkReservationTests.test_current_employer_can_move_and_socialize_while_both_purses_stay_reserved) ... ok",
+          "test_identity_cleanup_exception_cannot_drop_partial_wage_reservations (test_paid_work_reservations.PaidWorkReservationTests.test_identity_cleanup_exception_cannot_drop_partial_wage_reservations) ... ok",
+          "test_malformed_native_activity_hint_preserves_known_hints_and_population (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_native_activity_hint_preserves_known_hints_and_population) ... ok",
+          "test_malformed_native_collection_never_means_no_active_jobs (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_native_collection_never_means_no_active_jobs) ... ok",
+          "test_malformed_orphan_preserves_known_hints_and_quarantines_available_accounts (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_orphan_preserves_known_hints_and_quarantines_available_accounts) ... ok",
+          "test_narrowing_never_subtracts_another_activity_or_account_hold (test_paid_work_reservations.PaidWorkReservationTests.test_narrowing_never_subtracts_another_activity_or_account_hold) ... ok",
+          "test_native_orphans_and_explicit_reserved_accounts_survive_saved_rollback (test_paid_work_reservations.PaidWorkReservationTests.test_native_orphans_and_explicit_reserved_accounts_survive_saved_rollback) ... ok",
+          "test_native_witness_and_conflicting_duplicate_can_only_add_physical_exclusions (test_paid_work_reservations.PaidWorkReservationTests.test_native_witness_and_conflicting_duplicate_can_only_add_physical_exclusions) ... ok",
+          "test_no_observation_or_changed_identity_retains_both_participants (test_paid_work_reservations.PaidWorkReservationTests.test_no_observation_or_changed_identity_retains_both_participants) ... ok",
+          "test_orphan_held_and_native_only_identity_cannot_free_employer (test_paid_work_reservations.PaidWorkReservationTests.test_orphan_held_and_native_only_identity_cannot_free_employer) ... ok",
+          "test_public_history_is_free_only_when_ack_release_and_reconciliation_are_proved (test_paid_work_reservations.PaidWorkReservationTests.test_public_history_is_free_only_when_ack_release_and_reconciliation_are_proved) ... ok",
+          "test_qualified_projection_and_native_duplicate_do_not_mutate_authority (test_paid_work_reservations.PaidWorkReservationTests.test_qualified_projection_and_native_duplicate_do_not_mutate_authority) ... ok",
+          "test_reading_reservations_does_not_mutate_jobs_or_reassign_changed_bases (test_paid_work_reservations.PaidWorkReservationTests.test_reading_reservations_does_not_mutate_jobs_or_reassign_changed_bases) ... ok",
+          "test_worker_employer_accounts_and_business_remain_exclusive (test_paid_work_reservations.PaidWorkReservationTests.test_worker_employer_accounts_and_business_remain_exclusive) ... ok",
+          "test_worker_physical_hold_lasts_through_release_until_exact_ack (test_paid_work_reservations.PaidWorkReservationTests.test_worker_physical_hold_lasts_through_release_until_exact_ack) ... ok"
+        ]
+      }
+    },
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T16:10:18Z",
+      "completed_at": "2026-10-25T16:14:27Z",
+      "python": {
+        "run": 1280,
+        "passed": 1279,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "initially_skipped_generated_binary_passed_after_generation": true
+      },
+      "javascript": {
+        "run": 504,
+        "passed": 504,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6
+      },
+      "targeted_suites": {
+        "test_employment_concurrency_integration": [
+          "test_employer_identity_replacement_restores_conservative_physical_hold (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_employer_identity_replacement_restores_conservative_physical_hold) ... ok",
+          "test_employer_moves_and_chats_while_employee_attends_then_both_wage_legs_settle (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_employer_moves_and_chats_while_employee_attends_then_both_wage_legs_settle) ... ok",
+          "test_prepared_paid_admission_allows_employer_physical_activity_without_account_conflict (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_prepared_paid_admission_allows_employer_physical_activity_without_account_conflict) ... ok",
+          "test_worker_unloads_during_employer_social_activity_holds_without_economic_effects (test_employment_concurrency_integration.EmploymentConcurrencyIntegrationTests.test_worker_unloads_during_employer_social_activity_holds_without_economic_effects) ... ok"
+        ],
+        "test_employment_concurrency_metrics": [
+          "test_account_reservations_do_not_imply_employer_physical_restriction (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_account_reservations_do_not_imply_employer_physical_restriction) ... ok",
+          "test_changed_attendance_participants_with_reused_id_are_not_the_same_conversation (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_changed_attendance_participants_with_reused_id_are_not_the_same_conversation) ... ok",
+          "test_changed_lease_serial_excludes_interval (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_changed_lease_serial_excludes_interval) ... ok",
+          "test_different_conversations_do_not_fabricate_continuous_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_different_conversations_do_not_fabricate_continuous_overlap) ... ok",
+          "test_first_snapshot_is_not_observed_overlap_or_measured_zero (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_first_snapshot_is_not_observed_overlap_or_measured_zero) ... ok",
+          "test_gap_and_teleport_are_excluded_instead_of_counted_as_activity (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_gap_and_teleport_are_excluded_instead_of_counted_as_activity) ... ok",
+          "test_held_timeline_cannot_report_current_eligibility_or_sample_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_held_timeline_cannot_report_current_eligibility_or_sample_overlap) ... ok",
+          "test_invalid_sampling_policy_and_clock_are_rejected (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_invalid_sampling_policy_and_clock_are_rejected) ... ok",
+          "test_malformed_native_attendance_and_missing_session_do_not_crash_or_create_overlap (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_malformed_native_attendance_and_missing_session_do_not_crash_or_create_overlap) ... ok",
+          "test_missing_conversation_telemetry_is_not_zero_conversation (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_missing_conversation_telemetry_is_not_zero_conversation) ... ok",
+          "test_movement_requires_two_exact_attendance_samples_and_displacement (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_movement_requires_two_exact_attendance_samples_and_displacement) ... ok",
+          "test_no_attendance_progress_is_not_measured_simultaneous_activity (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_no_attendance_progress_is_not_measured_simultaneous_activity) ... ok",
+          "test_other_activity_reservation_is_not_subtracted_when_employer_is_freed_from_paid_hold (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_other_activity_reservation_is_not_subtracted_when_employer_is_freed_from_paid_hold) ... ok",
+          "test_owned_conversation_attendance_requires_same_identity_at_both_endpoints (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_owned_conversation_attendance_requires_same_identity_at_both_endpoints) ... ok",
+          "test_repeated_sample_cannot_double_count_and_stale_snapshot_masks_current_fields (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_repeated_sample_cannot_double_count_and_stale_snapshot_masks_current_fields) ... ok",
+          "test_replaced_or_unloaded_employer_has_unknown_activity_and_no_movement_credit (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_replaced_or_unloaded_employer_has_unknown_activity_and_no_movement_credit) ... ok",
+          "test_rolloff_removes_old_intervals_without_pretending_lifetime_counts (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_rolloff_removes_old_intervals_without_pretending_lifetime_counts) ... ok",
+          "test_same_job_id_with_different_frozen_contract_cannot_pair (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_same_job_id_with_different_frozen_contract_cannot_pair) ... ok",
+          "test_session_epoch_checkpoint_and_clock_rollback_reset_ephemeral_history (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_session_epoch_checkpoint_and_clock_rollback_reset_ephemeral_history) ... ok",
+          "test_snapshot_and_sampler_do_not_mutate_saved_state_or_expose_private_accounts (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_snapshot_and_sampler_do_not_mutate_saved_state_or_expose_private_accounts) ... ok",
+          "test_stationary_employer_is_measured_zero_movement_not_unknown (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_stationary_employer_is_measured_zero_movement_not_unknown) ... ok",
+          "test_worker_native_phase_without_exact_package_does_not_prove_attendance (test_employment_concurrency_metrics.EmploymentConcurrencyMetricsTests.test_worker_native_phase_without_exact_package_does_not_prove_attendance) ... ok"
+        ],
+        "test_paid_employment_integration": [
+          "test_cold_controller_loses_permit_without_reconstructing_existing_input_debit (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_cold_controller_loses_permit_without_reconstructing_existing_input_debit) ... ok",
+          "test_generic_job_attendance_effects_wages_learning_and_replay (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_generic_job_attendance_effects_wages_learning_and_replay) ... ok",
+          "test_native_blocked_start_holds_service_instead_of_retrying_admission (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_native_blocked_start_holds_service_instead_of_retrying_admission) ... ok",
+          "test_partial_wage_is_visible_held_and_does_not_teach_recipe (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_partial_wage_is_visible_held_and_does_not_teach_recipe) ... ok",
+          "test_replaced_employer_before_first_effect_cannot_spend (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_replaced_employer_before_first_effect_cannot_spend) ... ok",
+          "test_reset_after_issued_input_cannot_replay_or_award_output (test_paid_employment_integration.PaidEmploymentIntegrationTests.test_reset_after_issued_input_cannot_replay_or_award_output) ... ok"
+        ],
+        "test_employer_economic_exclusion": [
+          "test_consumption_supply_and_owner_effect_builders_reject_before_writing (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_consumption_supply_and_owner_effect_builders_reject_before_writing) ... ok",
+          "test_direct_resource_import_rejects_only_reserved_employer_account (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_direct_resource_import_rejects_only_reserved_employer_account) ... ok",
+          "test_direct_trade_rejects_mobile_employer_account_in_either_role (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_direct_trade_rejects_mobile_employer_account_in_either_role) ... ok",
+          "test_eat_choice_claimed_before_reservation_cannot_spend_after_it (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_eat_choice_claimed_before_reservation_cannot_spend_after_it) ... ok",
+          "test_employer_can_move_socialise_rest_but_neither_party_can_spend (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_employer_can_move_socialise_rest_but_neither_party_can_spend) ... ok",
+          "test_seller_buyer_procurement_and_both_paid_roles_exclude_reserved_account (test_employer_economic_exclusion.EmployerEconomicExclusionTests.test_seller_buyer_procurement_and_both_paid_roles_exclude_reserved_account) ... ok"
+        ],
+        "test_paid_work_reservations": [
+          "test_cleanup_requires_all_three_proofs (test_paid_work_reservations.PaidWorkReservationTests.test_cleanup_requires_all_three_proofs) ... ok",
+          "test_current_employer_can_move_and_socialize_while_both_purses_stay_reserved (test_paid_work_reservations.PaidWorkReservationTests.test_current_employer_can_move_and_socialize_while_both_purses_stay_reserved) ... ok",
+          "test_identity_cleanup_exception_cannot_drop_partial_wage_reservations (test_paid_work_reservations.PaidWorkReservationTests.test_identity_cleanup_exception_cannot_drop_partial_wage_reservations) ... ok",
+          "test_malformed_native_activity_hint_preserves_known_hints_and_population (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_native_activity_hint_preserves_known_hints_and_population) ... ok",
+          "test_malformed_native_collection_never_means_no_active_jobs (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_native_collection_never_means_no_active_jobs) ... ok",
+          "test_malformed_orphan_preserves_known_hints_and_quarantines_available_accounts (test_paid_work_reservations.PaidWorkReservationTests.test_malformed_orphan_preserves_known_hints_and_quarantines_available_accounts) ... ok",
+          "test_narrowing_never_subtracts_another_activity_or_account_hold (test_paid_work_reservations.PaidWorkReservationTests.test_narrowing_never_subtracts_another_activity_or_account_hold) ... ok",
+          "test_native_orphans_and_explicit_reserved_accounts_survive_saved_rollback (test_paid_work_reservations.PaidWorkReservationTests.test_native_orphans_and_explicit_reserved_accounts_survive_saved_rollback) ... ok",
+          "test_native_witness_and_conflicting_duplicate_can_only_add_physical_exclusions (test_paid_work_reservations.PaidWorkReservationTests.test_native_witness_and_conflicting_duplicate_can_only_add_physical_exclusions) ... ok",
+          "test_no_observation_or_changed_identity_retains_both_participants (test_paid_work_reservations.PaidWorkReservationTests.test_no_observation_or_changed_identity_retains_both_participants) ... ok",
+          "test_orphan_held_and_native_only_identity_cannot_free_employer (test_paid_work_reservations.PaidWorkReservationTests.test_orphan_held_and_native_only_identity_cannot_free_employer) ... ok",
+          "test_public_history_is_free_only_when_ack_release_and_reconciliation_are_proved (test_paid_work_reservations.PaidWorkReservationTests.test_public_history_is_free_only_when_ack_release_and_reconciliation_are_proved) ... ok",
+          "test_qualified_projection_and_native_duplicate_do_not_mutate_authority (test_paid_work_reservations.PaidWorkReservationTests.test_qualified_projection_and_native_duplicate_do_not_mutate_authority) ... ok",
+          "test_reading_reservations_does_not_mutate_jobs_or_reassign_changed_bases (test_paid_work_reservations.PaidWorkReservationTests.test_reading_reservations_does_not_mutate_jobs_or_reassign_changed_bases) ... ok",
+          "test_worker_employer_accounts_and_business_remain_exclusive (test_paid_work_reservations.PaidWorkReservationTests.test_worker_employer_accounts_and_business_remain_exclusive) ... ok",
+          "test_worker_physical_hold_lasts_through_release_until_exact_ack (test_paid_work_reservations.PaidWorkReservationTests.test_worker_physical_hold_lasts_through_release_until_exact_ack) ... ok"
+        ]
+      },
+      "papyrus": {
+        "step_status": "success",
+        "scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "6188701840c1d825e83267cb91acfe94c5429c872c0d1ced4df6685b4a24b0c6",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "8898c86847cffa60d44bac9e7b97720a67e827bff916e54b5add88e81710ef27",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    }
+  },
+  "integration_method": "Fresh SQLite society state; actual paid-employment, movement, conversation-attendance and trade controllers against simulated native APIs. Explicit choices, game time, locomotion and audio reports are fixture inputs. Paired telemetry uses controlled monotonic sample times.",
+  "verified_behaviour": [
+    "Employer moves and attends a two-turn non-economic conversation while exact worker attendance advances.",
+    "Both inventories remain reserved; employer purchases and stale consumption choices are rejected.",
+    "Paired movement and conversation observations produce overlap; permission-only and repeated observations do not.",
+    "Worker unload and employer base replacement hold work without economic effects.",
+    "Prepared start permits employer physical occupancy while preserving account exclusions.",
+    "Exact terminal acknowledgement frees reservations, allowing a later earned-wage purchase."
+  ],
+  "evidence_method": "Completed hosted metadata and logs; counts are per platform, overlapping focused suites are not added.",
+  "full_log_sha256": "f3d4545669dc1e63a774cb22103629f3f4fd1889a3be9e179e5f6a0401c6eac1",
+  "runtime_qualified": false,
+  "game_deployment_performed": false,
+  "native_execution_performed_locally": false,
+  "limits": [
+    "No live model choices, audible Skyrim speech, lip sync or human-realism evaluation.",
+    "Sampled job-seconds are not unique wall time, continuous movement or continuously audible conversation.",
+    "Rolling telemetry is ephemeral and does not reconstruct history after restart.",
+    "Whole inventories and businesses remain exclusive; no escrow or simultaneous hiring against one purse.",
+    "Foreground settlement is serialized; employers must remain loaded and identity-qualified.",
+    "Stationary attendance does not prove crafting animation; default catalog remains small with one input/output per recipe.",
+    "Full RTS and sustained integrated city-economy qualification remain outstanding."
+  ]
+}

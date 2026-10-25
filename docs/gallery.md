@@ -20,6 +20,12 @@ Generated system illustration — not gameplay
 
 ![Economy catalog flow](images/economy-catalog-flow.png)
 
+## Employer concurrency
+
+Generated system illustration — not gameplay
+
+![Employer concurrency](images/employer-concurrency.png)
+
 ## Employment encounter loop
 
 Generated system illustration — not gameplay

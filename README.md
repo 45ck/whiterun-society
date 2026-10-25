@@ -4,6 +4,12 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 **Independent employers, source implementation:** a qualified paid job reserves the worker's physical attendance while allowing the employer to move and hold a non-economic conversation. Both inventories remain reserved, so walking away cannot spend the wage or sell contracted inputs. The inspector separates account restrictions, activity restrictions, observed behaviour and measured overlap. A bounded sampler requires paired identity-matched native attendance and employer observations; unknown evidence stays unknown. [Concurrency contract, metrics and limitations](docs/employment-concurrency.md). This change is not installed or qualified in Skyrim.
 
+![Independent employer activity with reserved inventories and measured worker attendance](docs/images/employer-concurrency.png)
+
+*Generated architecture illustration, not gameplay. [Full built-in image generation prompt](docs/images/employer-concurrency.prompt.md).*
+
+[Full concurrency validation](https://github.com/45ck/whiterun-society/actions/runs/40210392239) passed on Windows and Ubuntu at `a65d957`: **1,280 Python tests per platform (1,279 passed and one initial generated-file skip), 504 JavaScript tests and six generated-plugin readback checks**. The skipped check passed after generation; Windows compiled both Papyrus scripts. Four new interoperability cases use actual movement, conversation and paid-work controllers with simulated game APIs. Existing earned-wage spending still passes. [Exact evidence and limitations](docs/evidence/employment-concurrency-validation.json).
+
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
 **Witnessed paid employment, source implementation:** residents can choose among public jobs derived from configured businesses and recipes. Employer and worker make separate decisions and may refuse; voiced contracts also require the offer and acceptance to be heard. A worker leaves the meeting before independent attendance. Production and wage transfer each retain their own native effect witnesses; partial output and unpaid wages stay visible. Completed work teaches the worker, and earned wages can fund later purchases. The inspector reports attendance, output, payment, release, holds and measured timings separately. [Protocol, evidence and limitations](docs/paid-employment-v2.md). This implementation is not installed or qualified in Skyrim; current recipes still have one input and one output, and stationary attendance does not prove a crafting animation.
@@ -313,7 +319,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (76)</summary>
+<summary>Browse every finished project image (77)</summary>
 
 ### Concurrent resident lives
 
@@ -332,6 +338,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Economy catalog flow](docs/images/economy-catalog-flow.png)
+
+### Employer concurrency
+
+Generated system illustration — not gameplay
+
+![Employer concurrency](docs/images/employer-concurrency.png)
 
 ### Employment encounter loop
 

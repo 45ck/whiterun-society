@@ -1,5 +1,9 @@
 # Employer movement during paid work
 
+![A worker retains attendance while an employer moves and talks; both inventories remain reserved](images/employer-concurrency.png)
+
+Generated system illustration, not gameplay. [Full prompt](images/employer-concurrency.prompt.md). Paired samples below do not establish continuous motion or audible speech.
+
 Paid work binds a worker's attendance and two inventory accounts. Those are different resources. The employer should be able to walk or converse while the worker attends, without being allowed to spend the reserved wage, sell reserved ingredients or change the contracted business.
 
 **The account/physical lease split is implemented in source; it is not installed or qualified in Skyrim.** This document records the contract and qualification limits. The earlier [paid-employment validation](evidence/paid-employment-validation.json) belongs to its recorded revision and does not qualify this new concurrency behavior.
@@ -57,13 +61,23 @@ Do not infer 100% concurrency or increased economic throughput from permission o
 
 ## Acceptance and remaining limits
 
+| Objective | Quantitative check | Evidence boundary |
+| --- | --- | --- |
+| Protect agreed resources | Zero accepted conflicting economic admissions in the tested trade, import, consumption, production and hiring cases | Report rejected / attempted cases; this is not a guarantee about untested paths |
+| Demonstrate independent activity | At least one positive movement interval and one positive conversation interval while exact worker attendance advances in the controlled scenario | Fixture target only; ordinary residents may choose quiet or stationary activity |
+| Keep measurements auditable | Every interval has a full job identity, matching worker lease and advancing attendance; publish qualified / candidate intervals and exclusion reasons | Never replace missing observations with zero activity |
+| Complete the economic cycle | Production, wage debit, wage credit, release and acknowledgement must all pass before the later earned-wage purchase | Separate effect witnesses; final balances alone are insufficient |
+| Avoid false eligibility | Zero fresh eligibility claims in tested error, stale, paused and identity-mismatch states | Native runtime remains unmeasured until a controlled game trial |
+
+There is no validated human-realism score or target to keep everyone moving constantly. These measures qualify resource ownership and sampled concurrency; they do not establish economic complexity or psychological realism by themselves.
+
 The offline interoperability suite uses the actual service, movement router, conversation-attendance controller and paid-work controller with simulated game APIs. The employer travels to a third resident and completes a two-turn non-economic conversation while the worker accrues attendance, then production and both wage legs settle. Separate cases cover admission while the employer already has physical occupancy, worker unload and employer base replacement. A retained paid-work integration checks that terminal acknowledgement clears the worker for an earned-wage purchase.
 
 The positive fixture feeds actual controller observations into the telemetry sampler. It records five qualified attendance intervals, one displacement-bearing interval and two conversation intervals. Explicit fixture clocks yield five sampled movement job-seconds and ten conversation job-seconds; these are protocol expectations, not measured game duration. A permission-only snapshot and repeated observations cannot inflate overlap. Missing identity and stopped attendance are excluded.
 
 Focused regressions cover employer inventory changes, worker anchor violations, competing activity reservations, stale consumption choices, direct trade/resource admission, stopped timelines and stale observer projections. Exact terminal acknowledgement suppresses only the matching old native projection; changed or conflicting identities retain protection. The UI distinguishes inventory reservation, activity admission, observed activity, eligibility and measured overlap.
 
-Final hosted qualification is pending for this source revision. Earlier published validation remains historical evidence for its own revision; no local fixture proves audible speech, live model choice or Skyrim gameplay.
+[Hosted run 40210392239](https://github.com/45ck/whiterun-society/actions/runs/40210392239) passed for `a65d957` on Windows and Ubuntu: 1,280 Python tests per platform (1,279 passed and one initial generated-file skip), 504 JavaScript tests and six generated-plugin readback checks. The skipped check passed after generation; Windows compiled both Papyrus scripts. The four new concurrency interoperability cases and six existing paid-work interoperability cases all passed. [Machine-readable evidence](evidence/employment-concurrency-validation.json). These are source and simulated-native results, not audible speech, live model choice or Skyrim gameplay.
 
 A controlled native case must keep the worker's exact attendance valid while the employer changes position and separately completes a non-economic interaction. Record both paired trajectories, the observed social receipt, stable reservations, exact recipe/wage effects and release/acknowledgement. Attempt a conflicting spend and preserve its rejection. Exercise employer unload/base replacement, worker interruption, partial effects, lost acknowledgements, cold controller loss and old-save restoration. Keep failed and held runs.
 
