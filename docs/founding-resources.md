@@ -2,6 +2,8 @@
 
 ## Data-defined resource scenarios: implemented source
 
+[Hosted validation of revision 46c0874](https://github.com/45ck/whiterun-society/actions/runs/40197789995) passed on Windows and Ubuntu: 908 Python tests per platform (907 passed, one generated-file check initially skipped), 358 JavaScript tests, six plugin builds and six readback tests. The initially skipped check passed after generation. Windows also compiled both Papyrus scripts. [Machine-readable evidence](evidence/resource-scenario-validation.json) identifies the exact revision and limits. Three tests exchange actual receipts between the Python service and JavaScript controller with mocked game APIs; they are not native gameplay trials.
+
 The source protocol replaces identity-specific engine allocations with a reviewed scenario definition: a uniform **20 gold, 2 bread and 2 grain** per eligible recipient, bounded by a finite external pool of **1,000 gold, 100 bread and 100 grain**. Optional exceptional allocations belong in explicit actor/base-bound scenario data, not branches on NPC names or IDs in the execution engine. This definition is authored starting capital, not earned revenue, economic calibration or an autonomous agent decision. Census remains resource-free.
 
 The manifest, native controller, service checkpoints and explicit request/helper contracts below are implemented in source and were inspected together. **They are not installed or native-qualified.** The historical 29-recipient trial below used the earlier allocation policy and does not qualify the replacement.

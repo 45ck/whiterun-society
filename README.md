@@ -10,6 +10,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 *Generated system illustration. Service accounting is durable; native effect witnesses are live only, so there is no exactly-once guarantee across crashes. [Full generation prompts](docs/images/finite-resource-delivery-flow.full.prompt.md).*
 
+[Full resource-scenario validation](https://github.com/45ck/whiterun-society/actions/runs/40197789995) passed on Windows and Ubuntu: **908 Python tests per platform (907 passed, one initial generated-file skip), 358 JavaScript tests and six generated-plugin readback tests**. The skipped test passed after generation. Windows also compiled both Papyrus scripts. [Exact revision and machine-readable evidence](docs/evidence/resource-scenario-validation.json).
+
 **Independent activities, controlled native overlap:** two authored rests and four authored local-voice turns achieved **28.359 cumulative seconds** of verified two-seat/voice overlap, passing the 10-second cumulative target with **zero cloud calls**. The longest continuous interval was **7.375 seconds**. This proves the bounded execution protocol, not autonomous choices or human realism; C1's zero-overlap refusal and obstructed camera remain documented. [Architecture, actual screenshots and limits](docs/concurrent-activities.md) · [C2 evidence](docs/concurrent-rest-controlled-trial.json) · [C1 evidence](docs/concurrent-rest-first-trial.json).
 
 ![Independent owner work, rest and conversation architecture](docs/images/independent-owner-work.png)

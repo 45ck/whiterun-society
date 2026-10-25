@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-25T13:32:42.758679+00:00",
+  "run_id": 40197789995,
+  "url": "https://github.com/45ck/whiterun-society/actions/runs/40197789995",
+  "revision": "46c08741a1eff146c450be6c3a4cefa69bcc7662",
+  "conclusion": "success",
+  "platforms": {
+    "ubuntu": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T13:28:51Z",
+      "completed_at": "2026-10-25T13:29:47Z",
+      "python": {
+        "run": 908,
+        "passed": 907,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 358,
+        "passed": 358,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      }
+    },
+    "windows": {
+      "conclusion": "success",
+      "started_at": "2026-10-25T13:28:51Z",
+      "completed_at": "2026-10-25T13:32:14Z",
+      "python": {
+        "run": 908,
+        "passed": 907,
+        "skipped": 1,
+        "failures": 0,
+        "errors": 0,
+        "skip_evidence": [
+          "test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback (test_activities_plugin.ActivitiesArtifactTests.test_generated_binary_has_two_disjoint_furniture_mailboxes_and_matching_readback) ... skipped 'Set WHITERUN_ACTIVITIES_STAGE for real generated plugin readback'"
+        ],
+        "initially_skipped_generated_binary_test_passed_in_later_readback": true
+      },
+      "javascript": {
+        "run": 358,
+        "passed": 358,
+        "skipped": 0,
+        "failures": 0
+      },
+      "plugin_builds": {
+        "count": 6,
+        "files": [
+          "WhiterunAgents.esp",
+          "WhiterunRouter.esp",
+          "WhiterunRest.esp",
+          "WhiterunLanes.esp",
+          "WhiterunCitizens.esp",
+          "WhiterunActivities.esp"
+        ]
+      },
+      "plugin_readback": {
+        "run": 6,
+        "passed": 6,
+        "failures": 0
+      },
+      "papyrus": {
+        "step_status": "success",
+        "compiled_scripts": [
+          {
+            "file": "WSSocietyRouter.pex",
+            "bytes": 3277,
+            "sha256": "999cbb2a03b5e23369bafc8a87a03a03950400f67cc548a96629f49090a28f92",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          },
+          {
+            "file": "WSSocietyResident.pex",
+            "bytes": 3338,
+            "sha256": "7457305e8ced23e21a7244f43a828739e3fc376e842c6519fb0f42bf59189c6f",
+            "scope": "Compiled staging artifact; quest attachment and native execution are unverified"
+          }
+        ]
+      }
+    }
+  },
+  "resource_manifest": {
+    "id": "founding-resources-v2",
+    "hash": "f361660497f1be6d256fcf2908c47fbdf2e7b3bb96a8161f9147a5b57c981d17",
+    "capacity": {
+      "gold": 1000,
+      "bread": 100,
+      "grain": 100
+    },
+    "default_grant": {
+      "gold": 20,
+      "bread": 2,
+      "grain": 2
+    },
+    "overrides": 0
+  },
+  "local_javascript": {
+    "run": 358,
+    "passed": 358,
+    "failed": 0
+  },
+  "cross_runtime_integration": {
+    "cases": 3,
+    "passed": 3,
+    "method": "Actual Python timeline checkpoints and persistent JavaScript controller exchange receipts; only native form and actor APIs are mocked.",
+    "cases_covered": [
+      "verified once-only settlement within one live controller",
+      "cold controller reset before first write",
+      "cold controller reset after partial delivery"
+    ]
+  },
+  "review_fixes": [
+    "Generic receipt cache bypass for imports",
+    "Held recipient and inventory-account reservation",
+    "Native live-epoch aggregate capacity and replacement-reference guard",
+    "Lazy native form resolution",
+    "Late arm preserves final receipt without falsely claiming no effects",
+    "Exact receipt protocol, acceptance, permit and inventory checks",
+    "Checkpoint presentation lag waits for fresh accounting",
+    "Pool counters checked against reservation and delivery journals"
+  ],
+  "evidence_method": "Completed hosted run metadata and full logs. Test counts are per platform, not independent native scenarios.",
+  "local_full_log_sha256": "7fd44d02737aa2365da304607a0f49b7478bae12afeb88d719d604dc178da16a",
+  "runtime_qualified": false,
+  "native_execution_performed_locally": false,
+  "game_deployment_performed": false,
+  "limits": [
+    "Native forms and inventory calls in automated protocol tests are mocks, not Skyrim execution.",
+    "The service reservation and terminal journal are durable; native per-leg witnesses are live only. Witness loss retains held reservations, not automatic replay or crash-spanning exactly-once proof.",
+    "Historical completed legacy grants remain historical. New imports into an existing legacy program are rejected, and unresolved legacy effects are held.",
+    "The one initially skipped generated-binary test passes after plugin generation in the later six-test stage.",
+    "Papyrus hashes are compiler-log reports, not independently downloaded artifact verification.",
+    "External grants are authored imports, not agent-selected wealth, sales, wages, production, GDP or evidence of realistic economics."
+  ]
+}
