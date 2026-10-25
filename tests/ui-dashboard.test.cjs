@@ -65,3 +65,8 @@ test('voice check is explicitly diagnostic and does not create resident speech e
  const {dom,w,audio,messages}=testVoice();try{await new Promise(r=>setImmediate(r));await w.whiterunTestVoice('check');assert.equal(audio[0].played,true);audio[0].currentTime=3;audio[0].onended();assert.equal(messages.some(m=>m.type==='society-speech'),false);assert.equal(messages.at(-1).test.status,'ended');assert.match(w.document.getElementById('voice-output-status').textContent,/no resident event/);
  }finally{dom.window.close();}
 });
+
+test('audio check cannot overlap a running society even between spoken turns',async()=>{
+ const {dom,w,audio}=testVoice();try{await new Promise(r=>setImmediate(r));w.whiterunRender({residents:[],trades:[],director:{running:true,status:'running'}});await w.whiterunTestVoice('check');assert.equal(audio.length,0);assert.match(w.document.getElementById('voice-output-status').textContent,/Pause society/);
+ }finally{dom.window.close();}
+});

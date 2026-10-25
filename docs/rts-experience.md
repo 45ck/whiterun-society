@@ -27,7 +27,7 @@ Skyrim ambience is still disabled in this diagnostic lab; NPC voices use the ind
 
 The native bridge confirmed RTS free mode and movement/fighting/activation disabled. A later explicit movie request was acknowledged and followed the active speaker. The new dashboard is served in both the in-game overlay and local control room. Its counts are sensor-based operator information and are never added to residents' private knowledge.
 
-Local checks: **300 Python tests and 128 JavaScript tests**, including actual HTML execution in jsdom, output-routing failure, diagnostic audio separation, play/pause messages, no automatic camera tours, accounting coverage, ownership classification, service controls and game-load reset. This is not a new rendered screenshot or native mouse-input acceptance test.
+Local checks: **300 Python tests and 129 JavaScript tests**, including actual HTML execution in jsdom, output-routing failure, diagnostic audio separation, play/pause messages, no automatic camera tours, accounting coverage, ownership classification, service controls and game-load reset. This is not a new rendered screenshot or native mouse-input acceptance test.
 
 Checkpoint acknowledgements now use a short polling interval, and consent/thinking phases keep the active cadence. Workers no longer add a fixed pause after every mutation. Claim binding, save/session checks and one outstanding request remain required. A matched before/after live negotiation timing comparison is still outstanding.
 

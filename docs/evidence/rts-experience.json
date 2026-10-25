@@ -108,7 +108,7 @@
   ],
   "tests": {
     "python": 300,
-    "javascript": 128
+    "javascript": 129
   },
   "camera": "RTS free overview by default; movie view is opt-in; no tours",
   "native_player_controls": {

@@ -34,7 +34,7 @@ refreshVoiceOutputs();
 let voiceTestAudio=null;
 window.whiterunTestVoice=async(id='manual-'+Date.now())=>{
  const status=document.getElementById('voice-output-status');
- if(voiceTestAudio||speechAudio){status.textContent='Wait for the current voice to finish';return;}
+ if(voiceTestAudio||speechAudio||state?.director?.running||[state?.society?.plan,state?.society?.conversation].some(x=>x&&!['complete','held'].includes(x.phase))){status.textContent='Pause society and finish the current interaction before the audio check';return;}
  const audio=new Audio('voice-check.wav');voiceTestAudio=audio;audio.volume=1;audio.muted=false;
  const report=(phase,error=null)=>reportVoiceOutput({test:{id,status:phase,error,playedSeconds:audio.currentTime||0,volume:audio.volume,muted:audio.muted}});
  const finish=(phase,error)=>{voiceTestAudio=null;document.getElementById('voice-output-test').disabled=false;status.textContent=error||'Audio check finished · saved sample, no resident event';report(phase,error);};
