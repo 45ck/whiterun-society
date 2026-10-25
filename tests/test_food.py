@@ -37,6 +37,8 @@ class FoodTests(unittest.TestCase):
         self.sync()
 
     def test_allocation_partitions_existing_stock_and_restricts_sale(self):
+        from trade_execution_fixture import qualify_trade_observation
+        qualify_trade_observation(self.obs)
         before=copy.deepcopy(self.obs)
         self.world.begin_plan('food-1',self.obs,108149,'stock_review');self.sync();self.decide('reserve_one')
         person=self.world.status()['people']['108149']

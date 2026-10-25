@@ -5,6 +5,7 @@ Only the resident's own completed transactions supply historical price evidence.
 """
 import copy
 from food import allocation
+from market_policy import goods_policy, policy_hash
 from economy_catalog import commodity_ids, catalog_hash, native_catalog_matches
 
 PRICING_POLICY = 'resident-bargaining-v1'
@@ -27,27 +28,31 @@ def price_choices(person, maximum=100, above=0, commodity='bread'):
     """Dense low bids, wider higher bids and remembered-price neighbours."""
     if type(maximum) is not int or type(above) is not int:
         raise ValueError('Integer price bounds required')
-    cap = min(100, maximum)
-    values = set(range(1, 13)) | {15, 20, 30, 50, 75, 100, cap, above + 1}
+    policy=goods_policy(commodity);cap=min(policy['price_max'],maximum)
+    values=set(policy['price_choices']) | {cap,above+1}
     for record in own_prices(person,commodity):
         anchor = round(record['septims_per_unit'])
         values.update((anchor - 1, anchor, anchor + 1))
-    return sorted(v for v in values if above < v <= cap)
+    return sorted(v for v in values if max(above,policy['price_min']-1) < v <= cap)
 
 
 def quote_valid(state, plan, observation):
     quote = plan.get('counter_quote')
     if not quote:
         return False
-    if quote.get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation):return False
+    if (quote.get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation)
+            or quote.get('market_policy_hash')!=policy_hash() or plan.get('market_policy_hash')!=policy_hash()):return False
     seller = next((r for r in observation.get('residents', []) if r['id'] == plan['target']), {})
     commodity=plan.get('commodity','bread')
     inventory = {k: seller.get('inventory', {}).get(k) for k in commodity_ids()}
     person = state['people'].get(str(plan['target']), {})
     return (quote['seller'] == plan['target'] and quote['buyer'] == plan['actor']
             and quote['unit_price'] == plan['unit_price'] and inventory == quote['inventory']
-            and quote.get('commodity','bread')==commodity and inventory[commodity] > 0
-            and (commodity!='bread' or (person.get('food_policy') == quote['policy']
+            and quote.get('commodity')==commodity and quote.get('quantity')==plan.get('quantity',1)
+            and quote.get('cost')==plan.get('quantity',1)*plan['unit_price']
+            and quote.get('purpose')==plan.get('purpose') and type(inventory.get(commodity)) is int
+            and inventory[commodity]>=plan.get('quantity',1)
+            and (goods_policy(commodity)['reserve_mode']!='existing_food_policy' or (person.get('food_policy') == quote['policy']
             and allocation(person, inventory) == quote['allocation'])))
 
 
@@ -56,10 +61,11 @@ def record_quote(state, plan, context, price, claim_id):
     person = state['people'][str(plan['target'])]
     stock = context['own_food_allocation'];commodity=plan.get('commodity','bread')
     plan['counter_quote'] = {'buyer': plan['actor'], 'seller': plan['target'], 'unit_price': price,
-        'commodity':commodity,'inventory': {k: context['observed_inventory'][k] for k in commodity_ids()},
+        'commodity':commodity,'quantity':plan.get('quantity',1),'cost':price*plan.get('quantity',1),
+        'purpose':plan.get('purpose'),'market_policy_hash':context.get('market_policy_hash'),'inventory': {k: context['observed_inventory'][k] for k in commodity_ids()},
         'catalog_hash':context.get('inventory_catalog_hash'),
         'policy': copy.deepcopy(person.get('food_policy')), 'allocation': copy.deepcopy(stock),
-        'release_reserved': commodity=='bread' and stock['allocated'] and stock['for_sale'] < 1, 'claim_id': claim_id}
+        'release_reserved': goods_policy(commodity)['reserve_mode']=='existing_food_policy' and stock['allocated'] and stock['for_sale'] < plan.get('quantity',1), 'claim_id': claim_id}
 
 
 def accept_quote(state, plan, observation):
@@ -69,7 +75,7 @@ def accept_quote(state, plan, observation):
     plan['counter_quote_accepted'] = True
     if quote['release_reserved']:
         plan['reserve_release'] = {'plan_id': plan['id'], 'trade_id': plan['trade_id'],
-            'buyer': plan['actor'], 'seller': plan['target'], 'quantity': 1,
+            'buyer': plan['actor'], 'seller': plan['target'], 'quantity': quote['quantity'],'commodity':quote['commodity'],
             'unit_price': quote['unit_price'], 'policy': copy.deepcopy(quote['policy']),
-            'catalog_hash':quote['catalog_hash'],
+            'catalog_hash':quote['catalog_hash'],'market_policy_hash':quote['market_policy_hash'],
             'inventory': copy.deepcopy(quote['inventory']), 'decision_claim_id': quote['claim_id']}

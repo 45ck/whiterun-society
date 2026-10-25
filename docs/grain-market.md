@@ -1,5 +1,7 @@
 # Grain procurement and a connected food chain
 
+**Historical implementation and native trial:** the results on this page describe the earlier grain-specific protocol. The later [configured procurement and witnessed-exchange implementation](generic-procurement.md) generalizes listings, demand and quantities in source, but is not native-qualified. Its arm/deliver protocol holds after native witness loss instead of reconstructing a transaction from matching inventories; the earlier restart behavior below is not permission to replay a new trade.
+
 An initialized bakery can now buy grain from a currently available public supplier. The buyer considers its own stock and production target; it does not know the supplier's inventory or willingness. Both residents can negotiate or refuse. A successful native purchase enables a later production choice, followed by an independently consented bread sale and consumption.
 
 ![Illustrated grain procurement and production loop](images/grain-market-loop.png)

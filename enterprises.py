@@ -7,14 +7,23 @@ import copy
 import re
 from activity_leases import work_account_conflict
 from economy_catalog import recipe_ids, recipe_spec, catalog_hash, recipe_hash
+from market_policy import tradable_ids, goods_policy, advertised_goods
 
 DEFAULT_POLICY = {'target_bread': 8, 'wage_gold': 2, 'grain_per_shift': 1,
                   'bread_per_shift': 2, 'work_minutes': 30}
 POLICY_SOURCE = 'Authored enterprise policy; catalog-defined inputs and outputs after qualified labour'
-RETAIL_CAPABILITIES = {'retail_food', 'retail_grain'}
+def retail_capabilities():
+    aliases = {goods_policy(item)['legacy_retail_capability'] for item in tradable_ids()}
+    aliases.discard(None)
+    if (aliases | {'retail_goods'}) & set(recipe_ids()):
+        raise ValueError('Market retail capability conflicts with a production recipe')
+    return aliases | {'retail_goods'}
+
+
+RETAIL_CAPABILITIES = retail_capabilities()
 
 def executable_capabilities():
-    return RETAIL_CAPABILITIES | set(recipe_ids())
+    return retail_capabilities() | set(recipe_ids())
 
 # Import compatibility; admission always resolves the current validated catalog.
 CAPABILITIES = executable_capabilities()
@@ -89,7 +98,7 @@ def current_work_terms(state, plan):
 def apply_enterprise_change(state, event_id, specification, observation, provenance):
     """Apply one validated charter revision to a private pending checkpoint."""
     town = state['town']
-    allowed = {'id', 'expected_revision', 'name', 'custodian', 'capabilities', 'production_policy', 'recipe_policies', 'active'}
+    allowed = {'id', 'expected_revision', 'name', 'custodian', 'capabilities', 'production_policy', 'recipe_policies', 'active', 'sale_commodities'}
     required = {'id', 'expected_revision', 'name', 'custodian', 'capabilities', 'active'}
     if set(specification) - allowed or required - set(specification):
         raise ValueError('Enterprise specification fields do not match contract')
@@ -110,6 +119,16 @@ def apply_enterprise_change(state, event_id, specification, observation, provena
         raise ValueError('Unsupported executable enterprise capabilities')
     if type(specification['active']) is not bool:
         raise ValueError('Enterprise active flag must be boolean')
+    sale_goods = specification.get('sale_commodities')
+    if 'sale_commodities' in specification:
+        if (not isinstance(sale_goods, list) or any(not isinstance(item, str) for item in sale_goods)
+                or len(sale_goods) != len(set(sale_goods)) or not set(sale_goods) <= set(tradable_ids())):
+            raise ValueError('Invalid explicit enterprise sale commodities')
+        aliases = {item for item in tradable_ids() if goods_policy(item)['legacy_retail_capability'] in caps}
+        if 'retail_goods' not in caps and not set(sale_goods) <= aliases:
+            raise ValueError('Explicit sale commodities require a matching retail capability')
+    if 'retail_goods' in caps and not sale_goods:
+        raise ValueError('Generic retail requires nonempty explicit sale commodities')
     supplied_policy = specification.get('production_policy', {})
     if not isinstance(supplied_policy, dict):
         raise ValueError('Expected production policy object')
@@ -147,6 +166,12 @@ def apply_enterprise_change(state, event_id, specification, observation, provena
         production_policy={k: v for k, v in policy.items() if k != 'source'},
         recipe_policies=recipe_policies, costs=costs,
         provenance=provenance)
+    if 'sale_commodities' in specification:
+        business['sale_commodities'] = sorted(sale_goods)
+    else:
+        # An exact new revision without the field returns to its explicit legacy
+        # capability projection; never retain stale declarations from an old one.
+        business.pop('sale_commodities', None)
     state['town']['businesses'][key] = business
     event = {'id': event_id, 'request': copy.deepcopy(specification), 'revision': revision + 1,
              'previous_custodian': old.get('custodian') if old else None, 'custodian': owner,

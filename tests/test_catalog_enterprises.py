@@ -3,6 +3,7 @@ import copy
 import unittest
 from unittest.mock import patch
 import economy_catalog as catalog
+import market_policy
 from enterprises import apply_enterprise_change, executable_capabilities, production_policy
 from entrepreneurship import enterprise_choices, knows_recipe, learn_recipe, recipe_knowledge, apply_resident_enterprise
 from agency_metrics import account_cashflow
@@ -25,6 +26,8 @@ class CatalogEnterpriseTests(unittest.TestCase):
     def setUp(self):
         self.catalog=expanded_catalog()
         self.mock=patch.object(catalog,'ECONOMY_CATALOG',self.catalog);self.mock.start();self.addCleanup(self.mock.stop)
+        policy=copy.deepcopy(market_policy.MARKET_POLICY);policy['catalog_hash']=catalog.catalog_hash()
+        market=patch.object(market_policy,'MARKET_POLICY',policy);market.start();self.addCleanup(market.stop)
         self.inventory={'gold':7,'bread':3,'grain':8,'ore':4,'ingot':2}
         self.state={'town':{'residents':{'7':{'id':7}},'businesses':{}},
             'people':{'7':{'profile':{'name':'An unknown artisan'},'memories':[]}}}

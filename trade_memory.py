@@ -2,15 +2,18 @@
 import hashlib
 import json
 import math
+from economic_language import trade_terms
 
 
 def _append(state, actor, offer, role, source, delivery_id=None):
     commodity = offer['commodity']
     memory = {'event_id':offer['plan_id'], 'refusal_event_id':offer['id'],
         'kind':'trade_offer_declined', 'other':offer['seller'] if role=='buyer' else offer['buyer'],
-        'role':role, commodity:1, 'commodity':commodity, 'gold':offer['unit_price'],
+        'role':role, 'goods':{commodity:offer['quantity']}, 'commodity':commodity, 'quantity':offer['quantity'],
+        'unit_price':offer['unit_price'],'gold':offer['cost'],'cost':offer['cost'],
         'offer_round':offer['offer_round'], 'source':source,
         'epistemic_status':'refused offer only; seller reason and stock are unknown' if role=='buyer' else 'own refusal decision'}
+    if commodity in ('bread','grain'):memory[commodity]=offer['quantity']  # Historical readers only.
     if delivery_id:memory['delivery_id']=delivery_id
     person=state['people'][str(actor)]
     person['memories']=(person.get('memories',[])+[memory])[-32:]
@@ -18,8 +21,7 @@ def _append(state, actor, offer, role, source, delivery_id=None):
 
 def remember_refusal_decision(state, plan):
     """Return a stable offer-event ID; never reveal private rationale or stock."""
-    offer={'plan_id':plan['id'], 'buyer':plan['actor'], 'seller':plan['target'],
-        'commodity':plan.get('commodity','bread'), 'unit_price':plan.get('unit_price',3),
+    offer={**trade_terms(plan),'plan_id':plan['id'], 'buyer':plan['actor'], 'seller':plan['target'],
         'offer_round':plan.get('offer_round',0)}
     decisions=plan.get('decisions') or []
     claim=decisions[-1].get('claim_id') if decisions else None

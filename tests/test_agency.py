@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
 from legacy_fixture import install_legacy_people
-from catalog_fixture import native_catalog, native_ack
+from catalog_fixture import native_catalog
+from trade_execution_fixture import qualify_trade_observation, arm_trade, trade_ack
 
 
 class AgencyTests(unittest.TestCase):
@@ -17,10 +18,20 @@ class AgencyTests(unittest.TestCase):
             {'id': 108156, 'x': -1000, 'y': 0, 'z': 0, 'inventory': {'gold': 12, 'bread': 0, 'grain': 0}}]}
         self.obs['routing']={'available':True,'adapter':'papyrus-mailbox-v1'}
         for resident in self.obs['residents']:resident['isPerson']=True
+        qualify_trade_observation(self.obs)
         self.world.observe(self.obs)
         self.world.bootstrap(self.obs)
         self.sync()
         install_legacy_people(self.world)
+        self.sync()
+        # Authored public charter, separate from historical people. No inferred
+        # occupation, stock grant, or knowledge of another person's identity.
+        state=copy.deepcopy(self.world.active)
+        state['town']={'residents':{str(row['id']):{'id':row['id']} for row in self.obs['residents']},'households':{},
+                      'businesses':{'fixture-food-shop':{'custodian':108149,
+                          'capabilities':['retail_goods'],'sale_commodities':['bread'],
+                          'active':True,'revision':1}}}
+        self.world._write(state,'Explicit authored public food listing fixture')
         self.sync()
 
     def tearDown(self):
@@ -63,15 +74,18 @@ class AgencyTests(unittest.TestCase):
         command = self.world.pending('a')
         self.assertEqual((command['kind'], command['target'], command['retain']), ('walk_to',108149,True))
         self.arrive()
+        self.assertEqual(self.world.agency_plan()['phase'], 'quote')
+        self.decide('bid_price_3')
         self.assertEqual(self.world.agency_plan()['phase'], 'consent')
         self.assertIsNone(self.world.pending('a'))
         self.decide('sell_bread')
-        command = self.world.pending('a')
+        command = arm_trade(self.world,self.obs,self.sync)
         self.assertEqual(command['kind'], 'inventory_trade')
+        self.assertEqual(command['phase'], 'deliver')
         self.assertEqual(command['catalog_hash'],native_catalog()['catalog_hash'])
         for index, role in [(0, 'buyer'), (1, 'seller')]:
             self.obs['residents'][index]['inventory'] = command['after'][role]
-        self.obs['ack'] = native_ack(command)
+        self.obs['ack'] = trade_ack(command)
         self.world.observe(self.obs)
         self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'after_purchase')
@@ -92,7 +106,7 @@ class AgencyTests(unittest.TestCase):
         self.assertNotIn('seek_bread', [o['id'] for o in claim['context']['options']])
 
     def test_seller_can_refuse_without_mutating_inventory(self):
-        self.start(); self.decide('seek_bread'); self.arrive()
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('bid_price_3')
         before = copy.deepcopy(self.obs['residents'])
         self.decide('decline')
         self.assertEqual(self.world.agency_plan()['phase'], 'reconsider')
@@ -108,22 +122,22 @@ class AgencyTests(unittest.TestCase):
         self.assertEqual(self.world.status()['people']['108186']['trust'],{})
 
     def test_reconsideration_receives_refusal_and_cannot_repeat_unchanged_offer(self):
-        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('bid_price_3'); self.decide('decline')
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual(context['memories'][-1]['gold'],3)
-        self.assertEqual({o['id'] for o in context['options']},
-                         {'leave_without_food','visit_adrianne','raise_offer'})
+        self.assertTrue({'leave_without_food','visit_person_108156','bid_price_5'} <= {o['id'] for o in context['options']})
+        self.assertNotIn('bid_price_3',[o['id'] for o in context['options']])
         self.obs['residents'][0]['inventory']['gold']=4
         context=self.world._plan_context(self.obs,self.world.agency_plan())
-        self.assertNotIn('raise_offer',[o['id'] for o in context['options']])
+        self.assertNotIn('bid_price_5',[o['id'] for o in context['options']])
 
     def test_higher_offer_requires_new_seller_consent_and_moves_exact_agreed_price(self):
-        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
-        self.decide('raise_offer')
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('bid_price_3'); self.decide('decline')
+        self.decide('bid_price_5')
         self.assertEqual(self.world.agency_plan()['phase'],'consent')
         self.assertEqual(self.world.state(),[])
         context=self.world._plan_context(self.obs,self.world.agency_plan())
-        self.assertIn('5 gold',context['event']['information'])
+        self.assertIn('5 septims',context['event']['information'])
         self.assertEqual(context['memories'][-1]['role'],'seller')
         self.decide('sell_bread')
         command=self.world.pending('a')
@@ -132,8 +146,8 @@ class AgencyTests(unittest.TestCase):
         self.assertEqual(command['after']['seller'],{'gold':15,'bread':2,'grain':0})
 
     def test_second_refusal_ends_negotiation_without_duplicate_memories(self):
-        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')
-        self.decide('raise_offer'); self.decide('decline')
+        self.start(); self.decide('seek_bread'); self.arrive(); self.decide('bid_price_3'); self.decide('decline')
+        self.decide('bid_price_5'); self.decide('decline')
         self.assertEqual(self.world.agency_plan()['outcome'],'seller_declined')
         self.obs['ack']={'id':'release-meal-1','status':'applied'}
         self.world.observe(self.obs);self.sync();self.world.observe(self.obs)
@@ -142,18 +156,18 @@ class AgencyTests(unittest.TestCase):
         self.assertFalse(self.world.agency_busy())
 
     def test_changed_destination_has_a_new_native_command_and_keeps_old_trip_evidence(self):
-        self.start();self.decide('seek_bread');self.arrive();self.decide('decline')
+        self.start();self.decide('seek_bread');self.arrive();self.decide('bid_price_3');self.decide('decline')
         old=self.world.agency_plan()['travel_id']
-        self.decide('visit_adrianne')
+        self.decide('visit_person_108156')
         new=self.world.pending('a')
         self.assertNotEqual(new['id'],old)
         self.assertEqual(new['target'],108156)
         self.assertEqual(self.world.agency_plan()['travel_history'][0]['id'],old)
 
     def test_loading_before_reconsideration_removes_later_refusal_and_offer(self):
-        self.start();self.decide('seek_bread');self.arrive()
+        self.start();self.decide('seek_bread');self.arrive();self.decide('bid_price_3')
         before=copy.deepcopy(self.obs)
-        self.decide('decline');self.decide('raise_offer')
+        self.decide('decline');self.decide('bid_price_5')
         self.world.observe({**before,'session':'restored-before-refusal'})
         self.assertEqual(self.world.agency_plan()['phase'],'consent')
         self.assertEqual(self.world.agency_plan()['unit_price'],3)

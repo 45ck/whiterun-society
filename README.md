@@ -4,6 +4,12 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Configured input markets, source implementation:** a resident derives demand from their own stock and learned recipes, discovers explicit public seller listings, and chooses a supplier and quantity. Negotiation binds the commodity, quantity, unit price and total to the exact agreement. The exchange saves a native permit before moving goods and payment, witnesses both sides of each transfer, and holds uncertain accounts instead of replaying them. The observer shows actual terms and separates verified sales from held exchanges. Default goods remain bread and grain; additional goods are test fixtures, not deployed industries. [Decision loop, data contracts and qualification limits](docs/generic-procurement.md).
+
+![Resident need, public opportunities, agent choice, heard agreement, verified exchange and consequences](docs/images/generic-market-cycle.png)
+
+*Generated architecture illustration, not gameplay. [Full generation prompt](docs/images/generic-market-cycle.prompt.md). Local integration and hosted validation are being completed; this source has not been installed in Skyrim.*
+
 **Finite resources from scenario data, source implementation:** starting allocations now come from one reviewed manifest, with uniform defaults instead of a privileged NPC branch. The saved program separates available, reserved and settled imports. A native permit is saved before delivery; each resource addition requires its own issued/observed witness. A lost session or witness holds the reservation without replay. This is an external import mechanism, not autonomous production or earned income. [Contract, historical evidence and native qualification still required](docs/founding-resources.md).
 
 ![Finite scenario resources, saved permits, witnessed delivery and uncertain-delivery holds](docs/images/finite-resource-delivery-flow.png)
@@ -62,7 +68,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 73 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 74 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -285,7 +291,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (73)</summary>
+<summary>Browse every finished project image (74)</summary>
 
 ### Concurrent resident lives
 
@@ -316,6 +322,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Finite resource delivery flow](docs/images/finite-resource-delivery-flow.png)
+
+### Generic market cycle
+
+Generated system illustration — not gameplay
+
+![Generic market cycle](docs/images/generic-market-cycle.png)
 
 ### Grain market loop
 

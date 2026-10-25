@@ -21,11 +21,14 @@ from knowledge import person_view
 from social import social_candidates
 from enterprises import plan_work_policy, current_work_terms
 from owner_production import owner_work_opportunities
-from procurement import grain_procurement
+from procurement import input_procurement, validate_procurement, PINS as PROCUREMENT_PINS
+from market_policy import goods_policy, policy_hash
+import economy_catalog
 from bargaining import PRICING_POLICY, own_prices, price_choices, record_quote, accept_quote, quote_valid
 from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_MINUTES
 from entrepreneurship import enterprise_choices, apply_resident_enterprise, recipe_knowledge
-from context_window import bounded_economic_context
+from context_window import (bounded_economic_context, purchase_attention_context, purchase_attention_policy,
+    purchase_catalogue_hash, check_purchase_decision_budget, frozen_purchase_choices)
 from trade_memory import remember_refusal_decision
 from activity_leases import reserved_activity_actors
 from economy_catalog import recipe_spec, require_native_catalog, MAX_STOCK, commodity_ids, native_catalog_matches, catalog_hash
@@ -118,7 +121,8 @@ class Agency:
             person['needs']['hunger'] = min(1, person['needs']['hunger'] + .35)
         plan = {'id': event_id, 'kind': kind, 'actor': actor, 'phase': 'allocate' if kind=='stock_review' else 'choose',
                 'decisions': [], 'claim': None, 'travel': None, 'trade_id': 'meal-' + event_id,
-                'unit_price': 3, 'refusals_recorded': 0, 'food_actions': True}
+                'unit_price': 3, 'quantity':1, 'commodity':'bread', 'purpose':'food',
+                'market_policy_hash':policy_hash(), 'catalog_hash':catalog_hash(), 'refusals_recorded': 0, 'food_actions': True}
         if state.get('town') is not None:
             plan.update(pricing_policy=PRICING_POLICY, offer_round=0)
         handoff=next((h for h in reversed(state.get('scene_handoffs',[]))
@@ -138,8 +142,6 @@ class Agency:
             if jobs:
                 plan.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
                 if voiced_trade:approach_employer(plan)
-            elif actor == 108186 and not state.get('town'):
-                plan.update(phase='job_offer', target=108149)  # Original standalone demo.
             else:
                 raise ValueError('No feasible paid-work opportunity for this resident')
         return {'checkpoint': self._write(state, kind+' triggered resident planning'), 'plan': plan}
@@ -148,7 +150,19 @@ class Agency:
         seller_turn = plan['phase'] == 'consent'
         reconsidering = plan['phase'] == 'reconsider'
         price = plan.get('unit_price', 3)
-        commodity=plan.get('commodity','bread');unit='loaf' if commodity=='bread' else 'unit of grain'
+        commodity=plan.get('commodity','bread');quantity=plan.get('quantity',1);cost=price*quantity
+        label=next((r['label'] for r in economy_catalog.ECONOMY_CATALOG['commodities'] if r['id']==commodity),None)
+        if label is None:raise ValueError('Unknown trade commodity')
+        policy=goods_policy(commodity)
+        if type(quantity) is not int or quantity not in policy['quantity_choices']:
+            raise ValueError('Trade quantity is not enabled by the market policy')
+        unit='loaf' if commodity=='bread' and quantity==1 else label
+        goods=f'{quantity} {unit}'
+        leave_action='leave_without_purchase' if plan.get('purpose')=='production_input' else 'leave_without_food'
+        if plan.get('market_policy_hash')!=policy_hash() or plan.get('catalog_hash')!=catalog_hash():
+            raise ValueError('Economic policy changed or is unbound; a fresh review is required')
+        if plan.get('procurement') and not validate_procurement(self.active,observation,plan['actor'],plan['procurement']):
+            raise ValueError('Selected input purchase is no longer valid')
         bargaining = plan.get('pricing_policy') == PRICING_POLICY
         actor = plan['target'] if seller_turn or plan['phase']=='job_offer' else plan['actor']
         actors = {a['id']: a for a in observation.get('residents', [])}
@@ -165,6 +179,7 @@ class Agency:
         price_options = {}
         business_options = {}
         market_options = {}
+        purchase_options = {}
         if plan['phase'] in ('job_offer', 'job_accept'):
             require_native_catalog(observation,'bread_recipe')
             current_work_terms(self.active, plan)
@@ -172,7 +187,7 @@ class Agency:
             wage, minutes = policy['wage_gold'], policy['work_minutes']
         def visits():
             if self.active.get('town') is None:
-                rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156,state=self.active) else []
+                rows=[]  # No implicit authored acquaintance in a world without a census.
             else:
                 rows=[{**r,'action':'visit_person_'+str(r['id'])} for r in social_candidates(self.active,observation,actor)]
             for row in rows:
@@ -205,47 +220,49 @@ class Agency:
         elif bargaining and plan['phase']=='quote':
             if distance(observation, actor, plan['target']) > 300:
                 raise ValueError('Seller is no longer within interaction range')
-            options = [{'id':'leave_without_food','effect':'Leave without making an offer; keep your money.'}]
-            for value in price_choices(person, inventory['gold'],commodity=commodity):
+            options = [{'id':leave_action,'effect':'Leave without making an offer; keep your money.'}]
+            for value in price_choices(person, inventory['gold']//quantity,commodity=commodity):
                 action='bid_price_'+str(value);price_options[action]=value
-                options.append({'id':action,'effect':f'Offer {value} septims for one {unit}; pay only if accepted.'})
+                options.append({'id':action,'effect':f'Offer {value} septims per unit for {goods}: {value*quantity} septims total; pay only if accepted.'})
             information = f'You reached a registered {commodity} seller. Choose your own opening bid using your money, hunger, priorities and remembered prices, or leave. Their stock, finances and reservation price are unknown. A low bid may be refused; a high bid leaves you less money. No market price is supplied.'
         elif seller_turn:
             if distance(observation, actor, plan['actor']) > 300:
                 raise ValueError('Buyer is no longer within interaction range')
             options = [{'id': 'decline', 'effect': 'Decline the request; keep your goods.'}]
-            if commodity=='grain' and inventory.get('grain',0)>0:
-                options.append({'id':'sell_grain','effect':f'Agree to sell one unit of your carried grain for {price} gold. You give up a production input and may instead refuse or name a price.'})
-            elif commodity=='bread' and inventory['bread'] > 0 and (not stock['allocated'] or stock['for_sale']>0):
-                options.append({'id': 'sell_bread', 'effect': f'Agree to sell one carried loaf for {price} gold to the nearby buyer.'})
-            elif commodity=='bread' and inventory['bread'] > 0:
-                options.append({'id':'sell_reserved_bread','effect':f'Reconsider your household allocation for this offer only: release ONE of your {inventory["bread"]} reserved loaves and sell it for {price} gold. Your household will have one less loaf. Keep your standing reserve policy for all remaining stock. You may instead refuse.'})
-            if bargaining and plan.get('offer_round',0)==1 and inventory.get(commodity,0)>0:
-                reserved=commodity=='bread' and stock['allocated'] and stock['for_sale']<1
+            if type(inventory.get(commodity)) is int and inventory[commodity]>=quantity:
+                reserved=policy['reserve_mode']=='existing_food_policy' and stock['allocated'] and stock['for_sale']<quantity
+                if reserved:
+                    options.append({'id':'sell_reserved_bread','effect':f'Release {goods} from your household allocation for this sale only at {price} septims each, {cost} total. Your household keeps less food; the standing reserve policy remains unchanged. You may refuse.'})
+                else:
+                    action='sell_bread' if commodity=='bread' and plan.get('purpose')=='food' else 'sell_goods'
+                    options.append({'id':action,'effect':f'Agree to sell {goods} for {price} septims each, {cost} total. Consider your own needs and productive uses; you may refuse.'})
+            if bargaining and plan.get('offer_round',0)==1 and inventory.get(commodity,0)>=quantity:
+                reserved=policy['reserve_mode']=='existing_food_policy' and stock['allocated'] and stock['for_sale']<quantity
                 for value in price_choices(person, above=price,commodity=commodity):
                     action='ask_price_'+str(value);price_options[action]=value
-                    options.append({'id':action,'effect':f'Offer one {"reserved " if reserved else ""}{unit} for {value} septims instead. Commit to this sale if the buyer agrees; keep your reserve policy for remaining stock.'})
+                    options.append({'id':action,'effect':f'Offer {goods} for {value} septims each, {value*quantity} total instead. Commit to this sale if the buyer agrees; keep your reserve policy for remaining stock.'})
             buyer_name=person_view(self.active,actor,plan['actor'])['name']
-            information = f'{buyer_name} is nearby and offers {price} gold for one {unit}. Choose freely whether to sell. Refusal does not reveal your motive to the buyer. Consider your own needs, productive uses, remaining stock, money and memories. Only a bread sale can reconsider your household food allocation. Your stock and motives are not disclosed to the buyer. Their total money is unknown.'
+            information = f'{buyer_name} is nearby and offers {price} septims each for {goods}, {cost} total. Choose freely whether to sell. Refusal does not reveal your motive to the buyer. Consider your own needs, productive uses, remaining stock, money and memories. Only a bread sale can reconsider your household food allocation. Your stock and motives are not disclosed to the buyer. Their total money is unknown.'
         elif reconsidering and bargaining:
-            options = [{'id':'leave_without_food','effect':'End this negotiation and keep your money.'}]
+            options = [{'id':leave_action,'effect':'End this negotiation and keep your money.'}]
             options += visits()
             if plan.get('counter_quote'):
                 if not quote_valid(self.active,plan,observation):
                     raise ValueError('Seller quote changed while awaiting acceptance')
-                if inventory['gold']>=price and distance(observation,actor,plan['target'])<=300:
-                    options.append({'id':'accept_counterprice','effect':f'Accept the seller\'s {price}-septim offer for one {unit}. Pay after spoken terms and native verification.'})
-                information=f'The seller offered one {unit} for {price} septims instead. Accept if worthwhile and affordable, or leave. Their finances, remaining stock and motives remain private. No further counteroffer is available in this bounded encounter.'
+                if inventory['gold']>=cost and distance(observation,actor,plan['target'])<=300:
+                    options.append({'id':'accept_counterprice','effect':f'Accept {goods} for {price} septims each, {cost} total. Pay after spoken terms and native verification.'})
+                information=f'The seller offered {goods} for {price} septims each, {cost} total instead. Accept if worthwhile and affordable, or leave. Their finances, remaining stock and motives remain private. No further counteroffer is available in this bounded encounter.'
             else:
                 if distance(observation,actor,plan['target'])<=300:
-                    for value in price_choices(person,inventory['gold'],above=price,commodity=commodity):
+                    for value in price_choices(person,inventory['gold']//quantity,above=price,commodity=commodity):
                         action='bid_price_'+str(value);price_options[action]=value
-                        options.append({'id':action,'effect':f'Make a final offer of {value} septims for one {unit}; pay only if accepted.'})
-                information=f'The seller declined your {price}-septim offer. Their reason is unknown. You can make one higher final bid or leave. Repeating the unchanged bid is unavailable.'
+                        options.append({'id':action,'effect':f'Make a final offer of {value} septims each for {goods}, {value*quantity} total; pay only if accepted.'})
+                information=f'The seller declined your offer of {price} septims each for {goods}, {cost} total. Their reason is unknown. You can make one higher final bid or leave. Repeating the unchanged bid is unavailable.'
         elif reconsidering:
             options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
             options += visits()
             if price == 3 and inventory['gold'] >= 5 and distance(observation, actor, plan['target']) <= 300:
+                price_options['raise_offer']=5
                 options.append({'id': 'raise_offer', 'effect': 'Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again.'})
             information = 'The seller just declined your 3-gold offer. Their reason is unknown. Reconsider your plan using this outcome, your needs, resources and priorities; repeating the unchanged request is not an available action in this bounded negotiation.'
         else:
@@ -273,10 +290,13 @@ class Agency:
                 for option in enterprise_choices(self.active,observation,actor):
                     business_options[option['id']]=option['specification']
                     options.append({'id':option['id'],'effect':option['effect']})
-                for supplier in grain_procurement(self.active,observation,actor):
-                    action='procure_grain_'+str(supplier['id']);targets[action]=supplier['id']
-                    work_options[action]=supplier['own_businesses']
-                    options.append({'id':action,'effect':'Visit '+supplier['name']+' as a publicly registered grain seller and choose an affordable bid for one grain. Your bakery input stock is below its authored target. Supplier stock and consent are unknown; this is not a harvest or an automatic sale.'})
+                for purchase in input_procurement(self.active,observation,actor):
+                    action=purchase['id']
+                    if action in purchase_options:raise ValueError('Duplicate input purchase choice identity')
+                    purchase_options[action]=copy.deepcopy(purchase);targets[action]=purchase['supplier']
+                    name=person_view(self.active,actor,purchase['supplier'])['name']
+                    product=next(row['label'] for row in economy_catalog.ECONOMY_CATALOG['commodities'] if row['id']==purchase['commodity'])
+                    options.append({'id':action,'effect':f'Visit {name}, a publicly registered supplier, to bid for {purchase["quantity"]} {product} for your production inputs. Your own business has an input shortfall. Supplier stock and consent are unknown; no purchase or production is guaranteed.'})
                 for job in owner_work_opportunities(self.active,observation,actor):
                     action=owner_work_choice_id(job)
                     if action in work_options:raise ValueError('Duplicate owner work choice identity')
@@ -300,7 +320,7 @@ class Agency:
             information+=' You chose this review as a personal goal. Consider its focus, recheck current resources and duties, and change your mind if appropriate. No need relief or economic effect has happened merely by choosing or arriving.'
         other=plan.get('target') if actor==plan['actor'] else plan['actor']
         counterparty=person_view(self.active,actor,other) if other!=actor and str(other) in self.active['people'] else None
-        return {'actor_id': actor, 'profile': person['profile'], 'session': self.session,
+        context={'actor_id': actor, 'profile': person['profile'], 'session': self.session,
                 'event': {'id': plan['id'], 'kind': plan['kind'], 'information': information},
                 'conversation_followups':copy.deepcopy(own_followups),
                 'own_goal_followups':copy.deepcopy(own_goals),
@@ -312,12 +332,15 @@ class Agency:
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
                 'prior_knowledge': 'Public enterprise charters identify advertised services, not personal names, private stock or willingness. Names require personal knowledge. '+('Prices are chosen from an authored bounded search space, not a supplied market equilibrium.' if bargaining else 'The 3-gold initial offer and 5-gold final offer are authored starting assumptions, not discovered market prices.'),
-                'own_price_history':own_prices(person,commodity), 'commodity':commodity, 'price_options':price_options,
+                'own_price_history':own_prices(person,commodity), 'commodity':commodity, 'quantity':quantity, 'unit_price':price, 'cost':cost,
+                'purpose':plan.get('purpose'),'market_policy_hash':plan['market_policy_hash'],'price_options':price_options,
                 'memories': person['memories'][-8:], 'trust': person['trust'],
                 'my_relationships':person.get('relationships',{}), 'option_targets':targets,
-                'work_options':work_options, 'owner_work_actions':owner_work_actions, 'enterprise_options':business_options, 'market_options':market_options,
+                'purchase_options':purchase_options,'work_options':work_options, 'owner_work_actions':owner_work_actions, 'enterprise_options':business_options, 'market_options':market_options,
                 'own_recipe_knowledge':recipe_knowledge(person),
                 'options': options}
+        return purchase_attention_context(context,plan,{row['supplier']:person_view(self.active,actor,row['supplier'])['name']
+            for row in purchase_options.values()})
 
     def _resident_perception(self, observation, actor):
         sensor = observation.get('perception', {}).get(str(actor), {})
@@ -330,8 +353,9 @@ class Agency:
     def claim_plan_decision(self, event_id, observation):
         self._agency_guard(observation)
         plan = self.agency_plan()
-        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'quote', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
+        if not plan or plan['id'] != event_id or plan['phase'] not in ('choose', 'purchase_select', 'quote', 'consent', 'reconsider', 'allocate', 'after_purchase', 'job_offer', 'job_accept'):
             raise ValueError('No unclaimed decision is ready')
+        check_purchase_decision_budget(plan)
         context = bounded_economic_context(self._plan_context(observation, plan),self.active['people'][str(
             plan['target'] if plan['phase'] in ('consent','job_offer') else plan['actor'])]['memories'])
         state = copy.deepcopy(self.active)
@@ -356,6 +380,20 @@ class Agency:
             raise ValueError('The chosen destination changed while deciding')
         if current.get('work_options',{}).get(chosen)!=claim['context'].get('work_options',{}).get(chosen):
             raise ValueError('The chosen employment terms changed while deciding')
+        if any(current.get(key)!=claim['context'].get(key) for key in ('commodity','quantity','unit_price','cost','purpose')):
+            raise ValueError('Negotiation terms changed while deciding')
+        purchase=current.get('purchase_options',{}).get(chosen)
+        claimed_purchase=claim['context'].get('purchase_options',{}).get(chosen)
+        if purchase is not None or claimed_purchase is not None:
+            if (not purchase or not claimed_purchase or any(purchase.get(k)!=claimed_purchase.get(k) for k in (*PROCUREMENT_PINS,'id'))
+                    or not validate_procurement(self.active,observation,plan['actor'],claimed_purchase)):
+                raise ValueError('The chosen input purchase terms changed while deciding')
+        if current.get('purchase_navigation',{}).get(chosen)!=claim['context'].get('purchase_navigation',{}).get(chosen):
+            raise ValueError('Purchase inspection group changed while deciding')
+        if chosen=='review_input_purchases' and current.get('purchase_attention')!=claim['context'].get('purchase_attention'):
+            raise ValueError('Input purchase catalogue changed while deciding')
+        if current.get('market_policy_hash')!=claim['context'].get('market_policy_hash'):
+            raise ValueError('Market policy changed while deciding')
         if current.get('price_options',{}).get(chosen)!=claim['context'].get('price_options',{}).get(chosen):
             raise ValueError('The chosen price changed while deciding')
         if current.get('enterprise_options',{}).get(chosen)!=claim['context'].get('enterprise_options',{}).get(chosen):
@@ -368,7 +406,7 @@ class Agency:
             raise ValueError('Inventory changed while deciding')
         if current.get('inventory_catalog_hash')!=claim['context'].get('inventory_catalog_hash'):
             raise ValueError('Inventory catalog changed while deciding')
-        if plan.get('commodity','bread')=='bread' and (chosen in ('sell_bread','sell_reserved_bread') or chosen.startswith('ask_price_')) and current['own_food_allocation']!=claim['context']['own_food_allocation']:
+        if goods_policy(plan.get('commodity','bread'))['reserve_mode']=='existing_food_policy' and (chosen in ('sell_bread','sell_reserved_bread') or chosen.startswith('ask_price_')) and current['own_food_allocation']!=claim['context']['own_food_allocation']:
             raise ValueError('Household allocation changed while deciding')
         state = copy.deepcopy(self.active)
         updated = state['plans'][-1]
@@ -376,10 +414,25 @@ class Agency:
             'decision': decision, 'model': str(result.get('model', 'unknown'))[:100],
             'elapsed_seconds': result.get('elapsed_seconds'), 'claim_id': claim_id,
             'rationale_kind': result.get('rationale_kind','model_public_rationale'),
+            'call_lane':'purchase_navigation' if claim['stage']=='purchase_select' else 'economic',
             'probabilities': result.get('probabilities',{}), 'usage': result.get('usage',{})})
         updated['claim'] = None
         action = decision['action_id']
-        if action in current['enterprise_options']:
+        if action=='review_input_purchases':
+            choices=frozen_purchase_choices(input_procurement(self.active,observation,updated['actor']))
+            if purchase_catalogue_hash(choices)!=claim['context']['purchase_attention']['catalogue_hash']:
+                raise ValueError('Input purchase catalogue changed before inspection')
+            updated.update(phase='purchase_select',purchase_menu={'choices':choices,'range':[0,len(choices)],'trail':[],
+                'catalogue_hash':purchase_catalogue_hash(choices),'policy':purchase_attention_policy()})
+        elif action in current.get('purchase_navigation',{}):
+            navigation=current['purchase_navigation'][action];menu=updated['purchase_menu']
+            if navigation['kind']=='cancel':
+                updated['phase']='choose';updated.pop('purchase_menu',None)
+            elif navigation['kind']=='back':
+                menu['range']=menu['trail'].pop();updated['phase']='purchase_select'
+            else:
+                menu['trail'].append(menu['range']);menu['range']=copy.deepcopy(navigation['range']);updated['phase']='purchase_select'
+        elif action in current['enterprise_options']:
             apply_resident_enterprise(state,updated,current['enterprise_options'][action],observation)
         elif action=='review_food_reserve':
             updated.update(phase='allocate',intent='review_food_reserve')
@@ -399,11 +452,18 @@ class Agency:
             if updated.get('voiced_trade'):approach_employer(updated)
         elif action in current['owner_work_actions']:
             updated.update(phase='ready_to_self_work',intent='owner_production',own_work_terms=current['work_options'][action])
+        elif action in current['purchase_options']:
+            purchase=copy.deepcopy(claim['context']['purchase_options'][action])
+            updated.update(procurement=purchase,procurement_claim_id=claim_id,commodity=purchase['commodity'],quantity=purchase['quantity'],
+                purpose='production_input',market_policy_hash=purchase['market_policy_hash'],catalog_hash=purchase['catalog_hash'],
+                trade_id='input-'+event_id,phase='travelling',target=purchase['supplier'],intent='procure_input',
+                travel_id='travel-'+event_id,release_required=True,food_actions=False,
+                dynamic_route=dynamic_route(updated['actor'],purchase['supplier']))
         elif action == 'offer_shift':
             updated['phase'] = 'job_accept'
         elif action == 'decline_work':
             updated.update(phase='complete', outcome='work_declined')
-        elif action in ('seek_bread', 'visit_adrianne', 'take_shift') or action.startswith(('seek_bread_', 'procure_grain_', 'visit_person_')):
+        elif action in ('seek_bread', 'visit_adrianne', 'take_shift') or action.startswith(('seek_bread_', 'visit_person_')):
             travel_id = 'travel-' + event_id
             if updated.get('travel'):
                 updated.setdefault('travel_history', []).append(updated['travel'])
@@ -412,9 +472,8 @@ class Agency:
             target = updated['target'] if action == 'take_shift' else current['option_targets'][action]
             if action == 'take_shift' and not updated.get('employment_dialogue'):
                 accept_contract(state, updated)
-            if action.startswith('procure_grain_'):updated.update(commodity='grain',trade_id='input-'+event_id)
             updated.update(phase='travelling', target=target,
-                           intent='procure_grain' if action.startswith('procure_grain_') else 'seek_bread' if action.startswith('seek_bread') else action, travel_id=travel_id, release_required=True)
+                           intent='seek_bread' if action.startswith('seek_bread') else action, travel_id=travel_id, release_required=True)
             updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
         elif action.startswith('bid_price_'):
             updated.update(phase='consent',unit_price=current['price_options'][action],offer_round=updated.get('offer_round',0)+1)
@@ -426,15 +485,15 @@ class Agency:
             updated['phase']='ready_to_trade'
         elif action == 'raise_offer':
             updated.update(phase='consent', unit_price=5)
-        elif action in ('sell_bread','sell_reserved_bread','sell_grain'):
+        elif action in ('sell_bread','sell_reserved_bread','sell_goods'):
             updated['phase'] = 'ready_to_trade'
             if action=='sell_reserved_bread':
                 updated['reserve_release']={'plan_id':event_id,'trade_id':updated['trade_id'],
-                    'buyer':updated['actor'],'seller':updated['target'],'quantity':1,
+                    'buyer':updated['actor'],'seller':updated['target'],'quantity':updated['quantity'],'commodity':updated['commodity'],
                     'unit_price':updated.get('unit_price',3),
                     'policy':copy.deepcopy(state['people'][str(updated['target'])].get('food_policy')),
                     'inventory':{k:current['observed_inventory'][k] for k in commodity_ids()},
-                    'catalog_hash':current['inventory_catalog_hash'],
+                    'catalog_hash':current['inventory_catalog_hash'],'market_policy_hash':current['market_policy_hash'],
                     'decision_claim_id':claim_id}
         elif action == 'decline':
             self._remember_refusal(state, updated)
@@ -442,8 +501,8 @@ class Agency:
                 updated['phase'] = 'reconsider'
             else:
                 updated.update(phase='complete', outcome='seller_declined')
-        elif action == 'leave_without_food':
-            updated.update(phase='complete', outcome='left_without_food')
+        elif action in ('leave_without_food','leave_without_purchase'):
+            updated.update(phase='complete', outcome='left_without_purchase' if action=='leave_without_purchase' else 'left_without_food')
         elif action in ('reserve_all','reserve_one','reserve_two'):
             state['people'][str(plan['actor'])]['food_policy'] = {
                 'mode':'household_all' if action=='reserve_all' else 'fixed_reserve',
@@ -459,7 +518,16 @@ class Agency:
             updated.update(phase='complete', outcome='employer_declined')
         else:
             updated.update(phase='complete', outcome='deferred')
-        speech_act={'raise_offer':'counteroffer','sell_grain':'accept','sell_bread':'accept','sell_reserved_bread':'accept','decline':'refuse','leave_without_food':'leave'}.get(action)
+        if action in ('sell_bread','sell_reserved_bread','sell_goods','accept_counterprice'):
+            seller_claim=updated.get('counter_quote',{}).get('claim_id') if action=='accept_counterprice' else claim_id
+            buyer_claim=claim_id if action=='accept_counterprice' else next((d['claim_id'] for d in reversed(updated['decisions'][:-1])
+                if d['actor_id']==updated['actor'] and (d['decision']['action_id'].startswith('bid_price_') or d['decision']['action_id']=='raise_offer' or d['decision']['action_id'].startswith('seek_bread'))),None)
+            updated['accepted_trade']={'buyer':updated['actor'],'seller':updated['target'],
+                'commodity':updated['commodity'],'quantity':updated['quantity'],'unit_price':updated['unit_price'],
+                'cost':updated['quantity']*updated['unit_price'],'catalog_hash':updated['catalog_hash'],
+                'market_policy_hash':updated['market_policy_hash'],'purpose':updated['purpose'],
+                'buyer_claim_id':buyer_claim,'seller_claim_id':seller_claim}
+        speech_act={'raise_offer':'counteroffer','sell_goods':'accept','sell_bread':'accept','sell_reserved_bread':'accept','decline':'refuse','leave_without_food':'leave','leave_without_purchase':'leave'}.get(action)
         if action.startswith('bid_price_'):speech_act='offer' if updated['offer_round']==1 else 'counteroffer'
         if action.startswith('ask_price_'):speech_act='seller_counteroffer'
         if action=='accept_counterprice':speech_act='buyer_accept'
@@ -567,10 +635,12 @@ class Agency:
                     if nearby:updated.update(phase='consent',target=sellers[0]['id'],target_kind='resident')
                     else:updated.update(phase='complete',outcome='market_seller_not_observed')
                 else:
-                    updated['phase'] = {'seek_bread':'consent','procure_grain':'consent','take_shift':'ready_to_work','ask_work':'job_offer'}.get(plan['intent'], 'complete')
+                    updated['phase'] = {'seek_bread':'consent','procure_input':'consent','take_shift':'ready_to_work','ask_work':'job_offer'}.get(plan['intent'], 'complete')
                     if updated['phase'] == 'complete':updated['outcome'] = 'visited_only'
             else:
                 updated.update(phase='held', error='Travel did not establish owned arrival')
+            if plan.get('procurement') and not validate_procurement(state,observation,plan['actor'],plan['procurement']):
+                updated.update(phase='held',error='Selected input purchase changed before arrival')
             if updated['phase']=='consent':
                 if updated.get('pricing_policy')==PRICING_POLICY:updated['phase']='quote'
                 else:self.queue_trade_speech(state,updated,'offer')
@@ -579,12 +649,14 @@ class Agency:
             self._write(state, 'resident travel outcome observed')
         elif plan['phase'] == 'ready_to_trade':
             try:
+                if plan.get('procurement') and not validate_procurement(self.active,observation,plan['actor'],plan['procurement']):
+                    raise ValueError('Selected input purchase changed before exchange')
                 if distance(observation, plan['actor'], plan['target']) > 300:
                     raise ValueError('Participants separated before exchange')
                 if plan.get('counter_quote_accepted') and not quote_valid(self.active,plan,observation):
                     raise ValueError('Seller quote changed before physical exchange')
                 self.plan_trade(plan['trade_id'], observation, plan['actor'], plan['target'],
-                                unit_price=plan.get('unit_price', 3), agency_plan=plan['id'],commodity=plan.get('commodity','bread'))
+                                quantity=plan.get('quantity',1), unit_price=plan.get('unit_price', 3), agency_plan=plan['id'],commodity=plan.get('commodity','bread'))
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
         elif plan['phase'] == 'ready_to_eat':

@@ -23,6 +23,7 @@ from routing import activity_blocker
 from scene_handoffs import scene_candidates
 from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 from bargaining import MAX_ECONOMIC_CALLS
+from context_window import MAX_PURCHASE_NAVIGATION_CALLS, purchase_decision_counts
 from tools.checkpoint_http import CheckpointHTTP
 from tools.goal_scheduler import GoalScheduler
 from director_policy import load_run_policy, resolve_run_policy
@@ -74,6 +75,32 @@ def event_counts(events):
             'confirmed_completions':sum(e.get('status')=='complete' or e.get('completion_confirmed') is True for e in events),
             'admitted_activities_without_confirmed_completion':sum(e.get('admission_verified') is True and e.get('completion_confirmed') is not True for e in events),
             'held_workers':sum(e.get('status')=='held' for e in events)}
+
+
+def resident_model_call_counts(plan):
+    """Count persisted result identities, never infer calls from fallback text.
+
+    Completed and current speech can contain the same receipt during recovery.
+    Claim IDs deduplicate that evidence. Missing IDs and unrecorded transport
+    attempts prevent this retained-result count from proving a provider total.
+    """
+    decisions=plan.get('decisions') or []
+    turns=list(plan.get('economic_turns') or [])
+    if isinstance(plan.get('economic_speech'),dict):turns.append(plan['economic_speech'])
+    wording=[row for turn in turns if isinstance(turn,dict)
+             for row in turn.get('wording_results',[]) if isinstance(row,dict)]
+    counts={};unidentified={}
+    for lane,rows in (('decision',decisions),('wording',wording)):
+        identified=set();missing=0
+        for row in rows:
+            claim_id=row.get('claim_id') if isinstance(row,dict) else None
+            if isinstance(claim_id,str) and claim_id.strip():identified.add(claim_id)
+            else:missing+=1
+        counts[lane]=len(identified);unidentified[lane]=missing
+    return {'model_calls':sum(counts.values()),'model_calls_by_lane':counts,
+        'model_call_unidentified_results':unidentified,'model_call_count_kind':'recorded_lower_bound',
+        'model_call_count_scope':'Unique persisted claim-result IDs, including accepted and rejected wording and fixtures. '
+            'Fallback text adds no call. Unidentified receipts and unrecorded attempts are unknown; this is not provider-billing proof.'}
 
 
 def isolated_before_action(state, event):
@@ -181,7 +208,7 @@ def main():
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],'goal_waves':[],'goal_model_calls':0,
               'run_policy':run_policy,
-              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events+(run_policy['goal_budget'] if args.resident_goals else 0),'status':'running'}
+              'maximum_model_calls':((MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)+MAX_PURCHASE_NAVIGATION_CALLS)*args.max_events+(run_policy['goal_budget'] if args.resident_goals else 0),'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():
@@ -354,9 +381,9 @@ def main():
                 if result.returncode or not plan or plan['id']!=event['id']:
                     evidence['events'][-1].update(status='held',error=(plan or {}).get('error','Resident worker did not finish cleanly'))
                     record();raise ValueError(evidence['events'][-1]['error'])
-                calls=len(recorded_model_results(plan)) if social else len(plan['decisions'])
-                if social:evidence['events'][-1]['actor']=plan.get('initiator')
-                evidence['events'][-1].update(status=plan['phase'],outcome=plan.get('outcome'),model_calls=calls)
+                if social:evidence['events'][-1].update(actor=plan.get('initiator'),model_calls=len(recorded_model_results(plan)))
+                else:evidence['events'][-1].update(decision_calls=purchase_decision_counts(plan),**resident_model_call_counts(plan))
+                evidence['events'][-1].update(status=plan['phase'],outcome=plan.get('outcome'))
                 record()
                 if plan['phase']=='held':raise ValueError('Scheduled resident event held; no automatic retry')
                 # Re-observe the town after each event. This also gives the

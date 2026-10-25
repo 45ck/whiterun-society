@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from economy_catalog import canonical_json, load_catalog
 from resource_manifest import load_manifest, manifest_hash
+from market_policy import load_policy, policy_hash
 
 def resource_bundle_inputs(repo):
     """Validate and hash reviewed resource configuration before any game writes."""
@@ -18,6 +19,17 @@ def resource_bundle_inputs(repo):
     if not re.fullmatch(r'[a-f0-9]{64}',digest) or digest!=hashlib.sha256(encoded.encode()).hexdigest():
         raise ValueError('Resource manifest canonical hash mismatch')
     factory=(repo/'bridge/resource-manifest.js').read_text(encoding='utf-8').split('\nif(typeof module')[0]
+    return factory,encoded,digest
+
+
+def market_bundle_inputs(repo):
+    """Pin the reviewed trade policy before any distributable files are written."""
+    reviewed=load_policy(repo/'config/market-policy.json')
+    encoded=canonical_json(reviewed)
+    digest=policy_hash(reviewed)
+    if not re.fullmatch(r'[a-f0-9]{64}',digest) or digest!=hashlib.sha256(encoded.encode()).hexdigest():
+        raise ValueError('Market policy canonical hash mismatch')
+    factory=(repo/'bridge/market-policy.js').read_text(encoding='utf-8').split('\nif(typeof module')[0]
     return factory,encoded,digest
 
 
@@ -39,6 +51,10 @@ resource_factory,resource_manifest_json,resource_manifest_digest=resource_bundle
 source=source.replace('__RESOURCE_MANIFEST_FACTORY__',resource_factory)
 source=source.replace('__RESOURCE_MANIFEST__',resource_manifest_json)
 source+='\n// Resource manifest SHA256: '+resource_manifest_digest+'\n'
+market_factory,market_policy_json,market_policy_digest=market_bundle_inputs(Path(__file__).resolve().parents[1])
+source=source.replace('__MARKET_POLICY_FACTORY__',market_factory)
+source=source.replace('__MARKET_POLICY__',market_policy_json)
+source+='\n// Market policy SHA256: '+market_policy_digest+'\n'
 factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
 source=source.replace('__TRANSFER_FACTORY__',factory)
 endowments=(Path(__file__).resolve().parents[1]/'bridge'/'endowments.js').read_text().split('\nif(typeof module')[0]

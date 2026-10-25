@@ -11,9 +11,8 @@ from economy_catalog import commodity_ids, require_native_catalog, native_catalo
 
 
 def snapshot(observation,buyer,seller,commodity='bread'):
-    if commodity not in ('bread','grain'):raise ValueError('Unsupported sale commodity')
     items=commodity_ids()
-    if commodity not in items or 'bread' not in items:raise ValueError('Catalog does not support this legacy commodity trade adapter')
+    if commodity not in items or commodity=='gold':raise ValueError('Unsupported sale commodity')
     actors={row['id']:row for row in observation.get('residents',[])}
     result={}
     for role,actor_id in [('buyer',buyer),('seller',seller)]:
@@ -23,6 +22,23 @@ def snapshot(observation,buyer,seller,commodity='bread'):
             raise ValueError('Complete nonnegative inventory observation required')
         result[role]={key:inv[key] for key in items}
     return result
+
+
+def qualified_snapshot(observation,buyer,seller,expected_bases=None):
+    """Current loaded adults plus consistent checkpoint-pinned account evidence."""
+    from endowments import observed_recipient, StaleAccountingObservation
+    inventory={};bases={};stale=False
+    for role,actor in (('buyer',buyer),('seller',seller)):
+        visible=[r for r in observation.get('residents',[]) if isinstance(r,dict) and r.get('id')==actor]
+        if len(visible)!=1 or visible[0].get('loaded') is False:
+            raise ValueError('Both trade participants must be currently observed and loaded')
+        try:
+            base,stock=observed_recipient(observation,actor,(expected_bases or {}).get(role))
+            inventory[role]=stock;bases[role]=base
+        except StaleAccountingObservation:
+            stale=True
+    if stale:raise StaleAccountingObservation('Trade accounting inventory checkpoint is stale')
+    return bases,inventory
 
 
 class WorldEconomy:

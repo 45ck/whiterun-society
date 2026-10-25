@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "id": "resident-market-v1",
+  "catalog_hash": "1f7f5d79e976a74ac5e8b2f9752734a759cbaf591b5941ae5cd82d33145ae554",
+  "goods": [
+    {"commodity":"bread","legacy_retail_capability":"retail_food","max_quantity":10,"quantity_choices":[1,2,5,10],"price_min":1,"price_max":100,"price_choices":[1,2,3,4,5,6,7,8,9,10,11,12,15,20,30,50,75,100],"reserve_mode":"existing_food_policy"},
+    {"commodity":"grain","legacy_retail_capability":"retail_grain","max_quantity":10,"quantity_choices":[1,2,5,10],"price_min":1,"price_max":100,"price_choices":[1,2,3,4,5,6,7,8,9,10,11,12,15,20,30,50,75,100],"reserve_mode":"seller_choice"}
+  ],
+  "provenance":"Authored experimental negotiation search bounds and public retail declarations. These are not discovered market prices, private stock or willingness to sell."
+}

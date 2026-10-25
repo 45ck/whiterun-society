@@ -6,8 +6,9 @@ let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyri
 let session = Date.now() + '-' + Math.random();
 __ECONOMY_CATALOG_FACTORY__
 const economyCatalog=createEconomyCatalogController(()=>sp,__ECONOMY_CATALOG_MANIFEST__);
+__MARKET_POLICY_FACTORY__
 __TRANSFER_FACTORY__
-const transfers=createInventoryTransfers(()=>sp,Date.now,{catalog:economyCatalog});
+const transfers=createInventoryTransfers(()=>sp,Date.now,{catalog:economyCatalog,marketPolicy:__MARKET_POLICY__,session:()=>session});
 __RESOURCE_MANIFEST_FACTORY__
 __ENDOWMENT_FACTORY__
 const endowments=createEndowmentController(()=>sp,Date.now,{catalog:economyCatalog,manifest:__RESOURCE_MANIFEST__,session:()=>session});
@@ -118,6 +119,58 @@ function resourceReservedActors(inventoryObserved=[]) {
     for(const row of [...residents,...inventoryObserved])if(valid(row?.id))ids.add(row.id);
   }
   return [...ids];
+}
+function savedTradeReservations() {
+  const society=presentation.society;
+  return [society?.pending,society?.unsettled_effect].filter(record=>record?.command?.kind==='inventory_trade'&&!['committed','complete'].includes(record.status));
+}
+function tradeReservedActors(inventoryObserved=[]) {
+  const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
+  const ids=new Set();let unknown=false;
+  const include=values=>{if(!Array.isArray(values)){unknown=true;return;}
+    for(const id of values){if(valid(id))ids.add(id);else unknown=true;}};
+  include(transfers.reservedActors());
+  const native=transfers.status();
+  if(native&&Object.prototype.hasOwnProperty.call(native,'reserved_actors'))include(native.reserved_actors);
+  if(pending?.kind==='inventory_trade'&&pending.session===session)include([pending.buyer,pending.seller]);
+  for(const record of savedTradeReservations()){
+    const identities=[record.command.buyer,record.command.seller];
+    for(const field of ['buyer','seller'])if(Object.prototype.hasOwnProperty.call(record,field))identities.push(record[field]);
+    include(identities);
+  }
+  if(unknown){
+    const society=presentation.society;
+    for(const people of [society?.people,society?.town?.residents])
+      for(const key of Object.keys(people||{}))if(/^[1-9][0-9]{0,9}$/.test(key)&&valid(Number(key)))ids.add(Number(key));
+    for(const row of Object.values(society?.town?.resident_control?.assignments||{}))if(valid(row?.actor))ids.add(row.actor);
+    for(const row of [...residents,...inventoryObserved])if(valid(row?.id))ids.add(row.id);
+  }
+  return [...ids];
+}
+function tradeReservationAllows(command) {
+  const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
+  const actors=[command.buyer,command.seller];
+  const native=transfers.reservedActors();
+  if(!Array.isArray(native)||native.some(id=>!valid(id)))return false;
+  if(native.some(id=>actors.includes(id))&&!transfers.permitsCommand(command))return false;
+  const reported=transfers.status();
+  if(reported&&Object.prototype.hasOwnProperty.call(reported,'reserved_actors')){
+    const held=reported.reserved_actors;
+    if(!Array.isArray(held)||held.some(id=>!valid(id)))return false;
+    if(held.some(id=>actors.includes(id))&&!transfers.permitsCommand(command))return false;
+  }
+  // Only transport binding fields differ between the saved journal command and
+  // its emitted envelope. Every contractual field and both full accounts match.
+  const contract=value=>Object.fromEntries(Object.entries(value).filter(([key])=>!['session','checkpoint'].includes(key)));
+  for(const record of savedTradeReservations()){
+    const ids=[record.command.buyer,record.command.seller];
+    for(const field of ['buyer','seller'])if(Object.prototype.hasOwnProperty.call(record,field))ids.push(record[field]);
+    if(ids.some(id=>!valid(id)))return false;
+    if(!ids.some(id=>actors.includes(id)))continue;
+    try{if(canonicalJson(contract(command))!==canonicalJson(contract(record.command)))return false;}catch(_){return false;}
+    if(record.status==='held'&&!transfers.permitsCommand(command))return false;
+  }
+  return true;
 }
 function reset() {
   browserFocusReady=false;uiHealth=null;nativeButtonEvents=0;lastNativeControlKey=null;
@@ -308,18 +361,27 @@ on('update', () => {
   speech.tick();
   // Long furniture attendance progresses even while a disjoint voice, meal,
   // model decision or checkpoint occupies the foreground command channel.
-  residentControl.yieldActors([...activityJobs.reservedActors(),...resourceReservedActors()]);
+  residentControl.yieldActors([...activityJobs.reservedActors(),...resourceReservedActors(),...tradeReservedActors()]);
   activityJobs.tick(presentation.society?.activity_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error);
   ownerWorkJobs.tick(presentation.society?.owner_work_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error,residentControl.status());
   residentControl.yieldActors(ownerWorkJobs.releasingActors());
   if (pending) {
     const command = pending; pending = null;
-    // Resource grants validate their complete identity on every arm/deliver replay.
+    // Grants and trades validate complete identity on every arm/deliver replay.
     // The generic ID-only cache must never bypass that controller's checks.
-    const resourceCommand=command.kind==='inventory_endowment';
-    if(!resourceCommand&&command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
-    if (command.session === session && (resourceCommand||!completed.has(command.id))) {
+    const resourceCommand=command.kind==='inventory_endowment',tradeCommand=command.kind==='inventory_trade';
+    const controllerReceipt=resourceCommand||tradeCommand;
+    if(!controllerReceipt&&command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
+    if (command.session === session && (controllerReceipt||!completed.has(command.id))) {
       try {
+        if(tradeCommand){
+          if(!Number.isInteger(command.checkpoint)||checkpointValue()!==command.checkpoint)throw new Error('Trade checkpoint mismatch');
+          if(!tradeReservationAllows(command))throw new Error('Unsettled trade reserves the accounts; exact saved/native contract required');
+        }else{
+          const reserved=tradeReservedActors();
+          const actors=[command.kind==='look_at_player'?selected:undefined,command.kind==='prepare_market'?108149:undefined,command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target])];
+          if(actors.some(id=>reserved.includes(id)))throw new Error('Unsettled trade reserves a command participant');
+        }
         if(!resourceCommand){
           const reserved=resourceReservedActors();
           const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target])];
@@ -349,7 +411,7 @@ on('update', () => {
             if(travel&&!['applied','held','released'].includes(travel.phase))blocked.push(travel.actor,travel.target);
             if(['starting','playing'].includes(speech.status()?.status))for(const participant of speech.status()?.facing||[])blocked.push(participant.actor);
             if(parallelRoutines.ownsActor(command.actor))blocked.push(command.actor);
-            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...resourceReservedActors());
+            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...resourceReservedActors(),...tradeReservedActors());
           }
           const result=command.kind==='activity_start_rest'?activityJobs.start(command,blocked):
             command.kind==='activity_ack_receipt'?activityJobs.acknowledge(command):
@@ -361,7 +423,7 @@ on('update', () => {
           if (!Number.isInteger(command.checkpoint) || checkpointValue()!==command.checkpoint) throw new Error('Trade checkpoint mismatch');
           const result=command.kind==='inventory_consume'?transfers.consume(command):transfers.step(command);
           if (!result.done) pending=command;
-          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
+          else {ack=result.ack;if(!tradeCommand)completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if (['inventory_produce','inventory_self_produce','inventory_self_produce_commit','inventory_supply'].includes(command.kind)) {
           if(checkpointValue()!==command.checkpoint)throw new Error('Production checkpoint mismatch');
@@ -448,7 +510,7 @@ on('update', () => {
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
         if (!['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt','scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_self_produce_commit','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
-      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};if(!resourceCommand)completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
+      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};if(!controllerReceipt)completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
     }
   }
   const activeConversation=presentation.society?.conversation;
@@ -577,7 +639,7 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   function controlEnabled(name){try{return typeof sp.Game[name]==='function'?sp.Game[name]():null;}catch(_){return null;}}
-  const societyState=presentation.society,foreground=new Set(resourceReservedActors(inventoryObservations));
+  const societyState=presentation.society,foreground=new Set([...resourceReservedActors(inventoryObservations),...tradeReservedActors(inventoryObservations)]);
   const plan=societyState?.plan,chat=societyState?.conversation,batch=societyState?.routine_batch;
   if(plan&&(!['complete','held','delegated'].includes(plan.phase)||plan.release_required)){for(const id of [plan.actor,plan.target,...(plan.economic_pair||[])])if(id)foreground.add(id);}
   if(chat&&(!['complete','held'].includes(chat.phase)||chat.release_required||chat.cleanup_review_required)){
@@ -597,6 +659,7 @@ on('update', () => {
   const observation = {
     economy_catalog:economyCatalog.status(),
     resource_import:endowments.status(),
+    trade_execution:transfers.status(),
     director_control:directorControl,
     player_controls:{request:playerControlRequest,
       movement:controlEnabled('isMovementControlsEnabled'),

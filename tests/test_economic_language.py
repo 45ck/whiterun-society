@@ -20,7 +20,7 @@ class EconomicLanguageTests(unittest.TestCase):
 
     def start(self):
         self.world.begin_plan('meal-1',self.obs, 108186,voiced_trade=True,natural_trade=True);self.sync()
-        self.decide('seek_bread');self.arrive()
+        self.decide('seek_bread');self.arrive();self.decide('bid_price_3')
         self.obs['conversationAttendance']={'id':'economic-attend-meal-1','phase':'attending','participants':[
             {'actor':a,'ownedPackage':True,'loaded':True} for a in (108186,108149)]}
         self.obs['ack']={'id':'economic-attend-meal-1','status':'applied'};self.world.observe(self.obs);self.sync()

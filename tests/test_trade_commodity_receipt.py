@@ -2,7 +2,7 @@ import copy
 import unittest
 import test_lineage as fixtures
 from agency_metrics import economic_network
-from catalog_fixture import native_ack
+from trade_execution_fixture import arm_trade, trade_ack
 
 
 class TradeCommodityReceiptTests(unittest.TestCase):
@@ -31,10 +31,11 @@ class TradeCommodityReceiptTests(unittest.TestCase):
         self.prepare();self.finish()
         for a in self.obs['residents']:a['inventory']['grain']=1 if a['id']==108149 else 0
         self.world.plan_trade('grain-1',self.obs,108186,108149,commodity='grain');self.bind()
-        c=self.world.pending(self.obs['session']);self.assertEqual(c['commodity'],'grain')
+        c=arm_trade(self.world,self.obs,self.bind);self.assertEqual(c['commodity'],'grain')
+        self.assertEqual(c['phase'],'deliver')
         for role,actor in [('buyer',108186),('seller',108149)]:
             next(a for a in self.obs['residents'] if a['id']==actor)['inventory']=copy.deepcopy(c['after'][role])
-        self.obs['ack']=native_ack(c);self.world.observe(self.obs);self.bind()
+        self.obs['ack']=trade_ack(c);self.world.observe(self.obs);self.bind()
         self.world.active['trades'].append({'id':'held','status':'held','command':{'commodity':'iron'}})
         m=economic_network(self.world.active)
         self.assertEqual(m['distinct_goods'],2);self.assertEqual(m['goods_receipts'],{'bread':1,'grain':1})

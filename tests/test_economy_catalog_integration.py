@@ -183,11 +183,14 @@ class EconomyCatalogIntegrationTests(unittest.TestCase):
 
     def test_two_recipes_in_one_dynamic_enterprise_keep_distinct_model_choices(self):
         import test_owner_work_integration
+        import market_policy
         from catalog_fixture import native_catalog
         helper=test_owner_work_integration.OwnerWorkIntegrationTests();helper.setUp()
         try:
             raw=self.expanded_catalog()
             with patch('economy_catalog.ECONOMY_CATALOG',raw):
+                policy=copy.deepcopy(market_policy.MARKET_POLICY);policy['catalog_hash']=catalog_hash()
+                market=patch.object(market_policy,'MARKET_POLICY',policy);market.start();self.addCleanup(market.stop)
                 helper.obs['economy_catalog']=native_catalog()
                 for actor in helper.obs['residents']:
                     actor['inventory'].update(Ore=7,Ingot=0,Untouched=11)

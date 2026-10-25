@@ -5,7 +5,7 @@ import test_economic_speech as speech_fixtures
 from food import allocation
 from metrics import simulation_metrics
 from trade_consent import reserved_sale_consent
-from catalog_fixture import native_ack
+from trade_execution_fixture import trade_ack, arm_trade
 
 
 class ReserveReconsiderationTests(unittest.TestCase):
@@ -23,7 +23,7 @@ class ReserveReconsiderationTests(unittest.TestCase):
         # The buyer learns neither household allocation nor willingness.
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertNotEqual(context['own_food_allocation'].get('policy'),self.policy)
-        self.decide('seek_bread');self.arrive()
+        self.decide('seek_bread');self.arrive();self.decide('bid_price_3')
         if voiced:
             self.obs['conversationAttendance']={'id':'economic-attend-meal-1','phase':'attending','participants':[
                 {'actor':actor,'ownedPackage':True,'loaded':True} for actor in (108186,108149)]}
@@ -32,13 +32,22 @@ class ReserveReconsiderationTests(unittest.TestCase):
 
     def commit_trade(self):
         command=self.world.pending('a');self.assertEqual(command['kind'],'inventory_trade')
+        self.assertEqual(command['phase'],'arm')
+        before=copy.deepcopy(self.obs['residents'])
+        command=arm_trade(self.world,self.obs,self.sync)
+        self.assertEqual(command['phase'],'deliver')
+        self.assertEqual(self.obs['residents'],before)
+        self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],0)
         for index,role in ((0,'buyer'),(1,'seller')):self.obs['residents'][index]['inventory']=command['after'][role].copy()
-        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
+        self.obs['ack']=trade_ack(command);self.world.observe(self.obs);self.sync()
 
     def test_one_offer_can_be_accepted_without_unlocking_remaining_household_stock(self):
         self.prepare();before=copy.deepcopy(self.obs['residents'])
         context=self.world._plan_context(self.obs,self.world.agency_plan())
-        self.assertEqual({o['id'] for o in context['options']},{'decline','sell_reserved_bread'})
+        options={o['id'] for o in context['options']}
+        self.assertEqual(options-{'decline','sell_reserved_bread'},set(context['price_options']))
+        self.assertTrue({'decline','sell_reserved_bread'}<=options)
+        self.assertNotIn('sell_bread',options,'Reserved stock requires explicit release, not ordinary consent')
         self.decide('sell_reserved_bread')
         self.assertEqual(self.obs['residents'],before)
         self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],0)
@@ -49,13 +58,15 @@ class ReserveReconsiderationTests(unittest.TestCase):
         self.assertEqual(sum(r['inventory']['gold'] for r in self.obs['residents']),31)
         self.assertEqual(sum(r['inventory']['bread'] for r in self.obs['residents']),3)
         self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],1)
-        with self.assertRaisesRegex(ValueError,'household reserve'):
+        with self.assertRaisesRegex(ValueError,'Accepted resident trade terms are missing or changed'):
             self.world.plan_trade('reuse-consent',self.obs,108186,108149,agency_plan='meal-1')
 
     def test_direct_trade_cannot_claim_consent_and_declining_preserves_stock(self):
         self.prepare();before=copy.deepcopy(self.obs['residents'])
-        with self.assertRaisesRegex(ValueError,'household reserve'):
+        with self.assertRaisesRegex(ValueError,'Accepted resident trade terms are missing or changed'):
             self.world.plan_trade('meal-meal-1',self.obs,108186,108149,agency_plan='meal-1')
+        self.assertIsNone(self.world.active['pending'])
+        self.assertEqual(self.world.active['trades'],[])
         self.decide('decline');self.assertEqual(self.obs['residents'],before)
         self.assertNotIn('reserve_release',self.world.agency_plan())
         self.assertEqual(self.world.agency_plan()['phase'],'reconsider')
@@ -93,10 +104,23 @@ class ReserveReconsiderationTests(unittest.TestCase):
         self.assertNotIn('reserve_release',self.world.agency_plan())
 
     def test_failed_native_transfer_is_not_counted_as_a_sale(self):
-        self.prepare();self.decide('sell_reserved_bread');command=self.world.pending('a')
-        self.obs['ack']=native_ack(command)
+        self.prepare();self.decide('sell_reserved_bread')
+        command=arm_trade(self.world,self.obs,self.sync)
+        self.assertEqual(command['phase'],'deliver')
+        # Claimed completed legs cannot substitute for the unchanged inventories.
+        self.obs['ack']=trade_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'held')
+        self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],0)
+
+    def test_matching_afterstate_without_delivery_witnesses_is_not_a_sale(self):
+        self.prepare();self.decide('sell_reserved_bread')
+        command=arm_trade(self.world,self.obs,self.sync)
+        for index,role in ((0,'buyer'),(1,'seller')):self.obs['residents'][index]['inventory']=command['after'][role].copy()
+        ack=trade_ack(command);ack.pop('legs')
+        self.obs['ack']=ack;self.world.observe(self.obs);self.sync()
+        self.assertEqual(self.world.agency_plan()['phase'],'held')
+        self.assertEqual(self.world.active['trades'],[])
         self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],0)
 
 

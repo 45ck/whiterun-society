@@ -4,6 +4,7 @@ import unittest
 import test_daily_life as daily_fixtures
 from population import person_seed
 from opportunities import food_sellers
+from trade_execution_fixture import qualify_trade_observation
 
 
 class DynamicEconomyTests(unittest.TestCase):
@@ -21,6 +22,7 @@ class DynamicEconomyTests(unittest.TestCase):
                 for aid, name, x, gold, bread in [(99, 'Buyer', 0, 7, 0),
                     (501, 'Secret seller name', 100, 7139, 2), (502, 'Second secret name', 200, 9173, 0)]]
         self.obs['residents'] = rows
+        qualify_trade_observation(self.obs)
         self.world.active['people'] = {str(r['id']): person_seed(r, 'dynamic-economy', day) for r in rows}
         self.world.active['people']['99']['needs'].update(hunger=.9, fatigue=.1)
         town = self.world.active['town']

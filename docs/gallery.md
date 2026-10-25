@@ -32,6 +32,12 @@ Generated system illustration — not gameplay
 
 ![Finite resource delivery flow](images/finite-resource-delivery-flow.png)
 
+## Generic market cycle
+
+Generated system illustration — not gameplay
+
+![Generic market cycle](images/generic-market-cycle.png)
+
 ## Grain market loop
 
 Generated system illustration — not gameplay

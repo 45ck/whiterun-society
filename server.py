@@ -27,6 +27,18 @@ def begin_agency_event(world, observation, data):
         data.get('kind', 'meal_time'), data.get('voiced_trade', False), data.get('natural_trade', False))
 
 
+def begin_trade_event(world, observation, data):
+    """Forward explicit public trade terms without silently changing the good."""
+    allowed={'id','buyer','seller','quantity','unit_price','commodity'}
+    if not isinstance(data,dict) or set(data)-allowed or not {'id','buyer','seller'}<=set(data):
+        raise ValueError('Invalid trade request fields')
+    commodity=data.get('commodity','bread')
+    if not isinstance(commodity,str) or not commodity:
+        raise ValueError('Trade commodity must be a nonempty catalog ID')
+    return world.plan_trade(data['id'],observation,data['buyer'],data['seller'],
+        data.get('quantity',1),data.get('unit_price',3),commodity=commodity)
+
+
 def begin_endowment_event(world, observation, data):
     """An operator explicitly selects a reviewed finite scenario; no default."""
     if not isinstance(data,dict) or set(data)!={'actor','scenario_id','scenario_hash'}:
@@ -265,8 +277,7 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.agency_busy(): raise ValueError('another command or resident plan is pending')
-                    result=world.plan_trade(data['id'],bridge['observation'],data['buyer'],data['seller'],
-                        data.get('quantity',1),data.get('unit_price',3))
+                    result=begin_trade_event(world,bridge['observation'],data)
                     self.reply(202,result)
                 elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background','/town/scene-handoff'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:

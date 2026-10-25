@@ -4,12 +4,16 @@ import unittest
 import test_dynamic_economy as fixtures
 from bargaining import price_choices, own_prices, MAX_ECONOMIC_CALLS, record_quote, quote_valid
 from economy_catalog import catalog_hash
+from market_policy import policy_hash
 from food import allocation
+from trade_execution_fixture import qualify_trade_observation, arm_trade, trade_ack
 from metrics import simulation_metrics
 
 
 class BargainingTests(unittest.TestCase):
-    setUp=fixtures.DynamicEconomyTests.setUp
+    def setUp(self):
+        fixtures.DynamicEconomyTests.setUp(self)
+        qualify_trade_observation(self.obs)
     tearDown=fixtures.DynamicEconomyTests.tearDown
     sync=fixtures.DynamicEconomyTests.sync
     census=fixtures.DynamicEconomyTests.census
@@ -33,11 +37,12 @@ class BargainingTests(unittest.TestCase):
         self.assertEqual(self.world.agency_plan()['phase'],'quote')
 
     def settle_sale(self):
-        command=self.world.pending(self.obs['session']);self.assertEqual(command['kind'],'inventory_trade')
+        command=arm_trade(self.world,self.obs,self.sync);self.assertEqual(command['kind'],'inventory_trade')
+        self.assertEqual(command['phase'],'deliver')
         for actor,role in ((99,'buyer'),(501,'seller')):
             resident=next(r for r in self.obs['residents'] if r['id']==actor)
             resident['inventory'].update(command['after'][role])
-        self.obs['ack']={'id':command['id'],'status':'applied','catalog_hash':command['catalog_hash']}
+        self.obs['ack']=trade_ack(command)
         self.world.observe(self.obs);self.sync()
         return command
 
@@ -68,9 +73,9 @@ class BargainingTests(unittest.TestCase):
     def test_private_quote_pins_complete_account_and_catalog_without_weakening_consent(self):
         seller=self.world.active['people']['501']
         row=next(r for r in self.obs['residents'] if r['id']==501)
-        plan={'actor':99,'target':501,'unit_price':7,'commodity':'bread'}
+        plan={'actor':99,'target':501,'unit_price':7,'commodity':'bread','quantity':1,'purpose':'food','market_policy_hash':policy_hash()}
         context={'observed_inventory':copy.deepcopy(row['inventory']),
-                 'own_food_allocation':allocation(seller,row['inventory']),'inventory_catalog_hash':catalog_hash()}
+                 'own_food_allocation':allocation(seller,row['inventory']),'inventory_catalog_hash':catalog_hash(),'market_policy_hash':policy_hash()}
         record_quote(self.world.active,plan,context,7,'seller-claim')
         self.assertEqual(plan['counter_quote']['inventory'],row['inventory'])
         self.assertEqual(plan['counter_quote']['catalog_hash'],catalog_hash())
@@ -133,10 +138,10 @@ class BargainingTests(unittest.TestCase):
         self.arrive(voice=True);self.decide('bid_price_4')
         self.assertEqual(self.speak()['actor'],99)
         self.decide('ask_price_7');ask=self.speak()
-        self.assertEqual(ask['actor'],501);self.assertIn('7 gold',ask['line'])
+        self.assertEqual(ask['actor'],501);self.assertIn('at 7 gold each, 7 gold total',ask['line'])
         self.decide('accept_counterprice');self.assertIsNone(self.world.active['pending'])
         accepted=self.speak();self.assertEqual(accepted['actor'],99)
-        self.assertIn('7 gold',accepted['line'])
+        self.assertIn('at 7 gold each, 7 gold total',accepted['line'])
         self.settle_sale();self.assertEqual(self.speak()['actor'],99)
         self.assertEqual(len(self.world.agency_plan()['economic_turns']),4)
 

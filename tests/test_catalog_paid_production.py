@@ -2,6 +2,7 @@ import copy
 import unittest
 from unittest.mock import patch
 import economy_catalog as catalog
+import market_policy
 from catalog_fixture import native_catalog, native_ack
 from test_catalog_enterprises import expanded_catalog
 from production import Production
@@ -25,6 +26,8 @@ class CatalogPaidProductionTests(unittest.TestCase):
         bread=next(r for r in self.catalog['recipes'] if r['id']=='bread_recipe')
         bread['inputs']['grain']=2;bread['outputs']['bread']=3;bread['version']=2
         self.mock=patch.object(catalog,'ECONOMY_CATALOG',self.catalog);self.mock.start();self.addCleanup(self.mock.stop)
+        policy=copy.deepcopy(market_policy.MARKET_POLICY);policy['catalog_hash']=catalog.catalog_hash()
+        market=patch.object(market_policy,'MARKET_POLICY',policy);market.start();self.addCleanup(market.stop)
         self.plan={'id':'shift','actor':7,'target':8,'phase':'ready_to_work','travel':{'movement':{'expectedPackage':99}}}
         self.world=Harness(self.plan)
         self.obs={'session':'unit','economy_catalog':native_catalog(),'residents':[
@@ -117,11 +120,18 @@ class CatalogPaidProductionTests(unittest.TestCase):
 
     def test_grain_procurement_uses_catalog_batch_quantities(self):
         from procurement import grain_procurement
-        state={'town':{'businesses':{'bakery':{'custodian':7,'capabilities':['bread_recipe']}}}}
-        with patch('procurement.commodity_sellers',return_value=[{'id':8,'name':'Unknown supplier'}]):
-            choices=grain_procurement(state,self.obs,7)
+        from entrepreneurship import learn_recipe
+        state={'people':{'7':{},'8':{}},'town':{'residents':{'7':{},'8':{}},'businesses':{
+            'bakery':{'owner':7,'custodian':7,'capabilities':['bread_recipe']},
+            'supplier':{'owner':8,'custodian':8,'capabilities':['retail_goods'],'sale_commodities':['grain']}}}}
+        learn_recipe(state['people']['7'],'authored-earlier-production','bread_recipe')
+        self.obs['routing']={'available':True,'adapter':'papyrus-mailbox-v1'}
+        choices=grain_procurement(state,self.obs,7)
         # Target8 minus3 carried bread needs2 batches of3, each consuming2 grain.
-        self.assertEqual(choices[0]['own_businesses'][0]['grain_shortfall'],4)
+        self.assertTrue(choices)
+        self.assertEqual({row['shortfall'] for row in choices},{4})
+        self.assertEqual({row['supplier'] for row in choices},{8})
+        self.assertTrue(all(row['quantity']<=4 for row in choices))
 
     def test_changed_bread_id_pair_is_generic_owner_only_not_paid_bread_alias(self):
         from owner_production import owner_work_opportunities
@@ -220,6 +230,8 @@ class GenericOwnerContextTests(unittest.TestCase):
             recipe=next(r for r in data['recipes'] if r['id']=='bread_recipe')
             recipe.update(inputs={'ore':2},outputs={'ingot':1})
             with patch.object(catalog,'ECONOMY_CATALOG',data):
+                policy=copy.deepcopy(market_policy.MARKET_POLICY);policy['catalog_hash']=catalog.catalog_hash()
+                market=patch.object(market_policy,'MARKET_POLICY',policy);market.start();self.addCleanup(market.stop)
                 case.obs['economy_catalog']=native_catalog()
                 for actor in case.obs['residents']:actor['inventory'].update(ore=4,ingot=0)
                 business=case.world.active['town']['businesses']['new-owner']

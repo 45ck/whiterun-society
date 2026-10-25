@@ -97,16 +97,22 @@ def simulation_metrics(state):
     option_counts=[len(d['context']['options']) for p in plans for d in p.get('decisions',[]) if isinstance(d.get('context',{}).get('options'),list)]
     bargaining_plans=[p for p in plans if p.get('pricing_policy')=='resident-bargaining-v1']
     by_commodity={}
-    for commodity in ('bread','grain'):
-        relevant=[p for p in bargaining_plans if p.get('commodity','bread')==commodity]
+    known_goods=set(commodity_ids())-{'gold'}
+    def good_key(value):return value if isinstance(value,str) and value in known_goods else '__unknown__'
+    for commodity in sorted(known_goods|{'__unknown__'}):
+        relevant=[p for p in bargaining_plans if good_key(p.get('commodity'))==commodity]
         proposals=[(d['decision']['action_id'],d.get('context',{}).get('price_options',{}).get(d['decision']['action_id']))
                    for p in relevant for d in p.get('decisions',[]) if d.get('decision')]
         bids=[v for a,v in proposals if a.startswith('bid_price_') and number(v)]
         asks=[v for a,v in proposals if a.startswith('ask_price_') and number(v)]
-        ids={p.get('trade_id') for p in relevant}
-        paid=[r['command']['cost']/r['command']['quantity'] for r in state.get('trades',[])
-              if r.get('status')=='committed' and r.get('id') in ids and r['command'].get('quantity',0)>0
-              and r['command'].get('commodity','bread')==commodity]
+        ids={p['trade_id'] for p in relevant if isinstance(p.get('trade_id'),str) and p['trade_id']}
+        paid=[]
+        for record in state.get('trades',[]):
+            command=record.get('command') or {};quantity=command.get('quantity');cost=command.get('cost')
+            if (record.get('status')=='committed' and record.get('id') in ids
+                and good_key(command.get('commodity'))==commodity and type(quantity) is int and quantity>0
+                and type(cost) is int and cost>0):
+                paid.append(cost/quantity)
         by_commodity[commodity]={'plans':len(relevant),'buyer_offers':distribution(bids),
             'seller_counteroffers':distribution(asks),'paid_prices':distribution(paid),
             'buyer_offer_histogram':dict(Counter(str(v) for v in bids)),
@@ -192,7 +198,9 @@ def simulation_metrics(state):
                 'known_cost_usd':round(sum(r.get('usage',{}).get('cost',0) for r in wording_results),8),
                 'results_with_cost':sum('cost' in r.get('usage',{}) for r in wording_results),
                 'scope':'Economic wording calls, including rejected responses and fixtures. Exact terms are preserved; surrounding claims and human realism are not independently verified.'},
-            'bargaining':{**by_commodity['bread'],'plans':len(bargaining_plans),'by_commodity':by_commodity,
+            'bargaining':{**by_commodity['__unknown__'],'plans':len(bargaining_plans),'by_commodity':by_commodity,
+                'unlabelled_plans':by_commodity['__unknown__']['plans'],
+                'top_level_price_scope':'Unlabelled legacy records only; labelled prices are separated by commodity.',
                 'accepted_counteroffers':sum(p.get('counter_quote_accepted') is True for p in bargaining_plans),
                 'scope':'Retained resident bargaining plans, including fixtures. Offers and accepted terms are not payments; paid prices require committed native inventory receipts.'},
             'grain_procurement_sales':sum(c.get('commodity')=='grain' for c in trades),

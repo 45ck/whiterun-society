@@ -11,6 +11,8 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__SCENE_HANDOFF_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/scene-handoffs.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__CONVERSATION_ATTENDANCE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/conversation-attendance.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__OBSERVER_CAMERA_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/observer-camera.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__MARKET_POLICY_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/market-policy.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__MARKET_POLICY__',JSON.stringify(require('../config/market-policy.json')))
   .replace('__TRANSFER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/inventory-transfers.js'),'utf8').split('\nif (typeof module')[0])
   .replace('__RESOURCE_MANIFEST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/resource-manifest.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__RESOURCE_MANIFEST__',JSON.stringify(require('../config/resource-manifest.json')))
@@ -27,7 +29,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
-function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null,endowmentFactory=null) {
+function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null,endowmentFactory=null,transferFactory=null) {
   const handlers = new Map(), notifications=[], requests=[], looks=[], nativeReads=[];
   let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
@@ -44,7 +46,8 @@ function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=nul
   let compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
   if(residentFactory)compiled=compiled.replace('const residentControl=createResidentControl(()=>sp);','const residentControl=residentFactory();');
   if(endowmentFactory)compiled=compiled.replace(/const endowments=createEndowmentController\([^;]+;/,'const endowments=endowmentFactory(()=>session);');
-  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory,endowmentFactory});
+  if(transferFactory)compiled=compiled.replace(/const transfers=createInventoryTransfers\([^;]+;/,'const transfers=transferFactory(()=>session);');
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory,endowmentFactory,transferFactory});
   vm.runInContext(compiled,context);
   return {handlers,notifications,requests,looks,nativeReads,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
 }
@@ -504,4 +507,127 @@ test('real resource controller advertises reviewed hashes and rotates epoch with
  assert.notEqual(after.epoch,before.epoch);
  assert.equal(after.manifest_hash,before.manifest_hash);
  assert.notEqual(h.requests.at(-1).session,h.requests[0].session);
+});
+
+
+function mockTradeController(overrides={}) {
+ return {reset(){},status:()=>({protocol:2,epoch:'mock-trade-epoch',available:true,reserved_actors:[]}),
+  reservedActors:()=>[],permitsCommand:()=>false,step:command=>({done:true,ack:{id:command.id,status:'armed'}}),
+  consume:command=>({done:true,ack:{id:command.id,status:'applied'}}),...overrides};
+}
+
+test('trade protocol status and initialized session reach the controller and reset',async()=>{
+ let epoch=1;const sessions=[];
+ const h=harness(false,null,null,null,getSession=>{sessions.push(getSession());return mockTradeController({reset(){epoch++;},
+  status:()=>({protocol:2,epoch:'trade-'+epoch,available:true,catalog_hash:'catalog',market_policy_hash:'policy',reserved_actors:[]})});});
+ h.handlers.get('update')();await settle();const before=h.requests[0].trade_execution;
+ assert.ok(sessions[0]);assert.equal(before.protocol,2);assert.equal(before.market_policy_hash,'policy');
+ assert.equal(before.catalog_hash,'catalog');assert.equal(before.available,true);
+ h.advance();h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.handlers.get('update')();await settle();
+ assert.notEqual(h.requests.at(-1).trade_execution.epoch,before.epoch);
+});
+
+test('trade arm and deliver replays bypass cached IDs and revalidate changed contracts',async()=>{
+ const calls=[];
+ const h=harness(false,null,null,null,()=>mockTradeController({step(command){calls.push({...command});
+  return {done:true,ack:{id:command.id,status:command.account==='original'?'applied':'held'}};}}));
+ checkpointFixture(h);let account='original',phase='arm';
+ h.setResponse(body=>({id:'trade-'+phase,kind:'inventory_trade',phase,protocol:2,buyer:123,seller:124,checkpoint:0,session:body.session,account}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ phase='deliver';
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ account='changed';
+ for(let i=0;i<2;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.ok(calls.filter(c=>c.phase==='arm').length>=2);assert.ok(calls.filter(c=>c.phase==='deliver').length>=3);
+ assert.equal(calls.at(-1).account,'changed');assert.equal(h.requests.at(-1).ack.status,'held');
+});
+
+test('consume retains receipt cache while trade exceptions remain controller-owned',async()=>{
+ let consumed=0,traded=0;let kind='inventory_consume';
+ const h=harness(false,null,null,null,()=>mockTradeController({consume(command){consumed++;return {done:true,ack:{id:command.id,status:'applied'}};},
+ step(command){traded++;if(traded===1)throw Error('rejected first payload');return {done:true,ack:{id:command.id,status:'armed'}};}}));
+ checkpointFixture(h);h.setResponse(body=>({id:'same-id',kind,actor:123,buyer:123,seller:124,checkpoint:0,session:body.session}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(consumed,1);kind='inventory_trade';
+ for(let i=0;i<4;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.ok(traded>=2);assert.equal(h.requests.at(-1).ack.status,'armed');
+});
+
+test('only the exact saved trade contract admits an initial arm against its own reservation',async()=>{
+ for(const changed of [false,true]){
+  let calls=0;
+  const h=harness(false,null,null,null,()=>mockTradeController({step(command){calls++;return {done:true,ack:{id:command.id,status:'armed'}};}}));checkpointFixture(h);
+  const original={id:'opening-arm',kind:'inventory_trade',protocol:2,phase:'arm',buyer:123,seller:124,before:{buyer:{gold:10},seller:{gold:10}},after:{buyer:{gold:8},seller:{gold:12}}};
+  h.setPresentation({society:{checkpoint:0,unsettled_effect:{status:'pending',command:original}}});
+  h.setResponse(body=>({...original,checkpoint:0,session:body.session,...(changed?{after:{buyer:{gold:0},seller:{gold:20}}}:{})}));
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  if(changed){assert.equal(calls,0);assert.match(h.requests.at(-1).ack.error,/exact saved\/native contract/);}
+  else assert.ok(calls>=2);
+ }
+});
+
+test('retained native trade permits exact continuation but rejects another contract',async()=>{
+ let calls=0;let allow=true;
+ const h=harness(false,null,null,null,()=>mockTradeController({reservedActors:()=>[123,124],permitsCommand:command=>command.permit==='live',
+  step(command){calls++;return {done:true,ack:{id:command.id,status:'applied'}};}}));checkpointFixture(h);
+ h.setResponse(body=>({id:'trade-deliver',kind:'inventory_trade',phase:'deliver',buyer:123,seller:124,checkpoint:0,session:body.session,permit:allow?'live':'other'}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ const prior=calls;allow=false;
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(calls,prior+1);assert.match(h.requests.at(-1).ack.error,/Unsettled trade/);
+});
+
+test('held trade reserves both purses through reset and blocks unrelated consumption',async()=>{
+ const blocked=[],yielded=[];
+ const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},tick(_s,_r,_f,ids){blocked.push([...ids]);}});
+ const h=harness(false,null,control,null,()=>mockTradeController());checkpointFixture(h);
+ h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();
+ h.setPresentation({society:{checkpoint:0,unsettled_effect:{status:'held',command:{kind:'inventory_trade',buyer:123,seller:124}}}});
+ h.setResponse(body=>({id:'eat',kind:'inventory_consume',actor:124,checkpoint:0,session:body.session}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.ok(blocked.at(-1).includes(123)&&blocked.at(-1).includes(124));
+ assert.ok(yielded.some(ids=>ids.includes(123)&&ids.includes(124)));
+ assert.match(h.requests.at(-1).ack.error,/Unsettled trade reserves/);
+});
+
+test('unknown trade participant conservatively reserves managed and observed residents',async()=>{
+ for(const nativeUnknown of [false,true]){
+  const blocked=[];const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_s,_r,_f,ids){blocked.push([...ids]);}});
+  const h=harness(false,null,control,null,()=>mockTradeController(nativeUnknown?{status:()=>({protocol:2,reserved_actors:'unknown'})}:{}));checkpointFixture(h);
+  h.setPresentation({society:{checkpoint:0,people:{'125':{}},town:{residents:{'126':{}}},
+   ...(nativeUnknown?{}:{unsettled_effect:{status:'held',command:{kind:'inventory_trade',buyer:124,seller:null}}})}});
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  for(const actor of [123,125,126,...(nativeUnknown?[]:[124])])assert.ok(blocked.at(-1).includes(actor));
+ }
+});
+
+
+test('real trade controller publishes reviewed policy identity and revokes its epoch on load',async()=>{
+ const policy=require('../config/market-policy.json'),{marketPolicyHash}=require('../bridge/market-policy.js');
+ const h=harness();assert.equal(h.nativeReads.length,0);
+ h.handlers.get('update')();await settle();const before=h.requests[0].trade_execution;
+ assert.equal(before.protocol,2);assert.equal(before.available,true);
+ assert.equal(before.catalog_hash,policy.catalog_hash);assert.equal(before.market_policy_hash,marketPolicyHash(policy));
+ assert.deepEqual(before.reserved_actors,[]);
+ h.advance();h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.handlers.get('update')();await settle();
+ assert.notEqual(h.requests.at(-1).trade_execution.epoch,before.epoch);
+ assert.equal(h.requests.at(-1).trade_execution.market_policy_hash,before.market_policy_hash);
+});
+
+
+test('cold held trade cannot authorize a fresh arm even when projected identity matches',async()=>{
+ let calls=0;
+ const h=harness(false,null,null,null,()=>mockTradeController({step(command){calls++;return {done:true,ack:{id:command.id,status:'armed'}};}}));checkpointFixture(h);
+ const saved={id:'held-arm',kind:'inventory_trade',phase:'arm',protocol:2,buyer:123,seller:124,before:{buyer:{gold:10},seller:{gold:10}},after:{buyer:{gold:8},seller:{gold:12}}};
+ h.setPresentation({society:{checkpoint:0,unsettled_effect:{status:'held',command:saved}}});
+ h.setResponse(body=>({...saved,checkpoint:0,session:body.session}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(calls,0);assert.match(h.requests.at(-1).ack.error,/exact saved\/native contract/);
+});
+
+test('held trade blocks authored stock preparation without explicit command actor fields',async()=>{
+ const h=harness(false,null,null,null,()=>mockTradeController({reservedActors:()=>[108149,123]}));checkpointFixture(h);
+ h.setResponse(body=>({id:'legacy-stock',kind:'prepare_market',session:body.session}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.match(h.requests.at(-1).ack.error,/Unsettled trade reserves/);
 });

@@ -7,6 +7,7 @@ import sys
 import time
 import uuid
 from dialogue_policy import MAX_COMBINED_CALLS
+from context_window import MAX_PURCHASE_NAVIGATION_CALLS
 from director_policy import resolve_run_policy, write_run_policy
 
 
@@ -94,7 +95,7 @@ class DirectorControl:
                     'mode':mode,'session_limit_seconds':policy['watch_seconds'],
                     'run_policy':policy,
                     'scene_handoffs_enabled':handoffs,
-                    'maximum_model_calls': MAX_COMBINED_CALLS*count+policy['goal_budget'], 'started_at': time.time(),
+                    'maximum_model_calls': (MAX_COMBINED_CALLS+MAX_PURCHASE_NAVIGATION_CALLS)*count+policy['goal_budget'], 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()
 

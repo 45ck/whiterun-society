@@ -1,7 +1,39 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {JSDOM}=require('jsdom'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'../ui',name),'utf8');
-const dashboard=()=>({control:{agent:1,scene:2,native:3,unknown:1,unloaded:2},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:k==='gold'?7:null,accounts:k==='gold'?2:0,population:9}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{high:1,known:4}])),economy:{committed_sales:2},control_scope:'Observed packages',needs_scope:'Gameplay needs',economy_scope:'Verified events'});
+const dashboard=()=>({inventory_catalog:{commodity_labels:{gold:'Septims',bread:'Bread',grain:'Grain (wheat)'}},control:{agent:1,scene:2,native:3,unknown:1,unloaded:2},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:k==='gold'?7:null,accounts:k==='gold'?2:0,population:9}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{high:1,known:4}])),economy:{committed_sales:2},control_scope:'Observed packages',needs_scope:'Gameplay needs',economy_scope:'Verified events'});
+
+test('generic multiunit sale cards retain exact terms and distinguish held partial effects',()=>{
+ const {dom,w}=native();try{
+  const d=dashboard();d.inventory_catalog.commodity_labels.iron='Iron ingot';
+  d.stock.iron={total:10,accounts:2,population:9};
+  const record={commodity:'iron',quantity:5,unit_price:7,cost:35,status:'held',buyer:1,seller:2};
+  const data={residents:[],trades:[record],director:{running:false},dashboard:d};
+  w.whiterunRender(data);let card=w.document.getElementById('trade').textContent;
+  assert.match(card,/5 Iron ingot.*HELD · NOT VERIFIED/);
+  assert.match(card,/7 gold each · 35 gold quoted/);assert.match(card,/effects may be partial/);
+  assert.doesNotMatch(card,/loaf|grain|VERIFIED SALE/);
+  assert.match(w.document.getElementById('town-charts').textContent,/10Iron ingot/);
+  record.status='committed';w.whiterunRender(data);card=w.document.getElementById('trade').textContent;
+  assert.match(card,/VERIFIED SALE/);assert.match(card,/35 gold paid/);
+  delete record.commodity;delete record.quantity;delete record.unit_price;
+  record.status='pending';w.whiterunRender(data);card=w.document.getElementById('trade').textContent;
+  assert.match(card,/Unknown quantity Unknown item/);assert.match(card,/Unknown gold each/);
+  assert.doesNotMatch(card,/loaf|grain|0 gold each|undefined/);
+ }finally{dom.window.close();}
+});
+
+test('market charts retain unknown goods and render catalog labels as text',()=>{
+ const {dom,w}=native();try{
+  const d=dashboard();d.inventory_catalog.commodity_labels.iron='<img src=x>Iron';
+  d.economy.negotiations={n:1,outcomes:{active:1}};
+  d.economy.bargaining={plans:2,by_commodity:{iron:{plans:1,buyer_offers:{n:1,median:7}},__unknown__:{plans:1,buyer_offers:{n:1,median:99}}}};
+  const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
+  assert.match(root.textContent,/<img src=x>Iron market/);assert.match(root.textContent,/Unknown item market/);
+  assert.equal(root.querySelector('img'),null);
+  assert.doesNotMatch(root.textContent,/Bread market|loaf/);
+ }finally{dom.window.close();}
+});
 
 test('catalog readiness is plain English and stale proof cannot claim game items verified',()=>{
  const {dom,w}=native();try{const data=dashboard(),root=w.document.getElementById('town-charts');
@@ -275,6 +307,10 @@ test('control room uses same charts and play API; rendering does not auto-steer 
  w.setInterval=()=>1;w.fetch=async(url,options)=>{requests.push({url,options});return {ok:true,json:async()=>url==='/observer/state'?state:{running:true,status:'running'}};};
  try{for(const script of w.document.scripts)w.eval(script.textContent);await new Promise(r=>setImmediate(r));
  assert.equal(w.document.querySelectorAll('#town-charts svg').length,1);
+ state.dashboard.inventory_catalog.commodity_labels.iron='Iron ingot';
+ state.trades=[{status:'held',command:{buyer:1,seller:2,commodity:'iron',quantity:5,unit_price:7,cost:35}}];
+ await w.poll();assert.match(w.document.getElementById('consequences').textContent,/HELD · NOT VERIFIED.*5 Iron ingot.*7 gold each · 35 gold quoted.*effects may be partial/);
+ state.trades[0].status='committed';await w.poll();assert.match(w.document.getElementById('consequences').textContent,/VERIFIED SALE.*35 gold paid/);
  for(const [director,label] of [[{status:'complete',running:false,outcome:'stopped'},'Paused'],[{status:'stopping',running:true},'Pausing'],[{status:'complete',running:false,outcome:'complete'},'Run complete']]){
   state.director={...director,max_events:12,events_completed:1};await w.poll();
   assert.match(w.document.getElementById('director-status').textContent,new RegExp('^Society '+label+' · 1 / 12 events settled'));
@@ -334,7 +370,7 @@ test('trade chart separates refused offers, active agreements and committed sale
  assert.equal(root.querySelector('[aria-label="Seller refused"]').getAttribute('aria-valuenow'),'1');
  assert.equal(root.querySelector('[aria-label="Completed sale"]').getAttribute('aria-valuenow'),'0');
  assert.equal(root.querySelector('[aria-label="In progress"]').getAttribute('aria-valuemax'),'3');
- assert.match(root.textContent,/0 committed sales released one reserved loaf/);
+ assert.match(root.textContent,/0 committed sales explicitly released household-reserved stock/);
  d.economy.negotiations={n:0,outcomes:{}};w.renderTownCharts(root,d);assert.match(root.textContent,/No retained voiced trade plans/);assert.equal(root.innerHTML.includes('NaN'),false);
  }finally{dom.window.close();}
 });
@@ -359,8 +395,8 @@ test('grain payments are displayed separately from bread bids and prices',()=>{
  const {dom,w}=native();try{const d=dashboard();d.economy.negotiations={n:2,outcomes:{sale:1,seller_refused:1}};
  d.economy.bargaining={plans:2,by_commodity:{bread:{plans:1,buyer_offers:{n:1,median:7},paid_prices:{n:0}},grain:{plans:1,buyer_offers:{n:1,median:2},paid_prices:{n:1,median:2}}}};
  const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
- assert.match(root.textContent,/Bread market.*7Buyer bids · 1.*—Paid prices · 0.*Median septims per loaf/);
- assert.match(root.textContent,/Grain input market.*2Paid prices · 1.*Median septims per grain unit/);
+ assert.match(root.textContent,/Bread market.*7Buyer bids · 1.*—Paid prices · 0.*Median septims per unit/);
+ assert.match(root.textContent,/Grain \(wheat\) market.*2Paid prices · 1.*Median septims per unit/);
  }finally{dom.window.close();}
 });
 

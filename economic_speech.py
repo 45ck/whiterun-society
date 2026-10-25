@@ -6,7 +6,7 @@ import time
 from agency import distance
 from enterprises import plan_work_policy, current_work_terms
 from employment import remember_unavailable, accept_contract
-from economic_language import economic_context, validate_wording, qualify_wording, wording_receipt, TERMS
+from economic_language import economic_context, validate_wording, qualify_wording, wording_receipt, trade_terms, TERMS
 from decisions import validate_decision
 from trade_memory import remember_refusal_decision, remember_refusal_heard
 
@@ -18,17 +18,22 @@ def attendance_id(plan):
 class EconomicSpeech:
     def queue_trade_speech(self, state, plan, act):
         if not plan.get('voiced_trade'):return
-        buyer,seller=plan.setdefault('economic_pair',[plan['actor'],plan['target']]);price=plan.get('unit_price',3)
-        unit='loaf' if plan.get('commodity','bread')=='bread' else 'unit of grain'
-        lines={
-            'offer':(buyer,seller,f'Would you sell me one {unit} for {price} gold?'),
-            'counteroffer':(buyer,seller,f'Would {price} gold change your mind? That is my final offer for one {unit}.'),
-            'seller_counteroffer':(seller,buyer,f'I can sell you one {unit} for {price} gold. Would that suit you?'),
-            'buyer_accept':(buyer,seller,f'Agreed. I will pay {price} gold for one {unit}.'),
-            'accept':(seller,buyer,f'Agreed. One {unit} for {price} gold.'),
-            'refuse':(seller,buyer,f'No, I will not sell a {unit} on those terms.'),
-            'leave':(buyer,seller,'All right. I will leave it there. Goodbye.'),
-            'receipt':(buyer,seller,f'Thank you. I have received one {unit} and paid {price} gold.')}
+        buyer,seller=plan.get('economic_pair',[plan['actor'],plan['target']])
+        terms=None;lines={}
+        if act=='leave':
+            lines={'leave':(buyer,seller,'All right. I will leave it there. Goodbye.')}
+        elif not act.startswith('work_'):
+            terms=trade_terms(plan);quantity=terms['quantity'];price=terms['unit_price'];total=terms['cost']
+            goods=f"{quantity} {'unit' if quantity==1 else 'units'} of {terms['label']}"
+            quote=f'{goods} at {price} gold each, {total} gold total'
+            lines={
+                'offer':(buyer,seller,f'Would you sell me {quote}?'),
+                'counteroffer':(buyer,seller,f'My final offer is {quote}. Would that suit you?'),
+                'seller_counteroffer':(seller,buyer,f'I can sell you {quote}. Would that suit you?'),
+                'buyer_accept':(buyer,seller,f'Agreed. I will buy {quote}.'),
+                'accept':(seller,buyer,f'Agreed. I will sell you {quote}.'),
+                'refuse':(seller,buyer,f'No, I will not sell {quote}.'),
+                'receipt':(buyer,seller,f'Thank you. I received {goods} at {price} gold each and paid {total} gold total.')}
         if act.startswith('work_'):
             policy=plan_work_policy(plan);wage=policy['wage_gold'];minutes=policy['work_minutes']
             lines.update({
@@ -40,6 +45,7 @@ class EconomicSpeech:
                 'work_receipt':(buyer,seller,f'The bread is made and I have received {wage} gold. Thank you.')})
         actor,listener,line=lines[act]
         if len(plan.get('economic_turns',[]))>=5:raise ValueError('Trade speech budget exhausted')
+        plan.setdefault('economic_pair',[buyer,seller])
         if not plan.get('economic_attendance'):
             generation=plan.get('economic_attendance_generation',0)+1
             plan['economic_attendance_generation']=generation
@@ -47,6 +53,7 @@ class EconomicSpeech:
         plan['economic_speech']={'actor':actor,'listener':listener,'act':act,'line':line,'canonical_line':line,
             'source':'Deterministic wording of accepted economic terms; not generated dialogue',
             'origin_session':self.session,'resume_phase':plan['phase']}
+        if terms:plan['economic_speech']['terms']=terms
         if act=='refuse':plan['economic_speech']['refusal_event_id']=remember_refusal_decision(state,plan)
         plan['phase']=('economic_propose' if plan.get('natural_trade') else 'economic_synthesize') if plan.get('economic_attendance') else 'economic_attending'
         plan['release_required']=True
@@ -116,7 +123,7 @@ class EconomicSpeech:
                 decision=validate_decision(result.get('decision'),claim['context'])
                 candidate=next(c for c in turn['candidates'] if c['id']==decision['action_id'])
                 speech.update(selected=copy.deepcopy(candidate),line=candidate['line'].replace(TERMS,speech['canonical_line']),
-                    source='Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified')
+                    source='Model-selected courtesy phrasing from a bounded grammar around exact economic terms')
                 receipt['selected_id']=candidate['id']
                 if candidate['id'] in turn.get('direct_wording_ids',[]):
                     speech.update(wording_fallback='selected_direct_terms',source='Jev selected deterministic terms instead of the qualified generated alternative')
@@ -183,6 +190,7 @@ class EconomicSpeech:
             person=state['people'][str(actor)]
             person['memories'].append({'event_id':turn['delivery_id'],'kind':kind,'speaker':turn['actor'],
                 'listener':turn['listener'],'quote':turn['line'],'economic_act':turn['act'],
+                'terms':copy.deepcopy(turn.get('terms')),
                 'source':'Completed nearby economic speech; physical ledger separately verifies transfers',
                 'epistemic_status':'heard terms; receipt act refers to a separately committed transfer'})
             person['memories']=person['memories'][-32:]

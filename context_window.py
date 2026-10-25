@@ -270,3 +270,129 @@ def bounded_goal_context(context):
     if encoded_size(result)>budget:
         raise ValueError('Required personal-goal context exceeds attention budget; no claim or model call created')
     return result
+
+# Purchase alternatives remain in a frozen, private execution catalogue. Only
+# the current node enters inference; a leaf retains original full option proof.
+PURCHASE_POLICY_PATH=Path(__file__).parent/'config/purchase-attention.json'
+MAX_PURCHASE_NAVIGATION_CALLS=16
+
+
+def purchase_attention_policy():
+    value=json.loads(PURCHASE_POLICY_PATH.read_text(encoding='utf-8-sig'))
+    if (set(value)!={'version','leaf_choices','branches','maximum_navigation_calls'}
+            or value['version']!='purchase-attention-v1'
+            or type(value['leaf_choices']) is not int or not 1<=value['leaf_choices']<=6
+            or type(value['branches']) is not int or not 2<=value['branches']<=8
+            or type(value['maximum_navigation_calls']) is not int or not 2<=value['maximum_navigation_calls']<=MAX_PURCHASE_NAVIGATION_CALLS):
+        raise ValueError('Invalid purchase attention policy')
+    return value
+
+
+def purchase_catalogue_hash(choices):
+    from procurement import PINS
+    import hashlib
+    if (not isinstance(choices,list) or not choices
+            or len({row.get('id') for row in choices})!=len(choices)):
+        raise ValueError('Invalid purchase catalogue')
+    payload=[{key:row[key] for key in ('id',*PINS)} for row in sorted(choices,key=lambda row:row['id'])]
+    return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+
+
+def frozen_purchase_choices(choices):
+    # Distance is observed context, never catalogue identity or group ordering.
+    return sorted(copy.deepcopy(choices),key=lambda row:(row['supplier'],row['business_id'],row['recipe_id'],
+        row['commodity'],row['listing_business_id'],row['quantity'],row['id']))
+
+
+def purchase_decision_counts(plan):
+    decisions=plan.get('decisions') or []
+    navigation=sum(row.get('call_lane')=='purchase_navigation' for row in decisions)
+    return {'economic':len(decisions)-navigation,'purchase_navigation':navigation}
+
+
+def check_purchase_decision_budget(plan):
+    from bargaining import MAX_ECONOMIC_CALLS
+    lane='purchase_navigation' if plan.get('phase')=='purchase_select' else 'economic'
+    limit=purchase_attention_policy()['maximum_navigation_calls'] if lane=='purchase_navigation' else MAX_ECONOMIC_CALLS
+    if purchase_decision_counts(plan)[lane]>=limit:
+        raise ValueError('Resident event exhausted its bounded '+lane+' decision budget')
+
+
+def purchase_attention_context(context,plan,supplier_names=None):
+    from procurement import PINS
+    import math
+    policy=purchase_attention_policy();result=copy.deepcopy(context)
+    choices=result.get('purchase_options') or {}
+    if plan.get('phase')!='purchase_select':
+        if len(choices)<=policy['leaf_choices']:return result
+        snapshot=list(choices.values());digest=purchase_catalogue_hash(snapshot)
+        ids=set(choices)
+        result['options']=[o for o in result['options'] if o['id'] not in ids]
+        result['options'].append({'id':'review_input_purchases','effect':f'Inspect all {len(snapshot)} input-purchase alternatives in a bounded menu. No supplier, quantity, price or purchase is selected yet.'})
+        result['option_targets']={key:value for key,value in result.get('option_targets',{}).items() if key not in ids}
+        result['purchase_options']={}
+        result['purchase_attention']={'version':policy['version'],'catalogue_hash':digest,'total_choices':len(snapshot),
+            'visible_choices':0,'stage':'overview','leaf_limit':policy['leaf_choices'],
+            'navigation_call_limit':policy['maximum_navigation_calls'],'navigation_scope':'Purchase navigation and selection calls; independent of negotiation calls',
+            'scope':'All alternatives remain reachable through inspection groups. No purchase choice has been dropped or authorized.'}
+        return result
+    menu=plan.get('purchase_menu') or {};snapshot=menu.get('choices')
+    if (not isinstance(snapshot,list) or menu.get('policy')!=policy
+            or menu.get('catalogue_hash')!=purchase_catalogue_hash(snapshot) or snapshot!=frozen_purchase_choices(snapshot)):
+        raise ValueError('Frozen purchase menu identity or policy changed')
+    span=menu.get('range');trail=menu.get('trail')
+    def valid_range(value):return isinstance(value,list) and len(value)==2 and all(type(i) is int for i in value) and 0<=value[0]<value[1]<=len(snapshot)
+    if not valid_range(span) or not isinstance(trail,list) or any(not valid_range(x) for x in trail):
+        raise ValueError('Malformed purchase menu path')
+    path=trail+[span]
+    if path[0]!=[0,len(snapshot)]:raise ValueError('Purchase menu path must begin at its catalogue root')
+    for parent,child in zip(path,path[1:]):
+        count=parent[1]-parent[0]
+        if count<=policy['leaf_choices']:raise ValueError('Purchase menu leaf cannot contain another group')
+        size=math.ceil(count/policy['branches'])
+        partitions=[[begin,min(parent[1],begin+size)] for begin in range(parent[0],parent[1],size)]
+        if child not in partitions:raise ValueError('Purchase menu path is not an authored group')
+    start,end=span;count=end-start
+    result['options']=[];result['purchase_options']={};result['option_targets']={}
+    for key in ('work_options','enterprise_options','market_options'):result[key]={}
+    result['owner_work_actions']=[]
+    navigation={};unavailable=[]
+    if count<=policy['leaf_choices']:
+        for selected in snapshot[start:end]:
+            action=selected['id'];current=choices.get(action)
+            if not current or any(current.get(k)!=selected.get(k) for k in ('id',*PINS)):
+                unavailable.append({'id':action,'commodity':selected['commodity'],'quantity':selected['quantity'],
+                    'supplier':selected['supplier'],'reason':'Current need, listing, stock observation or route no longer qualifies; exit to reconsider.'})
+                continue
+            result['purchase_options'][action]=copy.deepcopy(selected)
+            result['option_targets'][action]=selected['supplier']
+            original=next(o for o in context['options'] if o['id']==action)
+            result['options'].append(copy.deepcopy(original))
+    else:
+        size=math.ceil(count/policy['branches'])
+        for begin in range(start,end,size):
+            stop=min(end,begin+size);group=snapshot[begin:stop]
+            action=f'inspect_purchase_group_{begin}_{stop}'
+            navigation[action]={'kind':'group','range':[begin,stop]}
+            goods=', '.join(sorted({row['commodity'] for row in group}))
+            supplier_ids=sorted({row['supplier'] for row in group});suppliers=len(supplier_ids)
+            names=list(dict.fromkeys((supplier_names or {}).get(actor,'an unfamiliar resident') for actor in supplier_ids))
+            names_hint=', '.join(names[:3])+(' and others' if len(names)>3 else '')
+            distances=[choices[row['id']].get('distance') for row in group if row['id'] in choices]
+            distances=[value for value in distances if type(value) in (int,float) and math.isfinite(value) and value>=0]
+            distance_hint=f'observed distance {round(min(distances))}–{round(max(distances))} units' if distances else 'distance unobserved'
+            projects=', '.join(list(dict.fromkeys(row['business_id'] for row in group))[:3])
+            result['options'].append({'id':action,'effect':f'Inspect {len(group)} {goods} alternatives for your {projects}: {suppliers} suppliers ({names_hint}); {distance_hint}. Navigation only; stock and consent unknown.'})
+    if trail:
+        navigation['purchase_back']={'kind':'back','range':trail[-1]}
+        result['options'].append({'id':'purchase_back','effect':'Return to the previous inspection group; no purchase.'})
+    navigation['cancel_purchase_review']={'kind':'cancel'}
+    result['options'].append({'id':'cancel_purchase_review','effect':'Leave this menu and reconsider all other daily activities; no travel or purchase.'})
+    result['purchase_navigation']=navigation
+    result['purchase_attention']={'version':policy['version'],'catalogue_hash':menu['catalogue_hash'],
+        'total_choices':len(snapshot),'range':span,'stage':'leaf' if count<=policy['leaf_choices'] else 'groups',
+        'visible_choices':len(result['purchase_options']),'unavailable_choices':unavailable,
+        'navigation_calls_used':purchase_decision_counts(plan)['purchase_navigation'],
+        'navigation_call_limit':policy['maximum_navigation_calls'],'navigation_scope':'Purchase navigation and selection calls; independent of negotiation calls',
+        'scope':'Frozen alternatives, all reachable through groups and Back. Current leaf shows exact terms. Unavailable choices are explicit. Exit restores other daily actions.'}
+    return result

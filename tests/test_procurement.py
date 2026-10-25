@@ -3,9 +3,11 @@ import json
 import unittest
 import test_bargaining as fixtures
 from bargaining import own_prices
-from procurement import grain_procurement
+from procurement import input_procurement
 from owner_production import owner_work_opportunities
 from metrics import simulation_metrics
+from entrepreneurship import learn_recipe
+from trade_execution_fixture import qualify_trade_observation, arm_trade, trade_ack
 
 
 class ProcurementTests(unittest.TestCase):
@@ -16,43 +18,62 @@ class ProcurementTests(unittest.TestCase):
     claim=fixtures.BargainingTests.claim
     choose=fixtures.BargainingTests.choose
     decide=fixtures.BargainingTests.decide
-    settle_sale=fixtures.BargainingTests.settle_sale
     speak=fixtures.BargainingTests.speak
 
     def setUp(self):
         fixtures.BargainingTests.setUp(self)
+        qualify_trade_observation(self.obs)
         self.obs['residents'][0]['inventory'].update(gold=20,bread=2,grain=0)
         self.obs['residents'][1]['inventory'].update(grain=3)
         self.world.active['town']['businesses']={
             'bakery':{'owner':99,'custodian':99,'revision':1,'capabilities':['bread_recipe']},
             'supplier':{'owner':501,'custodian':501,'revision':1,'capabilities':['retail_grain']}}
         self.world.active['people']['501']['food_policy']={'mode':'household_all'}
+        # Explicit synthetic prior participation; a charter/catalog grants no knowledge.
+        learn_recipe(self.world.active['people']['99'],'fixture-prior-verified-bread-production','bread_recipe')
+
+    def settle_sale(self):
+        command=arm_trade(self.world,self.obs,self.sync)
+        self.assertEqual(command['kind'],'inventory_trade')
+        self.assertEqual(command['phase'],'deliver')
+        self.assertFalse(self.world.active['trades'],'arming a purchase is not a sale')
+        for actor,role in ((99,'buyer'),(501,'seller')):
+            resident=next(row for row in self.obs['residents'] if row['id']==actor)
+            resident['inventory'].update(command['after'][role])
+        self.obs['ack']=trade_ack(command)
+        self.world.observe(self.obs);self.sync()
+        return command
 
     def arrive(self,voice=False):
-        claim=self.claim();self.choose(claim,'procure_grain_501');self.sync()
+        claim=self.claim()
+        selected=next((key,value) for key,value in claim['context']['purchase_options'].items()
+                      if value['commodity']=='grain' and value['quantity']==1 and value['supplier']==501)
+        self.purchase_id,self.purchase=selected
+        self.choose(claim,self.purchase_id);self.sync()
         plan=self.world.agency_plan()
         if voice:plan['voiced_trade']=True
         self.obs['ack']={'id':plan['travel_id'],'status':'applied','movement':{
-            'hasOwnedPackage':True,'aliasesConfirmed':True,'adapter':'papyrus-mailbox','actor':99,'target':501}}
+            'id':plan['travel_id'],'hasOwnedPackage':True,'aliasesConfirmed':True,'adapter':'papyrus-mailbox','actor':99,'target':501}}
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'quote')
         return claim
 
     def test_procurement_uses_public_supplier_and_own_shortfall_without_stock_omniscience(self):
         context=self.arrive()['context']
-        self.assertEqual(context['option_targets']['procure_grain_501'],501)
-        self.assertEqual(context['work_options']['procure_grain_501'][0]['grain_shortfall'],3)
+        self.assertEqual(context['option_targets'][self.purchase_id],501)
+        self.assertEqual(context['purchase_options'][self.purchase_id],self.purchase)
+        self.assertEqual(self.purchase['shortfall'],3)
         for secret in ('7139','Secret seller name','Carlotta'):
             self.assertNotIn(secret,json.dumps(context))
 
     def test_verified_grain_purchase_preserves_bread_and_hunger_then_enables_production(self):
         self.arrive();hunger=self.world.active['people']['99']['needs']['hunger']
-        self.decide('bid_price_2');context=self.decide('sell_grain');command=self.settle_sale()
+        self.decide('bid_price_2');context=self.decide('sell_goods');command=self.settle_sale()
         self.assertNotIn('sell_bread',[o['id'] for o in context['options']])
         self.assertEqual(command['commodity'],'grain')
         self.assertEqual(command['after']['buyer'],{'gold':18,'bread':2,'grain':1})
         self.assertEqual(command['after']['seller'],{'gold':7141,'bread':2,'grain':2})
-        self.assertEqual(self.world.agency_plan()['outcome'],'bought_grain')
+        self.assertEqual(self.world.agency_plan()['outcome'],'purchased_input')
         self.assertEqual(self.world.active['people']['99']['needs']['hunger'],hunger)
         self.assertEqual(self.world.active['people']['501']['food_policy'],{'mode':'household_all'})
         self.assertFalse(own_prices(self.world.active['people']['99']))
@@ -80,24 +101,25 @@ class ProcurementTests(unittest.TestCase):
 
     def test_supplier_advertisement_does_not_guarantee_stock_and_adequate_inputs_stop_procurement(self):
         self.obs['residents'][1]['inventory']['grain']=0
-        self.assertEqual(len(grain_procurement(self.world.active,self.obs,99)),1)
+        choices=input_procurement(self.world.active,self.obs,99)
+        self.assertTrue(any(row['supplier']==501 and row['commodity']=='grain' and row['quantity']==1 for row in choices))
         self.arrive();self.decide('bid_price_1')
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual([o['id'] for o in context['options']],['decline'])
         self.obs['residents'][0]['inventory']['grain']=3
-        self.assertEqual(grain_procurement(self.world.active,self.obs,99),[])
+        self.assertEqual(input_procurement(self.world.active,self.obs,99),[])
 
     def test_grain_speech_uses_correct_good_and_receipt_waits_for_native_exchange(self):
         self.arrive(voice=True);self.decide('bid_price_3')
-        offer=self.speak();self.assertIn('grain',offer['line']);self.assertNotIn('loaf',offer['line'])
-        self.decide('sell_grain');accepted=self.speak();self.assertIn('grain',accepted['line'])
-        self.settle_sale();receipt=self.speak();self.assertIn('received one unit of grain',receipt['line'])
+        offer=self.speak();self.assertIn('grain',offer['line'].lower());self.assertNotIn('loaf',offer['line'].lower())
+        self.decide('sell_goods');accepted=self.speak();self.assertIn('grain',accepted['line'].lower())
+        self.settle_sale();receipt=self.speak();self.assertIn('received 1 unit of grain',receipt['line'].lower())
         self.assertEqual(self.world.agency_plan()['phase'],'complete')
         self.assertEqual(len(self.world.agency_plan()['decisions']),3,'no pointless single-choice inference after procurement')
 
     def test_old_save_cannot_inherit_grain_purchase_or_memory(self):
         self.arrive();old=copy.deepcopy(self.obs)
-        self.decide('bid_price_2');self.decide('sell_grain');self.settle_sale()
+        self.decide('bid_price_2');self.decide('sell_goods');self.settle_sale()
         self.world.observe({**old,'session':'restored-input-save'})
         self.assertEqual(self.world.active['trades'],[])
         self.assertEqual(own_prices(self.world.active['people']['99'],'grain'),[])

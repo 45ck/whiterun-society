@@ -8,7 +8,7 @@ import copy
 import hashlib
 import json
 import sqlite3
-from world_economy import snapshot
+from trade_execution import TradeExecution
 from agency import Agency
 from food import FoodEconomy, allocation
 from production import Production
@@ -35,7 +35,7 @@ from economy_catalog import require_native_catalog, native_catalog_matches, cata
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
+class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -115,6 +115,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         # A prepared recipe owns the writer until its exact receipt settles.
         # Do not hide its acknowledgement behind an unrelated conversation.
         effect = self.active.get('pending')
+        if effect and effect.get('command',{}).get('kind')=='inventory_trade':
+            self.observe_trade(observation)
+            return
         if effect and effect.get('command',{}).get('kind')=='inventory_endowment':
             self.observe_endowment(observation)
             return
@@ -176,98 +179,6 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         if pending['command']['kind']=='inventory_self_produce':
             self.observe_owner_production(observation)
             return
-        ack = observation.get('ack') or {}
-        if ack.get('id') != pending['id']:
-            return
-        command = pending['command']
-        try:
-            actual = snapshot(observation, command['buyer'], command['seller'],command.get('commodity','bread'))
-        except ValueError:
-            return
-        state = copy.deepcopy(self.active)
-        if (ack.get('status') == 'applied' and ack.get('catalog_hash') == command['catalog_hash']
-            and actual == command['after']):
-            record = state['pending']
-            record['status'] = 'committed'
-            record['evidence'] = {'actual': actual, 'ack': ack, 'session': session}
-            state['trades'].append(record)
-            state['pending'] = None
-            if state.get('plans') and state['plans'][-1]['trade_id'] == record['id']:
-                if state['plans'][-1].get('food_actions'):
-                    state['plans'][-1].update(phase='complete' if command.get('commodity')=='grain' else 'after_purchase', purchase_completed=True)
-                    if command.get('commodity')=='grain':state['plans'][-1]['outcome']='bought_grain'
-                    self.queue_trade_speech(state,state['plans'][-1],'receipt')
-                else:
-                    state['plans'][-1].update(phase='complete', outcome='bought_'+command.get('commodity','bread'))
-            for actor, other, role in [(command['buyer'], command['seller'], 'bought'),
-                                        (command['seller'], command['buyer'], 'sold')]:
-                person = state['people'].get(str(actor))
-                if person is not None:
-                    person['memories'].append({'event_id': record['id'], 'kind': 'completed_trade',
-                        'role': role, 'other': other, command.get('commodity','bread'): command['quantity'], 'commodity':command.get('commodity','bread'), 'quantity':command['quantity'], 'gold': command['cost']})
-                    person['memories'] = person['memories'][-32:]
-                    person['trust'][str(other)] = min(10, person['trust'].get(str(other), 0) + 1)
-            self._write(state, 'trade observed; memories and trust updated')
-        else:
-            state['pending']['status'] = 'held'
-            state['pending']['evidence'] = {'actual': actual, 'ack': ack}
-            if state.get('plans') and state['plans'][-1]['trade_id'] == pending['id']:
-                state['plans'][-1].update(phase='held', error='Physical trade requires reconciliation')
-            self._write(state, 'trade requires reconciliation')
-
-    def plan_trade(self, event_id, observation, buyer, seller, quantity=1, unit_price=3, agency_plan=None, commodity='bread'):
-        if self.routines_busy():raise ValueError('Independent journeys are still executing')
-        if self.conversation_busy():
-            raise ValueError('A conversation owns the participants')
-        if self.error or not self.active or self.transition:
-            raise ValueError('Society checkpoint is not synchronized')
-        if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
-            raise ValueError('Observation belongs to a different checkpoint')
-        if not isinstance(event_id, str) or not 1 <= len(event_id) <= 128 or event_id.startswith('checkpoint-'):
-            raise ValueError('Invalid trade event ID')
-        if any(type(v) is not int or v <= 0 for v in (buyer, seller, quantity, unit_price)):
-            raise ValueError('Positive integer trade values required')
-        if buyer == seller or quantity > 10 or unit_price > 100:
-            raise ValueError('Invalid or oversized trade')
-        if commodity not in ('bread','grain'):raise ValueError('Unsupported sale commodity')
-        request = dict(buyer=buyer, seller=seller, quantity=quantity, unit_price=unit_price)
-        if commodity!='bread':request['commodity']=commodity
-        for old in self.active['trades'] + ([self.active['pending']] if self.active['pending'] else []):
-            if old['id'] == event_id:
-                if old['request'] != request:
-                    raise ValueError('Event ID reused with different trade')
-                return old
-        if self.active['pending']:
-            raise ValueError('An unsettled trade must be reconciled first')
-        if activity_conflict(self.active, actors=(buyer, seller), observation=observation):
-            raise ValueError('A trade participant owns an independent activity lease')
-        bound_catalog=require_native_catalog(observation)
-        before = snapshot(observation, buyer, seller,commodity)
-        cost = quantity * unit_price
-        if before['buyer']['gold'] < cost or before['seller'][commodity] < quantity:
-            raise ValueError('Insufficient observed funds or goods')
-        stock = allocation(self.active['people'].get(str(seller), {}), before['seller'])
-        reserve_consent=(reserved_sale_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before['seller'])
-                         if commodity=='bread' else None)
-        if commodity=='bread' and stock['allocated'] and stock['for_sale'] < quantity and not reserve_consent:
-            raise ValueError('This trade would spend the resident\'s household reserve')
-        after=copy.deepcopy(before)
-        after['buyer']['gold']-=cost;after['seller']['gold']+=cost
-        after['buyer'][commodity]+=quantity;after['seller'][commodity]-=quantity
-        if any(n>MAX_STOCK for stock in after.values() for n in stock.values()):raise ValueError('Trade would overflow native inventory')
-        command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
-                       catalog_hash=bound_catalog,quantity=quantity, cost=cost, commodity=commodity, before=before, after=after)
-        record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
-        if reserve_consent:record['reserve_release']=copy.deepcopy(reserve_consent)
-        state = copy.deepcopy(self.active)
-        state['pending'] = record
-        if agency_plan:
-            if not state.get('plans') or state['plans'][-1]['id'] != agency_plan:
-                raise ValueError('Trade has no matching resident plan')
-            state['plans'][-1]['phase'] = 'trading'
-        checkpoint = self._write(state, 'trade intent persisted before physical action')
-        return {**record, 'prepared_checkpoint': checkpoint}
-
     def pending(self, session):
         if session != self.session or self.error:
             return None
@@ -276,6 +187,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             command=self.active['pending']['command']
+            if command.get('kind')=='inventory_trade':return self.trade_pending_command(session)
             if command.get('kind')=='inventory_endowment':return self.endowment_pending_command(session)
             if command.get('kind','').startswith('inventory_') and command.get('catalog_hash')!=catalog_hash():return None
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}

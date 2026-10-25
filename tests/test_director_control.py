@@ -23,7 +23,7 @@ class DirectorControlTests(unittest.TestCase):
     def test_single_owner_bounded_process_and_graceful_stop(self,popen):
         process=Mock();process.poll.return_value=None;popen.return_value=process
         result=self.control.start({'max_events':2,'scene_handoffs':True},self.bridge,self.society)
-        self.assertTrue(result['running']);self.assertEqual(result['maximum_model_calls'],224)
+        self.assertTrue(result['running']);self.assertEqual(result['maximum_model_calls'],256)
         self.assertNotIn('receipt',result);self.assertNotIn('stop_file',result)
         argv=popen.call_args.args[0];self.assertNotIn('test-placeholder',' '.join(argv))
         self.assertIn('--social-opportunities',argv)
@@ -70,7 +70,7 @@ class DirectorControlTests(unittest.TestCase):
         result=self.control.control({'action':'play'},self.bridge,self.society)
         self.assertEqual((result['mode'],result['max_events'],result['session_limit_seconds']),('play',96,3600))
         self.assertEqual(result['run_policy']['goal_budget'],768)
-        self.assertEqual(result['maximum_model_calls'],2304)
+        self.assertEqual(result['maximum_model_calls'],3840)
         self.assertTrue(result['scene_handoffs_enabled'])
         argv=popen.call_args.args[0]
         self.assertEqual(argv[argv.index('--watch-seconds')+1],'3600')

@@ -1,0 +1,6 @@
+{
+  "version": "purchase-attention-v1",
+  "leaf_choices": 6,
+  "branches": 8,
+  "maximum_navigation_calls": 16
+}

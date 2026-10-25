@@ -69,6 +69,7 @@ function createEconomyCatalogController(platform,manifest){
   identity(recipeId){return catalog&&Object.hasOwn(catalog.recipes,recipeId)?{catalog_hash:catalog.catalog_hash,recipe_hash:catalog.recipe_hashes[recipeId]}:null;},
   recipe(recipeId){return catalog&&Object.hasOwn(catalog.recipes,recipeId)?clone(catalog.recipes[recipeId]):null;},
   itemIds(){return catalog?Object.keys(catalog.commodities).sort():[];},
+  commodities(){return catalog?clone(Object.values(catalog.commodities)):[];},
   resolve(){
    if(!catalog)return {available:false,forms:{},errors:{catalog:error||'Catalog unavailable'},type_verified:false};
    const sp=platform(),forms={},errors={},seen=new Set();let typeVerified=true;

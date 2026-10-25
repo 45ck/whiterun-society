@@ -34,7 +34,7 @@ def _account_actor(value):
     return int(suffix) if len(suffix)<=10 and suffix.isascii() and suffix.isdigit() and str(int(suffix))==suffix and int(suffix)>0 else None
 
 def reserved_work_accounts(state,observation=None):
-    actors=resource_quarantine_actors(state,observation)
+    actors=resource_quarantine_actors(state,observation)|trade_quarantine_actors(state,observation)
     for row in _work_rows(state,observation):
         actors.update(row.get(field) for field in ('actor','custodian','account_actor')
                       if type(row.get(field)) is int and row[field]>0)
@@ -88,6 +88,39 @@ def resource_quarantine_actors(state,observation=None):
         for field in ('residents','inventory_observations'):
             actors.update(row['id'] for row in observation.get(field,[]) if isinstance(row,dict) and valid(row.get('id')))
     return actors
+
+def trade_quarantine_actors(state,observation=None):
+    """Both sides of an unresolved exchange remain unavailable for new work.
+
+    Native orphan leases survive saved-state rollback. Malformed participants
+    cannot be interpreted as a free account; reserve the observed population.
+    """
+    state=state or {};observation=observation or {};actors=set();unknown=False
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    for record in (state.get('pending'),state.get('unsettled_effect')):
+        if not isinstance(record,dict):continue
+        command=record.get('command')
+        if not isinstance(command,dict) or command.get('kind')!='inventory_trade':continue
+        if record.get('status') in ('committed','complete'):continue
+        pair=[command.get('buyer'),command.get('seller')]
+        actors.update(value for value in pair if valid(value))
+        unknown=unknown or not all(valid(value) for value in pair) or pair[0]==pair[1]
+    native=observation.get('trade_execution') or {}
+    if isinstance(native,dict) and 'reserved_actors' in native:
+        reserved=native['reserved_actors']
+        if isinstance(reserved,list):
+            actors.update(value for value in reserved if valid(value))
+            unknown=unknown or not all(valid(value) for value in reserved)
+        else:unknown=True
+    if unknown:
+        for people in (state.get('people'),(state.get('town') or {}).get('residents')):
+            if isinstance(people,dict):
+                actors.update(int(key) for key in people if isinstance(key,str) and key.isascii() and key.isdigit()
+                              and len(key)<=10 and str(int(key))==key and valid(int(key)))
+        for field in ('residents','inventory_observations'):
+            actors.update(row['id'] for row in observation.get(field,[]) if isinstance(row,dict) and valid(row.get('id')))
+    return actors
+
 
 def conversation_quarantine_actors(state,observation=None):
     """Reserve ambiguous cleanup participants without choosing a release owner.

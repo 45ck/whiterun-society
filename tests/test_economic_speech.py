@@ -1,7 +1,7 @@
 import copy
 import unittest
 import test_agency as fixtures
-from catalog_fixture import native_ack
+from trade_execution_fixture import trade_ack
 
 
 class EconomicSpeechTests(unittest.TestCase):
@@ -13,7 +13,7 @@ class EconomicSpeechTests(unittest.TestCase):
 
     def start(self):
         self.world.begin_plan('meal-1',self.obs, 108186,voiced_trade=True);self.sync()
-        self.decide('seek_bread');self.arrive()
+        self.decide('seek_bread');self.arrive();self.decide('bid_price_3')
         self.assertEqual(self.world.agency_plan()['phase'],'economic_attending')
         self.obs['conversationAttendance']={'id':'economic-attend-meal-1','phase':'attending','participants':[
             {'actor':actor,'ownedPackage':True,'loaded':True} for actor in (108186,108149)]}
@@ -37,9 +37,15 @@ class EconomicSpeechTests(unittest.TestCase):
         self.assertIsNone(self.world.active['pending'])
         self.assertIn('Agreed',self.speak()['line'])
         trade=self.world.pending('a');self.assertEqual(trade['kind'],'inventory_trade')
+        self.assertEqual(trade['phase'],'arm')
         self.assertFalse(self.world.agency_plan().get('purchase_completed',False))
+        before=copy.deepcopy(self.obs['residents'])
+        self.obs['ack']=trade_ack(trade);self.world.observe(self.obs);self.sync()
+        self.assertEqual(self.obs['residents'],before,'Arm authorizes no inventory effect')
+        self.assertEqual(self.world.active['trades'],[])
+        trade=self.world.pending('a');self.assertEqual(trade['phase'],'deliver')
         for index,role in ((0,'buyer'),(1,'seller')):self.obs['residents'][index]['inventory']=trade['after'][role]
-        self.obs['ack']=native_ack(trade);self.world.observe(self.obs);self.sync()
+        self.obs['ack']=trade_ack(trade);self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['economic_speech']['act'],'receipt')
         self.assertEqual(len(self.world.active['trades']),1)
         self.speak();self.decide('keep_food')
@@ -51,7 +57,7 @@ class EconomicSpeechTests(unittest.TestCase):
 
     def test_counteroffer_and_second_refusal_do_not_transfer_inventory(self):
         self.start();before=copy.deepcopy(self.obs['residents']);self.speak();self.decide('decline');self.speak()
-        self.decide('raise_offer');self.assertIn('5 gold',self.speak()['line'])
+        self.decide('bid_price_5');self.assertIn('5 gold',self.speak()['line'])
         self.decide('decline');self.speak()
         self.assertEqual(self.world.agency_plan()['outcome'],'seller_declined')
         self.assertEqual(self.obs['residents'],before);self.assertEqual(self.world.active['trades'],[])
@@ -69,7 +75,7 @@ class EconomicSpeechTests(unittest.TestCase):
         self.assertEqual(self.world.pending('new-session')['kind'],'release_routine')
 
     def test_replanning_releases_old_seller_before_new_destination(self):
-        self.start();self.speak();self.decide('decline');self.speak();self.decide('visit_adrianne')
+        self.start();self.speak();self.decide('decline');self.speak();self.decide('visit_person_108156')
         self.assertEqual(self.world.agency_plan()['economic_speech']['listener'],108149)
         self.speak();command=self.world.pending('a');self.assertEqual(command['kind'],'release_routine')
         self.assertEqual(command['participants'],[108186,108149])

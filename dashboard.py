@@ -1,8 +1,9 @@
 """Operator-wide town charts from observations, never resident knowledge."""
 import math
+import economy_catalog
 from activity_metrics import activity_metrics
 from owner_work_metrics import owner_work_metrics
-from economy_catalog import ECONOMY_CATALOG, catalog_hash, commodity_ids, recipe_ids, native_catalog_matches
+from economy_catalog import catalog_hash, commodity_ids, recipe_ids, native_catalog_matches
 
 
 def inventory_catalog_status(observation, fresh=True):
@@ -28,7 +29,8 @@ def inventory_catalog_status(observation, fresh=True):
     return {'status':status,'fresh':fresh is True,'verified':verified,'reason':reason,
         'configured_item_count':len(commodity_ids()),'configured_recipe_count':len(recipe_ids()),
         'verified_native_item_count':len(commodity_ids()) if verified else None,
-        'configured_version':ECONOMY_CATALOG['version'],'configured_hash':expected,
+        'configured_version':economy_catalog.ECONOMY_CATALOG['version'],'configured_hash':expected,
+        'commodity_labels':{row['id']:row['label'] for row in economy_catalog.ECONOMY_CATALOG['commodities']},
         'reported_hash':report.get('catalog_hash') if isinstance(report.get('catalog_hash'),str) else None,
         'diagnostics':diagnostics,'scope':'Configuration and game-item verification only; counts are not stock, executed recipes or completed production.'}
 
@@ -70,7 +72,7 @@ def town_dashboard(society, observation, spatial=None, fresh=True):
     accounts={str(r['id']):r.get('inventory',{}) for r in observation.get('inventory_observations',[])}
     accounts.update({key:r.get('inventory',{}) for key,r in loaded.items()})
     stock={}
-    for item in ('gold','bread','grain'):
+    for item in commodity_ids():
         values=[accounts[k][item] for k in managed if k in accounts and type(accounts[k].get(item)) is int and accounts[k][item]>=0]
         stock[item]={'total':sum(values) if values else None,'accounts':len(values),'population':len(managed)}
     needs={}
@@ -96,5 +98,5 @@ def town_dashboard(society, observation, spatial=None, fresh=True):
         'drama':metrics.get('drama'),'quality_goals':metrics.get('quality_goals'),
         'control_scope':'Current observed package ownership, not long-term autonomy or quest compatibility.',
         'stock':stock,'needs':needs,'needs_scope':'Authored simulation needs, not measured human psychology.',
-        'economy':{k:economy.get(k) for k in ('committed_sales','committed_production','committed_meals','active_enterprises','resident_enterprise_changes','operator_enterprise_changes','household_release_sales','negotiations','wording')},
+        'economy':{k:economy.get(k) for k in ('committed_sales','committed_production','committed_meals','active_enterprises','resident_enterprise_changes','operator_enterprise_changes','household_release_sales','negotiations','wording','bargaining')},
         'economy_scope':'Cumulative verified events in this save, including qualification experiments.'}

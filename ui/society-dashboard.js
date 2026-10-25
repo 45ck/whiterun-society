@@ -6,6 +6,20 @@ function directorLabel(director){
  if(director.status==='complete')return 'Stopped';
  return 'Paused';
 }
+function commodityLabel(commodity,catalog){
+ const label=catalog?.commodity_labels?.[commodity];
+ return typeof label==='string'&&label.trim()?label:typeof commodity==='string'&&commodity?'Unverified item ('+commodity+')':'Unknown item';
+}
+function tradePresentation(trade,catalog){
+ const integer=value=>Number.isSafeInteger(value)&&value>0?value:null;
+ const quantity=integer(trade.quantity),unit=integer(trade.unit_price),total=integer(trade.cost);
+ const consistent=quantity!==null&&unit!==null&&total!==null&&Number.isSafeInteger(quantity*unit)&&quantity*unit===total;
+ const committed=trade.status==='committed',held=trade.status==='held';
+ return {goods:`${quantity??'Unknown quantity'} ${commodityLabel(trade.commodity,catalog)}`,
+  badge:committed?'VERIFIED SALE':held?'HELD · NOT VERIFIED':'PENDING · NOT VERIFIED',
+  detail:`${unit??'Unknown'} gold each · ${total??'Unknown'} gold ${committed?'paid':'quoted'} · ${!consistent?'terms incomplete or inconsistent · ':''}${committed?'goods and money checked in-game':held?'effects may be partial; reconciliation required':'exchange not yet verified'}`,
+  status:committed?'Inventory transfer verified against the game.':held?'Exchange held. A partial effect is possible; no verified sale is credited.':'Waiting for the game to confirm both parts of the exchange.'};
+}
 // Operator charts. No chart value enters a resident's private decision context.
 function activityJobLabel(job){
  const native=job.native_phase;
@@ -166,7 +180,7 @@ function renderTownCharts(root,data){
   add(panel,'p',`Cost coverage ${ratio(a.cost_coverage)}. ${a.cost_scope||''}`,'town-chart-note');add(panel,'p',a.scope,'town-chart-note');
  }
  const stock=section('Observed resources'),grid=add(stock,'div',undefined,'town-stock-grid');
- for(const [key,label] of [['gold','Gold'],['bread','Loaves'],['grain','Grain']]){const value=data.stock[key],card=add(grid,'div',undefined,'town-stock');add(card,'strong',value.total??'—');add(card,'span',label);add(card,'small',`${value.accounts}/${value.population} accounts`);}
+ for(const [key,value] of Object.entries(data.stock||{})){const card=add(grid,'div',undefined,'town-stock');add(card,'strong',value.total??'—');add(card,'span',commodityLabel(key,data.inventory_catalog));add(card,'small',`${value.accounts}/${value.population} accounts`);}
  const needs=section('Residents with unmet needs');
  for(const [key,label] of [['hunger','Hungry'],['fatigue','Tired'],['social_contact','Seeking company']]){const value=data.needs[key],item=add(needs,'div',undefined,'town-need'),line=add(item,'div',undefined,'town-need-label');add(line,'span',label);add(line,'span',value.known?`${value.high} / ${value.known}`:'Unknown');const track=add(item,'div',undefined,'town-need-track');track.setAttribute('role','meter');track.setAttribute('aria-label',label);track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(value.known||1));track.setAttribute('aria-valuenow',String(value.high));add(track,'div',undefined,'town-need-fill').style.width=(value.known?value.high/value.known*100:0)+'%';}
  add(needs,'p',data.needs_scope,'town-chart-note');
@@ -210,19 +224,19 @@ function renderTownCharts(root,data){
    const fill=add(track,'div',undefined,'town-need-fill');fill.style.width=(negotiation.n?count/negotiation.n*100:0)+'%';fill.style.background=color;
   }
   add(trade,'p',negotiation.n?negotiation.scope:'No retained voiced trade plans yet.','town-chart-note');
-  add(trade,'p',`${data.economy.household_release_sales??'Unknown'} committed sales released one reserved loaf. Remaining household stock stays reserved.`,'town-chart-note');
+  add(trade,'p',`${data.economy.household_release_sales??'Unknown'} committed sales explicitly released household-reserved stock. Other stock remains governed by the resident's allocation.`,'town-chart-note');
   const bargaining=data.economy.bargaining;
   if(bargaining?.plans){
-   for(const [commodity,seriesGroup] of Object.entries(bargaining.by_commodity||{bread:bargaining})){
+   for(const [commodity,seriesGroup] of Object.entries(bargaining.by_commodity||{__unknown__:bargaining})){
      if(!seriesGroup.plans)continue;
-     add(trade,'h4',commodity==='grain'?'Grain input market':'Bread market');
+     add(trade,'h4',`${commodityLabel(commodity==='__unknown__'?null:commodity,data.inventory_catalog)} market`);
      const prices=add(trade,'div',undefined,'town-stock-grid');
    for(const [label,key] of [['Buyer bids','buyer_offers'],['Seller asks','seller_counteroffers'],['Paid prices','paid_prices']]){
     const series=seriesGroup[key],card=add(prices,'div',undefined,'town-stock');
     add(card,'strong',series?.n?String(series.median):'—');
     add(card,'span',`${label} · ${series?.n||0}`);
    }
-   add(trade,'p',`Median septims per ${commodity==='grain'?'grain unit':'loaf'}. Bids and asks are proposals; paid prices require verified inventory exchange.`,'town-chart-note');
+   add(trade,'p','Median septims per unit. Bids and asks are proposals; paid prices require verified inventory exchange.','town-chart-note');
     }
   }
  }
@@ -261,4 +275,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel};
+if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation};

@@ -2,6 +2,7 @@ import copy
 import unittest
 import test_population
 from catalog_fixture import native_ack
+from trade_execution_fixture import qualify_trade_observation
 
 
 class DailyLifeTests(unittest.TestCase):
@@ -12,6 +13,7 @@ class DailyLifeTests(unittest.TestCase):
     def setUp(self):
         test_population.PopulationTests.setUp(self)
         self.census()
+        qualify_trade_observation(self.obs)
         self.world.initialize_population('census','daily-seed',self.obs);self.sync()
         self.world.configure_enterprise('fixture-bakery', {'id':'business-108149','expected_revision':0,
             'name':'Fixture food enterprise','custodian':108149,'capabilities':['bread_recipe','retail_food'],
@@ -107,9 +109,11 @@ class DailyLifeTests(unittest.TestCase):
         self.assertIn(99,[e['actor'] for e in self.world.active['town']['daily']['queue']])
 
     def test_input_shortfall_queues_livelihood_before_hunger_is_urgent(self):
+        from entrepreneurship import learn_recipe
         self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
         self.obs['residents'][2]['inventory'].update(bread=2,grain=0,gold=7)
         self.world.active['people']['99']['needs'].update(hunger=.4,fatigue=.2)
+        learn_recipe(self.world.active['people']['99'],'authored-earlier-production','bread_recipe')
         self.world.active['town']['businesses']['buyer-bakery']={
             'owner':99,'custodian':99,'revision':1,'capabilities':['bread_recipe']}
         self.world.active['town']['businesses']['business-108149']['capabilities'].append('retail_grain')
@@ -118,7 +122,10 @@ class DailyLifeTests(unittest.TestCase):
         self.assertIn('buying inputs',event['reason'])
         self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
         claim=self.world.claim_plan_decision(event['id'],self.obs)['claim']
-        self.assertIn('procure_grain_108149',{o['id'] for o in claim['context']['options']})
+        purchases=claim['context']['purchase_options']
+        self.assertTrue(purchases)
+        self.assertTrue(all(p['commodity']=='grain' and p['supplier']==108149 for p in purchases.values()))
+        self.assertTrue(set(purchases)<={o['id'] for o in claim['context']['options']})
 
     def test_unloaded_residents_age_but_get_no_fictitious_execution(self):
         self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=99]

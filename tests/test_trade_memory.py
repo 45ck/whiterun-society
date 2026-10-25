@@ -7,7 +7,7 @@ from trade_memory import remember_refusal_decision, remember_refusal_heard
 class RefusalMemoryTests(unittest.TestCase):
     def setUp(self):
         self.state={'people':{'1':{'memories':[]},'2':{'memories':[]}}}
-        self.plan={'id':'sale','actor':1,'target':2,'voiced_trade':True,'unit_price':3,
+        self.plan={'id':'sale','actor':1,'target':2,'voiced_trade':True,'unit_price':3,'commodity':'bread','quantity':1,
             'offer_round':1,'decisions':[{'claim_id':'choice-1','decision':{'reason':'PRIVATE_STOCK_REASON'},
                 'context':{'reserved_stock':999}}]}
 
@@ -61,6 +61,21 @@ class RefusalMemoryTests(unittest.TestCase):
         self.assertIn('non-spoken',memory['source']);self.assertNotIn('delivery_id',memory)
         self.assertEqual(len(self.state['people']['1']['memories']),1)
 
+    def test_multiunit_refusal_remembers_frozen_quantity_and_total_only_after_hearing(self):
+        self.plan.update(commodity='grain',quantity=5,unit_price=4)
+        event=remember_refusal_decision(self.state,self.plan)
+        self.assertEqual(self.state['people']['1']['memories'],[])
+        self.plan.update(quantity=1,unit_price=99)
+        self.assertTrue(remember_refusal_heard(self.state,self.plan,self.turn(event)))
+        memory=self.state['people']['1']['memories'][0]
+        self.assertEqual((memory['commodity'],memory['quantity'],memory['grain'],memory['unit_price'],memory['cost'],memory['gold']),('grain',5,5,4,20,20))
+
+    def test_missing_or_unknown_terms_do_not_create_refusal_knowledge(self):
+        for changes in ({'commodity':None},{'commodity':'unconfigured'},{'quantity':None},{'quantity':True}):
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                remember_refusal_decision(self.state,{**self.plan,**changes})
+        self.assertTrue(all(not p['memories'] for p in self.state['people'].values()))
+
 
 class RefusalSpeechIntegrationTests(unittest.TestCase):
     setUp=fixtures.EconomicSpeechTests.setUp
@@ -79,7 +94,7 @@ class RefusalSpeechIntegrationTests(unittest.TestCase):
         self.assertEqual(len(self.refusals(108149)),1);self.assertEqual(self.refusals(108186),[])
         self.speak();self.assertEqual(len(self.refusals(108186)),1)
         self.world.observe(self.obs);self.sync();self.assertEqual(len(self.refusals(108186)),1)
-        self.decide('raise_offer');self.speak();self.decide('decline')
+        self.decide('bid_price_5');self.speak();self.decide('decline')
         self.assertEqual(len(self.refusals(108149)),2);self.assertEqual(len(self.refusals(108186)),1)
         self.speak();self.assertEqual([m['gold'] for m in self.refusals(108186)],[3,5])
         self.assertEqual(self.world.agency_plan()['refusals_recorded'],2)
