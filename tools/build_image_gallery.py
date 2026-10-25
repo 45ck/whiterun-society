@@ -16,6 +16,7 @@ GENERATED.add('resident-initialization-flow.png')
 GENERATED.add('finite-resource-delivery-flow.png')
 GENERATED.add('generic-market-cycle.png')
 GENERATED.add('livelihood-startup.png')
+GENERATED.add('paid-employment-cycle.png')
 MEASURED={'personal-goals-movement-chart.png','owner-work-fixture-timeline.png'}
 
 def build():

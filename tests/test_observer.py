@@ -34,6 +34,19 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(result['residents'][0]['activity_blocker'],'native_scene')
         self.assertEqual(result['residents'][0]['native_activity']['scene_id'],888)
         self.assertIsNone(result['residents'][1]['native_activity'])
+
+    def test_paid_capability_is_unknown_when_disconnected_or_checkpoint_changes(self):
+        self.obs.update(ready=True,checkpoint=10,session='paid-observer',paid_employment={
+            'available':True,'protocol':2,'epoch':'paid-epoch','session':'paid-observer'})
+        bridge={'last_seen':time.time(),'observation':self.obs}
+        current=observer_state(bridge,self.society)
+        self.assertTrue(current['dashboard']['paid_employment_metrics']['capability']['available'])
+        self.assertEqual(current['paid_employment_metrics'],current['dashboard']['paid_employment_metrics'])
+        for stale in ({**bridge,'last_seen':0},
+                      {**bridge,'observation':{**self.obs,'checkpoint':11}}):
+            result=observer_state(stale,self.society)
+            self.assertIsNone(result['paid_employment_metrics']['capability']['available'])
+            self.assertFalse(result['paid_employment_metrics']['capability']['fresh'])
         self.assertEqual(result['residents'][1]['activity_blocker'],'not_loaded')
 
     def test_configured_recipe_editor_is_generic_and_does_not_mutate_catalog(self):

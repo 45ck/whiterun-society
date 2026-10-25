@@ -28,6 +28,8 @@ __ACTIVITY_JOBS_FACTORY__
 const activityJobs=createActivityJobsController(()=>sp);
 __OWNER_WORK_JOBS_FACTORY__
 const ownerWorkJobs=createOwnerWorkJobsController(()=>sp,Date.now,{catalog:economyCatalog});
+__PAID_EMPLOYMENT_FACTORY__
+const paidEmployment=createPaidEmploymentController(()=>sp,Date.now,{catalog:economyCatalog});
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
 __PARALLEL_ROUTINES_FACTORY__
@@ -94,6 +96,23 @@ const registrations = [];
 sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
+function paidReservedActors(){
+  const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
+  const actors=new Set(paidEmployment.reservedActors());let unknown=false;
+  for(const job of presentation.society?.paid_employment?.jobs||[]){
+    for(const id of [job.worker,job.employer]){if(valid(id))actors.add(id);else unknown=true;}
+  }
+  if(unknown)for(const id of [...residents.map(r=>r.id),...Object.keys(presentation.society?.people||{}).map(Number)])if(valid(id))actors.add(id);
+  return [...actors];
+}
+function paidSuspendedWorkers(){
+  // A held payment keeps its account leases even after the attendance override
+  // disappears. Do not let that disappearance restore an older walking goal.
+  const rows=[...(paidEmployment.status()?.jobs||[]),...(presentation.society?.paid_employment?.jobs||[])];
+  return [...new Set(rows.filter(job=>job&&(job.phase==='held'||job.cancel_requested===true)
+    &&!(job.receipt_acknowledged===true&&job.release_verified===true&&job.effect_unreconciled===false)).map(job=>job.worker)
+    .filter(id=>Number.isInteger(id)&&id>0&&id<=0xffffffff))];
+}
 function resourceReservedActors(inventoryObserved=[]) {
   const valid=id=>Number.isInteger(id)&&id>0&&id<=0xffffffff;
   const ids=new Set();let unknown=false;
@@ -185,7 +204,7 @@ function reset() {
   observerReady = false; residents = [];
   cameraDirty=true;
   transfers.reset();
-  activityJobs.reset();ownerWorkJobs.reset();production.reset();rest.reset();parallelRoutines.reset();
+  activityJobs.reset();ownerWorkJobs.reset();paidEmployment.reset();production.reset();rest.reset();parallelRoutines.reset();
   movement.reset();
   routines.reset();movementSource=null;routineRecoveryNeeded=true;
 }
@@ -364,20 +383,27 @@ on('update', () => {
   residentControl.yieldActors([...activityJobs.reservedActors(),...resourceReservedActors(),...tradeReservedActors()]);
   activityJobs.tick(presentation.society?.activity_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error);
   ownerWorkJobs.tick(presentation.society?.owner_work_jobs,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error,residentControl.status());
-  residentControl.yieldActors(ownerWorkJobs.releasingActors());
+  paidEmployment.tick(presentation.society?.paid_employment,session,Date.now()-lastPresentationAt<10000&&!presentation.society?.error,residentControl.status());
+  residentControl.yieldActors([...ownerWorkJobs.releasingActors(),...paidEmployment.releasingActors(),...paidSuspendedWorkers()]);
   if (pending) {
     const command = pending; pending = null;
     // Grants and trades validate complete identity on every arm/deliver replay.
     // The generic ID-only cache must never bypass that controller's checks.
     const resourceCommand=command.kind==='inventory_endowment',tradeCommand=command.kind==='inventory_trade';
     const legacyPaidCommand=command.kind==='inventory_produce';
+    const paidCommand=['paid_work_start','inventory_paid_work_commit','paid_work_ack_receipt'].includes(command.kind);
     const journeyCommand=['parallel_routines','background_routines'].includes(command.kind);
-    const controllerReceipt=resourceCommand||tradeCommand||legacyPaidCommand||journeyCommand;
+    const controllerReceipt=resourceCommand||tradeCommand||legacyPaidCommand||journeyCommand||paidCommand;
     // Paid legacy IDs must not retrieve cached applied receipts or enter native effects.
     if(legacyPaidCommand&&command.session===session)ack=production.step(command).ack;
     if(!controllerReceipt&&command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
     if (!legacyPaidCommand&&command.session === session && (controllerReceipt||!completed.has(command.id))) {
       try {
+        if(!paidCommand){
+          const reserved=paidReservedActors();
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
+          if(actors.some(id=>reserved.includes(id)))throw new Error('Paid employment reserves a command participant');
+        }
         if(tradeCommand){
           if(!Number.isInteger(command.checkpoint)||checkpointValue()!==command.checkpoint)throw new Error('Trade checkpoint mismatch');
           if(!tradeReservationAllows(command))throw new Error('Unsettled trade reserves the accounts; exact saved/native contract required');
@@ -399,12 +425,27 @@ on('update', () => {
           const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor),...(command.jobs||[]).map(j=>j.actor)];
           if(actors.some(id=>ownerWorkJobs.ownsActor(id))&&!ownerWorkJobs.permitsCommand(command))throw new Error('Independent owner work reserves a command participant');
         }
-        if(['walk_to','parallel_routines','background_routines','rest_at_bench','activity_start_rest','owner_work_start','conversation_attend','scene_handoff'].includes(command.kind)){
+        if(['walk_to','parallel_routines','background_routines','rest_at_bench','activity_start_rest','owner_work_start','paid_work_start','conversation_attend','scene_handoff'].includes(command.kind)){
           const quarantined=conversationQuarantineActors(presentation.society,residents);
-          const actors=[command.actor,command.target,...(command.participants||[]),...(command.members||[]).flatMap(member=>[member.actor,member.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
+          const actors=[command.actor,command.target,command.worker,command.employer,...(command.participants||[]),...(command.members||[]).flatMap(member=>[member.actor,member.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
           if(actors.some(id=>quarantined.includes(id)))throw new Error('Unverified conversation cleanup reserves a command participant');
         }
-        if(['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt'].includes(command.kind)){
+        if(paidCommand){
+          if(!Number.isInteger(command.checkpoint)||checkpointValue()!==command.checkpoint)throw new Error('Paid work checkpoint mismatch');
+          const blocked=[...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...resourceReservedActors(),...tradeReservedActors()];
+          if(command.kind==='paid_work_start'){
+            for(const participant of conversationAttendance.status()?.participants||[])if(!participant.released)blocked.push(participant.actor);
+            const travel=movementSource?.status(),resting=rest.status(),working=production.status();
+            if(travel&&travel.phase!=='released')blocked.push(travel.actor,travel.target);
+            if(resting&&!resting.release_verified)blocked.push(resting.actor);
+            if(working&&!['complete','held'].includes(working.phase))blocked.push(working.actor);
+            for(const actor of [command.worker,command.employer])if(parallelRoutines.ownsActor(actor))blocked.push(actor);
+            if(['starting','playing'].includes(speech.status()?.status))for(const participant of speech.status()?.facing||[])blocked.push(participant.actor);
+          }
+          const result=command.kind==='paid_work_start'?paidEmployment.start(command,blocked):command.kind==='paid_work_ack_receipt'?paidEmployment.acknowledge(command):paidEmployment.commit(command);
+          if(!result.done)pending=command;else ack=result.ack;
+        }
+        else if(['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt'].includes(command.kind)){
           if(checkpointValue()!==command.checkpoint)throw new Error('Activity checkpoint mismatch');
           const blocked=[];
           if(command.kind==='activity_start_rest'||command.kind==='owner_work_start'){
@@ -415,7 +456,7 @@ on('update', () => {
             if(travel&&!['applied','held','released'].includes(travel.phase))blocked.push(travel.actor,travel.target);
             if(['starting','playing'].includes(speech.status()?.status))for(const participant of speech.status()?.facing||[])blocked.push(participant.actor);
             if(parallelRoutines.ownsActor(command.actor))blocked.push(command.actor);
-            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...resourceReservedActors(),...tradeReservedActors());
+            blocked.push(...activityJobs.reservedActors(),...ownerWorkJobs.reservedActors(),...paidReservedActors(),...resourceReservedActors(),...tradeReservedActors());
           }
           const result=command.kind==='activity_start_rest'?activityJobs.start(command,blocked):
             command.kind==='activity_ack_receipt'?activityJobs.acknowledge(command):
@@ -513,7 +554,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt','scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_self_produce_commit','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
+        if (!['paid_work_start','inventory_paid_work_commit','paid_work_ack_receipt','activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt','scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_self_produce_commit','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};if(!controllerReceipt)completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
     }
   }
@@ -643,7 +684,7 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   function controlEnabled(name){try{return typeof sp.Game[name]==='function'?sp.Game[name]():null;}catch(_){return null;}}
-  const societyState=presentation.society,foreground=new Set([...resourceReservedActors(inventoryObservations),...tradeReservedActors(inventoryObservations)]);
+  const societyState=presentation.society,foreground=new Set([...resourceReservedActors(inventoryObservations),...tradeReservedActors(inventoryObservations),...paidReservedActors()]);
   const plan=societyState?.plan,chat=societyState?.conversation,batch=societyState?.routine_batch;
   if(plan&&(!['complete','held','delegated'].includes(plan.phase)||plan.release_required)){for(const id of [plan.actor,plan.target,...(plan.economic_pair||[])])if(id)foreground.add(id);}
   if(chat&&(!['complete','held'].includes(chat.phase)||chat.release_required||chat.cleanup_review_required)){
@@ -652,18 +693,18 @@ on('update', () => {
   }
   if(batch&&!['complete','held'].includes(batch.phase))for(const m of batch.members||[])foreground.add(m.actor);
   const controlFresh=Date.now()-lastPresentationAt<10000&&!societyState?.error;
-  const activityReserved=[...activityJobs.reservedActors(),...ownerWorkJobs.releasingActors()],savedControl=societyState?.town?.resident_control;
+  const activityReserved=[...activityJobs.reservedActors(),...ownerWorkJobs.releasingActors(),...paidEmployment.releasingActors(),...paidSuspendedWorkers()],savedControl=societyState?.town?.resident_control;
   const effectiveControl=savedControl?{...savedControl,assignments:Object.fromEntries(Object.entries(savedControl.assignments||{}).filter(([,row])=>!activityReserved.includes(row.actor)))}:savedControl;
   const publicPlaces=routines.places(residents),restObservation=rest.sense(residents);
   // A checkpoint transition pauses new bindings; it must not release every
   // standing task while a disjoint conversation commits a memory.
   if(!controlFresh||(!societyState?.transition&&societyState?.checkpoint===checkpointValue()))
-    residentControl.tick(effectiveControl,residents,controlFresh,[...foreground,...activityReserved],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],[...ownerWorkJobs.holds(),...(plan?[plan]:[])]);
+    residentControl.tick(effectiveControl,residents,controlFresh,[...foreground,...activityReserved],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],[...ownerWorkJobs.holds(),...paidEmployment.holds(),...(plan?[plan]:[])]);
   else residentControl.renew(residents,controlFresh);
   const observation = {
     economy_catalog:economyCatalog.status(),
     resource_import:endowments.status(),
-    paid_employment:production.paidWorkCapability(),
+    paid_employment:paidEmployment.status(),
     trade_execution:transfers.status(),
     director_control:directorControl,
     player_controls:{request:playerControlRequest,

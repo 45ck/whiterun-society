@@ -6,6 +6,7 @@ This worker never writes the timeline database or sends native commands.
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -36,10 +37,25 @@ def activity_job_records(society):
 def owner_work_job_records(society):
     return _job_records(society.get('owner_work_jobs',society.get('work_jobs')) or {})
 
+def paid_work_job_records(society):
+    return _job_records(society.get('paid_employment') or {})
+
+
+def has_delegated_job(plan):
+    return any(plan.get(key) for key in ('activity_job','work_job','paid_work_job'))
+
+
 def delegated_job_completed(job,kind):
     if job.get('phase')!='complete' or job.get('release_verified') is not True or not job.get('receipt_hash'):return False
     if kind=='rest':return True
     settlement=job.get('settlement') or {}
+    if kind=='paid_employment':
+        return (type(job.get('protocol')) is int and job['protocol']==2 and not job.get('orphan')
+            and job.get('effect_unreconciled') is False and bool(job.get('effect_receipt_hash'))
+            and settlement.get('phase')=='committed'
+            and all(settlement.get(key) is True for key in ('output_verified','wage_debit_verified','wages_verified','inventory_verified'))
+            and isinstance(settlement.get('commit_id'),str) and bool(settlement['commit_id'])
+            and settlement.get('production_record_id')==settlement['commit_id'])
     return (kind=='owner_production' and not job.get('orphan') and settlement.get('phase')=='committed'
             and settlement.get('committed_inventory_verified') is True
             and isinstance(settlement.get('commit_id'),str) and bool(settlement['commit_id'])
@@ -53,19 +69,38 @@ def delegated_activity_admission(state,event_id,actor,session):
     if society.get('transition'):return None
     if plan.get('id')!=event_id or plan.get('actor')!=actor or plan.get('phase') not in ('delegated','complete'):
         raise ValueError('Delegated activity does not match the current resident plan')
-    if bool(plan.get('activity_job'))==bool(plan.get('work_job')):
-        raise ValueError('Delegated activity requires one unambiguous job protocol')
-    work=bool(plan.get('work_job'));kind='owner_production' if work else 'rest'
-    job_id=plan['work_job'] if work else plan['activity_job']
-    job=(owner_work_job_records(society) if work else activity_job_records(society)).get(job_id)
+    protocols=[(key,kind,records) for key,kind,records in (
+        ('activity_job','rest',activity_job_records),('work_job','owner_production',owner_work_job_records),
+        ('paid_work_job','paid_employment',paid_work_job_records)) if plan.get(key)]
+    if len(protocols)!=1:raise ValueError('Delegated activity requires one unambiguous job protocol')
+    field,kind,records=protocols[0];job_id=plan[field];job=records(society).get(job_id)
+    work=kind=='owner_production';paid=kind=='paid_employment'
+    actor_field='worker' if paid else 'actor'
     if (not isinstance(job,dict) or job.get('id')!=job_id or job.get('source_plan')!=event_id
-            or type(job.get('actor')) is not int or job['actor']!=actor or job.get('session')!=session
+            or type(job.get(actor_field)) is not int or job[actor_field]!=actor or job.get('session')!=session
             or job.get('orphan')):
         raise ValueError('Delegated activity lacks a matching saved job')
+    if paid:
+        terms=plan.get('work_terms') or {};status=society.get('paid_employment') or {}
+        native=(state['bridge'].get('observation') or {}).get('paid_employment') or {}
+        if (type(job.get('protocol')) is not int or job['protocol']!=2
+                or job.get('job_id')!=job_id or job.get('employer')!=plan.get('target')
+                or job.get('epoch')!=status.get('epoch') or not job.get('epoch')
+                or native.get('available') is not True or type(native.get('protocol')) is not int or native['protocol']!=2
+                or native.get('epoch')!=job['epoch']
+                or any(job.get(key)!=terms.get(key) for key in ('worker','worker_base_id','employer','employer_base_id',
+                    'recipe_id','catalog_hash','recipe_hash','terms_hash','business_id'))
+                or job.get('business_revision')!=terms.get('revision')
+                or not isinstance(job.get('consent_hash'),str) or not job['consent_hash']):
+            raise ValueError('Delegated paid employment identity or terms do not match')
     if job.get('phase')=='prepared':return None
     result={'activity_job_id':job_id,'activity_phase':job['phase'],'activity_kind':kind,
             'admission_verified':True,'completion_confirmed':False}
     if work:result['work_job_id']=job_id
+    if paid:
+        result['paid_work_job_id']=job_id
+        result['paid_identity']={key:job[key] for key in ('worker','worker_base_id','employer','employer_base_id',
+            'session','epoch','business_id','business_revision','recipe_id','catalog_hash','recipe_hash','terms_hash','consent_hash')}
     if delegated_job_completed(job,kind):return {**result,'completion_confirmed':True}
     accepted=job.get('phase')=='running'
     if work and job.get('phase') in ('attendance_verified','recipe_prepared','recipe_committed'):
@@ -73,6 +108,15 @@ def delegated_activity_admission(state,event_id,actor,session):
         if job['phase']=='recipe_committed':
             settlement=job.get('settlement') or {}
             accepted=accepted and settlement.get('phase')=='committed' and settlement.get('committed_inventory_verified') is True
+    if paid:
+        accepted=(job.get('phase')=='working' and type(job.get('accepted_at')) in (int,float)
+            and math.isfinite(job['accepted_at']) and job['accepted_at']>=0)
+        if job.get('phase') in ('attendance_verified','commit_prepared','effects_verified'):
+            accepted=bool(job.get('attendance_receipt_hash'))
+            if job['phase']=='effects_verified':
+                settlement=job.get('settlement') or {}
+                accepted=accepted and settlement.get('phase')=='committed' and all(settlement.get(key) is True
+                    for key in ('output_verified','wage_debit_verified','wages_verified','inventory_verified'))
     if not accepted or job.get('receipt_acknowledged'):
         raise ValueError('Independent activity has no current accepted native admission')
     return result
@@ -135,7 +179,7 @@ def main():
             if not plan or plan['id'] != args.event_id:
                 raise ValueError('Active plan changed, possibly after loading another save')
             phase = plan['phase']
-            independent_owner=independent_owner or bool(plan.get('activity_job') or plan.get('work_job'))
+            independent_owner=independent_owner or has_delegated_job(plan)
             if previous != phase:
                 record(phase, state)
                 previous = phase
@@ -153,7 +197,7 @@ def main():
                 # original-terms fallback each. Preparation never plays audio.
                 voice_worker=VoiceWorker(args.runtime.parent,15 if wording else 5,[model.get('key_env'),(wording or {}).get('key_env')])
             if phase in ('complete', 'held') and not plan.get('release_required') and not plan.get('activity_release_required') and plan.get('remembered'):
-                if phase=='complete' and (plan.get('activity_job') or plan.get('work_job')):
+                if phase=='complete' and has_delegated_job(plan):
                     admission=delegated_activity_admission(state,args.event_id,args.actor,evidence['before']['bridge']['session'])
                     if not admission or not admission['completion_confirmed']:raise ValueError('Completed independent activity lacks a verified receipt')
                     evidence.update(admission)

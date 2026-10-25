@@ -52,8 +52,65 @@ def _account_actor(value):
     suffix=value.removeprefix('native-inventory:')
     return int(suffix) if len(suffix)<=10 and suffix.isascii() and suffix.isdigit() and str(int(suffix))==suffix and int(suffix)>0 else None
 
+
+def paid_work_reservations(state,observation=None):
+    """Both purses and the charter stay exclusive through reconciled release.
+
+    The physical attendance hold belongs only to the worker. For this initial
+    protocol both participants are also excluded from new activity admission;
+    splitting social/physical/account leases is a separate concurrency feature.
+    """
+    state=state or {};observation=observation or {};rows=[];unknown=False
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    for field in ('paid_work_jobs','paid_work_orphans','paid_employment'):
+        if field not in state:continue
+        records=state[field]
+        if isinstance(records,dict):
+            if 'jobs' in records:
+                for part in ('jobs','history'):
+                    values=records.get(part,[])
+                    if isinstance(values,list):rows.extend(values)
+                    else:unknown=True
+            else:rows.extend(records.values())
+        elif isinstance(records,list):rows.extend(records)
+        else:unknown=True
+    native=observation.get('paid_employment',{})
+    if isinstance(native,dict):
+        for field in ('jobs','receipts'):
+            values=native.get(field,[])
+            if isinstance(values,list):rows.extend(values)
+            else:unknown=True
+    else:unknown=True;native={}
+    actors=set();businesses=set()
+    for row in rows:
+        if not isinstance(row,dict):unknown=True;continue
+        if (row.get('receipt_acknowledged') is True and row.get('release_verified') is True
+                and row.get('effect_unreconciled') is False):continue
+        pair=(row.get('worker'),row.get('employer'))
+        actors.update(actor for actor in pair if valid(actor))
+        business=row.get('business_id')
+        if isinstance(business,str) and business:businesses.add(business)
+        else:unknown=True
+        if not all(valid(actor) for actor in pair) or pair[0]==pair[1]:unknown=True
+    reserved=native.get('reserved_actors',[])
+    if isinstance(reserved,list):
+        actors.update(actor for actor in reserved if valid(actor))
+        if not all(valid(actor) for actor in reserved):unknown=True
+    else:unknown=True
+    if unknown:
+        for people in (state.get('people'),(state.get('town') or {}).get('residents')):
+            if isinstance(people,dict):
+                actors.update(int(key) for key in people if isinstance(key,str) and key.isascii()
+                    and key.isdigit() and len(key)<=10 and str(int(key))==key and valid(int(key)))
+        for field in ('residents','inventory_observations'):
+            actors.update(row['id'] for row in observation.get(field,[])
+                if isinstance(row,dict) and valid(row.get('id')))
+        businesses.update(key for key in ((state.get('town') or {}).get('businesses') or {}) if isinstance(key,str))
+    return actors,businesses
+
 def reserved_work_accounts(state,observation=None,*,include_identity=True):
     actors=resource_quarantine_actors(state,observation)|trade_quarantine_actors(state,observation)
+    actors.update(paid_work_reservations(state,observation)[0])
     if include_identity:actors.update(identity_quarantine_actors(state,observation))
     for row in _work_rows(state,observation):
         actors.update(row.get(field) for field in ('actor','custodian','account_actor')
@@ -66,7 +123,7 @@ def reserved_work_accounts(state,observation=None,*,include_identity=True):
 
 def reserved_work_businesses(state,observation=None):
     return {row['business_id'] for row in _work_rows(state,observation)
-            if isinstance(row.get('business_id'),str) and row['business_id']}
+            if isinstance(row.get('business_id'),str) and row['business_id']}|paid_work_reservations(state,observation)[1]
 
 def work_account_conflict(state,actors=(),business_ids=(),observation=None):
     accounts={'native-inventory:'+str(actor) for actor in actors if type(actor) is int and actor>0}

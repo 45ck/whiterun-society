@@ -1,5 +1,11 @@
 # Current direction: RTS-only
 
+## Witnessed paid employment
+
+The next source milestone connects generic business/recipe opportunities to separate employer and worker choices, heard agreement when voiced, release of the meeting, independent worker attendance and serialized witnessed production/payment. Output, wage debit, wage credit, contract completion and release remain separate evidence. A lost or partial effect holds the affected accounts without replay. Only the attending worker earns production learning. The inspector shows stage counts, denominators, unknown evidence and latency coverage; these are protocol measures, not human-realism scores. [Implementation contract and acceptance](paid-employment-v2.md).
+
+Native gameplay qualification remains outstanding. The default catalog is still small and every valid recipe has one input/output. Both participant accounts currently exclude other activities until acknowledged release; separating purse reservations from employer movement/social participation remains a concurrency requirement. Do not call this a completed city economy, natural conversation study or new in-game demo.
+
 ## Fresh livelihood startup and identity qualification
 
 **Source qualification, 26 October 2026:** [hosted run 40205604026](https://github.com/45ck/whiterun-society/actions/runs/40205604026) passed at `0b934c4` on Windows and Ubuntu. Each platform ran 1,148 Python tests (1,147 passed, one generated-file check initially skipped and subsequently passed), 450 JavaScript tests and six generated-plugin readback checks. Windows compiled both Papyrus scripts. The five fresh-livelihood integration tests use actual controllers with simulated native APIs and authored choices. [Exact evidence](evidence/livelihood-validation.json). New source remains uninstalled; paid employment remains held. These results do not qualify live model choices, audible conversation or the integrated game experience.

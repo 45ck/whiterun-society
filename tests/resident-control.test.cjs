@@ -136,6 +136,27 @@ test('new continuity requires an explicit valid pinned base identity',()=>{
  }
 });
 
+test('paid employment holds only its pinned worker and uses a separate job identity',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,actor_base_id:1007,slot:0,mode:'go_to',target:500,goal_id:'personal-goal'};
+ f.actors.set(8,{...f.actor,getFormID:()=>8,getActorBase:()=>({getFormID:()=>1008}),getCurrentPackage:()=>({getFormID:()=>9001})});
+ f.control.assignments[8]={actor:8,actor_base_id:1008,slot:1,mode:'await_decision'};
+ f.hold();const saved=JSON.stringify(f.control);
+ const paid={id:'shift-a',actor:7,actor_base_id:1007,slot:0,intent:'paid_employment',phase:'working'};
+ for(let i=0;i<6;i++){f.step(true,[7,8],[paid]);for(const slot of [0,1]){f.slots[slot][5].setValue(f.slots[slot][4].getValue());f.slots[slot][6].setValue(1);}}
+ const worker=f.controller.status().activities.find(r=>r.actor===7),employer=f.controller.status().activities.find(r=>r.actor===8);
+ assert.equal(worker.work_hold_id,'paid-work-shift-a');assert.equal(worker.goal_id,'paid-work-shift-a');
+ assert.equal(worker.suspended_goal_id,'personal-goal');assert.equal(worker.target,7);assert.equal(worker.phase,'work_holding');
+ assert.equal(employer.work_hold_id,null);assert.equal(JSON.stringify(f.control),saved);
+});
+
+test('paid employment override rejects missing or changed base and wrong slot',()=>{
+ for(const change of [{actor_base_id:undefined},{actor_base_id:2007},{slot:undefined},{slot:1}]){
+  const f=fixture();f.hold();const request=f.forms[4].getValue();
+  f.step(true,[],{id:'shift-a',actor:7,actor_base_id:1007,slot:0,intent:'paid_employment',phase:'working',...change});
+  assert.equal(f.status().work_hold_id,null);assert.equal(f.forms[4].getValue(),request);
+ }
+});
+
 test('observed and freshly resolved native bases must both match before mailbox writes',()=>{
  for(const change of [f=>f.base(2007),f=>f.observedBase(2007),f=>delete f.actor.getActorBase]){
   const f=fixture();change(f);f.start();assert.equal(f.forms[2].getSize(),0);

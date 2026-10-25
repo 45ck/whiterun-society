@@ -4,6 +4,12 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Witnessed paid employment, source implementation:** residents can choose among public jobs derived from configured businesses and recipes. Employer and worker make separate decisions and may refuse; voiced contracts also require the offer and acceptance to be heard. A worker leaves the meeting before independent attendance. Production and wage transfer each retain their own native effect witnesses; partial output and unpaid wages stay visible. Completed work teaches the worker, and earned wages can fund later purchases. The inspector reports attendance, output, payment, release, holds and measured timings separately. [Protocol, evidence and limitations](docs/paid-employment-v2.md). This implementation is not installed or qualified in Skyrim; current recipes still have one input and one output, and stationary attendance does not prove a crafting animation.
+
+![Work offers, consent, attendance, witnessed production and wages, spending and memory](docs/images/paid-employment-cycle.png)
+
+*Generated system illustration, not gameplay. The variety of pictured goods is conceptual, not a claim of deployed industries. [Full image prompt](docs/images/paid-employment-cycle.prompt.md).*
+
 **Fresh livelihoods, source implementation:** an explicit starting-background scenario gives recipe knowledge to a seeded, identity-bound cohort. It creates no businesses, money, stock or work history. Residents can then choose their own charter, procure inputs and work. Current actor/base identity is checked before decisions and speech; changed or unbound census identities are held without inheriting another resident's history. The inspector separates authored knowledge from verified production learning, and startup tools preview before applying a checkpoint-bound change. [Initialization loop and evidence limits](docs/livelihood-backgrounds.md).
 
 ![Observe identities, assign explicit backgrounds, let residents choose, then verify production before learning](docs/images/livelihood-startup.png)
@@ -12,7 +18,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 [Full livelihood validation](https://github.com/45ck/whiterun-society/actions/runs/40205604026) passed on Windows and Ubuntu at revision `0b934c4`: **1,148 Python tests per platform (1,147 passed and one initial generated-file skip), 450 JavaScript tests and six generated-plugin readback tests**. The skipped check passed after generation; Windows compiled both Papyrus scripts. Five fresh-state integration tests exercise startup, resident choices, actual JavaScript controllers with simulated native APIs, verified production learning and identity changes. Choices are test fixtures; no live model or Skyrim runtime qualification is claimed. [Machine-readable evidence and remaining limits](docs/evidence/livelihood-validation.json).
 
-**Paid employment is currently held:** an audit found that the legacy execution path could accept balances without sufficient attendance and payment witnesses. New paid admissions and native replay are disabled; historical records remain readable. Independent owner production uses its separate witnessed protocol. [Required replacement protocol and acceptance tests](docs/paid-employment-protocol.md).
+**Legacy paid employment remains held:** its old execution path could accept balances without sufficient attendance and payment witnesses. Legacy admissions and native replay are disabled; historical records remain readable. The new protocol above requires a matching protocol-2 bridge and independent evidence. Owner production retains its separate witnessed protocol. [Legacy boundary and replacement protocol](docs/paid-employment-protocol.md).
 
 **Configured input markets, source implementation:** a resident derives demand from their own stock and learned recipes, discovers explicit public seller listings, and chooses a supplier and quantity. Negotiation binds the commodity, quantity, unit price and total to the exact agreement. The exchange saves a native permit before moving goods and payment, witnesses both sides of each transfer, and holds uncertain accounts instead of replaying them. The observer shows actual terms and separates verified sales from held exchanges. Default goods remain bread and grain; additional goods are test fixtures, not deployed industries. [Decision loop, data contracts and qualification limits](docs/generic-procurement.md).
 
@@ -80,7 +86,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 75 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 76 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -303,7 +309,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (75)</summary>
+<summary>Browse every finished project image (76)</summary>
 
 ### Concurrent resident lives
 
@@ -388,6 +394,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Npc four systems](docs/images/npc-four-systems.png)
+
+### Paid employment cycle
+
+Generated system illustration — not gameplay
+
+![Paid employment cycle](docs/images/paid-employment-cycle.png)
 
 ### Personal knowledge loop
 

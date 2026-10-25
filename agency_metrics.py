@@ -170,6 +170,7 @@ def account_cashflow(state):
         else:unique[event]=(fingerprint,command)
     accounts={};rejected=Counter();kinds=Counter();recognized=0
     recipe_receipts=Counter();recipe_evidence=Counter()
+    paid_records = None
     valid_gold=lambda x:type(x) is int and x>=0
     valid_id=lambda x:type(x) is int and x>0
     def change(command,role=None):
@@ -191,6 +192,18 @@ def account_cashflow(state):
                     change(c,'buyer')==-cost and change(c,'seller')==cost):
                 rejected['invalid_trade_cash_leg']+=1;continue
             add(buyer,'purchases_paid',cost);add(seller,'sales_receipts',cost)
+        elif kind=='inventory_paid_work_commit':
+            if paid_records is None:
+                from paid_employment_metrics import verified_paid_records
+                paid_records = verified_paid_records(state)
+            worker,employer=c.get('worker'),c.get('employer');wage=c.get('wage_gold')
+            if not (event in paid_records and paid_records[event].get('command') == c
+                    and valid_id(worker) and valid_id(employer) and worker!=employer
+                    and type(wage) is int and wage>0 and change(c,'worker')==wage
+                    and change(c,'employer')==-wage):
+                rejected['unverified_paid_employment_cash_leg']+=1;continue
+            add(worker,'wages_received',wage);add(employer,'wages_paid',wage)
+            add(employer,'production_events',1)
         elif kind=='inventory_produce':
             worker,employer=c.get('worker'),c.get('employer');wage=change(c,'worker')
             if not (valid_id(worker) and valid_id(employer) and worker!=employer and type(wage) is int and wage>0 and

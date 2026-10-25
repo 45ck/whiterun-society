@@ -69,30 +69,51 @@ def production_policy(business, recipe_id='bread_recipe'):
 
 
 def plan_work_policy(plan):
-    terms = plan.get('work_terms', {}).get('policy')
-    if terms is None:
-        return production_policy({})  # Explicit pre-census compatibility fixture.
-    return production_policy({'production_policy': {k: v for k, v in terms.items() if k != 'source'}})
+    terms = plan.get('work_terms', {})
+    policy = terms.get('policy')
+    if policy is None:
+        return production_policy({})  # Historical pre-census display adapter only.
+    recipe_id = terms.get('recipe_id', 'bread_recipe')
+    return production_policy({'recipe_policies': {recipe_id: {
+        k: v for k, v in policy.items() if k != 'source'}}}, recipe_id)
 
 
-def current_work_terms(state, plan):
-    """Never silently change accepted wages, employer or recipe mid-contract."""
-    paid_bread_recipe()
+def current_work_terms(state, plan, observation=None):
+    """Revalidate a pinned charter; no job or inventory effect is authorized here."""
     terms = plan.get('work_terms')
     if not terms:
         if state.get('town') is not None:
             raise ValueError('Initialized town work requires an enterprise contract')
         return
-    if (terms.get('recipe_id') != 'bread_recipe' or terms.get('catalog_hash') != catalog_hash()
-            or terms.get('recipe_hash') != recipe_hash('bread_recipe')):
+    recipe_id = terms.get('recipe_id')
+    if (recipe_id not in recipe_ids() or terms.get('catalog_hash') != catalog_hash()
+            or terms.get('recipe_hash') != recipe_hash(recipe_id)):
         raise ValueError('Enterprise or agreed work terms changed: catalog proof is absent or stale')
-    business = state.get('town', {}).get('businesses', {}).get(terms['business_id'])
+    business = (state.get('town') or {}).get('businesses', {}).get(terms.get('business_id'))
     if (not business or business.get('active', True) is not True or
-            business['custodian'] != plan['target'] or
+            business.get('custodian') != plan['target'] or
             business.get('revision', 0) != terms.get('revision', 0) or
-            'bread_recipe' not in business.get('capabilities', []) or
-            production_policy(business) != plan_work_policy(plan)):
+            recipe_id not in business.get('capabilities', []) or
+            production_policy(business, recipe_id) != plan_work_policy(plan)):
         raise ValueError('Enterprise or agreed work terms changed')
+    if terms.get('protocol') == 2:
+        from employment import work_terms_hash
+        from resident_identity import resident_identity_status
+        from entrepreneurship import knows_recipe
+        from economy_catalog import require_native_catalog
+        if (terms.get('worker') != plan['actor'] or terms.get('employer') != plan['target']
+                or terms.get('terms_hash') != work_terms_hash(terms)):
+            raise ValueError('Paid employment identity or terms hash changed')
+        if observation is not None:
+            require_native_catalog(observation, recipe_id)
+            for role in ('worker', 'employer'):
+                identity = resident_identity_status(state, observation, terms[role])
+                if not identity['qualified'] or identity['base_id'] != terms.get(role + '_base_id'):
+                    raise ValueError('Paid employment resident identity changed')
+            if not knows_recipe(state['people'][str(terms['employer'])], recipe_id,
+                    state=state, observation=observation, actor_id=terms['employer']):
+                raise ValueError('Employer no longer knows the agreed recipe')
+    return business
 
 
 def apply_enterprise_change(state, event_id, specification, observation, provenance):

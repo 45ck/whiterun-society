@@ -66,11 +66,12 @@ function createResidentControl(platform,now=Date.now){
    for(const savedRow of rows){
     // Reuse only this actor's existing continuity slot. The saved journey is
     // untouched; dropping the foreground work intent restores its destination.
-    const intent=(Array.isArray(ownerWork)?ownerWork:[ownerWork]).find(work=>work&&work.actor===savedRow.actor&&work.intent==='owner_production'&&
+    const intent=(Array.isArray(ownerWork)?ownerWork:[ownerWork]).find(work=>work&&work.actor===savedRow.actor&&
+      (work.intent==='owner_production'||work.intent==='paid_employment'&&work.actor_base_id===savedRow.actor_base_id&&work.slot===savedRow.slot)&&
       ['ready_to_self_work','working'].includes(work.phase)&&typeof work.id==='string'&&work.id.length<=64&&
       (work.slot===undefined||work.slot===savedRow.slot));
     const work=!!intent;
-    const holdId=work?'owner-work-'+intent.id:null;
+    const holdId=work?(intent.intent==='paid_employment'?'paid-work-':'owner-work-')+intent.id:null;
     const row=work?{...savedRow,mode:'await_decision',target:savedRow.actor,goal_id:holdId,
       work_hold_id:holdId,suspended_goal_id:savedRow.goal_id,source:'Owned stationary attendance for resident-chosen production'}:savedRow;
     const loaded=residents.find(r=>r.id===row.actor&&r.isPerson===true),r=records(row.slot);

@@ -28,7 +28,7 @@ from tools.checkpoint_http import CheckpointHTTP
 from tools.goal_scheduler import GoalScheduler
 from director_policy import load_run_policy, resolve_run_policy
 from dispatch_policy import fair_pending, can_insert_social, dispatch_metrics
-from tools.run_resident_event import delegated_activity_admission,activity_job_records,owner_work_job_records,delegated_job_completed
+from tools.run_resident_event import delegated_activity_admission,activity_job_records,owner_work_job_records,paid_work_job_records,has_delegated_job,delegated_job_completed
 from activity_leases import reserved_activity_actors
 
 
@@ -57,12 +57,17 @@ def event_available(state,event):
 
 def observe_delegated_completions(evidence,state):
     """Record later verified receipts without relabelling an admission as work."""
-    jobs={'rest':activity_job_records(state['society']),'owner_production':owner_work_job_records(state['society'])}
+    jobs={'rest':activity_job_records(state['society']),'owner_production':owner_work_job_records(state['society']),
+          'paid_employment':paid_work_job_records(state['society'])}
     session=state['bridge'].get('session')
     for event in evidence.get('events',[]):
-        kind=event.get('activity_kind','owner_production' if event.get('work_job_id') else 'rest')
-        job=jobs.get(kind,{}).get(event.get('work_job_id') or event.get('activity_job_id'))
-        if not job or job.get('source_plan')!=event['id'] or job.get('actor')!=event.get('actor') or job.get('session')!=session:continue
+        kind=event.get('activity_kind','paid_employment' if event.get('paid_work_job_id') else ('owner_production' if event.get('work_job_id') else 'rest'))
+        job=jobs.get(kind,{}).get(event.get('paid_work_job_id') or event.get('work_job_id') or event.get('activity_job_id'))
+        if not job or job.get('source_plan')!=event['id'] or job.get('worker' if kind=='paid_employment' else 'actor')!=event.get('actor') or job.get('session')!=session:continue
+        if kind=='paid_employment' and (job.get('orphan') or type(job.get('protocol')) is not int or job['protocol']!=2
+                or job.get('id')!=event.get('paid_work_job_id') or job.get('job_id')!=job.get('id')
+                or not isinstance(event.get('paid_identity'),dict) or not event['paid_identity']
+                or any(job.get(key)!=value for key,value in event['paid_identity'].items())):continue
         event['activity_observed_phase']=job.get('phase')
         if job.get('phase')=='held':event['activity_outcome']=job.get('outcome','independent_activity_held')
         if delegated_job_completed(job,kind):
@@ -337,12 +342,13 @@ def main():
                 if current['society']['transition']:raise TimeoutError('Resident worker checkpoint did not settle')
                 observe_delegated_completions(evidence,current)
                 plan=current['society']['conversation'] if social else current['society']['plan']
-                if not social and plan and plan.get('id')==event['id'] and (plan.get('activity_job') or plan.get('work_job')) and plan.get('phase') in ('delegated','complete'):
+                if not social and plan and plan.get('id')==event['id'] and has_delegated_job(plan) and plan.get('phase') in ('delegated','complete'):
                     admission=delegated_activity_admission(current,event['id'],event['actor'],session)
                     worker_file=runtime/('resident-event-'+hashlib.sha256(event['id'].encode()).hexdigest()[:12]+'.json')
                     worker=json.loads(worker_file.read_text(encoding='utf-8'))
                     if (result.returncode or not admission or worker.get('event_id')!=event['id'] or worker.get('status') not in ('delegated','complete')
                             or worker.get('activity_job_id')!=admission['activity_job_id'] or worker.get('admission_verified') is not True
+                            or admission['activity_kind']=='paid_employment' and (worker.get('activity_kind')!='paid_employment' or worker.get('paid_work_job_id')!=admission['paid_work_job_id'] or worker.get('paid_identity')!=admission['paid_identity'])
                             or admission['activity_kind']=='owner_production' and (worker.get('activity_kind')!='owner_production' or worker.get('work_job_id')!=admission['work_job_id'])
                             or worker.get('status')=='complete' and admission['completion_confirmed'] is not True
                             or worker.get('before',{}).get('bridge',{}).get('session')!=session):

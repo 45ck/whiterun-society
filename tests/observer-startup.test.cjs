@@ -45,9 +45,9 @@ test('a late preview cannot restore an earlier seed or cohort after the user edi
  f.el('background-seed').value='ChangedTown';f.el('background-seed').oninput();release();await pending;
  assert.equal(f.el('background-apply').disabled,true);assert.match(f.el('background-status').textContent,/Draft changed/);await f.w.backgroundRequest(true);assert.equal(f.posts().length,1);assert.equal(f.el('background-assignments').textContent,'');
 }finally{f.dom.window.close();}});
-test('startup warns that paid labour lacks required execution witnesses without obscuring historical records',async()=>{const f=await fixture();try{
+test('startup labels the held legacy executor separately from current v2 capability',async()=>{const f=await fixture();try{
  f.state.startup.paid_work_capability={available:false,reason:'legacy_paid_execution_unqualified',detail:'Paid production requires session-bound attendance and issued/observed inventory and wage witnesses.'};f.w.renderStartup();
- assert.match(f.el('startup-overview').textContent,/Paid labour unavailable/);assert.match(f.el('startup-overview').textContent,/inventory and wage witnesses/);assert.match(f.el('startup-overview').textContent,/Historical paid-work records remain readable/);assert.match(f.el('startup-overview').textContent,/owner production is a separate mechanism/);
+ assert.match(f.el('startup-overview').textContent,/Legacy paid work held/);assert.match(f.el('startup-overview').textContent,/inventory and wage witnesses/);assert.match(f.el('startup-overview').textContent,/Historical paid-work records remain readable/);assert.match(f.el('startup-overview').textContent,/owner production is a separate mechanism/);
 }finally{f.dom.window.close();}});
 test('knowledge inspector distinguishes authored prior, verified learning and legacy records',async()=>{const f=await fixture();try{
  const resident={person:{skills:{craft:.25},authored_recipe_priors:{metal_recipe:{scenario_id:'start',event_id:'prior',provenance:'Scenario craft history'}},known_recipes:{bread_recipe:{source:'verified_native_production',definition:{id:'bread_recipe'},event_id:'work'},legacy_recipe:{source:'old_source'}}},recipe_knowledge:{recipes:{metal_recipe:true,bread_recipe:true},provenance:{metal_recipe:{source:'authored_livelihood_background',valid:true},bread_recipe:{source:'verified_native_production',valid:true}}}};

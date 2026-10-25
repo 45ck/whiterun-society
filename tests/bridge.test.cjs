@@ -25,11 +25,12 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__REST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/rest.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ACTIVITY_JOBS_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/activity-jobs.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__OWNER_WORK_JOBS_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/owner-work-jobs.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__PAID_EMPLOYMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/paid-employment.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ROUTINE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/agent-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__SPEECH_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/speech.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__BRIDGE_CONFIG__',JSON.stringify({port:17841,token:'test-only'}));
 
-function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null,endowmentFactory=null,transferFactory=null) {
+function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=null,endowmentFactory=null,transferFactory=null,paidFactory=null) {
   const handlers = new Map(), notifications=[], requests=[], looks=[], nativeReads=[];
   let respond=()=>null,clock=10000,presentation=null;
   const actor={getFormID:()=>123,getDisplayName:()=> 'Test NPC',is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
@@ -47,7 +48,8 @@ function harness(nativeGlobal=false,activityRestFactory=null,residentFactory=nul
   if(residentFactory)compiled=compiled.replace('const residentControl=createResidentControl(()=>sp);','const residentControl=residentFactory();');
   if(endowmentFactory)compiled=compiled.replace(/const endowments=createEndowmentController\([^;]+;/,'const endowments=endowmentFactory(()=>session);');
   if(transferFactory)compiled=compiled.replace(/const transfers=createInventoryTransfers\([^;]+;/,'const transfers=transferFactory(()=>session);');
-  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory,endowmentFactory,transferFactory});
+  if(paidFactory)compiled=compiled.replace(/const paidEmployment=createPaidEmploymentController\([^;]+;/,'const paidEmployment=paidFactory();');
+  const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory,residentFactory,endowmentFactory,transferFactory,paidFactory});
   vm.runInContext(compiled,context);
   return {handlers,notifications,requests,looks,nativeReads,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(compiled,context)};
 }
@@ -56,6 +58,38 @@ function checkpointFixture(h){
  const original=h.sp.Game.getFormFromFile,marker={getValue:()=>0};h.sp.GlobalVariable={from:value=>value};
  h.sp.Game.getFormFromFile=(id,file)=>file==='WhiterunSociety.esp'&&id===0x800?marker:original(id,file);
 }
+
+test('held paid worker cannot restore a saved journey while both accounts stay reserved',async()=>{
+ for(const origin of ['native','saved','partial_ack']){
+  const ticks=[],yielded=[],job={worker:123,employer:124,phase:'held',effects_issued:true,release_verified:false};
+  if(origin==='partial_ack')job.receipt_acknowledged=true;
+  const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},
+   tick(saved,_residents,_fresh,actors){ticks.push({saved:structuredClone(saved),actors:[...actors]});}});
+  const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],
+   reservedActors:()=>origin==='native'?[123,124]:[],status:()=>({jobs:origin==='native'?[job]:[]})});
+  const h=harness(false,null,control,null,null,paid);checkpointFixture(h);
+  const assignments={'0':{actor:123,mode:'go_to',target:900},'1':{actor:124,mode:'await_decision'}};
+  h.setPresentation({society:{checkpoint:0,paid_employment:{jobs:origin!=='native'?[job]:[]},town:{resident_control:{assignments}}}});
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.ok(yielded.some(ids=>ids.includes(123)),origin+' worker must yield the stale hold');
+  assert.equal(ticks.at(-1).saved.assignments['0'],undefined,origin+' worker must not rebind its saved journey');
+  assert.equal(ticks.at(-1).saved.assignments['1'].actor,124,'Employer keeps its separate stationary assignment');
+  assert.ok([123,124].every(id=>ticks.at(-1).actors.includes(id)),'Both account activity exclusions remain');
+  assert.equal(assignments['0'].target,900,'Saved goal history is not rewritten');
+ }
+});
+
+test('prepared paid admission retains the worker continuity slot before a native hold exists',async()=>{
+ const ticks=[],yielded=[];
+ const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},tick(saved){ticks.push(structuredClone(saved));}});
+ const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],reservedActors:()=>[],status:()=>({jobs:[]})});
+ const h=harness(false,null,control,null,null,paid);checkpointFixture(h);
+ h.setPresentation({society:{checkpoint:0,paid_employment:{jobs:[{worker:123,employer:124,phase:'prepared'}]},
+  town:{resident_control:{assignments:{'0':{actor:123,slot:0,mode:'go_to',target:900}}}}}});
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(ticks.at(-1).assignments['0'].slot,0);
+ assert.equal(yielded.some(ids=>ids.includes(123)),false);
+});
 
 test('held conversation cleanup keeps every possible participant out of standing tasks',async()=>{
  const blocked=[];const control=()=>({reset(){},yieldActors(){},status:()=>({}),renew(){},tick(_saved,_residents,_fresh,actors){blocked.push(Array.from(actors));}});
@@ -655,5 +689,28 @@ test('journey identity checks cannot be bypassed with a cached applied ID',async
   for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
   assert.equal(h.requests.at(-1).ack.status,'held');
   assert.ok(h.requests.at(-1).ack.error);
+ }
+});
+
+test('paid protocol commands cannot reuse an unrelated applied cache entry',async()=>{
+ for(const paidKind of ['paid_work_start','inventory_paid_work_commit','paid_work_ack_receipt']){
+  const h=harness();checkpointFixture(h);let kind='notify';
+  h.setResponse(body=>({id:'cached-paid',kind,session:body.session,checkpoint:0,worker:123,employer:124}));
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.equal(h.requests.at(-1).ack.status,'applied');kind=paidKind;
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.equal(h.requests.at(-1).ack.status,'held');
+  assert.ok(h.requests.at(-1).ack.error);
+ }
+});
+
+test('saved paid employment reserves both participants before native admission',async()=>{
+ for(const participant of [123,124]){
+  const h=harness();checkpointFixture(h);
+  h.setPresentation({society:{checkpoint:0,paid_employment:{jobs:[{worker:123,employer:124,phase:'prepared'}]}}});
+  h.setResponse(body=>({id:'conflicting-travel',kind:'walk_to',actor:participant,target:456,session:body.session,checkpoint:0}));
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.equal(h.requests.at(-1).ack.status,'failed');
+  assert.match(h.requests.at(-1).ack.error,/Paid employment reserves/);
  }
 });

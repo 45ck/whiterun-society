@@ -185,10 +185,13 @@ class Agency:
         market_options = {}
         purchase_options = {}
         if plan['phase'] in ('job_offer', 'job_accept'):
-            require_native_catalog(observation,'bread_recipe')
-            current_work_terms(self.active, plan)
+            require_native_catalog(observation,plan.get('work_terms',{}).get('recipe_id','bread_recipe'))
+            current_work_terms(self.active, plan, observation)
             policy = plan_work_policy(plan)
             wage, minutes = policy['wage_gold'], policy['work_minutes']
+            paid_recipe=plan.get('work_terms',{}).get('recipe_id','bread_recipe')
+            paid_currency=plan.get('work_terms',{}).get('currency','gold')
+            paid_inputs,paid_outputs=recipe_quantities(paid_recipe)
         def visits():
             if self.active.get('town') is None:
                 rows=[]  # No implicit authored acquaintance in a world without a census.
@@ -200,17 +203,20 @@ class Agency:
         if plan['phase']=='job_offer':
             options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
             resources = work_inventory(observation, plan['actor'], plan['target'])
-            if (resources['employer']['grain'] >= policy['grain_per_shift'] and resources['employer']['gold'] >= wage
-                    and resources['employer']['bread'] <= MAX_STOCK-policy['bread_per_shift']
-                    and resources['worker']['gold'] <= MAX_STOCK-wage):
+            try:
+                produced=economy_catalog.apply_recipe(resources['employer'],paid_recipe)
+                feasible=(resources['employer'][paid_currency]>=wage and produced[paid_currency]>=wage
+                          and resources['worker'][paid_currency]<=MAX_STOCK-wage)
+            except ValueError:feasible=False
+            if feasible:
                 worker_name = person_view(self.active,actor,plan['actor'])['name']
-                options.append({'id':'offer_shift','effect':f'Offer {worker_name} {wage} gold from your purse to convert {policy["grain_per_shift"]} of your grain into {policy["bread_per_shift"]} bread. They may refuse. Pay only after {minutes} game minutes of qualified work and observed production.'})
-            information = f'Consider paid bread-making to replenish your stock toward your enterprise target of {policy["target_bread"]} loaves. The recipe is authored; no oven animation is implemented. Your household reserve applies to output. Sale prices and sales are not guaranteed, wages cost {wage} gold and grain has an opportunity cost. Use your own remembered trades when judging whether replenishing is worthwhile.'
+                options.append({'id':'offer_shift','effect':f'Offer {worker_name} {wage} {paid_currency} from your purse to convert your {paid_inputs} into {paid_outputs}. They may refuse. Pay after {minutes} game minutes of qualified attendance and observed production.'})
+            information = f'Consider paying for {paid_recipe}. Inputs remain your responsibility and output stays yours. Sales are not guaranteed; wages cost {wage} {paid_currency} and inputs have an opportunity cost. Use your own remembered trades when judging whether production is worthwhile. Stationary attendance does not prove a productive animation.'
         elif plan['phase']=='job_accept':
             employer_name = person_view(self.active,actor,plan['target'])['name']
             options = [{'id':'decline_work','effect':'Decline the job. No goods or wages change hands.'},
-                       {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: walk to the employer, spend {minutes} game minutes on simulated bread-making work and receive {wage} gold after the output is verified. You supply labour, not grain or money.'}]
-            information = f'{employer_name} offers you a paid job: {wage} gold for {minutes} game minutes of bread-making work at their location. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
+                       {'id':'take_shift','effect':f'Accept {employer_name}\'s offer: attend {minutes} game minutes of {paid_recipe} work for {wage} {paid_currency}, payable after verified output. You supply labour; the employer supplies inputs. Payment can remain unresolved if execution fails.'}]
+            information = f'{employer_name} offers you {wage} {paid_currency} for {minutes} game minutes of {paid_recipe} work. Consider fatigue, food, other priorities and your memories. You can refuse; the employer\'s private inventory is not known.'
         elif plan['phase']=='allocate':
             options = [{'id':'reserve_all','effect':'Keep all carried bread for your household. None is offered for sale until you review this policy again.'},
                        {'id':'reserve_one','effect':'Keep up to one carried loaf for your household; earmark any surplus for sale. You may still refuse individual offers.'},
@@ -308,11 +314,12 @@ class Agency:
                     inputs,outputs=recipe_quantities(job['recipe_id'])
                     options.append({'id':action,'effect':f'Spend {job["policy"]["work_minutes"]} game minutes working your own stock where you are. Use {inputs} to produce {outputs}. No wage or gold is created or transferred. Output stays yours; household food policy applies to food only. Consider fatigue and other needs; the productive animation is not implemented.'})
                 for i, job in enumerate(work_opportunities(self.active, observation, actor)):
-                    action = 'seek_work' if i == 0 else 'seek_work_' + job['business_id']
+                    action = ('seek_work_' + hashlib.sha256(json.dumps([job['business_id'],job['recipe_id']],separators=(',',':')).encode()).hexdigest()[:24]
+                              if job.get('protocol')==2 else 'seek_work' if i == 0 else 'seek_work_' + job['business_id'])
                     work_options[action] = job
                     targets[action] = job['employer']
                     terms = job['policy']
-                    options.append({'id': action, 'effect': f'Ask {job["employer_name"]} about an advertised {terms["work_minutes"]}-game-minute bread-making shift paying {terms["wage_gold"]} gold. The employer must offer and you must accept. No wage is guaranteed.'})
+                    options.append({'id': action, 'effect': f'Ask {job["employer_name"]} about an advertised {terms["work_minutes"]}-game-minute {job.get("recipe_id","bread_recipe")} shift paying {terms["wage_gold"]} {job.get("currency","gold")}. The employer must offer and you must accept. No wage is guaranteed.'})
             if plan['kind']=='need_review' and rest_opportunities(self.active,observation,actor):
                 options.append({'id':'rest_at_bench','effect':'Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.'})
             information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
@@ -343,6 +350,8 @@ class Agency:
                 'purchase_options':purchase_options,'work_options':work_options, 'owner_work_actions':owner_work_actions, 'enterprise_options':business_options, 'market_options':market_options,
                 'own_recipe_knowledge':recipe_knowledge(person,state=self.active,observation=observation,actor_id=actor),
                 'options': options}
+        if plan['phase'] in ('job_offer','job_accept') and plan.get('work_terms',{}).get('protocol')==2:
+            context.update(work_terms=copy.deepcopy(plan['work_terms']),terms_hash=plan['work_terms']['terms_hash'])
         return purchase_attention_context(context,plan,{row['supplier']:person_view(self.active,actor,row['supplier'])['name']
             for row in purchase_options.values()})
 
@@ -384,6 +393,8 @@ class Agency:
             raise ValueError('The chosen destination changed while deciding')
         if current.get('work_options',{}).get(chosen)!=claim['context'].get('work_options',{}).get(chosen):
             raise ValueError('The chosen employment terms changed while deciding')
+        if any(current.get(key)!=claim['context'].get(key) for key in ('work_terms','terms_hash')):
+            raise ValueError('The offered employment contract changed while deciding')
         if any(current.get(key)!=claim['context'].get(key) for key in ('commodity','quantity','unit_price','cost','purpose')):
             raise ValueError('Negotiation terms changed while deciding')
         purchase=current.get('purchase_options',{}).get(chosen)
@@ -475,7 +486,7 @@ class Agency:
                 travel_id += '-replan-' + str(len(updated['decisions']))
             target = updated['target'] if action == 'take_shift' else current['option_targets'][action]
             if action == 'take_shift' and not updated.get('employment_dialogue'):
-                accept_contract(state, updated)
+                accept_contract(state, updated, observation)
             updated.update(phase='travelling', target=target,
                            intent='seek_bread' if action.startswith('seek_bread') else action, travel_id=travel_id, release_required=True)
             updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
@@ -560,6 +571,15 @@ class Agency:
     def _agency_observe(self, observation):
         plan = self.agency_plan()
         ack = observation.get('ack') or {}
+        if plan and plan['phase']=='paid_work_releasing':
+            if ack.get('id')=='release-'+plan['id']:
+                state=copy.deepcopy(self.active);updated=state['plans'][-1]
+                if ack.get('status')=='applied' and ack.get('released') is True:
+                    updated.update(phase='ready_to_paid_work',release_required=False,paid_work_release=copy.deepcopy(ack))
+                    if plan.get('voiced_trade'):updated['economic_release']=copy.deepcopy(ack)
+                else:updated.update(phase='held',error='Employment meeting release was not verified')
+                self._write(state,'employment meeting release observed before independent work')
+            return
         if plan and plan['phase'] in TERMINAL and plan.get('release_required'):
             if ack.get('id') == 'release-' + plan['id'] and ack.get('status') == 'applied' and (not plan.get('economic_pair') or ack.get('released') is True):
                 state = copy.deepcopy(self.active)
@@ -681,9 +701,17 @@ class Agency:
             try:
                 if distance(observation, plan['actor'], plan['target']) > 300:
                     raise ValueError('Participants separated before work')
-                self.plan_production(observation, plan)
+                if plan.get('work_terms',{}).get('protocol')==2:
+                    current_work_terms(self.active,plan,observation)
+                    state=copy.deepcopy(self.active)
+                    state['plans'][-1].update(phase='paid_work_releasing',release_required=True)
+                    self._write(state,'release the agreed employment meeting before assigning attendance')
+                else:self.plan_production(observation, plan)
             except ValueError as error:
                 self.hold_plan(plan['id'], str(error), observation)
+        elif plan['phase']=='ready_to_paid_work':
+            try:self.delegate_paid_work(plan,observation)
+            except ValueError as error:self.hold_plan(plan['id'],str(error),observation)
         elif plan['phase'] == 'ready_to_rest':
             try:self.plan_rest(observation,plan)
             except ValueError as error:self.hold_plan(plan['id'],str(error),observation)
@@ -693,7 +721,7 @@ class Agency:
 
     def agency_command(self, session):
         plan = self.agency_plan()
-        if plan and plan['phase'] in TERMINAL and plan.get('release_required'):
+        if plan and plan['phase'] in (*TERMINAL,'paid_work_releasing') and plan.get('release_required'):
             return {'id': 'release-' + plan['id'], 'kind': 'release_routine', 'actor': plan['actor'],
                     **({'participants':plan['economic_pair']} if plan.get('economic_pair') else {}),
                     'session': session, 'checkpoint': self.marker}

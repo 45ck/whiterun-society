@@ -5,7 +5,7 @@ import secrets
 import time
 from agency import distance
 from enterprises import plan_work_policy, current_work_terms
-from employment import remember_unavailable, accept_contract
+from employment import remember_unavailable, accept_contract, work_description
 from economic_language import economic_context, validate_wording, qualify_wording, wording_receipt, trade_terms, TERMS
 from decisions import validate_decision
 from trade_memory import remember_refusal_decision, remember_refusal_heard
@@ -36,13 +36,14 @@ class EconomicSpeech:
                 'receipt':(buyer,seller,f'Thank you. I received {goods} at {price} gold each and paid {total} gold total.')}
         if act.startswith('work_'):
             policy=plan_work_policy(plan);wage=policy['wage_gold'];minutes=policy['work_minutes']
+            work=work_description(plan);currency=plan.get('work_terms',{}).get('currency','gold')
             lines.update({
-                'work_request':(buyer,seller,f'Are you hiring for that {minutes}-minute bread-making shift?'),
-                'work_offer':(seller,buyer,f'I can offer {wage} gold for {minutes} minutes of bread-making. I supply the grain and pay after the work is done.'),
+                'work_request':(buyer,seller,f'Are you hiring for that {minutes}-minute shift to {work}?' ),
+                'work_offer':(seller,buyer,f'I can offer {wage} {currency} for {minutes} minutes to {work}. I supply the inputs and pay after the work is done.'),
                 'work_unavailable':(seller,buyer,'I am not offering you a shift right now.'),
-                'work_accept':(buyer,seller,f'I accept. {minutes} minutes of bread-making for {wage} gold, paid after the work.'),
+                'work_accept':(buyer,seller,f'I accept. {minutes} minutes to {work} for {wage} {currency}, paid after the work.'),
                 'work_decline':(buyer,seller,'Thank you, but I will not take that shift.'),
-                'work_receipt':(buyer,seller,f'The bread is made and I have received {wage} gold. Thank you.')})
+                'work_receipt':(buyer,seller,f'The agreed output is verified and I have received {wage} {currency}. Thank you.')})
         actor,listener,line=lines[act]
         if len(plan.get('economic_turns',[]))>=5:raise ValueError('Trade speech budget exhausted')
         plan.setdefault('economic_pair',[buyer,seller])
@@ -54,6 +55,8 @@ class EconomicSpeech:
             'source':'Deterministic wording of accepted economic terms; not generated dialogue',
             'origin_session':self.session,'resume_phase':plan['phase']}
         if terms:plan['economic_speech']['terms']=terms
+        if act.startswith('work_') and plan.get('work_terms',{}).get('protocol')==2:
+            plan['economic_speech']['terms_hash']=plan['work_terms']['terms_hash']
         if act=='refuse':plan['economic_speech']['refusal_event_id']=remember_refusal_decision(state,plan)
         plan['phase']=('economic_propose' if plan.get('natural_trade') else 'economic_synthesize') if plan.get('economic_attendance') else 'economic_attending'
         plan['release_required']=True
@@ -177,13 +180,13 @@ class EconomicSpeech:
         if type(elapsed) not in (int,float) or not math.isfinite(elapsed) or elapsed<current['audio']['seconds']-.3 or report.get('nearbyThroughout') is not True:
             self.hold_plan(plan['id'],'Economic playback incomplete or listener departed',observation);return True
         if current['act']=='work_accept':
-            try:current_work_terms(self.active,plan)
+            try:current_work_terms(self.active,plan,observation)
             except ValueError as error:
                 self.hold_plan(plan['id'],str(error),observation);return True
         state=copy.deepcopy(self.active);updated=state['plans'][-1];turn=updated.pop('economic_speech')
         turn.update(delivered=True,playback=copy.deepcopy(report),ended_at=time.time())
         updated.setdefault('economic_turns',[]).append(turn);updated['phase']=turn['resume_phase']
-        if turn['act']=='work_accept':accept_contract(state,updated)
+        if turn['act']=='work_accept':accept_contract(state,updated,observation)
         if turn['act']=='work_unavailable':remember_unavailable(state,updated,observation.get('gameDays'),turn['delivery_id'])
         if turn['act']=='refuse':remember_refusal_heard(state,updated,turn)
         if updated['phase']=='travelling':updated.update(phase='economic_departing',economic_resume='travelling')

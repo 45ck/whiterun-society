@@ -50,6 +50,59 @@ function ownerRecipeLabel(recipe){
  const goods=amounts=>Object.entries(amounts||{}).map(([good,quantity])=>`${quantity} ${good}`).join(' + ');
  return `${recipe.id} · ${recipe.version} · ${goods(recipe.inputs)} → ${goods(recipe.outputs)}`;
 }
+const paidEmploymentStages=[['offered','Offer recorded'],['accepted','Acceptance recorded'],['attendance_qualified','Attendance qualified'],['output_verified','Output verified'],['wage_paid','Wage transfer verified'],['completed','Contract completed'],['released','Activity released'],['held','Held for review']];
+function paidEmploymentLabel(job){
+ if(job?.orphan)return 'Quarantined employment record · no new effects credited';
+ const proof=job?.stages||{};
+ if(proof.held===true)return 'Employment held · inspect each effect separately';
+ if(proof.completed===true)return proof.released===true?'Contract completed · release verified':'Contract completed · release not verified';
+ if(proof.output_verified===true&&proof.wage_paid!==true)return 'Output verified · wage transfer not verified';
+ if(proof.wage_paid===true&&proof.output_verified!==true)return 'Wage transfer verified · output not verified';
+ if(proof.output_verified===true&&proof.wage_paid===true)return 'Output and wage verified · contract completion pending';
+ if(proof.attendance_qualified===true)return 'Attendance qualified · settlement not verified';
+ if(proof.accepted===true)return 'Accepted contract · attendance not yet qualified';
+ if(proof.offered===true)return 'Offer recorded · acceptance not verified';
+ return 'Employment evidence unavailable';
+}
+function paidEmploymentJobs(state){
+ const metrics=state?.dashboard?.paid_employment_metrics||state?.paid_employment_metrics||state?.society?.paid_employment_metrics;
+ return metrics?.measured===true&&Array.isArray(metrics.jobs)?metrics.jobs:[];
+}
+function renderPaidEmploymentJob(root,job,catalog){
+ if(!root||!job)return;const doc=root.ownerDocument;
+ const add=(tag,value,parent=root,cls)=>{const e=doc.createElement(tag);e.textContent=value;if(cls)e.className=cls;parent.append(e);return e;};
+ const name=(label,id)=>typeof label==='string'&&label.trim()?label:Number.isSafeInteger(id)?'Resident '+id:'Unknown resident';
+ const shown=value=>typeof value==='number'&&Number.isFinite(value)?value:'—';
+ root.dataset.paidEmploymentJob=String(job.id||'unknown');
+ add('h3','Worker '+name(job.worker_name,job.worker)+' · employer '+name(job.employer_name,job.employer));
+ add('p',paidEmploymentLabel(job),root,'town-chart-note');
+ add('p','Recipe: '+(job.recipe_id||'Unrecorded')+' · '+(job.stages?.accepted===true?'Agreed':'Proposed')+' wage '+shown(job.wage_gold)+' septims · '+shown(job.work_minutes)+' game minutes',root,'town-chart-note');
+ if(job.recipe?.status==='verified')add('p',Object.entries(job.recipe.inputs||{}).map(([key,n])=>n+' '+commodityLabel(key,catalog)).join(' + ')+' → '+Object.entries(job.recipe.outputs||{}).map(([key,n])=>n+' '+commodityLabel(key,catalog)).join(' + '),root,'town-chart-note');
+ const list=add('dl','',root,'paid-proof-grid');
+ for(const [key,label] of paidEmploymentStages){add('dt',label,list);const value=job.stages?.[key],state=value===true?(key==='held'?'held':'verified'):value===false?'not_recorded':'unknown';const cell=add('dd',value===true?(key==='held'?'Yes':'Yes · recorded proof'):value===false?(key==='held'?'No recorded hold':'Not verified'):'Unknown',list);cell.dataset.evidence=state;}
+ if(job.held_reason)add('p','Hold: '+job.held_reason,root,'town-chart-note');
+ if(job.phase)add('p','Saved phase: '+String(job.phase).replaceAll('_',' '),root,'town-chart-note');
+ add('p','Attendance, output, both wage-transfer legs, contract completion and release need separate evidence. A matching balance is not payment proof.',root,'town-chart-note');
+}
+function renderPaidEmploymentMetrics(root,metrics,catalog){
+ if(!root||!metrics)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const e=doc.createElement(tag);e.textContent=text;if(cls)e.className=cls;parent.append(e);return e;};
+ add('h3','Paid employment · evidence ledger');
+ const capability=metrics.capability,current=capability?.fresh===true&&capability.protocol===2;
+ const available=current&&capability.available===true,unavailable=current&&capability.available===false;
+ const status=add('p',available?'Current v2 executor reported available · each job still requires its own evidence.':unavailable?'Current v2 executor reports unavailable.':'Current v2 executor unknown or stale · saved job evidence is separate.',root,'town-chart-note');status.dataset.paidExecutor=available?'available':unavailable?'unavailable':'unknown';
+ if(metrics.measured!==true){add('p','Unmeasured · no qualified paid-employment evidence projection. Historical outcomes are not current execution proof.',root,'town-chart-note');return;}
+ const grid=add('div','',root,'town-stock-grid');
+ for(const [key,label] of paidEmploymentStages){const stage=metrics.stages?.[key],tile=add('div','',grid,'town-stock');const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—';add('strong',String(count(stage?.success)),tile);add('span',label,tile);add('small',count(stage?.n)+' assessed · '+count(stage?.unknown)+' unknown',tile);}
+ add('p',(Number.isSafeInteger(metrics.retained_jobs)?metrics.retained_jobs:'—')+' retained jobs. Stage counts are independent evidence samples, not a completion score or a measure of economic output.',root,'town-chart-note');
+ const detail=add('details','',root,'town-detail');detail.dataset.panel='Paid employment contracts';add('summary','Individual contracts and effect evidence',detail);
+ for(const job of metrics.jobs||[])renderPaidEmploymentJob(add('section','',detail),job,catalog);
+ const partial=metrics.partial_effects;if(partial){add('h4','Partial effects · not settled contracts',detail);const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—';for(const [key,label] of [['output_verified_without_commit','Output witnessed without journal commit'],['wage_debit_without_verified_credit','Wage debited without verified worker credit'],['wages_verified_without_commit','Both wage legs witnessed without journal commit']])add('p',label+': '+count(partial[key]),detail,'town-chart-note');const goods=Object.entries(partial.observed_output_goods||{});if(goods.length)add('p','Unsettled witnessed output: '+goods.map(([id,n])=>n+' '+commodityLabel(id,catalog)).join(' · '),detail,'town-chart-note');}
+ if(Number.isSafeInteger(metrics.legacy_rows_excluded))add('p',metrics.legacy_rows_excluded+' legacy records excluded from v2 proof counts.',detail,'town-chart-note');
+ if(Number.isSafeInteger(metrics.conflicting_job_lineages)&&metrics.conflicting_job_lineages)add('p',metrics.conflicting_job_lineages+' conflicting job histories · evidence remains unknown.',detail,'town-chart-note');
+ if(metrics.latency){add('h4','Elapsed timings · separate clocks',detail);let samples=false;for(const [key,distribution] of Object.entries(metrics.latency)){if(!(distribution.n>0||distribution.unknown>0))continue;samples=true;const value=n=>Number.isFinite(n)?n:'—',wall=key.endsWith('_wall_seconds'),game=key.endsWith('_game_minutes');if(!wall&&!game)continue;const label=key.replace(/_(wall_seconds|game_minutes)$/,'').replaceAll('_',' ');add('p',label+': '+value(distribution.median)+' median / '+value(distribution.p95)+' p95 '+(wall?'wall seconds':'game minutes')+' · '+value(distribution.n)+' timed / '+value(distribution.eligible)+' eligible · '+value(distribution.unknown)+' missing',detail,'town-chart-note');}if(!samples)add('p','No qualified timestamp pairs yet.',detail,'town-chart-note');add('p',metrics.timing_scope||'Elapsed time includes waiting and pauses; not productive work time.',detail,'town-chart-note');}
+ if(metrics.eligibility)add('p',metrics.eligibility.n===null?'Opportunity coverage unmeasured · '+metrics.eligibility.scope:String(metrics.eligibility.n)+' opportunity samples · '+metrics.eligibility.scope,detail,'town-chart-note');
+ add('p',metrics.scope||'Retained job evidence only; no human-realism or productivity score.',root,'town-chart-note');
+}
 function renderResourceImports(root,program){
  if(!root||!program)return;
  const add=(tag,text,parent=root)=>{const el=root.ownerDocument.createElement(tag);el.textContent=text;parent.append(el);return el;};
@@ -77,6 +130,7 @@ function renderTownCharts(root,data){
   .town-swatch{width:7px;height:7px;border-radius:50%;flex:none}.town-stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.town-stock{padding:10px 7px;border:1px solid #ffffff15;border-radius:8px;background:#ffffff04}.town-stock strong{display:block;font-size:23px;font-weight:500;color:#e0bd72}.town-stock span{font-size:11px;color:#bac5c5}.town-stock small{display:block;font-size:9px;color:#8e9ea2;margin-top:4px}
   .town-need{margin:8px 0}.town-need-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}.town-need-track{height:7px;border-radius:4px;background:#ffffff0d;overflow:hidden}.town-need-fill{height:100%;border-radius:4px;background:#dfa56d}.town-flow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px}.town-flow strong{display:block;color:#9dc9ac;font-size:20px;font-weight:500}.town-tabs{display:flex;gap:5px;margin:5px 0}.town-tabs button{flex:1;background:#ffffff08;border:1px solid #ffffff18;border-radius:6px;padding:7px;color:inherit}
   .town-trend{display:block;width:100%;height:88px;margin:8px 0}.town-detail{border-top:1px solid #ffffff15;padding-top:10px}.town-detail>summary{font-size:12px;cursor:pointer;color:#e0bd72}.town-detail>summary:focus-visible{outline:2px solid #e0bd72;outline-offset:4px}
+  .paid-proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px;line-height:1.4}.paid-proof-grid dt,.paid-proof-grid dd{margin:0}.paid-proof-grid dd[data-evidence=verified]{color:#9dc9ac}.paid-proof-grid dd[data-evidence=unknown],.paid-proof-grid dd[data-evidence=held]{color:#dfa56d}[data-paid-employment-job]{border-top:1px solid #ffffff15;padding-top:8px;margin-top:10px;overflow-wrap:anywhere}
   `;doc.head.append(style);
  }
  const opened=new Set([...root.querySelectorAll('details[open]')].map(e=>e.dataset.panel));
@@ -136,6 +190,7 @@ function renderTownCharts(root,data){
   if(number(a.retained_orphans)>0)add(evidence,'p',`${a.retained_orphans} orphan records quarantined for release only; excluded from admissions and recovered rests.`,'town-chart-note');
   add(evidence,'p',a.scope,'town-chart-note');
  }
+ if(data.paid_employment_metrics){const panel=add(root,'section');renderPaidEmploymentMetrics(panel,data.paid_employment_metrics,data.inventory_catalog);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
  if(data.owner_work){const work=data.owner_work,panel=section('Independent owner work');
   metricTiles(panel,[[`${shown(work.leased_jobs)} / ${shown(work.configured_capacity)}`,'Reserved work slots'],[shown(work.observed_working),'Observed attendance'],[shown(work.awaiting_commit),'Awaiting inventory commit']]);
   add(panel,'p',`${shown(work.native_matched_jobs)} matched / ${shown(work.leased_jobs)} leases · ${shown(work.unmeasured_jobs)} unmeasured. Native capacity ${shown(work.native_capacity)}; this pool is separate from rest and citizen-control slots.`,'town-chart-note');
@@ -275,4 +330,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation};
+if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation,paidEmploymentLabel,paidEmploymentJobs,renderPaidEmploymentJob,renderPaidEmploymentMetrics};

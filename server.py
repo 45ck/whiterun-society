@@ -249,7 +249,7 @@ def main():
                     native_effect=bool(bridge['command'] or world.active and world.active.get('pending')))
                 if rejected:return self.reply(409,rejected)
                 if self.path=='/service/shutdown':
-                    if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')) or world.activity_status()['jobs'] or world.owner_work_status()['jobs']:
+                    if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')) or world.activity_status()['jobs'] or world.owner_work_status()['jobs'] or world.paid_employment_status()['jobs']:
                         raise ValueError('Settle active society work before restarting the service')
                     bridge['shutdown_requested']=True
                     return self.reply(202,{'status':'stopping','effects_in_flight':False})
@@ -293,7 +293,8 @@ def main():
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
                         'society':society_status,'director':director.status(),'director_control_receipt':bridge.get('director_control_receipt'),
-                        'dashboard':town_dashboard(society_status,data,bridge['spatial'])}
+                        'dashboard':{**town_dashboard(society_status,data,bridge['spatial']),
+                                     'paid_employment_metrics':society_status['paid_employment_metrics']}}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):

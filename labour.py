@@ -1,48 +1,66 @@
-"""Feasible paid-work opportunities, not inferred consent or public inventory.
-
-The first executable enterprise uses the verified bread recipe. Stock targets,
-wages and working hours are authored scenario policy, not discovered economics.
-"""
+"""Recipe-based paid opportunities; eligibility is never consent or production."""
 from routing import route_available
 from knowledge import person_view
-from enterprises import production_policy, paid_bread_recipe
-from employment import recently_refused
-from paid_work_policy import paid_work_capability
-from economy_catalog import native_catalog_matches, commodity_ids, recipe_spec, recipe_hash, catalog_hash, MAX_STOCK
+from enterprises import production_policy
+from employment import recently_refused, work_terms_hash
+from economy_catalog import native_catalog_matches, commodity_ids, recipe_spec, recipe_ids, recipe_hash, catalog_hash, MAX_STOCK
+import economy_catalog
+from resident_identity import resident_identity_status
+
+
+def paid_employment_available(observation):
+    native = observation.get('paid_employment') or {}
+    return (isinstance(native, dict) and native.get('available') is True
+        and type(native.get('protocol')) is int and native['protocol'] == 2
+        and isinstance(native.get('epoch'), str) and bool(native['epoch'])
+        and type(native.get('capacity')) is int and 1 <= native['capacity'] <= 128
+        and ('session' not in native or native['session'] == observation.get('session')))
+
 
 def work_opportunities(state, observation, worker):
-    if not paid_work_capability()['available']:
-        return []
-    if not native_catalog_matches(observation, 'bread_recipe'):return []
-    try:recipe = paid_bread_recipe()
-    except ValueError:return []
-    town = state.get('town') or {}
-    resident = town.get('residents', {}).get(str(worker))
-    actors = {a['id']: a for a in observation.get('residents', []) if a.get('isPerson') is True}
-    if not resident or worker not in actors:
-        return []
-    opportunities = []
-    for business_id, business in sorted(town.get('businesses', {}).items()):
-        employer = business['custodian']
-        if business.get('active', True) is not True or 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer,state):
-            continue
-        stock = actors.get(employer, {}).get('inventory', {})
-        if any(type(stock.get(k)) is not int or not 0 <= stock[k] <= MAX_STOCK for k in commodity_ids()):
-            continue
-        try:policy = production_policy(business)
-        except (ValueError, KeyError):continue
-        if recently_refused(state, worker, business_id, business.get('revision', 0), observation.get('gameDays')):
-            continue
-        if stock['gold'] < policy['wage_gold'] or any(stock[k] < n for k, n in recipe['inputs'].items()) or stock['bread'] >= policy['target_bread']:
-            continue
-        if any(stock[k] > MAX_STOCK-n for k, n in recipe['outputs'].items()):continue
-        worker_stock=actors[worker].get('inventory',{})
-        if any(type(worker_stock.get(k)) is not int or not 0 <= worker_stock[k] <= MAX_STOCK for k in commodity_ids()):continue
-        if worker_stock['gold'] > MAX_STOCK-policy['wage_gold']:continue
-        opportunities.append({'business_id': business_id, 'employer': employer,
-            'employer_name': person_view(state,worker,employer)['name'],
-            'revision': business.get('revision', 0), 'policy': policy,
-            'recipe_id':'bread_recipe','catalog_hash':catalog_hash(),'recipe_hash':recipe_hash('bread_recipe')})
+    from entrepreneurship import knows_recipe
+    if not paid_employment_available(observation) or not native_catalog_matches(observation):return []
+    identity = resident_identity_status(state, observation, worker)
+    if not identity['qualified']:return []
+    actors = {a['id']: a for a in observation.get('residents', []) if isinstance(a,dict) and a.get('isPerson') is True}
+    currency = next(row['id'] for row in economy_catalog.ECONOMY_CATALOG['commodities'] if row['currency'])
+    def inventory(actor):
+        row=actors.get(actor,{})
+        if 'inventory_checkpoint' in row and row['inventory_checkpoint'] != observation.get('checkpoint'):return None
+        stock=row.get('inventory')
+        if (not isinstance(stock,dict) or set(stock) != set(commodity_ids())
+                or any(type(v) is not int or not 0 <= v <= MAX_STOCK for v in stock.values())):return None
+        return stock
+    worker_stock=inventory(worker)
+    if worker_stock is None:return []
+    opportunities=[]
+    for business_id,business in sorted((state.get('town') or {}).get('businesses',{}).items()):
+        employer=business.get('custodian')
+        if (business.get('active',True) is not True or employer==worker
+                or not route_available(observation,worker,employer,state)):continue
+        employer_identity=resident_identity_status(state,observation,employer)
+        stock=inventory(employer)
+        if not employer_identity['qualified'] or stock is None:continue
+        revision=business.get('revision',0)
+        if type(revision) is not int or revision<1:continue
+        if recently_refused(state,worker,business_id,revision,observation.get('gameDays')):continue
+        for recipe_id in sorted(set(business.get('capabilities',[])) & set(recipe_ids())):
+            if not knows_recipe(state['people'].get(str(employer),{}),recipe_id,
+                    state=state,observation=observation,actor_id=employer):continue
+            try:policy=production_policy(business,recipe_id)
+            except (ValueError,KeyError):continue
+            recipe=recipe_spec(recipe_id);wage=policy['wage_gold']
+            target=policy.get('target_output',policy.get('target_bread'))
+            if (stock[currency]<wage or worker_stock[currency]>MAX_STOCK-wage
+                    or any(stock[k]<n for k,n in recipe['inputs'].items())
+                    or any(stock[k]>=target or stock[k]>MAX_STOCK-n for k,n in recipe['outputs'].items())):continue
+            terms={'protocol':2,'worker':worker,'worker_base_id':identity['base_id'],
+                'employer':employer,'employer_base_id':employer_identity['base_id'],
+                'employer_name':person_view(state,worker,employer)['name'],
+                'business_id':business_id,'revision':revision,'policy':policy,'currency':currency,
+                'recipe_id':recipe_id,'catalog_hash':catalog_hash(),'recipe_hash':recipe_hash(recipe_id)}
+            terms['terms_hash']=work_terms_hash(terms)
+            opportunities.append(terms)
     return opportunities
 
 

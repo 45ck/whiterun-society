@@ -86,6 +86,12 @@ Generated system illustration — not gameplay
 
 ![Npc four systems](images/npc-four-systems.png)
 
+## Paid employment cycle
+
+Generated system illustration — not gameplay
+
+![Paid employment cycle](images/paid-employment-cycle.png)
+
 ## Personal knowledge loop
 
 Generated system illustration — not gameplay

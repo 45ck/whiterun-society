@@ -8,6 +8,7 @@ import copy
 import hashlib
 import json
 import sqlite3
+import time
 from trade_execution import TradeExecution
 from agency import Agency
 from food import FoodEconomy, allocation
@@ -31,6 +32,8 @@ from owner_production import OwnerProduction
 from resident_goals import ResidentGoals
 from activity_jobs import ActivityJobs
 from owner_work_jobs import OwnerWorkJobs
+from paid_employment import PaidEmployment
+from paid_employment_metrics import paid_employment_metrics
 from activity_leases import activity_conflict,identity_quarantine_actors
 from resident_identity import valid_actor_id
 from economy_catalog import require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
@@ -38,7 +41,7 @@ from economy_catalog import require_native_catalog, native_catalog_matches, cata
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, LivelihoodBackgrounds, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
+class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, LivelihoodBackgrounds, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs, PaidEmployment):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -52,6 +55,7 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         self.transition = None
         self.error = 'Waiting for game checkpoint'
         self.latest_observation = None
+        self.latest_observation_at = None
 
     def _write(self, state, reason):
         encoded = json.dumps(state, sort_keys=True, separators=(',', ':'), allow_nan=False)
@@ -87,11 +91,13 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
 
     def observe(self, observation):
         self.latest_observation = None
+        self.latest_observation_at = None
         session, marker = observation.get('session'), observation.get('checkpoint')
         if not isinstance(session, str) or not session or type(marker) is not int or not 0 <= marker <= MAX_MARKER:
             self.error = 'Missing or invalid game checkpoint'
             return
         self.latest_observation = copy.deepcopy(observation)
+        self.latest_observation_at = time.monotonic()
         changed = session != self.session or marker != self.marker
         if session != self.session:
             self.transition = None
@@ -121,6 +127,9 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         # A prepared recipe owns the writer until its exact receipt settles.
         # Do not hide its acknowledgement behind an unrelated conversation.
         effect = self.active.get('pending')
+        if effect and effect.get('command',{}).get('kind')=='inventory_paid_work_commit':
+            self.observe_paid_production(observation)
+            return
         if effect and effect.get('command',{}).get('kind')=='inventory_produce':
             self.observe_production(observation)
             return
@@ -150,7 +159,11 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         if not self.active['pending'] and not foreground_command and self.observe_activity_jobs(observation):
             return
         if not self.active['pending'] and not foreground_command:
+            if self.observe_paid_employment(observation):
+                return
             if self.observe_owner_work_jobs(observation):
+                return
+            if not self.conversation_busy() and not self.agency_busy() and self.prepare_paid_work_commit(observation):
                 return
             if not self.conversation_busy() and not self.agency_busy() and self.prepare_owner_work_recipe(observation):
                 return
@@ -197,6 +210,9 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             command=self.active['pending']['command']
             if command.get('kind')=='inventory_produce':return None
+            if command.get('kind')=='inventory_paid_work_commit':
+                paid_command=self.paid_work_commit_command(session)
+                return {**paid_command,'checkpoint':self.marker} if paid_command else None
             if command.get('kind') in ('parallel_routines','background_routines'):
                 observation=self.latest_observation or {}
                 jobs=command.get('jobs')
@@ -213,6 +229,9 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
         foreground_command = self.speech_command(session) or self.agency_command(session)
         if foreground_command:return foreground_command
+        paid_command = self.paid_work_pending_command()
+        if paid_command:
+            return {**paid_command, 'checkpoint': self.marker}
         activity_command = self.activity_pending_command()
         if activity_command:
             return {**activity_command, 'checkpoint': self.marker}
@@ -234,6 +253,9 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
             observation=None
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
                 'paid_work_capability':paid_work_capability(),
+                'paid_employment':self.paid_employment_status(),
+                'paid_employment_metrics':paid_employment_metrics(self.active, observation,
+                    fresh=observation is not None and self.latest_observation_at is not None and 0<=time.monotonic()-self.latest_observation_at<=10),
                 'activity_jobs': self.activity_status(),
                 'owner_work_jobs': self.owner_work_status(),
                 'scene_handoffs':self.active.get('scene_handoffs',[]) if self.active else [],
