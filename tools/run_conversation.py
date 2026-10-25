@@ -14,6 +14,7 @@ from decisions import infer
 from social import SOCIAL_STAGES
 from tools.voice_worker import VoiceWorker
 from dialogue_policy import POLICIES
+from tools.checkpoint_http import CheckpointHTTP
 
 
 def stock_voice(actor, observation):
@@ -35,11 +36,10 @@ def main():
     evidence={'id':args.id,'calls':{'propose':0,'select':0,'social':0},'started_at':time.time(),'stages':[],'synthesis_timings':[],
               'polling':{'checkpoint_seconds':.1,'native_wait_seconds':.2,'sleep_after_mutation':False}}
     path=runtime/('conversation-'+hashlib.sha256(args.id.encode()).hexdigest()[:12]+'.json')
+    client=CheckpointHTTP(f"http://127.0.0.1:{bridge['port']}",bridge['token'],timeout=10)
     def req(route,data=None):
-        request=urllib.request.Request(f"http://127.0.0.1:{bridge['port']}"+route,
-            data=None if data is None else json.dumps(data).encode(),headers={'Content-Type':'application/json','Authorization':'Bearer '+bridge['token']})
         try:
-            with urllib.request.urlopen(request,timeout=10) as r:result=json.load(r)
+            result=client(route,data)
         except urllib.error.HTTPError as e:raise ValueError(json.load(e).get('error','Request rejected')) from None
         if route=='/state' and time.time()-(result['bridge']['last_seen'] or 0)>10:raise ValueError('Game disconnected')
         return result

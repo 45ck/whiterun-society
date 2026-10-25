@@ -30,7 +30,10 @@ function storyActor(society,residents){
  const loaded=id=>residents.some(r=>r.id===id&&r.isPerson===true);
  if(loaded(candidate))return candidate;
  const batch=society?.routine_batch;
- return active(batch)?batch.members?.find(m=>m.phase==='travelling'&&loaded(m.actor))?.actor||null:null;
+ const traveller=active(batch)?batch.members?.find(m=>m.phase==='travelling'&&loaded(m.actor))?.actor:null;
+ if(traveller)return traveller;
+ const goalActor=Object.entries(society?.people||{}).find(([id,p])=>p.standing_goal?.phase==='travelling'&&loaded(Number(id)));
+ return goalActor?Number(goalActor[0]):null;
 }
 function tradeCameraActors(society,residents){
  const pair=society?.plan?.economic_pair;

@@ -3,6 +3,8 @@
 No wall-clock simulation while the game is disconnected. Inference is delegated
 to persisted-claim workers: at most six calls per economic event, 16 per
 social encounter when an explicit language configuration is supplied.
+The watch duration is a scheduling horizon: an already claimed event is settled
+before exit. It is not a hard cancellation deadline for network operations.
 """
 import argparse
 import hashlib
@@ -21,6 +23,8 @@ from routing import activity_blocker
 from scene_handoffs import scene_candidates
 from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 from bargaining import MAX_ECONOMIC_CALLS
+from tools.checkpoint_http import CheckpointHTTP
+from tools.goal_scheduler import GoalScheduler
 
 
 def fair_pending(events, social_first=True):
@@ -124,6 +128,7 @@ def main():
     parser.add_argument('--model-config',type=Path)
     parser.add_argument('--language-config',type=Path,help=f'Enables scheduled social encounters with at most {MAX_COMBINED_CALLS} model calls each')
     parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
+    parser.add_argument('--resident-goals',action='store_true',help='Give loaded residents independent standing destinations, at most 64 decisions per run')
     parser.add_argument('--receipt',type=Path)
     parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
     parser.add_argument('--social-opportunities',action='store_true',help='Offer nearby encounters between economic events; participation remains a resident choice')
@@ -132,15 +137,14 @@ def main():
     if not 0<=args.max_events<=96 or not 0<=args.watch_seconds<=3600:
         raise ValueError('Use 0–96 resident events and 0–3600 seconds of observation')
     if args.max_events and not args.model_config:raise ValueError('An explicit decision model configuration is required')
+    if args.resident_goals and not args.model_config:raise ValueError('Personal goals require a decision model configuration')
     if args.social_opportunities and not args.language_config:raise ValueError('Social opportunities require a language configuration')
     runtime=args.root/'runtime'
     config=json.loads((runtime/'bridge-config.json').read_text())
+    client=CheckpointHTTP(f"http://127.0.0.1:{config['port']}",config['token'])
     def request(route,data=None):
-        req=urllib.request.Request(f"http://127.0.0.1:{config['port']}"+route,
-            None if data is None else json.dumps(data).encode(),
-            headers={'Authorization':'Bearer '+config['token'],'Content-Type':'application/json'})
         try:
-            with urllib.request.urlopen(req,timeout=30) as response:return json.load(response)
+            return client(route,data)
         except urllib.error.HTTPError as error:raise ValueError(json.load(error).get('error','Request rejected')) from None
     def fresh():
         state=request('/state')
@@ -149,19 +153,26 @@ def main():
         if state['society']['error']:raise ValueError(state['society']['error'])
         return state
     before=fresh();session=before['bridge']['session']
-    evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],
-              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events,'status':'running'}
+    evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],'scene_handoffs':[],'goal_waves':[],'goal_model_calls':0,
+              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else MAX_ECONOMIC_CALLS)*args.max_events+(64 if args.resident_goals else 0),'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
     record();deadline=time.monotonic()+args.watch_seconds;first=True
+    goals=GoalScheduler(args.root,args.model_config,session,evidence,record) if args.resident_goals else None
+    initial_goals=False
+    def run_worker(command):
+        return goals.run_foreground(command,fresh,stopping,deadline) if goals else subprocess.run(command,check=False)
     try:
         while first or time.monotonic()<deadline:
             if stopping():break
             first=False;state=fresh()
             if state['bridge']['session']!=session:raise ValueError('Save/session changed; director stopped')
-            if state['society']['transition'] or state['bridge']['command']:
-                raise ValueError('Finish the pending native/checkpoint command before running the director')
+            settle_deadline=time.monotonic()+40
+            while state['society']['transition'] or state['bridge']['command']:
+                if time.monotonic()>settle_deadline:raise TimeoutError('Native/checkpoint command did not settle before director review')
+                time.sleep(.2);state=fresh()
+                if state['bridge']['session']!=session:raise ValueError('Save/session changed while waiting for director review')
             candidates=scene_candidates(state['society'],state['bridge']['observation']) if args.scene_handoffs else []
             if candidates and len(evidence['scene_handoffs'])<args.max_events:
                 resident=candidates[0];handoff_id='scene-'+uuid.uuid4().hex[:20]
@@ -175,6 +186,10 @@ def main():
                         evidence['scene_handoffs'].append(handoff);record();break
                     if time.monotonic()>handoff_deadline:raise TimeoutError('Scene handoff did not settle; no automatic retry')
                     time.sleep(.2)
+            if goals:
+                goals.tick(state,allow_launch=not stopping() and (not initial_goals or time.monotonic()<deadline))
+                if not initial_goals:goals.drain();initial_goals=True
+                state=fresh()
             result=request('/town/review',{'source':'bounded_director'})
             if not result.get('duplicate'):evidence['reviews'].append(result);record()
             bind_deadline=time.monotonic()+30
@@ -203,7 +218,7 @@ def main():
                     command=[sys.executable,str(Path(__file__).with_name('run_parallel_routines.py')),
                         '--root',str(args.root),'--id',batch_id,'--events',*ids,'--model-config',str(args.model_config)]
                     if overlap:command+=['--social-during-travel','--language-config',str(args.language_config)]
-                    result=subprocess.run(command,check=False)
+                    result=run_worker(command)
                     current=fresh();batch=current['society'].get('routine_batch')
                     if current['bridge']['session']!=session or not batch or batch['id']!=batch_id:
                         raise ValueError('Independent-journey cohort did not finish cleanly')
@@ -242,7 +257,7 @@ def main():
                     '--runtime',str(runtime),'--event-id',event['id'],'--actor',str(event['actor']),
                     '--kind',event['kind'],'--model-config',str(args.model_config)]
                 if not social and args.language_config:command+=['--voice-trade','--language-config',str(args.language_config)]
-                result=subprocess.run(command,check=False)
+                result=run_worker(command)
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')
                 # A worker's hold/finish response can precede the engine's
@@ -294,10 +309,13 @@ def main():
                 if args.social_opportunities:break
             if args.max_events and len(evidence['events'])>=args.max_events:break
             if time.monotonic()<deadline:time.sleep(min(2,max(.01,deadline-time.monotonic())))
+        if goals:goals.drain()
         evidence.update(status='stopped' if stopping() else 'complete',after=fresh());record()
         print(json.dumps({'status':'complete','reviews':len(evidence['reviews']),'events':evidence['events'],'evidence':str(output)}))
     except Exception as error:
         evidence.update(status='held',error=str(error));record();raise
+    finally:
+        if goals:goals.drain();record()
 
 
 if __name__=='__main__':main()

@@ -1,0 +1,8 @@
+{
+  "version": "resident-goals-v1",
+  "minimum_distance": 250,
+  "maximum_distance": 12000,
+  "review_game_minutes": 15,
+  "arrival_distance": 200,
+  "claim_timeout_seconds": 1800
+}

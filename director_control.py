@@ -32,6 +32,9 @@ class DirectorControl:
             result.update(events_completed=sum(e['status'] != 'started' for e in receipt['events']),
                           current_event=receipt['events'][-1] if receipt['events'] else None,
                           outcome=receipt['status'])
+            if receipt.get('goal_scheduler'):
+                result['goal_scheduler']=receipt['goal_scheduler']
+                result['goal_model_calls']=receipt.get('goal_model_calls')
             if receipt.get('error'): result['error'] = receipt['error'][:240]
         except (OSError, ValueError, KeyError):
             pass
@@ -72,7 +75,7 @@ class DirectorControl:
         command = [sys.executable, str(Path(__file__).parent/'tools/run_daily_life.py'),
                    '--root', str(self.runtime.parent), '--max-events', str(count),
                    '--watch-seconds', '3600' if mode=='play' else '600', '--model-config', str(configs[0]),
-                   '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--receipt', str(receipt),
+                   '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--resident-goals', '--receipt', str(receipt),
                    '--stop-file', str(stop_file)]
         if handoffs:command.append('--scene-handoffs')
         self.log = (self.runtime/(run_id+'.log')).open('w', encoding='utf-8')
@@ -85,7 +88,7 @@ class DirectorControl:
         self.run = {'id': run_id, 'status': 'running', 'max_events': count,
                     'mode':mode,'session_limit_seconds':3600 if mode=='play' else 600,
                     'scene_handoffs_enabled':handoffs,
-                    'maximum_model_calls': MAX_COMBINED_CALLS*count, 'started_at': time.time(),
+                    'maximum_model_calls': MAX_COMBINED_CALLS*count+64, 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()
 

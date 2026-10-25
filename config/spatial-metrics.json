@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "sample_seconds": 5,
+  "maximum_gap_seconds": 15,
+  "window_seconds": 3600,
+  "maximum_samples": 720,
+  "chart_points": 60,
+  "position_jitter_units": 10,
+  "maximum_speed_units_per_second": 1500,
+  "nearby_radius_units": 150,
+  "log_rotation_bytes": 8388608,
+  "targets": [
+    {"id":"SPA-01","objective":"Trustworthy spatial observation","measure":"Usable tracked actor-time coverage","field":"coverage.usable_percent","target":90,"unit":"percent","direction":"gte","minimum_sample":300,"sample_field":"coverage.candidate_actor_seconds","scope":"Loaded managed actor-seconds between paired samples; excludes missing time, paused clock and invalid geometry from the numerator."},
+    {"id":"SPA-02","objective":"Purposeful resident continuity","measure":"Sampled personal-goal coverage","field":"coverage.goal_percent","target":95,"unit":"percent","direction":"gte","minimum_sample":300,"sample_field":"coverage.loaded_resident_samples","scope":"A personal goal exists; this does not prove economic usefulness or continuous reasoning."},
+    {"id":"SPA-03","objective":"Navigable city","measure":"Verified reachable food destinations","field":null,"target":95,"unit":"percent","direction":"gte","minimum_sample":100,"scope":"Requires navigation-route probes from representative origins, opening hours, stock, prices and successful access; proximity alone cannot qualify."},
+    {"id":"SPA-04","objective":"Urban resilience","measure":"Qualified route disruption and recovery scenarios","field":null,"target":5,"unit":"scenarios","direction":"gte","minimum_sample":5,"scope":"Requires blocked-route interventions and measured replanning/recovery without teleportation."},
+    {"id":"SPA-05","objective":"Equitable service access","measure":"Neighbourhood food-access p90 to p10 ratio","field":null,"target":2,"unit":"ratio","direction":"lte","minimum_sample":100,"scope":"Proposed authored objective; needs neighbourhood/household geography, valid travel times and affordability."},
+    {"id":"SPA-06","objective":"Capacity-aware urban systems","measure":"Businesses with measured queues and throughput","field":null,"target":90,"unit":"percent","direction":"gte","minimum_sample":30,"scope":"Requires service capacities, request-arrival and completion timestamps, not proximity or crowd counts."}
+  ]
+}

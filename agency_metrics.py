@@ -1,0 +1,130 @@
+"""Save-derived agency and exchange structure; no synthetic realism score."""
+from collections import Counter
+import math
+from statistics import mean,median
+
+
+def number(value):
+    return type(value) in (int,float) and math.isfinite(value) and value>=0
+
+
+def rate(success,n):
+    return {'success':success,'n':n,'percent':round(100*success/n,2) if n else None}
+
+
+def distribution(values):
+    values=sorted(v for v in values if number(v))
+    return {'n':len(values),'mean':round(mean(values),3) if values else None,
+            'median':round(median(values),3) if values else None,
+            'p95':round(values[max(0,math.ceil(.95*len(values))-1)],3) if values else None}
+
+
+def fixture(row):
+    return row.get('provenance')=='test_fixture' or str(row.get('model','')).startswith(('test','deterministic-integration-fixture'))
+
+
+def entropy(counts):
+    total=sum(counts.values())
+    return round(-sum((n/total)*math.log2(n/total) for n in counts.values()),3) if total else None
+
+
+def choice_family(result):
+    action=(result.get('decision') or {}).get('action_id')
+    # A different reference ID is a destination, not a new action mechanism.
+    if isinstance(action,str) and action.startswith('visit_'):return 'visit_destination'
+    return action if action=='quiet' else 'unclassified'
+
+
+def agency_metrics(state):
+    people=state.get('people',{});town=state.get('town') or {}
+    managed=town.get('residents',{})
+    waves=town.get('goal_waves',[])
+    raw=[r for w in waves for r in w.get('results',[])]
+    results=[r for r in raw if not fixture(r)]
+    accepted=[r for r in results if r.get('accepted') is True]
+    choices=Counter(choice_family(r) for r in accepted)
+    destinations={r['decision']['action_id'][6:] for r in accepted
+                  if isinstance((r.get('decision') or {}).get('action_id'),str) and r['decision']['action_id'].startswith('visit_')}
+    goals=[people.get(k,{}).get('standing_goal') or {} for k in managed]
+    phases=Counter(g.get('phase','unassigned') for g in goals)
+    all_outcomes={}
+    for actor,p in people.items():
+        for m in p.get('memories',[]):
+            if m.get('kind') in ('standing_goal_arrival','standing_goal_failed') and m.get('event_id'):
+                all_outcomes[(actor,m['event_id'])]=m
+    outcomes=[m for m in all_outcomes.values() if not fixture(m)]
+    attempted=[r for r in results if r.get('attempted') is True]
+    skipped=[r for r in results if r.get('attempted') is False]
+    # Old receipts lack an attempted marker; preserve their recorded timings
+    # and reported costs without turning them into proven call-count samples.
+    inference_receipts=[r for r in results if r.get('attempted') is not False]
+    costs=[r.get('usage',{}).get('cost') for r in inference_receipts]
+    known_costs=[c for c in costs if number(c)]
+    return {
+        'retained_waves':len(waves),'completed_waves':sum(w.get('phase')=='complete' for w in waves),
+        'held_waves':sum(w.get('phase')=='held' for w in waves),
+        'pending_claimed_decisions':sum(len(w.get('members',[])) for w in waves if w.get('phase')=='thinking'),
+        'recorded_results':len(results),'excluded_fixture_results':len(raw)-len(results),
+        'recorded_attempted_calls':len(attempted),'skipped_before_inference':len(skipped),
+        'attempt_status_unknown':len(results)-len(attempted)-len(skipped),
+        'attempt_status_coverage':rate(len(attempted)+len(skipped),len(results)),
+        'decision_acceptance':rate(len(accepted),len(results)),
+        'inference_failures':rate(sum(r.get('failure')=='inference_failed' for r in attempted),len(attempted)),
+        'rejections':dict(Counter(r.get('failure') or 'unclassified' for r in results if r.get('accepted') is not True)),
+        'inference_seconds':distribution(r.get('elapsed_seconds') for r in inference_receipts),
+        'known_cost_usd':round(sum(known_costs),8) if known_costs else None,
+        'cost_coverage':rate(sum(number(r.get('usage',{}).get('cost')) for r in attempted),len(attempted)),
+        'accepted_choices':len(accepted),'choice_classes':dict(choices),
+        'distinct_choice_classes':len([key for key in choices if key!='unclassified']),'choice_entropy_bits':entropy({k:v for k,v in choices.items() if k!='unclassified'}),
+        'destination_kind_choices':dict(Counter(r.get('chosen_family','legacy_unrecorded') for r in accepted if choice_family(r)=='visit_destination')),
+        'distinct_chosen_destinations':len(destinations),
+        'options_per_decision':distribution(r.get('option_count') for r in results),
+        'current_goal_phases':dict(phases),
+        'current_goal_coverage':rate(sum(phases[p] for p in ('travelling','quiet','arrived')),len(managed)),
+        'journey_arrival':rate(sum(m['kind']=='standing_goal_arrival' for m in outcomes),len(outcomes)),
+        'excluded_fixture_journey_outcomes':len(all_outcomes)-len(outcomes),
+        'journey_outcomes_with_model_provenance':sum(m.get('provenance')=='model_decision' for m in outcomes),
+        'journey_outcomes_with_unknown_provenance':sum(m.get('provenance')!='model_decision' for m in outcomes),
+        'journey_game_minutes':distribution(m.get('travel_game_minutes') for m in outcomes),
+        'decision_to_settlement_seconds':distribution(m.get('elapsed_seconds') for m in outcomes),
+        'scope':'Current save; retained waves and bounded personal memories, not lifetime telemetry. Goal coverage includes unloaded initialized residents. Claims are pending work, not continuous thinking. Known test models are excluded from result/outcome series; unlabelled legacy journey provenance remains explicit. Arrival implies no trade, work or need recovery.',
+        'timing_scope':'Provider inference time and decision-to-settlement wall time are separate. Settlement includes waiting and interruptions; it is not pure walking time. Missing historical timestamps remain unknown.',
+        'attempt_scope':'Attempt counts, inference-failure rate and billing coverage use explicit attempted=true receipts. Pre-inference skips remain rejected decisions but are not model calls. Legacy missing attempt markers are reported as unknown.',
+        'cost_scope':'Known provider costs include legacy reported costs; billing coverage uses explicitly attempted calls only. Missing costs are not zero and this is not a complete provider bill.'}
+
+
+def economic_network(state):
+    trades=[r.get('command') or {} for r in state.get('trades',[]) if r.get('status')=='committed']
+    valid_id=lambda x:type(x) is int and x>0
+    complete=[c for c in trades if valid_id(c.get('buyer')) and valid_id(c.get('seller')) and c['buyer']!=c['seller']]
+    links=Counter((c['buyer'],c['seller']) for c in complete)
+    participants={actor for pair in links for actor in pair}
+    goods=Counter(c['commodity'] for c in trades if isinstance(c.get('commodity'),str) and c['commodity'])
+    sellers=Counter(c['seller'] for c in complete)
+    known_costs=[c['cost'] for c in trades if number(c.get('cost'))]
+    total=sum(sellers.values())
+    hhi=sum((n/total)**2 for n in sellers.values()) if total else None
+    return {'committed_sales':len(trades),'complete_party_receipts':len(complete),
+        'party_identity_coverage':rate(len(complete),len(trades)),
+        'distinct_participants':len(participants),'distinct_buyers':len({c['buyer'] for c in complete}),
+        'distinct_sellers':len(sellers),'directed_trade_links':len(links),
+        'links':[{'buyer':a,'seller':b,'sales':n} for (a,b),n in sorted(links.items())],
+        'distinct_goods':len(goods),'goods_receipts':dict(goods),'goods_label_coverage':rate(sum(goods.values()),len(trades)),
+        'known_turnover_septims':sum(known_costs) if known_costs else None,
+        'turnover_coverage':rate(len(known_costs),len(trades)),
+        'seller_transaction_hhi':round(hhi,4) if hhi is not None else None,
+        'largest_seller_transaction_share':round(100*max(sellers.values())/total,2) if total else None,
+        'trade_link_density':round(len(links)/(len(participants)*(len(participants)-1)),4) if len(participants)>1 else None,
+        'scope':'Committed physical receipts, including controlled integration experiments. Graph uses complete distinct buyer/seller IDs; unknown commodity labels are not guessed. Turnover is not profit, supply-chain depth or welfare. Seller concentration is transaction-count based, not market power or a target to maximize.'}
+
+
+def drama_metrics(state):
+    edges=[r for actor,p in state.get('people',{}).items() for other,r in p.get('relationships',{}).items() if str(actor)!=str(other)]
+    heard=[r for r in edges if number(r.get('heard_turns')) and r['heard_turns']>0]
+    return {'recorded_directed_edges':len(edges),'authored_background_edges':sum(bool(r.get('background')) for r in edges),
+        'heard_history_coverage':rate(len(heard),len(edges)),
+        'heard_turns_per_recorded_edge':distribution(r.get('heard_turns') for r in edges),
+        'positive_affinity_edges':sum(type(r.get('affinity')) in (int,float) and r['affinity']>0 for r in edges),
+        'negative_affinity_edges':sum(type(r.get('affinity')) in (int,float) and r['affinity']<0 for r in edges),
+        'qualified_conflict_resolution_chains':None,'belief_revision_accuracy':None,'memory_consistency_rating':None,
+        'scope':'Directed gameplay relationships and heard history only. Affinity polarity is not a verified conflict, motive or human psychological measure. Event-linked multi-party conflict/resolution and independent memory-consistency review remain uninstrumented.'}

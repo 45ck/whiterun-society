@@ -2,21 +2,46 @@ const test=require('node:test'),assert=require('node:assert/strict'),vm=require(
 const {observeNativeActivity,nativeActivityBlocker}=require('../bridge/papyrus-router.js');
 const createResidentControl=vm.runInNewContext(fs.readFileSync(require.resolve('../bridge/resident-control.js'),'utf8')+';createResidentControl',{observeNativeActivity,nativeActivityBlocker});
 function fixture(){
- let clock=0,current=42,scene=0,loaded=true;
+ let clock=0,current=42,scene=0,loaded=true,x=0;
+ const cell={getFormID:()=>1,isInterior:()=>false};
+ const destination={getFormID:()=>500,isDisabled:()=>false,getParentCell:()=>cell,getPositionX:()=>1000,getPositionY:()=>0,getPositionZ:()=>0};
  const actor={getFormID:()=>7,is3DLoaded:()=>loaded,isDead:()=>false,isChild:()=>false,
-  getCurrentPackage:()=>({getFormID:()=>current}),evaluatePackage(){},getCurrentScene:()=>scene?{getFormID:()=>scene}:null,isInCombat:()=>false,getSleepState:()=>0};
+  getCurrentPackage:()=>({getFormID:()=>current}),evaluatePackage(){},getCurrentScene:()=>scene?{getFormID:()=>scene}:null,isInCombat:()=>false,getSleepState:()=>0,getParentCell:()=>cell,getPositionX:()=>x,getPositionY:()=>0,getPositionZ:()=>0};
  const list=()=>{let items=[];return {revert:()=>items=[],addForm:f=>items.push(f),getSize:()=>items.length,getAt:i=>items[i]};};
  const global=()=>{let value=0;return {getValue:()=>value,setValue:n=>value=n};};
  const slots=Array.from({length:128},(_,i)=>{let running=false;return [{isRunning:()=>running,start:()=>{running=true;return true;},stop:()=>{running=false;}},{getFormID:()=>9000+i},list(),list(),global(),global(),global(),global()];});
- const sp={Game:{getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];},getFormEx:()=>actor},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Actor:{from:f=>f}};
+ const sp={Game:{getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];},getFormEx:id=>id===500?destination:actor},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Actor:{from:f=>f},ObjectReference:{from:f=>f}};
  const controller=createResidentControl(()=>sp,()=>clock),control={enabled:true,assignments:{7:{actor:7,slot:0,mode:'await_decision'}}};
- const f={controller,control,forms:slots[0],slots,actor,package:n=>current=n,scene:n=>scene=n,loaded:n=>loaded=n,
-  step(fresh=true,foreground=[]){clock+=1000;controller.tick(control,loaded?[{id:7,isPerson:true}]:[],fresh,foreground);},
+ const f={controller,control,forms:slots[0],slots,actor,destination,sites:[{id:500}],position:n=>x=n,package:n=>current=n,scene:n=>scene=n,loaded:n=>loaded=n,
+  step(fresh=true,foreground=[]){clock+=1000;controller.tick(control,loaded?[{id:7,isPerson:true}]:[],fresh,foreground,this.sites);},
   status:()=>controller.status().activities[0],
   bind(){slots[0][5].setValue(slots[0][4].getValue());slots[0][6].setValue(1);},
   start(){for(let i=0;i<4;i++)this.step();},
   hold(){this.start();this.bind();this.step();current=9000;this.step();}};return f;
 }
+
+test('personal destination uses its own mailbox and reports genuine arrival distance',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal'};
+ f.hold();assert.equal(f.forms[3].getAt(0),f.destination);assert.equal(f.status().phase,'travelling');assert.equal(f.status().distance,1000);
+ f.position(850);f.step();assert.equal(f.status().phase,'arrived');assert.equal(f.status().goal_id,'goal');
+ f.control.assignments[7].mode='await_decision';f.step();assert.equal(f.forms[0].isRunning(),false);
+});
+
+test('unobserved destination fails without moving or endlessly rebinding',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal'};f.sites=[];
+ f.start();assert.equal(f.status().phase,'failed');assert.equal(f.forms[0].isRunning(),false);f.step();assert.equal(f.status().phase,'failed');
+});
+
+test('foreground attendance suspends journey progress and arrival claims',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal'};f.hold();
+ f.position(900);f.package(99);f.step(true,[7]);assert.equal(f.status().phase,'interaction_priority');assert.equal(f.forms[0].isRunning(),true);
+ f.package(9000);f.step();assert.equal(f.status().phase,'arrived');
+});
+
+test('unreachable personal destination expires and releases its own quest',()=>{
+ const f=fixture();f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'goal'};f.hold();
+ for(let i=0;i<182;i++)f.step();assert.equal(f.status().phase,'failed');assert.equal(f.forms[0].isRunning(),false);
+});
 test('standby needs mailbox acknowledgement and observed package ownership',()=>{
  const f=fixture();f.start();f.package(9000);f.step();assert.equal(f.status().phase,'binding');
  f.bind();f.step();assert.equal(f.status().phase,'holding');assert.equal(f.status().ownedPackage,true);
@@ -40,6 +65,15 @@ test('unloaded resident loses ownership evidence and must rebind after loading',
 test('mailbox tampering fails and stops our quest without retry loops',()=>{
  const f=fixture();f.hold();f.forms[3].revert();f.step();assert.equal(f.status().phase,'failed');assert.equal(f.forms[0].isRunning(),false);
  f.step();assert.equal(f.status().phase,'failed');
+});
+
+test('checkpoint-only renewal keeps a verified lease alive without rebinding changed goals',()=>{
+ const f=fixture();f.hold();const serial=f.forms[4].getValue(),pulse=f.forms[7].getValue();
+ f.control.assignments[7]={actor:7,slot:0,mode:'go_to',target:500,goal_id:'not-committed'};
+ f.controller.renew([{id:7,isPerson:true}],true);
+ assert.equal(f.forms[7].getValue(),pulse+1);assert.equal(f.forms[4].getValue(),serial);assert.equal(f.forms[3].getAt(0),f.actor);
+ f.forms[3].revert();f.controller.renew([{id:7,isPerson:true}],true);assert.equal(f.forms[7].getValue(),pulse+1);
+ f.controller.renew([{id:7,isPerson:true}],false);assert.equal(f.forms[0].isRunning(),false);
 });
 test('invalid duplicate slots release control instead of controlling the wrong actor',()=>{
  const f=fixture();f.hold();f.control.assignments[8]={actor:8,slot:0,mode:'await_decision'};f.step();assert.equal(f.forms[0].isRunning(),false);assert.match(f.controller.status().error,/Invalid/);

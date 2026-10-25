@@ -4,6 +4,7 @@ Profiles are authored demo interpretations, not claims about canonical character
 psychology. Needs and beliefs are scenario inputs, distinct from observed inventory.
 """
 import json
+import math
 import time
 import urllib.request
 
@@ -66,11 +67,13 @@ def validate_decision(value, context):
     return value
 
 
-def infer(context, config, api_key):
+def infer(context, config, api_key, *, timeout=None):
     """One bounded call per event. No retries, tools, or model-written commands."""
+    if timeout is not None and (type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0<timeout<=180):
+        raise ValueError('Invalid decision timeout')
     if config.get('provider') == 'openrouter_decisions':
         from decision_provider import infer_jev
-        result = infer_jev(context, config, api_key)
+        result = infer_jev(context, config, api_key, **({'timeout':min(30,timeout)} if timeout is not None else {}))
         validate_decision(result['decision'], context)
         return result
     schema = {'type': 'object', 'additionalProperties': False,
@@ -85,7 +88,7 @@ def infer(context, config, api_key):
     request = urllib.request.Request(config['url'] + '/v1/chat/completions', json.dumps(payload).encode(),
         headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api_key})
     start = time.monotonic()
-    with urllib.request.urlopen(request, timeout=180) as response:
+    with urllib.request.urlopen(request, timeout=180 if timeout is None else timeout) as response:
         result = json.load(response)
     choice = result['choices'][0]
     if choice.get('finish_reason') != 'stop':

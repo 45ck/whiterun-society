@@ -16,6 +16,8 @@ from observer import observer_state, camera_request
 from director_control import DirectorControl
 from doc_assets import documentation_asset
 from dashboard import town_dashboard
+from spatial_telemetry import SpatialTelemetry
+from tools.checkpoint_http import checkpoint_rejection
 
 
 class LocalServer(HTTPServer):
@@ -43,6 +45,7 @@ def main():
     world=TimelineEconomy(args.runtime/'timeline.sqlite')
     bridge={'last_seen':None,'observation':None,'session':None,'command':None,'last_ack':None}
     director=DirectorControl(args.runtime)
+    spatial=SpatialTelemetry(args.runtime/'spatial-telemetry.jsonl')
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args): pass
@@ -78,7 +81,7 @@ def main():
                 self.end_headers();self.wfile.write(body);return
             if self.path=='/' or self.path.startswith('/observer'):
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
-                if self.path=='/observer/state':return self.reply(200,{**observer_state(bridge,world.status()),'director':director.status()})
+                if self.path=='/observer/state':return self.reply(200,{**observer_state({**bridge,'spatial':spatial.status(bridge['session'])},world.status()),'director':director.status()})
                 if self.path not in ('/','/observer','/observer/'):return self.reply(404,{'error':'not found'})
                 page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token)
                 page=page.replace('<script>','<script>\n'+(Path(__file__).parent/'ui/resident-media-data.js').read_text(encoding='utf-8')+"\nwindow.RESIDENT_MEDIA_BASE='/docs/images/';\n"+(Path(__file__).parent/'ui/resident-media.js').read_text(encoding='utf-8')+'\n'+(Path(__file__).parent/'ui/society-dashboard.js').read_text(encoding='utf-8')+'\n',1).encode()
@@ -129,6 +132,8 @@ def main():
                 if not 0<length<=65536: raise ValueError('invalid body size')
                 data=json.loads(self.rfile.read(length))
                 if not isinstance(data,dict): raise ValueError('expected object')
+                rejected=checkpoint_rejection(self.path,self.headers.get('X-Society-Session'),bridge['session'],world.transition)
+                if rejected:return self.reply(409,rejected)
                 if self.path=='/service/shutdown':
                     if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')):
                         raise ValueError('Settle active society work before restarting the service')
@@ -169,10 +174,12 @@ def main():
                         log.write(json.dumps({'at':time.time(),'observation':data})+'\n')
                     journal=world.state()
                     society_status=world.status()
+                    spatial.observe(data,society_status)
+                    bridge['spatial']=spatial.status(session)
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
                         'society':society_status,'director':director.status(),'director_control_receipt':bridge.get('director_control_receipt'),
-                        'dashboard':town_dashboard(society_status,data)}
+                        'dashboard':town_dashboard(society_status,data,bridge['spatial'])}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):
@@ -182,6 +189,12 @@ def main():
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
                     self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera'),'director_control_receipt':bridge.get('director_control_receipt')})
+                elif self.path in ('/goals/claim','/goals/result'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if bridge['command']:raise ValueError('Another native command is pending')
+                    if self.path=='/goals/claim':result=world.claim_resident_goals(data['id'],bridge['observation'],data.get('limit',32))
+                    else:result=world.finish_resident_goals(data['id'],data['claim_id'],data['results'],bridge['observation'])
+                    self.reply(202,result)
                 elif self.path=='/town/resident-control':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     if director.status()['running']:raise ValueError('Pause the director before changing resident control')

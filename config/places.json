@@ -1,0 +1,16 @@
+{
+  "version": "whiterun-venues-v1",
+  "knowledge": "Authored shared town-map knowledge from inspected owned-game references; not automatic discovery or line of sight.",
+  "venues": [
+    {"id": 179739, "kind": "public_place", "name": "Whiterun market", "editor_id": "WhiterunMarketplaceMarker", "access": "public", "provenance": "Skyrim.esm public market marker inspected in the isolated lab."},
+    {"id": 586076, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 945260, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 945259, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 945258, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 586077, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 329463, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 329462, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 329461, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."},
+    {"id": 586075, "kind": "rest_bench", "name": "Whiterun bench", "access": "inspected_unowned", "provenance": "Skyrim.esm unowned bench reference inspected in the isolated lab."}
+  ]
+}

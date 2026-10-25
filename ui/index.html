@@ -30,7 +30,7 @@
  <div class="small" style="margin-top:10px">Residents choose. Refusal changes the outcome.</div>
 </section>
 <aside class="sidebar panel">
- <div class="row"><button id="society-play">Play society</button><button id="society-pause">Pause</button></div><div id="society-state" class="small">Checking simulation</div><div id="audio-state" class="small"></div><details><summary class="small" style="cursor:pointer">Voice output settings</summary><label class="small" for="voice-output">NPC voice output</label><select id="voice-output" style="background:#203330;color:inherit;padding:8px;max-width:100%"><option value="">Windows default</option></select><button id="voice-output-test">Test voice output</button><button id="voice-output-choose" hidden>Choose output device</button><div id="voice-output-status" class="small" role="status">Checking audio output</div></details><div class="small">Up to 96 events / 60 min. Pause settles the current interaction.</div>
+ <div class="row"><button id="society-play">Play society</button><button id="society-pause">Pause</button></div><div id="society-state" class="small">Checking simulation</div><div id="personal-goal-budget" class="small" role="status">Personal decision budget unavailable</div><div id="audio-state" class="small"></div><details><summary class="small" style="cursor:pointer">Voice output settings</summary><label class="small" for="voice-output">NPC voice output</label><select id="voice-output" style="background:#203330;color:inherit;padding:8px;max-width:100%"><option value="">Windows default</option></select><button id="voice-output-test">Test voice output</button><button id="voice-output-choose" hidden>Choose output device</button><div id="voice-output-status" class="small" role="status">Checking audio output</div></details><div class="small">Up to 96 events / 60 min. Pause settles the current interaction.</div>
  <div class="row"><div><div class="label">The city, right now</div><div class="section-title">People & exchange</div></div><span id="live-badge" class="badge">WAITING</span></div>
  <div class="row"><div><div class="metric" id="count">—</div><div class="small">actors visible to the game</div></div><div style="text-align:right"><div class="metric" id="trade-count">0</div><div class="small">verified exchanges</div></div></div>
  <svg id="map" style="height:200px" viewBox="0 0 258 95" aria-label="Live actor positions"></svg><div class="small">Captured Whiterun aerial · live resident markers</div>
@@ -76,7 +76,7 @@ function residentActivity(id){
  const a=state.parallel_routines?.activities?.find(x=>x.actor===id);if(a&&['travelling','walking','requesting'].includes(a.phase))return 'Agent journey · '+(names[a.target]||'chosen destination');
  const r=state.residents?.find(x=>x.id===id),hold=state.resident_control?.activities?.find(x=>x.actor===id);
  if(!r)return 'Outside loaded area';if(r.activity?.scene_id)return 'Native scene';
- if(hold?.ownedPackage&&hold.expectedPackage===r.activity?.package_id)return 'Awaiting a decision · society control';
+ if(hold?.ownedPackage&&hold.expectedPackage===r.activity?.package_id){const goal=state.society?.people?.[String(id)]?.standing_goal;if(hold.mode==='go_to')return (hold.phase==='arrived'?'Reached ':'Walking to ')+(goal?.target?.name||'chosen destination');if(goal?.phase==='quiet')return 'Chosen quiet interval';if(goal?.phase==='arrived')return 'At chosen destination';return 'Awaiting a decision · society control';}
  if(hold&&['failed','package_not_acquired'].includes(hold.phase))return 'Control issue · '+hold.phase.replaceAll('_',' ');
  return r.activity?.package_id?'Native routine':'Activity unobserved';
 }
@@ -102,6 +102,7 @@ function draw(){if(!state)return;renderTownCharts(document.getElementById('town-
  text('notice',director.running?'Simulation playing · select, follow or watch an interaction':'Simulation paused · press Play society to start resident decisions');
  text('live-badge',director.running?'PLAYING':'PAUSED');
  text('society-state',(director.running?'Playing':'Paused')+(director.max_events?' · '+(director.events_completed||0)+' / '+director.max_events+' events':'')+(director.error?' · '+director.error:''));document.getElementById('society-play').disabled=!!director.running;document.getElementById('society-pause').disabled=!director.running;
+ text('personal-goal-budget',window.personalGoalBudget?.(director)||'Personal decision budget unavailable');
  text('audio-state',state.speech?.status==='playing'?'NPC voice playing through overlay':state.speech?.status==='failed'?'Voice failed: '+state.speech.error:'NPC voice waiting'+(state.audioEnabled===false?' · Skyrim ambience disabled':''));
  if(state.director_control_receipt?.status==='rejected')text('society-state',state.director_control_receipt.error);
  text('camera-label',camera==='focus'?(names[focusId]||'Resident close-up'):camera==='free'?'RTS overview · wheel zoom · drag to pan':camera==='story'?'Movie view · current activity':camera==='trade'?'Encounter overview':camera==='street'?'Whiterun approach':'Market overview');

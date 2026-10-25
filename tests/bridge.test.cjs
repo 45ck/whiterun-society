@@ -13,7 +13,7 @@ const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.j
   .replace('__PRODUCTION_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/production.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__MOVEMENT_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/movement.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PAPYRUS_ROUTER_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/papyrus-router.js'),'utf8').split('\nif(typeof module')[0])
-  .replace('__PLACE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/places.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__PLACE_FACTORY__','const WHITERUN_VENUE_CATALOG='+JSON.stringify(require('../config/places.json'))+';\n'+fs.readFileSync(path.join(__dirname,'../bridge/places.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__PARALLEL_ROUTINES_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/parallel-routines.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__REST_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/rest.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__ROUTINE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/agent-routines.js'),'utf8').split('\nif(typeof module')[0])
@@ -37,6 +37,20 @@ function harness(nativeGlobal=false) {
   return {handlers,notifications,requests,looks,player,actor,sp,cell,advance:(ms=2100)=>{clock+=ms;},setResponse:fn=>{respond=fn;},setPresentation:value=>{presentation=value;},reload:()=>vm.runInContext(source,context)};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
+
+test('a repeated completed command redelivers its original acknowledgement without repeating its effect',async()=>{
+ const h=harness();let next='first';
+ h.setResponse(body=>({id:next,kind:'notify',session:body.session}));
+ h.handlers.get('update')();await settle();
+ h.advance();h.handlers.get('update')();await settle();
+ const original=JSON.parse(JSON.stringify(h.requests.at(-1).ack));assert.equal(original.id,'first');
+ next='second';h.advance();h.handlers.get('update')();await settle();
+ h.advance();h.handlers.get('update')();await settle();assert.equal(h.requests.at(-1).ack.id,'second');
+ next='first';h.advance();h.handlers.get('update')();await settle();
+ h.advance();h.handlers.get('update')();await settle();
+ assert.deepEqual(JSON.parse(JSON.stringify(h.requests.at(-1).ack)),original);
+ assert.equal(h.notifications.filter(x=>x.includes('command received')).length,2);
+});
 
 test('native activity reports actual scene identity and unknown API availability',async()=>{
   const h=harness();h.actor.getCurrentScene=()=>({getFormID:()=>888});

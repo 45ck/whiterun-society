@@ -2,6 +2,8 @@
 
 As of 25 October 2026, the active product is a city economy/social observer. Native player movement, fighting and activation are disabled; direct player dialogue is deferred. Free camera, selection, follow and movie view are the interaction model. Historical first-person experiments do not define the current scope.
 
+**Current acceptance programme:** [Living city roadmap](simulation-roadmap.md) defines the expanded quantitative plan for independent lives, personal knowledge, conversation, consequential drama, connected production, city geography, urban-policy experiments and sustained viewing. [Society OKRs](society-okrs.md) documents the versioned executable targets and separates them from planned measures. Movie view is the default watching experience; manual RTS controls remain available.
+
 # Living society development plan
 
 Updated 25 October 2026 from Calvin's explicit direction. This plan preserves the full objective: a playable and watchable Whiterun economy and society, with autonomous residents, grounded speech, persistent consequences and an RTS-style observer. Items below are requirements and work in progress, not claims of completion.
@@ -99,3 +101,20 @@ Next: reduce pipeline reply latency and unnecessary courtesy, qualify relationsh
 Calvin prefers movie view as the main experience, especially for a future livestream. Movie view is now the startup/reset default, with save-derived updates rotating every 12 seconds. Manual RTS remains available. Local economic candidate synthesis overlaps the wording decision; one native refusal completed with two selected clips, a 10.997-second response gap and unchanged inventories. [Evidence and limits](movie-watch.md).
 
 Highest-priority movement work: replace self-targeted standing waits with independently chosen destinations and quiet goals for every eligible loaded resident. Persist claims and goals, use bounded concurrent model waves, and let all committed native actions progress between inferences. Preserve higher-priority encounter/work ownership, private knowledge and economic consent. Reconsider on arrival, meaningful stimuli, interruption or due time; do not create perpetual walking merely to fill the screen. Expose per-resident decision age, next review, idle reason, movement/arrival and population goal coverage. Verify multiple simultaneous journeys during speech and native save rollback. Current all-resident autonomy is incomplete; queued work is not active thinking.
+
+## Expanded measurable city programme
+
+Calvin's latest direction is to build the integrated system ambitiously with parallel engineering work, keep policies and scenario content data-driven, and show reliable quantitative evidence as the town changes. The current implementation slice adds standing personal goals, activity/spatial instrumentation and versioned OKR definitions. These changes still require integrated native qualification. The full goal remains active.
+
+The immediate sequence is to stabilize concurrent native goal execution, qualify travel while other residents converse, and distinguish purposeful waiting from technical inactivity. Record goal coverage, due-to-claim latency, inference latency/cost coverage, action completion, route failures, observed movement and stationary intervals. A standing goal or package ownership alone cannot prove purposeful economic activity.
+
+The next sequence connects arrival to actual work, rest, trade and social opportunities, then extends finite upstream supply, production chains, enterprise accounts, remembered commitments, conflict and reconciliation. Three-dimensional city work adds valid space-aware trajectories, route/access measurements, service capacity and reversible policy interventions. The roadmap specifies trial denominators, evidence sources, failure treatment and unmeasured mechanisms for each milestone.
+
+Normal behaviour must be independent of fixed NPC names, pairs and scripted outcomes. Identity, capabilities, businesses, resources, places, schedules, policy thresholds and experiment targets belong in scenario/save/configuration data with versions. Deterministic code still validates identity, feasible actions, resource accounting and native execution. Data-driven configuration does not by itself establish autonomy; changed-state and changed-roster tests must demonstrate that choices and effects respond correctly.
+
+No aggregate human-realism score, forced friendship rate, movement quota or drama quota is an acceptance shortcut. A paused/unloaded resident is not measured idle; a spoken plan is not completed work; a nearby shop is not proof of a reachable affordable service. Sample coverage, unknowns, controlled fixtures and unforced outcomes remain visible. The programme includes recorded demonstration videos and a staged soak-test ladder before continuous livestream qualification; no broadcast is launched by this plan.
+
+
+## Independent goals and measured continuity implemented
+
+Personal goals, concurrent bounded inference, background due reviews, native destination ownership, data-defined venue/policy catalogues and sampled spatial telemetry are implemented. The repaired trial produced 44 personal decisions, 41 accepted journeys, 4 delivered spoken turns and movement during voice playback. It retained unavailable-resident and dialogue validation failures; 17 save fields matched reload/rollback. [Evidence, failure history and limitations](personal-goals.md). All-resident autonomy, economic depth, causal psychology, richer drama and sustained broadcast remain open in the [quantitative roadmap](simulation-roadmap.md).

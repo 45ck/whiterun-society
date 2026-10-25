@@ -15,6 +15,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from decisions import infer
 from social import social_candidates,valid_social_notice
 from dialogue_policy import MAX_COMBINED_CALLS
+from tools.checkpoint_http import CheckpointHTTP
 
 
 def settle_social_child(process, encounter_id, request, reason):
@@ -50,11 +51,10 @@ def main():
     if not 1<=len(args.events)<=8:raise ValueError('One to eight resident events per bounded run')
     runtime=args.root/'runtime';config=json.loads((runtime/'bridge-config.json').read_text())
     model=json.loads(args.model_config.read_text());key=os.environ[model['key_env']] if model.get('key_env') else Path(model['key_file']).read_text().strip()
+    client=CheckpointHTTP(f"http://127.0.0.1:{config['port']}",config['token'])
     def request(path,data=None):
-        req=urllib.request.Request(f"http://127.0.0.1:{config['port']}"+path,None if data is None else json.dumps(data).encode(),
-            headers={'Authorization':'Bearer '+config['token'],'Content-Type':'application/json'})
         try:
-            with urllib.request.urlopen(req,timeout=30) as response:return json.load(response)
+            return client(path,data)
         except urllib.error.HTTPError as e:raise ValueError(json.load(e).get('error','Request rejected')) from None
     def state():
         result=request('/state')

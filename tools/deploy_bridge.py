@@ -2,6 +2,7 @@
 import argparse
 import json
 import hashlib
+import re
 from pathlib import Path
 
 parser=argparse.ArgumentParser()
@@ -28,7 +29,23 @@ router=(Path(__file__).resolve().parents[1]/'bridge'/'papyrus-router.js').read_t
 source=source.replace('__PAPYRUS_ROUTER_FACTORY__',router)
 source=source.replace('__RESIDENT_CONTROL_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge/resident-control.js').read_text(encoding='utf-8-sig').split('\nif(typeof module')[0])
 source=source.replace('__SCENE_HANDOFF_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'scene-handoffs.js').read_text().split('\nif(typeof module')[0])
-source=source.replace('__PLACE_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'places.js').read_text().split('\nif(typeof module')[0])
+venue_catalog=json.loads((Path(__file__).resolve().parents[1]/'config/places.json').read_text(encoding='utf-8'))
+if (not isinstance(venue_catalog,dict) or not isinstance(venue_catalog.get('version'),str)
+        or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}',venue_catalog['version'])
+        or not isinstance(venue_catalog.get('knowledge'),str) or not venue_catalog['knowledge'].strip() or len(venue_catalog['knowledge'])>500
+        or not isinstance(venue_catalog.get('venues'),list) or len(venue_catalog['venues'])>512):
+    raise ValueError('Invalid venue catalogue')
+venue_ids=set()
+for venue in venue_catalog['venues']:
+    if (not isinstance(venue,dict) or type(venue.get('id')) is not int or not 0<venue['id']<=0xffffffff or venue['id'] in venue_ids
+            or venue.get('kind') not in ('public_place','rest_bench')
+            or any(not isinstance(venue.get(k),str) or not venue[k].strip() or len(venue[k])>limit for k,limit in (('name',120),('provenance',500)))
+            or venue.get('access')!=('inspected_unowned' if venue['kind']=='rest_bench' else 'public')
+            or ('editor_id' in venue and (not isinstance(venue['editor_id'],str) or len(venue['editor_id'])>120))):
+        raise ValueError('Invalid venue catalogue entry')
+    venue_ids.add(venue['id'])
+venue_source='const WHITERUN_VENUE_CATALOG='+json.dumps(venue_catalog)+';\n'
+source=source.replace('__PLACE_FACTORY__',venue_source+(Path(__file__).resolve().parents[1]/'bridge'/'places.js').read_text().split('\nif(typeof module')[0])
 rest=(Path(__file__).resolve().parents[1]/'bridge'/'rest.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__REST_FACTORY__',rest)
 routines=(Path(__file__).resolve().parents[1]/'bridge'/'agent-routines.js').read_text().split('\nif(typeof module')[0]

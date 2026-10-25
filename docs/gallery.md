@@ -20,6 +20,12 @@ Generated system illustration — not gameplay
 
 ![Grain market loop](images/grain-market-loop.png)
 
+## Independent lives metrics
+
+Generated system illustration — not gameplay
+
+![Independent lives metrics](images/independent-lives-metrics.png)
+
 ## Independent lives observed
 
 Generated system illustration — not gameplay
@@ -247,6 +253,18 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Parallel observer](images/parallel-observer.jpg)
+
+## Personal goals budget hold
+
+Captured game or observer interface — historical prototype
+
+![Personal goals budget hold](images/personal-goals-budget-hold.jpg)
+
+## Personal goals movement chart
+
+Measured native trial chart — sampled evidence, not a screenshot or human-realism score
+
+![Personal goals movement chart](images/personal-goals-movement-chart.png)
 
 ## Portrait 108138
 

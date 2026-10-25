@@ -1,0 +1,11 @@
+# Independent lives illustration
+
+Generated with the built-in image generation tool on 25 October 2026. This image explains the architecture; it is not native game evidence. Saved as `docs/images/independent-lives-metrics.png`.
+
+## Original prompt
+
+Use case: infographic-diagram. Create a polished high-resolution landscape editorial infographic for the Whiterun Society open-source Skyrim economy simulation README. Dark charcoal parchment, antique gold and turquoise, clean highly legible cream typography, tasteful detailed isometric medieval town illustration with market, benches, bakery and roads. Main title exactly 'WHITERUN SOCIETY'. Subtitle 'Independent lives. Measured consequences.' Clearly label 'SYSTEM ILLUSTRATION — NOT A GAME SCREENSHOT'. Main flow five clear connected panels: '1  OBSERVE' with 'Loaded people • place • time • needs'; '2  CHOOSE' with 'Saved claim → Jev decision' and 'Bounded concurrent requests'; '3  ACT' with 'Skyrim navigation & animation' and 'Many journeys progress together'; '4  INTERACT' with 'Language → choice → local voice' and 'Consent & verified inventory'; '5  REMEMBER' with 'Arrivals • outcomes • relationships' looping to OBSERVE. Show three NPC portrait tokens with distinct tiny goal paths going toward different parts of the town, plus two people facing each other near market. Below put a compact evidence strip with exactly three distinct cards: 'MEASURED' 'Movement • arrivals • speech • transfers'; 'TARGETS' 'Coverage • latency • reliability • access'; 'UNMEASURED' 'Human realism • causal psychology'. Final bottom note exactly 'Agent choices use current state. Code validates effects. Quiet is a valid choice.' Small separate planned band 'PLANNED: richer drama • urban planning • long-run economics'. No fictitious numerical success scores, no charts implying observed results, no brands other than Whiterun Society, no screenshots. Clear arrows and tidy generous spacing; this is an architectural explainer with medieval atmosphere and precise short labels.
+
+## Revision prompt
+
+Remove all four small building-name labels inside the illustrated town, replacing their areas with natural town scenery. Keep the architecture panels and the system-illustration disclaimer. The generated place labels were inaccurate and were removed before publication.

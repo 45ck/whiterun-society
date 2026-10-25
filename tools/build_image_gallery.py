@@ -7,6 +7,9 @@ import re
 ROOT=Path(__file__).resolve().parents[1]
 GENERATED={'economic-speech-layers.png','resident-enterprise-loop.png','employment-encounter-loop.png','grain-market-loop.png','resident-bargaining-loop.png','npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
 
+GENERATED.add('independent-lives-metrics.png')
+MEASURED={'personal-goals-movement-chart.png'}
+
 def build():
     images=sorted((ROOT/'docs/images').iterdir(),key=lambda p:(p.name not in GENERATED,p.name))
     records=[];cards=[];markdown=['# Visual documentation','All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.']
@@ -14,6 +17,7 @@ def build():
         if image.suffix.lower() not in ('.png','.jpg','.jpeg','.webp'):continue
         title=image.stem.replace('-',' ').capitalize()
         kind='Generated system illustration — not gameplay' if image.name in GENERATED else 'Captured game or observer interface — historical prototype'
+        if image.name in MEASURED:kind='Measured native trial chart — sampled evidence, not a screenshot or human-realism score'
         if 'fixture' in image.stem:kind='Controlled native protocol fixture — authored choices, not autonomous behaviour'
         records.append({'file':image.name,'title':title,'kind':kind})
         cards.append(f'<article><a href="images/{escape(image.name)}"><img loading="lazy" src="images/{escape(image.name)}" alt="{escape(title)}"></a><h2>{escape(title)}</h2><p>{escape(kind)}</p><a href="images/{escape(image.name)}">Open full image</a></article>')

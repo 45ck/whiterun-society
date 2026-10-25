@@ -5,7 +5,9 @@ import time
 import urllib.request
 
 
-def infer_jev(context, config, api_key):
+def infer_jev(context, config, api_key, *, timeout=30):
+    if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0<timeout<=30:
+        raise ValueError('Invalid decision timeout')
     if config['url'] != 'https://openrouter.ai/api/alpha/decisions':
         raise ValueError('Unsupported decision endpoint')
     options = {o['id']: o['effect'] for o in context['options']}
@@ -21,7 +23,7 @@ def infer_jev(context, config, api_key):
     request = urllib.request.Request(config['url'], encoded,
         headers={'Content-Type': 'application/json', 'Authorization': 'Bearer '+api_key})
     started = time.monotonic()
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         result = json.load(response)
     answer = result['answers']['action']
     choice = answer['choice']

@@ -15,6 +15,11 @@
     "kind": "Generated system illustration \u2014 not gameplay"
   },
   {
+    "file": "independent-lives-metrics.png",
+    "title": "Independent lives metrics",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "independent-lives-observed.png",
     "title": "Independent lives observed",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -203,6 +208,16 @@
     "file": "parallel-observer.jpg",
     "title": "Parallel observer",
     "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "personal-goals-budget-hold.jpg",
+    "title": "Personal goals budget hold",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "personal-goals-movement-chart.png",
+    "title": "Personal goals movement chart",
+    "kind": "Measured native trial chart \u2014 sampled evidence, not a screenshot or human-realism score"
   },
   {
     "file": "portrait-108138.jpg",

@@ -27,11 +27,12 @@ from scene_handoffs import SceneHandoffs
 from resident_control import ResidentControl
 from trade_consent import reserved_sale_consent
 from owner_production import OwnerProduction
+from resident_goals import ResidentGoals
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction):
+class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -107,9 +108,13 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return
         if self.conversation_busy():
             self.observe_conversation(observation)
+            if not self.transition and not self.active['pending']:
+                self.observe_resident_goals(observation)
             return
         if not self.active['pending']:
             self._agency_observe(observation)
+            if not self.transition and not self.active['pending']:
+                self.observe_resident_goals(observation)
             return
         pending = self.active['pending']
         if pending['status'] != 'pending':

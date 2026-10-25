@@ -1,12 +1,19 @@
 // Authored breaks at existing unowned benches inspected in Skyrim.esm.
 // No teleport, inventory mutation, forced animation, or sleep claim.
-function createRestController(platform,now=Date.now){
- const seats=[0x8f15c,0xe6c6c,0xe6c6b,0xe6c6a,0x8f15d,0x506f7,0x506f6,0x506f5,0x8f15b];
+function createRestController(platform,now=Date.now,catalog){
+ const configure=typeof configuredVenueCatalog==='function'?configuredVenueCatalog:require('./places.js').configuredVenueCatalog;
+ const observeSpace=typeof venueSpace==='function'?venueSpace:require('./places.js').venueSpace;
+ const configured=configure(catalog),sites= configured.venues.filter(v=>v.kind==='rest_bench'),seats=sites.map(v=>v.id);
  const makeRouter=typeof createPapyrusRouterController==='function'?createPapyrusRouterController:require('./papyrus-router.js').createPapyrusRouterController;
  const router=makeRouter(platform,now,{file:'WhiterunRest.esp',furniture:true});
  let active=null;
  const position=a=>[a.getPositionX(),a.getPositionY(),a.getPositionZ()];
  const getSeat=id=>platform().ObjectReference?.from(platform().Game.getFormEx(id));
+ const ownership=seat=>{
+  try{if(typeof seat.getActorOwner!=='function'||typeof seat.getFactionOwner!=='function')return 'authored_unowned_not_sensed';
+   return seat.getActorOwner()||seat.getFactionOwner()?'owned':'native_unowned';
+  }catch(_){return 'unknown';}
+ };
  return {
   reset(){active=null;router.reset();},
   release(){if(typeof platform().Game.getFormFromFile==='function')router.release();},
@@ -14,10 +21,12 @@ function createRestController(platform,now=Date.now){
   sense(residents){
    const sp=platform(),sites=[],sensors={};
    if(!sp.ObjectReference||typeof sp.Game.getFormFromFile!=='function')return {available:false,sites,sensors};
-   for(const id of seats){
-    const seat=getSeat(id);if(!seat||!seat.is3DLoaded())continue;
+   for(const site of configured.venues.filter(v=>v.kind==='rest_bench')){
+    const id=site.id,seat=getSeat(id);if(!seat||seat.getFormID()!==id||!seat.is3DLoaded()||seat.isDisabled?.()===true)continue;
+    const owner=ownership(seat);if(owner==='owned'||owner==='unknown')continue;
+    const coordinates=position(seat);if(!coordinates.every(Number.isFinite))continue;
     const occupancyKnown=typeof seat.isFurnitureInUse==='function';
-    sites.push({id,name:'Whiterun bench',position:position(seat),loaded:true,
+    sites.push({...site,position:coordinates,space:observeSpace(seat),loaded:true,catalog_version:configured.version,source:configured.knowledge,ownership:owner,
      occupancy_known:occupancyKnown,occupied:occupancyKnown?seat.isFurnitureInUse(false):null});
    }
    for(const row of residents){
@@ -48,6 +57,7 @@ function createRestController(platform,now=Date.now){
     return end('held','Invalid bounded rest contract');
    if(!actor||!seat||!actor.is3DLoaded()||!seat.is3DLoaded()||actor.isDead()||actor.isChild()||typeof actor.getSitState!=='function'||typeof actor.getFurnitureReference!=='function')
     return end('held','Loaded adult, bench and sitting sensor required');
+   if(seat.getFormID()!==command.target||seat.isDisabled?.()===true||['owned','unknown'].includes(ownership(seat)))return end('held','Registered unowned bench required');
    const keyword=sp.Keyword?.from(sp.Game.getFormEx(0x13794));
    if(!keyword||!actor.hasKeyword(keyword)||typeof actor.isInCombat!=='function'||actor.isInCombat())return end('held','Rest classification or safety check failed');
    if(!active||active.id!==command.id){

@@ -2,7 +2,7 @@
 import math
 
 
-def town_dashboard(society, observation):
+def town_dashboard(society, observation, spatial=None):
     people=society.get('people',{});managed=(society.get('town') or {}).get('residents',{})
     loaded={str(r['id']):r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     owned=set()
@@ -18,7 +18,8 @@ def town_dashboard(society, observation):
     standby=set()
     for a in (observation.get('resident_control') or {}).get('activities',[]):
         actor=str(a.get('actor'));row=loaded.get(actor);package=a.get('expectedPackage')
-        if row and a.get('ownedPackage') is True and type(package) is int and package>0 and (row.get('activity') or {}).get('package_id')==package:standby.add(actor)
+        if row and a.get('ownedPackage') is True and type(package) is int and package>0 and (row.get('activity') or {}).get('package_id')==package:
+            (owned if a.get('mode')=='go_to' and a.get('phase') in ('travelling','arrived') else standby).add(actor)
     control={key:0 for key in ('agent','standby','scene','native','unknown','unloaded')}
     for key in managed:
         row=loaded.get(key);activity=(row or {}).get('activity') or {}
@@ -37,7 +38,17 @@ def town_dashboard(society, observation):
         values=[v for v in values if type(v) in (int,float) and math.isfinite(v) and 0<=v<=1]
         needs[name]={'high':sum(v>=threshold for v in values),'known':len(values),'threshold':threshold}
     economy=(society.get('metrics') or {}).get('economy',{})
-    return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,
+    goals=[people.get(k,{}).get('standing_goal') or {} for k in managed if k in loaded]
+    autonomy={'loaded_population':len(goals),'with_goal':sum(g.get('phase') in ('travelling','quiet','arrived') for g in goals),
+        'awaiting_first_goal':sum(not g for g in goals),'held_goals':sum(g.get('phase')=='held' for g in goals),
+        'claimed_decisions':sum(len(w['members']) for w in (society.get('town') or {}).get('goal_waves',[]) if w['phase']=='thinking'),
+        'walking_now':sum(str(a['actor']) in owned and a.get('mode')=='go_to' and a.get('phase')=='travelling' for a in (observation.get('resident_control') or {}).get('activities',[])),
+        'arrivals':sum(m.get('kind')=='standing_goal_arrival' for p in people.values() for m in p.get('memories',[])),
+        'scope':'Current loaded managed residents. Claims are pending requests, not constant inference. Arrival is not economic output.'}
+    metrics=society.get('metrics') or {}
+    return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,'autonomy':autonomy,
+        'spatial':spatial,'agency':metrics.get('agency'),'economic_network':metrics.get('economic_network'),
+        'drama':metrics.get('drama'),'quality_goals':metrics.get('quality_goals'),
         'control_scope':'Current observed package ownership, not long-term autonomy or quest compatibility.',
         'stock':stock,'needs':needs,'needs_scope':'Authored simulation needs, not measured human psychology.',
         'economy':{k:economy.get(k) for k in ('committed_sales','committed_production','committed_meals','active_enterprises','resident_enterprise_changes','operator_enterprise_changes','household_release_sales','negotiations','wording')},

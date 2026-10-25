@@ -20,6 +20,7 @@ from tools.run_conversation import stock_voice
 from language import propose, LanguageOutputError
 from economic_language import MAX_ECONOMIC_LANGUAGE_CALLS
 from tools.prepared_speech import PreparedSpeech
+from tools.checkpoint_http import CheckpointHTTP
 
 
 def main():
@@ -39,13 +40,10 @@ def main():
     wording=json.loads(args.language_config.read_text()) if args.language_config else None
     wording_key=(os.environ[wording['key_env']] if wording.get('key_env') else Path(wording['key_file']).read_text().strip()) if wording else None
 
+    client=CheckpointHTTP(f"http://127.0.0.1:{config['port']}",config['token'])
     def request(route, data=None):
-        req = urllib.request.Request(f"http://127.0.0.1:{config['port']}"+route,
-            data=None if data is None else json.dumps(data).encode(),
-            headers={'Authorization': 'Bearer '+config['token'], 'Content-Type': 'application/json'})
         try:
-            with urllib.request.urlopen(req, timeout=30) as response:
-                result = json.load(response)
+            result=client(route,data)
         except urllib.error.HTTPError as error:
             raise ValueError(json.load(error).get('error', 'Request rejected')) from None
         if route == '/state' and (not result['bridge']['last_seen'] or time.time()-result['bridge']['last_seen'] > 10):

@@ -61,7 +61,7 @@ let nativeButtonEvents=0,lastNativeControlKey=null;
 const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
-const completed = new Set();
+const completed = new Map();
 // Hot reload must replace subscriptions instead of adding a second controller.
 const registrationKey = 'whiterunSocietyHandlers';
 const previous = sp.storage[registrationKey];
@@ -258,51 +258,53 @@ on('update', () => {
   speech.tick();
   if (pending) {
     const command = pending; pending = null;
+    // Repeat only the recorded receipt, never an already executed effect.
+    if(command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
     if (command.session === session && !completed.has(command.id)) {
       try {
         if (command.kind === 'inventory_trade' || command.kind === 'inventory_consume') {
           if (!Number.isInteger(command.checkpoint) || checkpointValue()!==command.checkpoint) throw new Error('Trade checkpoint mismatch');
           const result=command.kind==='inventory_consume'?transfers.consume(command):transfers.step(command);
           if (!result.done) pending=command;
-          else {ack=result.ack;completed.add(command.id);}
+          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if (['inventory_produce','inventory_self_produce','inventory_supply'].includes(command.kind)) {
           if(checkpointValue()!==command.checkpoint)throw new Error('Production checkpoint mismatch');
           const result=production.step(command);
           if(!result.done)pending=command;
-          else {ack=result.ack;completed.add(command.id);}
+          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='rest_at_bench'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Rest checkpoint mismatch');
           const result=rest.step(command);
-          if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
+          if(!result.done)pending=command;else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='scene_handoff'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Scene handoff checkpoint mismatch');
           const result=sceneHandoffs.step(command);
-          if(!result.done)pending=command;else {ack=result.ack;completed.add(command.id);}
+          if(!result.done)pending=command;else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='speak'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Speech checkpoint mismatch');
           speech.start(command);
-          completed.add(command.id);
+          completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);
         }
         else if(command.kind==='conversation_attend'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Attendance checkpoint mismatch');
           if(command.participants?.some(id=>parallelRoutines.ownsActor(id)))throw new Error('Background journey owns an attendance participant');
           const result=conversationAttendance.meet(command);
-          if(!result.done)pending=command;else{ack=result.ack;completed.add(command.id);}
+          if(!result.done)pending=command;else{ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='inventory_endowment'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Endowment checkpoint mismatch');
           const result=endowments.step(command);
           if(!result.done)pending=command;
-          else {ack=result.ack;completed.add(command.id);}
+          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='parallel_routines'||command.kind==='background_routines'){
           if(checkpointValue()!==command.checkpoint||command.origin_session!==session)throw new Error('Independent routine checkpoint or session mismatch');
           const result=command.kind==='background_routines'?parallelRoutines.startBackground(command):parallelRoutines.step(command);
-          if(!result.done)pending=command;else{ack=result.ack;completed.add(command.id);}
+          if(!result.done)pending=command;else{ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if (command.kind === 'walk_to') {
           if(parallelRoutines.ownsActor(command.actor)||parallelRoutines.ownsActor(command.target))throw new Error('Background journey owns a meeting participant');
@@ -310,7 +312,7 @@ on('update', () => {
           movementSource=command.method==='package'?routines:movement;
           const result=movementSource.step(command);
           if(!result.done)pending=command;
-          else {ack=result.ack;completed.add(command.id);}
+          else {ack=result.ack;completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if(command.kind==='release_routine'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Release checkpoint mismatch');
@@ -319,7 +321,7 @@ on('update', () => {
           const paired=command.participants?conversationAttendance.finish(command):null;
           const result=paired?(!original.done||!paired.done?{done:false}:original.ack.released?paired:original):original;
           if(!result.done)pending=command;
-          else {ack={...result.ack,...(command.stop_speech_id?{speechStop:{id:command.stop_speech_id,acknowledged:stopped,status:speech.status()?.status}}:{})};completed.add(command.id);}
+          else {ack={...result.ack,...(command.stop_speech_id?{speechStop:{id:command.stop_speech_id,acknowledged:stopped,status:speech.status()?.status}}:{})};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
         }
         else if (command.kind === 'bind_checkpoint') {
           if (!Number.isInteger(command.next)||command.next<1||command.next>16777215) throw new Error('Invalid checkpoint');
@@ -350,8 +352,8 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
-      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
+        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null);}
+      } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.set(command.id,ack?.id===command.id?JSON.parse(JSON.stringify(ack)):null); }
     }
   }
   const activeConversation=presentation.society?.conversation;
@@ -487,10 +489,12 @@ on('update', () => {
   if(chat&&!['complete','held'].includes(chat.phase))for(const id of chat.speakers||[])foreground.add(id);
   if(batch&&!['complete','held'].includes(batch.phase))for(const m of batch.members||[])foreground.add(m.actor);
   const controlFresh=Date.now()-lastPresentationAt<10000&&!societyState?.error;
+  const publicPlaces=routines.places(residents),restObservation=rest.sense(residents);
   // A checkpoint transition pauses new bindings; it must not release every
   // standing task while a disjoint conversation commits a memory.
   if(!controlFresh||(!societyState?.transition&&societyState?.checkpoint===checkpointValue()))
-    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground]);
+    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)]);
+  else residentControl.renew(residents,controlFresh);
   const observation = {
     director_control:directorControl,
     player_controls:{request:playerControlRequest,
@@ -502,7 +506,7 @@ on('update', () => {
     ui_health:uiHealth?{...uiHealth,native:{button_events:nativeButtonEvents,last_control_key:lastNativeControlKey,focus_ready:browserFocusReady===true,focus_requested:cursor,browser_wanted_focus:typeof sp.browser?.isFocused==='function'?sp.browser.isFocused():null}}:null,audio_output:audioOutput,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,framing:cameraFraming,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
-    ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
+    ready:observerReady,mode:'observer',residents,places:publicPlaces,inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:restObservation,productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
     map_projection:mapProjection,selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };

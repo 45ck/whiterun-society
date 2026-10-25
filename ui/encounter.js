@@ -52,6 +52,15 @@ window.drawEncounter=()=>{
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
+ const goal=person.standing_goal;
+ if(goal){
+  const native=state.resident_control?.activities?.find(a=>a.actor===displayResident);
+  inspectorText(panel,'Personal standing goal','label');
+  inspectorText(panel,(goal.target?.name||'Quiet interval')+' · '+goal.phase.replaceAll('_',' '));
+  if(Number.isFinite(native?.distance)&&native.goal_id===goal.id)inspectorText(panel,Math.round(native.distance)+' units to chosen destination');
+  if(Number.isFinite(state.gameDays)&&Number.isFinite(goal.decided_day))inspectorText(panel,Math.max(0,Math.round((state.gameDays-goal.decided_day)*1440))+' game minutes since this decision');
+  inspectorText(panel,'Movement does not imply trade, work or rest recovery.');
+ }
  if(plan?.actor===displayResident&&plan.enterprise_change){
   inspectorText(panel,plan.decisions?.some(d=>String(d.model).includes('fixture'))?'Business integration test':'Own business decision','label');
   inspectorText(panel,(plan.outcome||plan.phase).replaceAll('_',' '));

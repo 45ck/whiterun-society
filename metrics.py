@@ -6,6 +6,7 @@ from relationship_metrics import relationship_metrics
 from dialogue_metrics import dialogue_metrics
 from quality_goals import quality_goals
 from dialogue_policy import recorded_model_results
+from agency_metrics import agency_metrics,economic_network,drama_metrics
 
 
 def number(value):
@@ -242,5 +243,8 @@ def simulation_metrics(state):
         'scope':'Native scene release only. Not quest compatibility, successful agent action, or psychological realism.'}
     result['relationships']=relationship_metrics(state.get('people',{}))
     result['dialogue_analysis']=dialogue_metrics(scenes)
+    result['agency']=agency_metrics(state)
+    result['economic_network']=economic_network(state)
+    result['drama']=drama_metrics(state)
     result['quality_goals']=quality_goals(result)
     return result

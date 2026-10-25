@@ -30,9 +30,17 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 57 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 60 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
+
+## Independent lives and measurable progress
+
+![Independent NPC loops and measurement](docs/images/independent-lives-metrics.png)
+
+Movie view now follows independent personal goals as well as conversations. In one repaired native trial, 44 personal decisions produced 41 validated journeys; up to 15 residents moved while a four-line NPC conversation played. The same trial retained an invalid-greeting failure and three unavailable-resident choices. [Implementation, movement chart, voice clips and save proof](docs/personal-goals.md).
+
+The scorecard defines **57 configurable OKRs**, with **50 further acceptance protocols** covering economics, relationships, behavioural sensitivity, movement and urban systems. The trial baseline passed only one target—telemetry coverage. Unknown realism is not assigned a success score. [Definitions](docs/society-okrs.md) · [Roadmap](docs/simulation-roadmap.md).
 
 ## The whole simulation
 
@@ -82,7 +90,7 @@ Speech now receives game time, the latest heard line, known relationships and ac
 
 Jev chooses the economic actions; deterministic wording keeps spoken amounts aligned with the terms; local Kokoro speaks them; Skyrim performs movement and inventory changes. A live Amren–Carlotta trial delivered **four turns**: offer 3 gold, refusal, offer 5 gold, refusal. Both actors were released and **no gold or bread transferred**. This proves a voiced refusal/counteroffer path, not a successful sale. [Protocol and limits](docs/voiced-trade.md)
 
-The observer now includes an interruption control, derived friendship bands, small-talk word cues, current native Skyrim race labels and **26 OKRs** spanning social, economic, physical and behavioural experiments. Most psychology, semantic-dialogue and evolutionary-mechanism measures remain **unmeasured**. Friendship bands are authored game rules, not psychological diagnoses. [Definitions and thresholds](docs/society-okrs.md)
+The observer now includes an interruption control, derived friendship bands, small-talk word cues, current native Skyrim race labels and **57 configurable OKRs** spanning social, economic, physical, spatial and behavioural experiments. Most psychology, semantic-dialogue and evolutionary-mechanism measures remain **unmeasured**. Friendship bands are authored game rules, not psychological diagnoses. [Definitions and thresholds](docs/society-okrs.md)
 
 ### Watch a running society and measure its limits
 
@@ -239,7 +247,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (57)</summary>
+<summary>Browse every finished project image (60)</summary>
 
 ### Economic speech layers
 
@@ -258,6 +266,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Grain market loop](docs/images/grain-market-loop.png)
+
+### Independent lives metrics
+
+Generated system illustration — not gameplay
+
+![Independent lives metrics](docs/images/independent-lives-metrics.png)
 
 ### Independent lives observed
 
@@ -486,6 +500,18 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Parallel observer](docs/images/parallel-observer.jpg)
+
+### Personal goals budget hold
+
+Captured game or observer interface — historical prototype
+
+![Personal goals budget hold](docs/images/personal-goals-budget-hold.jpg)
+
+### Personal goals movement chart
+
+Measured native trial chart — sampled evidence, not a screenshot or human-realism score
+
+![Personal goals movement chart](docs/images/personal-goals-movement-chart.png)
 
 ### Portrait 108138
 

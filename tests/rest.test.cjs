@@ -14,7 +14,7 @@ function fixture(){
  const sp={Game:{getFormFromFile:id=>forms[id-0x800],getFormEx:id=>id===99?actor:id===0x13794?{}:seat},
   Actor:{from:f=>f},ObjectReference:{from:f=>f},Keyword:{from:f=>f},Quest:{from:f=>f},FormList:{from:f=>f},GlobalVariable:{from:f=>f},Utility:{getCurrentGameTime:()=>game}};
  const controller=createRestController(()=>sp,()=>clock),command={id:'rest-one',kind:'rest_at_bench',actor:99,target:0x8f15b,rest_minutes:30};
- return {controller,command,actor,forms,sp,step:()=>controller.step(command),move:n=>x=n,time:n=>clock=n,
+ return {controller,command,actor,seat,forms,sp,step:()=>controller.step(command),move:n=>x=n,time:n=>clock=n,
   tick:(m=.5)=>{clock+=100;game+=m/1440;},sit:(n=3,id=0x8f15b)=>{sit=n;furniture=id;},occupied:v=>occupied=v,combat:v=>combat=v,retain:v=>releasePackage=!v,
   start(){for(let i=0;i<3;i++)this.step();forms[5].setValue(forms[4].getValue());forms[6].setValue(1);this.step();current=123;},
   seated(){this.start();x=100;this.sit();this.step();}};
@@ -46,4 +46,17 @@ test('release cannot be claimed while the owned package remains',()=>{
 });
 test('an unavailable exact furniture sensor cannot start qualified rest',()=>{
  const f=fixture();delete f.actor.getFurnitureReference;f.step();assert.equal(f.step().ack.status,'held');
+});
+
+test('bench catalogue controls offered references and exposes observed space and ownership scope',()=>{
+ const f=fixture(),catalog=structuredClone(require('../config/places.json'));
+ catalog.venues=[{...catalog.venues.find(v=>v.kind==='rest_bench'),id:500,name:'New bench'}];
+ f.seat.getFormID=()=>500;f.seat.getParentCell=()=>({getFormID:()=>10,isInterior:()=>false});f.seat.getWorldSpace=()=>({getFormID:()=>1});
+ const c=createRestController(()=>f.sp,()=>0,catalog),sites=c.sense([]).sites;
+ assert.equal(sites.length,1);assert.equal(sites[0].id,500);assert.deepEqual(sites[0].space,{cell:10,interior:false,world:1});
+ assert.equal(sites[0].ownership,'authored_unowned_not_sensed');
+ c.step(f.command);assert.equal(c.step(f.command).ack.status,'held');
+ f.seat.getActorOwner=()=>({getFormID:()=>33});f.seat.getFactionOwner=()=>null;assert.equal(c.sense([]).sites.length,0);
+ f.seat.getActorOwner=()=>null;assert.equal(c.sense([]).sites[0].ownership,'native_unowned');
+ f.seat.isDisabled=()=>true;assert.equal(c.sense([]).sites.length,0);
 });

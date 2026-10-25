@@ -58,6 +58,11 @@ def observer_state(bridge,society):
             'observed_inventory':stock.get(str(business['custodian'])),
             'account_scope':'Custodian inventory shared with household and any other charters; not a separate company wallet'})
     metrics=dict(society.get('metrics') or {})
+    spatial=bridge.get('spatial')
+    if spatial:
+        metrics['spatial']=spatial
+        metrics['quality_goals']={**metrics.get('quality_goals',{}),'items':[
+            *(metrics.get('quality_goals') or {}).get('items',[]),*spatial.get('quality_goals',{}).get('items',[])]}
     metrics['population_breakdown']={'loaded_races':dict(Counter((r.get('race') or {}).get('name') or 'unknown' for r in residents if r['loaded'])),
         'personality_trait_means':{trait:round(mean(p['profile']['big_five'][trait] for p in society.get('people',{}).values() if trait in p.get('profile',{}).get('big_five',{})),3)
             for trait in sorted({t for p in society.get('people',{}).values() for t in p.get('profile',{}).get('big_five',{})})},
@@ -67,7 +72,7 @@ def observer_state(bridge,society):
         'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
         'resident_control':obs.get('resident_control'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'metrics':metrics,'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':town_dashboard(society,obs),
+        'metrics':metrics,'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':town_dashboard({**society,'metrics':metrics},obs,spatial),
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),
@@ -78,6 +83,6 @@ def observer_state(bridge,society):
         'cancelled_production':society.get('cancelled_production',[])[-10:],
         'unsettled_effect':society.get('unsettled_effect'),
         'limits':[str(len(residents))+' initialized residents, not a claim of every Whiterun NPC.',
-            'Up to six background journeys can overlap one disjoint conversation; exclusive travel cohorts still support eight. Inventory transactions remain serialized.',
+            'Personal standing goals use up to 128 native slots; up to four goal model calls run concurrently in bounded waves. Foreground journeys and conversations take priority. Inventory transactions remain serialized.',
             'Traits, needs and relationship scores are gameplay models, not measured psychology.',
             'Family households, continuous town scheduling and broad production chains remain incomplete.']}

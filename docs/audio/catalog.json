@@ -490,5 +490,37 @@
     "sha256": "5f8db06544e3a47ab64f2397a3dcbc5deeceee202ebf1b8b9765f3b395f35897",
     "source": "Selected prepared Kokoro clip used in native overlay; not a physical output recording. Surrounding generated claims remain unverified.",
     "encounter": "Prepared economic speech \u2014 Jon and Carlotta"
+  },
+  {
+    "file": "personal-goals-conversation-1.wav",
+    "speaker": "Whiterun Guard",
+    "line": "Quiet night out here. Keeps things peaceful for us all.",
+    "sha256": "47b605d0282d15895da0ca44021a8343528c401337faf69afdf3e61f4fde9854",
+    "source": "Selected Kokoro clip with native overlay ended receipt during independent journeys. Not a recording of physical speaker output; human realism remains unscored.",
+    "encounter": "Independent journeys and night-time small talk"
+  },
+  {
+    "file": "personal-goals-conversation-2.wav",
+    "speaker": "Heimskr",
+    "line": "Indeed, a calm night can do wonders for the soul. I've had my own share of restless evenings.",
+    "sha256": "dd21ab872f2f85386b8d9e957e3560e37c2705f9ec05ee20a402414f42bfdff6",
+    "source": "Selected Kokoro clip with native overlay ended receipt during independent journeys. Not a recording of physical speaker output; human realism remains unscored.",
+    "encounter": "Independent journeys and night-time small talk"
+  },
+  {
+    "file": "personal-goals-conversation-3.wav",
+    "speaker": "Whiterun Guard",
+    "line": "Restless nights do that. Glad this one's calming for you.",
+    "sha256": "3279436e581cbd9345cd39b32d27e80db5587b2500d280daac8cea0fd08960f9",
+    "source": "Selected Kokoro clip with native overlay ended receipt during independent journeys. Not a recording of physical speaker output; human realism remains unscored.",
+    "encounter": "Independent journeys and night-time small talk"
+  },
+  {
+    "file": "personal-goals-conversation-4.wav",
+    "speaker": "Heimskr",
+    "line": "Indeed. Take care of yourself tonight.",
+    "sha256": "10de2e2576ac075b6d940658ba2d6ac9cde7b244b720a752fe3de7603da89dc8",
+    "source": "Selected Kokoro clip with native overlay ended receipt during independent journeys. Not a recording of physical speaker output; human realism remains unscored.",
+    "encounter": "Independent journeys and night-time small talk"
   }
 ]
