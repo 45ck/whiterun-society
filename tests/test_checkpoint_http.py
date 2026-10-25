@@ -109,5 +109,34 @@ class CheckpointHTTPTests(unittest.TestCase):
         self.assertLessEqual(clock[0],.5)
         self.assertLessEqual(call.call_count,6)
 
+    def test_independent_result_retries_only_exact_certified_conflict_and_pins_session(self):
+        code='independent_review_effect_busy'
+        self.assertEqual(checkpoint_rejection('/independent-reviews/result','a','a',False,True)['code'],code)
+        self.assertEqual(checkpoint_rejection('/independent-reviews/claim','old','a',False)['code'],'session_changed')
+        self.assertIsNone(checkpoint_rejection('/independent-reviews/claim','a','a',False,True))
+        client=self.client();client.session='a'
+        with patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=[conflict(code=code),response({'checkpoint':9})]) as call,\
+                patch('tools.checkpoint_http.time.sleep'):
+            self.assertEqual(client('/independent-reviews/result',{'claim_id':'one','results':[{'actor':7}]}),{'checkpoint':9})
+        self.assertEqual(call.call_args_list[0].args[0].data,call.call_args_list[1].args[0].data)
+        self.assertEqual(call.call_args_list[1].args[0].get_header('X-society-session'),'a')
+        for route,session in (('/independent-reviews/claim','a'),('/goals/result','a'),('/independent-reviews/result','b')):
+            client=self.client();client.session='a'
+            with patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=conflict(code=code,session=session)) as call:
+                with self.assertRaises(ValueError):client(route,{})
+                self.assertEqual(call.call_count,1)
+
+    def test_independent_result_never_retries_uncertain_failure_or_expired_window(self):
+        code='independent_review_effect_busy'
+        for error in (conflict(code=code,status=400),conflict(code=code,status=500),TimeoutError(),OSError()):
+            client=self.client();client.session='a'
+            with patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=error) as call:
+                with self.assertRaises(type(error)):client('/independent-reviews/result',{})
+                self.assertEqual(call.call_count,1)
+        client=self.client();client.session='a';client.checkpoint_wait=0
+        with patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=conflict(code=code)) as call:
+            with self.assertRaises(TimeoutError):client('/independent-reviews/result',{})
+            self.assertEqual(call.call_count,1)
+
 
 if __name__=='__main__':unittest.main()

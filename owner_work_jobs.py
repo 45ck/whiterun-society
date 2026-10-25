@@ -10,6 +10,7 @@ import math
 import secrets
 import time
 from activity_leases import owner_work_leases, activity_conflict, work_account_conflict
+from activity_plan_sources import find_activity_plan, independent_plan_authorized
 from enterprises import production_policy
 from entrepreneurship import learn_recipe
 from owner_production import owner_work_opportunities
@@ -137,8 +138,25 @@ class OwnerWorkJobs:
                 'history': [view(job) for job in records if job.get('receipt_acknowledged')][-32:]}
 
     def delegate_owner_work(self, plan, observation):
-        self._agency_guard(observation)
-        if plan is not self.agency_plan() or plan.get('phase') != 'ready_to_self_work':
+        if not isinstance(self.active, dict) or not isinstance(plan, dict):
+            raise ValueError('Owner delegation requires a saved society and accepted plan')
+        independent = independent_plan_authorized(self.active, plan, 'ready_to_self_work')
+        if (plan.get('kind') == 'independent_review' or 'independent_review' in plan
+                or plan.get('id') in self.active.get('independent_plans', {})) and not independent:
+            raise ValueError('Independent owner decision is not an exact accepted saved review')
+        if independent:
+            self._agency_guard(observation, allow_routines=True)
+            from resident_goals import occupied
+            from resident_identity import resident_identity_status
+            if plan.get('actor') in occupied(self.active, observation):
+                raise ValueError('Independent owner actor is occupied by foreground or routine activity')
+            identity = resident_identity_status(self.active, observation, plan.get('actor'))
+            if (not identity['qualified'] or identity['base_id'] != plan.get('actor_base_id')
+                    or plan.get('session') != self.session):
+                raise ValueError('Independent owner requires a current bound resident identity')
+        else:
+            self._agency_guard(observation)
+        if not independent and (plan is not self.agency_plan() or plan.get('phase') != 'ready_to_self_work'):
             raise ValueError('Independent owner work requires the current accepted owner decision')
         capability = observation.get('owner_work_jobs') or {};capacity = capability.get('capacity')
         if capability.get('available') is not True or type(capacity) is not int or not 1 <= capacity <= 128:
@@ -180,7 +198,7 @@ class OwnerWorkJobs:
                'release_verified': False, 'receipt_acknowledged': False}
         if type(actor.get('baseId')) is int:job['actor_base_id'] = actor['baseId']
         state.setdefault('work_jobs', {})[job_id] = job
-        next(p for p in state['plans'] if p['id'] == plan['id']).update(phase='delegated', work_job=job_id)
+        find_activity_plan(state, plan['id']).update(phase='delegated', work_job=job_id)
         state['people'][str(actor_id)]['agency'].update(state='work_delegated', event_id=plan['id'],
             reason='Independent owner attendance; no inventory effect yet')
         return {'checkpoint': self._write(state, 'owner attendance and exclusive account lease persisted'), 'job_id': job_id}
@@ -201,7 +219,7 @@ class OwnerWorkJobs:
     def _hold_owner_job(state, job, reason, *, unreconciled=False):
         job.update(phase='held', error=reason, cancel_requested=True, effect_unreconciled=unreconciled)
         if job.get('orphan'):return
-        plan = next((p for p in state.get('plans', []) if p['id'] == job['source_plan']), None)
+        plan = find_activity_plan(state, job['source_plan'])
         if plan:plan.update(phase='held', outcome='independent_owner_work_held', error=reason, remembered=True)
         for event in state.get('town', {}).get('daily', {}).get('queue', []):
             if event['id'] == job['source_plan']:event.update(status='held', outcome='independent_owner_work_held')
@@ -209,7 +227,7 @@ class OwnerWorkJobs:
     @staticmethod
     def _complete_owner_job(state, job, day):
         job.update(phase='complete', outcome='owner_work_completed', settled_day=day)
-        plan = next((p for p in state.get('plans', []) if p['id'] == job['source_plan']), None)
+        plan = find_activity_plan(state, job['source_plan'])
         if plan:plan.update(phase='complete', outcome='owner_work_completed', remembered=True)
         for event in state.get('town', {}).get('daily', {}).get('queue', []):
             if event['id'] == job['source_plan']:event.update(status='complete', outcome='owner_work_completed', settled_day=day)

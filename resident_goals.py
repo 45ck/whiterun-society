@@ -158,6 +158,8 @@ class ResidentGoals:
         if existing:return {'duplicate':True,'wave':copy.deepcopy(existing)}
         if event_id in town.get('goal_claim_ids',[]):return {'duplicate':True,'retired':True}
         if any(w['phase']=='thinking' for w in waves):raise ValueError('A personal-goal wave is already claimed')
+        if any(w.get('phase')=='thinking' for w in self.active.get('independent_review_waves',[])):
+            raise ValueError('An independent review inference wave is already claimed')
         day=native_day(observation);policy=load_policy()
         busy=occupied(self.active,observation);eligible=[]
         for r in observation.get('residents',[]):

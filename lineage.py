@@ -30,10 +30,12 @@ from resident_control import ResidentControl
 from trade_consent import reserved_sale_consent
 from owner_production import OwnerProduction
 from resident_goals import ResidentGoals
+from independent_reviews import IndependentReviews
 from activity_jobs import ActivityJobs
 from owner_work_jobs import OwnerWorkJobs
 from paid_employment import PaidEmployment
 from paid_employment_metrics import paid_employment_metrics
+from independent_review_metrics import independent_review_metrics
 from activity_leases import activity_conflict,identity_quarantine_actors
 from resident_identity import valid_actor_id
 from economy_catalog import require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
@@ -41,7 +43,7 @@ from economy_catalog import require_native_catalog, native_catalog_matches, cata
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, LivelihoodBackgrounds, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs, PaidEmployment):
+class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, LivelihoodBackgrounds, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, IndependentReviews, ActivityJobs, OwnerWorkJobs, PaidEmployment):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -173,11 +175,13 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
             self.observe_conversation(observation)
             if not self.transition and not self.active['pending']:
                 self.observe_resident_goals(observation)
+                self._observe_independent_followthrough(observation)
             return
         if not self.active['pending']:
             self._agency_observe(observation)
             if not self.transition and not self.active['pending']:
                 self.observe_resident_goals(observation)
+                self._observe_independent_followthrough(observation)
             return
         pending = self.active['pending']
         if pending['status'] != 'pending':
@@ -201,6 +205,13 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         if pending['command']['kind']=='inventory_self_produce':
             self.observe_owner_production(observation)
             return
+    def _observe_independent_followthrough(self, observation):
+        # Admission can progress beside an unrelated foreground plan, but every
+        # saved change still binds through the single checkpoint writer.
+        if self.error or self.transition or not self.active or self.active.get('pending'):return
+        if self.observe_independent_reviews(observation):return
+        self.prepare_independent_review_jobs(observation)
+
     def pending(self, session):
         if session != self.session or self.error:
             return None
@@ -252,6 +263,10 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         if observation and (observation.get('session')!=self.session or observation.get('checkpoint')!=self.marker):
             observation=None
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                **self.independent_reviews_status(),
+                'independent_review_metrics':independent_review_metrics(
+                    {**(self.active or {}),'checkpoint':self.marker,'transition':self.transition,'error':self.error},observation,
+                    fresh=observation is not None and self.latest_observation_at is not None and 0<=time.monotonic()-self.latest_observation_at<=10),
                 'paid_work_capability':paid_work_capability(),
                 'paid_employment':self.paid_employment_status(),
                 'paid_employment_metrics':paid_employment_metrics(self.active, observation,

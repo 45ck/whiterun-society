@@ -2,6 +2,8 @@
 
 An experimental, open-source society simulation for Skyrim Special Edition: an RTS city economy and social simulation you can watch and direct.
 
+**Independent follow-through, source implementation:** residents' rest/work intentions can now receive their own actionable decisions while an unrelated foreground encounter continues. Accepted decisions live in separate source-bound plans and delegate existing native rest/owner-work jobs without replacing the foreground plan. Quiet deferral and handback to a full review remain valid choices. One scheduler shares the existing model budget across goals and reviews; inventory settlement remains serialized. [Decision loop, metrics and limits](docs/independent-followthrough.md). This source is not installed or qualified in Skyrim.
+
 **Independent employers, source implementation:** a qualified paid job reserves the worker's physical attendance while allowing the employer to move and hold a non-economic conversation. Both inventories remain reserved, so walking away cannot spend the wage or sell contracted inputs. The inspector separates account restrictions, activity restrictions, observed behaviour and measured overlap. A bounded sampler requires paired identity-matched native attendance and employer observations; unknown evidence stays unknown. [Concurrency contract, metrics and limitations](docs/employment-concurrency.md). This change is not installed or qualified in Skyrim.
 
 ![Independent employer activity with reserved inventories and measured worker attendance](docs/images/employer-concurrency.png)

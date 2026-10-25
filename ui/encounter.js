@@ -52,6 +52,8 @@ window.drawEncounter=()=>{
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
+ const independent=independentReviewMetrics(state);
+ if(independent?.measured===true)for(const review of independent.reviews||[]){if(review.actor!==displayResident)continue;const card=document.createElement('section');panel.append(card);renderIndependentReview(card,review,independent.fresh);}
  const paidJobs=paidEmploymentJobs(state).filter(job=>job.worker===displayResident||job.employer===displayResident);
  for(const job of paidJobs){const card=document.createElement('section');panel.append(card);renderPaidEmploymentJob(card,job,state.dashboard?.inventory_catalog,employmentConcurrencyForJob(employmentConcurrencyReport(state),job));}
  const ownerJob=state.dashboard?.owner_work?.jobs?.find(job=>job.actor===displayResident);

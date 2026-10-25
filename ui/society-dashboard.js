@@ -80,13 +80,13 @@ function renderEmploymentReservations(root,concurrency){
  const doc=root.ownerDocument,add=(parent,tag,text)=>{const e=doc.createElement(tag);e.textContent=text;parent.append(e);return e;};
  const section=add(root,'section','');section.dataset.employmentReservations='true';
  add(section,'h4','Inventory and activity reservations');const table=add(section,'table','');table.className='paid-reservation-table';
- const header=add(table,'thead',''),labels=add(header,'tr','');for(const text of ['Participant','Inventory reserved','Activity reserved']){const cell=add(labels,'th',text);cell.scope='col';}
+ const header=add(table,'thead',''),labels=add(header,'tr','');for(const text of ['Participant','Inventory reserved','Activity admission reserved']){const cell=add(labels,'th',text);cell.scope='col';}
  const body=add(table,'tbody','');for(const role of ['worker','employer']){const row=add(body,'tr',''),label=add(row,'th',role==='worker'?'Worker':'Employer');label.scope='row';for(const kind of ['inventory','activity']){const value=concurrency?.reservations?.[role+'_'+kind];const cell=add(row,'td',value===true?'Reserved':value===false?'Not currently reserved':'Unknown');cell.dataset.reservation=value===true?'reserved':value===false?'not_reserved':'unknown';}}
  const eligible=concurrency?.employer_non_economic_eligible;
  add(section,'p',eligible===true?'Employer non-inventory activity: current admission checks pass.':eligible===false?'Employer non-inventory activity: current admission checks do not pass.':'Employer non-inventory activity eligibility is unmeasured.').className='town-chart-note';
  const activity=concurrency?.employer_activity,states={conversation_attending:'Observed conversation attendance',native_scene:'Observed native scene',combat:'Observed combat',sleep_transition:'Observed sleep transition',observed_loaded:'Observed loaded; current activity unclassified',unmeasured:'Unmeasured'};
  add(section,'p','Employer activity: '+(states[activity?.state]||'Unmeasured')+(activity?.state==='conversation_attending'&&activity.conversation_id?' · encounter '+activity.conversation_id:'')).className='town-chart-note';
- add(section,'p','Effective reservation checks include other jobs. A purse reservation does not reserve movement; other guards may still block activity. Eligibility and a single observation do not prove overlapping work or conversation.').className='town-chart-note';
+ add(section,'p','Admission reservation checks include other jobs; they do not describe every occupied native package. A purse reservation does not reserve movement; other guards may still block activity. Eligibility and a single observation do not prove overlapping work or conversation.').className='town-chart-note';
 }
 function renderEmploymentConcurrency(root,report){
  if(!root||!report)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const el=doc.createElement(tag);el.textContent=text;if(cls)el.className=cls;parent.append(el);return el;};
@@ -138,6 +138,45 @@ function renderPaidEmploymentMetrics(root,metrics,catalog,concurrencyReport){
  if(metrics.eligibility)add('p',metrics.eligibility.n===null?'Opportunity coverage unmeasured · '+metrics.eligibility.scope:String(metrics.eligibility.n)+' opportunity samples · '+metrics.eligibility.scope,detail,'town-chart-note');
  add('p',metrics.scope||'Retained job evidence only; no human-realism or productivity score.',root,'town-chart-note');
 }
+function independentReviewMetrics(state){
+ return state?.dashboard?.independent_review_metrics||state?.independent_review_metrics||state?.society?.independent_review_metrics;
+}
+function independentReviewLabel(review,fresh){
+ if(review.status==='native_attending'&&fresh!==true)return 'Native attendance unmeasured · observation stale';
+ if(review.status==='claimed')return review.inference_active===true?'Model inference active':review.inference_active===false?'Decision request claimed · inference not active':'Decision request claimed · worker activity unmeasured';
+ return ({waiting:'Waiting in the review queue',accepted:'Decision accepted',delegated:'Native task delegated · outcome pending',native_attending:'Native attendance observed',settled:'Linked settlement recorded',held:'Review held',handoff:'Handed to foreground review',quiet:'Quiet decision · no native task',unmeasured:'Review evidence unmeasured'})[review.status]||'Review state unmeasured';
+}
+function renderIndependentReview(root,review,fresh){
+ if(!root||!review)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const el=doc.createElement(tag);el.textContent=text;if(cls)el.className=cls;parent.append(el);return el;};
+ root.dataset.independentReview=String(review.event_id||'unknown');
+ add('h4',review.actor_name||'Resident '+(Number.isSafeInteger(review.actor)?review.actor:'unknown'));
+ add('p',independentReviewLabel(review,fresh),root,'town-chart-note');
+ add('p','Recorded action: '+(typeof review.action_id==='string'?review.action_id.replaceAll('_',' '):'No action recorded'),root,'town-chart-note');
+ const proof=add('dl','',root,'paid-proof-grid');for(const [key,label] of [['waiting','Queued'],['claimed','Decision request claimed'],['accepted','Decision accepted'],['delegated','Delegated native task'],['native_attending','Native attendance'],['settled','Settlement']]){add('dt',label,proof);const value=key==='native_attending'&&fresh!==true?null:review.stages?.[key];const cell=add('dd',value===true?'Recorded':value===false?'Not recorded':'Unknown',proof);cell.dataset.evidence=value===true?'verified':value===false?'not_recorded':'unknown';}
+ if(review.native_required===false)add('p','No native task is required by this decision. Quiet choices and handoffs are not failed work.',root,'town-chart-note');
+ else if(review.native_required!==true)add('p','Whether this decision requires a native task is unknown.',root,'town-chart-note');
+ if(review.status==='handoff')add('p','Foreground review owns the next decision; this handoff does not imply a completed action.',root,'town-chart-note');
+ if(review.provenance)add('p','Provenance: '+review.provenance,root,'town-chart-note');
+ const trace=add('details','',root,'town-detail');add('summary','Source and outcome links',trace);
+ for(const [key,label] of [['event_id','Source event'],['actor_base_id','Bound actor base'],['wave_id','Decision wave'],['claim_id','Decision claim'],['plan_id','Plan'],['job_id','Native job'],['job_kind','Job kind'],['session','Recorded session']])if(review[key]!==undefined&&review[key]!==null)add('p',label+': '+review[key],trace,'town-chart-note');
+ for(const [key,label] of [['source_linked','Source event'],['plan_linked','Accepted plan'],['job_linked','Delegated job']])add('p',label+' linkage: '+(review[key]===true?'verified':review[key]===false?'not verified':'unknown'),trace,'town-chart-note');
+ add('p','A claim is not proof of continuous model inference. An accepted decision or delegated task is not a completed economic effect.',root,'town-chart-note');
+}
+function renderIndependentReviewMetrics(root,metrics){
+ if(!root||!metrics)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const el=doc.createElement(tag);el.textContent=text;if(cls)el.className=cls;parent.append(el);return el;};
+ add('h3','Independent follow-through');
+ if(metrics.measured!==true){add('p','Unmeasured · independent review evidence is unavailable.',root,'town-chart-note');return;}
+ const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—',grid=add('div','',root,'town-stock-grid');
+ for(const [key,label] of [['waiting','Queued'],['claimed','Requests claimed'],['accepted','Decisions accepted'],['delegated','Tasks delegated'],['native_attending','Native attendance observed'],['settled','Linked settlements'],['held','Held'],['quiet','Quiet outcomes'],['handoff','Foreground handoffs']]){const card=add('div','',grid,'town-stock');add('strong',key==='native_attending'&&metrics.fresh!==true?'—':String(count(metrics.counts?.[key])),card);add('span',label,card);}
+ add('p',count(metrics.counts?.unmeasured)+' reviews with unmeasured status. Counts describe retained review states, not constant thinking or a success score.',root,'town-chart-note');
+ if(metrics.fresh!==true)add('p','Native observations are stale or unavailable. Saved decisions remain separate from current execution.',root,'town-chart-note');
+ const detail=add('details','',root,'town-detail');detail.dataset.panel='Independent review traces';add('summary','Residents, choices and linked outcomes',detail);for(const review of metrics.reviews||[])renderIndependentReview(add('section','',detail),review,metrics.fresh);
+ const evidence=add('details','',detail,'town-detail');add('summary','Link coverage and elapsed timings',evidence);
+ for(const [key,label] of [['source_events','Source events'],['claims','Decision claims'],['plans','Plans'],['jobs','Native jobs']]){const c=metrics.coverage?.[key];if(c)add('p',label+': '+count(c.success)+' linked / '+count(c.n)+' assessed · '+count(c.unknown)+' unknown / '+count(c.eligible)+' eligible',evidence,'town-chart-note');}
+ for(const [key,label,unit] of [['claim_to_result_seconds','Claim to recorded result','wall seconds'],['result_to_native_admission_seconds','Result to native admission','wall seconds'],['result_to_native_admission_game_minutes','Result to native admission','game minutes']]){const d=metrics.latency?.[key];if(!d)continue;const value=n=>typeof n==='number'&&Number.isFinite(n)?n:'—';add('p',label+': '+value(d.median)+' median / '+value(d.p95)+' p95 '+unit+' · '+count(d.n)+' timed / '+count(d.eligible)+' eligible · '+count(d.unknown)+' missing',evidence,'town-chart-note');}
+ if(metrics.timing_scope)add('p',metrics.timing_scope,evidence,'town-chart-note');
+ add('p',metrics.scope||'Recorded decisions, delegation and settlement are separate evidence stages.',root,'town-chart-note');
+}
 function renderResourceImports(root,program){
  if(!root||!program)return;
  const add=(tag,text,parent=root)=>{const el=root.ownerDocument.createElement(tag);el.textContent=text;parent.append(el);return el;};
@@ -165,7 +204,7 @@ function renderTownCharts(root,data){
   .town-swatch{width:7px;height:7px;border-radius:50%;flex:none}.town-stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.town-stock{padding:10px 7px;border:1px solid #ffffff15;border-radius:8px;background:#ffffff04}.town-stock strong{display:block;font-size:23px;font-weight:500;color:#e0bd72}.town-stock span{font-size:11px;color:#bac5c5}.town-stock small{display:block;font-size:9px;color:#8e9ea2;margin-top:4px}
   .town-need{margin:8px 0}.town-need-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}.town-need-track{height:7px;border-radius:4px;background:#ffffff0d;overflow:hidden}.town-need-fill{height:100%;border-radius:4px;background:#dfa56d}.town-flow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px}.town-flow strong{display:block;color:#9dc9ac;font-size:20px;font-weight:500}.town-tabs{display:flex;gap:5px;margin:5px 0}.town-tabs button{flex:1;background:#ffffff08;border:1px solid #ffffff18;border-radius:6px;padding:7px;color:inherit}
   .town-trend{display:block;width:100%;height:88px;margin:8px 0}.town-detail{border-top:1px solid #ffffff15;padding-top:10px}.town-detail>summary{font-size:12px;cursor:pointer;color:#e0bd72}.town-detail>summary:focus-visible{outline:2px solid #e0bd72;outline-offset:4px}
-  .paid-proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px;line-height:1.4}.paid-proof-grid dt,.paid-proof-grid dd{margin:0}.paid-proof-grid dd[data-evidence=verified]{color:#9dc9ac}.paid-proof-grid dd[data-evidence=unknown],.paid-proof-grid dd[data-evidence=held]{color:#dfa56d}[data-paid-employment-job]{border-top:1px solid #ffffff15;padding-top:8px;margin-top:10px;overflow-wrap:anywhere}.paid-reservation-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:11px;line-height:1.4}.paid-reservation-table th,.paid-reservation-table td{text-align:left;padding:5px;border-bottom:1px solid #ffffff15;overflow-wrap:anywhere}.paid-reservation-table td[data-reservation=unknown]{color:#dfa56d}
+  .paid-proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px;line-height:1.4}.paid-proof-grid dt,.paid-proof-grid dd{margin:0}.paid-proof-grid dd[data-evidence=verified]{color:#9dc9ac}.paid-proof-grid dd[data-evidence=unknown],.paid-proof-grid dd[data-evidence=held]{color:#dfa56d}[data-paid-employment-job],[data-independent-review]{border-top:1px solid #ffffff15;padding-top:8px;margin-top:10px;overflow-wrap:anywhere}.paid-reservation-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:11px;line-height:1.4}.paid-reservation-table th,.paid-reservation-table td{text-align:left;padding:5px;border-bottom:1px solid #ffffff15;overflow-wrap:anywhere}.paid-reservation-table td[data-reservation=unknown]{color:#dfa56d}
   `;doc.head.append(style);
  }
  const opened=new Set([...root.querySelectorAll('details[open]')].map(e=>e.dataset.panel));
@@ -227,6 +266,7 @@ function renderTownCharts(root,data){
  }
  if(data.paid_employment_metrics){const panel=add(root,'section');renderPaidEmploymentMetrics(panel,data.paid_employment_metrics,data.inventory_catalog,data.employment_concurrency_metrics);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
  if(data.employment_concurrency_metrics){const panel=add(root,'section');renderEmploymentConcurrency(panel,data.employment_concurrency_metrics);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
+ if(data.independent_review_metrics){const panel=add(root,'section');renderIndependentReviewMetrics(panel,data.independent_review_metrics);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
  if(data.owner_work){const work=data.owner_work,panel=section('Independent owner work');
   metricTiles(panel,[[`${shown(work.leased_jobs)} / ${shown(work.configured_capacity)}`,'Reserved work slots'],[shown(work.observed_working),'Observed attendance'],[shown(work.awaiting_commit),'Awaiting inventory commit']]);
   add(panel,'p',`${shown(work.native_matched_jobs)} matched / ${shown(work.leased_jobs)} leases · ${shown(work.unmeasured_jobs)} unmeasured. Native capacity ${shown(work.native_capacity)}; this pool is separate from rest and citizen-control slots.`,'town-chart-note');
@@ -366,4 +406,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation,paidEmploymentLabel,paidEmploymentJobs,renderPaidEmploymentJob,renderPaidEmploymentMetrics,employmentConcurrencyReport,employmentConcurrencyForJob,renderEmploymentReservations,renderEmploymentConcurrency};
+if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation,paidEmploymentLabel,paidEmploymentJobs,renderPaidEmploymentJob,renderPaidEmploymentMetrics,employmentConcurrencyReport,employmentConcurrencyForJob,renderEmploymentReservations,renderEmploymentConcurrency,independentReviewMetrics,independentReviewLabel,renderIndependentReview,renderIndependentReviewMetrics};

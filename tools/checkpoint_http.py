@@ -5,7 +5,7 @@ import urllib.error
 import urllib.request
 
 
-MUTATION_PREFIXES=('/agency/','/conversation/','/routines/','/town/','/goals/','/world/','/market-day/')
+MUTATION_PREFIXES=('/agency/','/conversation/','/routines/','/town/','/goals/','/independent-reviews/','/world/','/market-day/')
 
 
 def checkpoint_rejection(path,expected_session,current_session,transition,native_effect=False):
@@ -17,6 +17,8 @@ def checkpoint_rejection(path,expected_session,current_session,transition,native
         return {'code':'checkpoint_busy','error':'Checkpoint is binding; request was not applied','session':current_session}
     if path=='/goals/result' and native_effect:
         return {'code':'goal_effect_busy','error':'Native effect is pending; goal result was not applied','session':current_session}
+    if path=='/independent-reviews/result' and native_effect:
+        return {'code':'independent_review_effect_busy','error':'Native effect is pending; independent review result was not applied','session':current_session}
     return None
 
 
@@ -45,7 +47,8 @@ class CheckpointHTTP:
                 try:body=json.load(error)
                 except (ValueError,TypeError):raise ValueError('Unrecognized checkpoint conflict; no retry') from None
                 recognized=isinstance(body,dict) and (body.get('code')=='checkpoint_busy'
-                    or route=='/goals/result' and body.get('code')=='goal_effect_busy')
+                    or route=='/goals/result' and body.get('code')=='goal_effect_busy'
+                    or route=='/independent-reviews/result' and body.get('code')=='independent_review_effect_busy')
                 if not recognized:
                     raise ValueError(body.get('error','Request conflict; no retry') if isinstance(body,dict) else 'Request conflict; no retry') from None
                 if body.get('session')!=self.session:raise ValueError('Game session changed; no retry') from None

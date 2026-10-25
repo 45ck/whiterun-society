@@ -44,19 +44,21 @@ def focus_opportunities(state,observation,actor):
     searches=[s for s in market_opportunities(state,observation,actor) if s['id'] not in reserved]
     benches=[s for s in rest_opportunities(state,observation,actor) if s['id'] not in reserved]
     neighbours=social_candidates(state,observation,actor)
-    public_work=[]
+    # Recipe definitions and explicit public charters drive possible reviews.
+    # Own feasibility uses current native stock; public employers reveal no purse.
+    from economy_catalog import recipe_ids
+    from owner_production import owner_work_opportunities
+    recipes=set(recipe_ids())
+    own_terms=owner_work_opportunities(state,observation,actor,require_owned=False)
+    public_work=[{'business_id':t['business_id'],'kind':'own_enterprise','revision':t['revision'],'recipe_id':t['recipe_id']} for t in own_terms]
     for business_id,business in sorted(town.get('businesses',{}).items()):
         employer=business.get('custodian')
-        if business.get('active',True) is not True or 'bread_recipe' not in business.get('capabilities',[]):continue
-        if employer==actor:
-            if business.get('owner')!=actor:continue
-            # Ownership and own input stock establish something to review, not
-            # a paid job, available animation or completed productive labour.
-            if type(stock.get('grain')) is not int or stock['grain']<1:continue
-            public_work.append({'business_id':business_id,'kind':'own_enterprise','revision':business.get('revision',0)})
-        elif str(employer) in town.get('residents',{}) and route_available(observation,actor,employer,state) and same_social_space(own,rows.get(employer,{})):
+        offered_recipes=sorted(recipes.intersection(business.get('capabilities',[])))
+        if business.get('active',True) is not True or not offered_recipes:continue
+        if employer==actor:continue
+        if str(employer) in town.get('residents',{}) and route_available(observation,actor,employer,state) and same_social_space(own,rows.get(employer,{})):
             public_work.append({'business_id':business_id,'kind':'public_employer','revision':business.get('revision',0),
-                'employer':person_view(state,actor,employer),
+                'employer':person_view(state,actor,employer),'recipe_ids':offered_recipes,
                 'source':'Public production charter only; employer resources, vacancy and consent are unknown'})
     return {'food':carried_food or can_bid and bool(sellers or searches),'rest':bool(benches),'work':bool(public_work),'social':bool(neighbours),
         'food_sellers':sellers,'public_work':public_work,'public_food_search_sites':[s['id'] for s in searches],

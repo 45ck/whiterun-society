@@ -70,6 +70,19 @@ class ObserverTests(unittest.TestCase):
         self.assertIsNone(held['employment_concurrency_metrics']['counts']['paid_account_participants'])
         self.assertEqual(held['employment_concurrency_metrics']['overlap'],overlap)
 
+    def test_independent_review_metrics_reach_inspector_and_expire_with_observation(self):
+        self.obs.update(ready=True,checkpoint=10,session='reviews')
+        self.society.update(independent_reviews={},independent_plans={},independent_review_waves=[])
+        bridge={'last_seen':time.time(),'observation':self.obs}
+        result=observer_state(bridge,self.society)
+        metric=result['independent_review_metrics']
+        self.assertTrue(metric['fresh'])
+        self.assertEqual(metric,result['dashboard']['independent_review_metrics'])
+        self.assertEqual(metric,result['metrics']['independent_reviews'])
+        for changed in ({**bridge,'last_seen':0},{**bridge,'observation':{**self.obs,'checkpoint':11}},
+                        {**bridge,'observation':{**self.obs,'paused':True}}):
+            self.assertFalse(observer_state(changed,self.society)['independent_review_metrics']['fresh'])
+
     def test_configured_recipe_editor_is_generic_and_does_not_mutate_catalog(self):
         from test_catalog_enterprises import expanded_catalog
         catalog=expanded_catalog()

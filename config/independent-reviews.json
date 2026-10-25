@@ -1,0 +1,10 @@
+{
+  "version": "independent-reviews-v1",
+  "maximum_wave_members": 32,
+  "claim_timeout_seconds": 1800,
+  "accepted_timeout_seconds": 300,
+  "review_game_minutes": 15,
+  "maximum_records": 4096,
+  "retained_waves": 16,
+  "maximum_context_bytes": 14000
+}

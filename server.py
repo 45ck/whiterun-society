@@ -252,6 +252,10 @@ def main():
                     native_effect=bool(bridge['command'] or world.active and world.active.get('pending')))
                 if rejected:return self.reply(409,rejected)
                 if self.path=='/service/shutdown':
+                    reviews=world.independent_reviews_status()
+                    if (any(row.get('phase')=='thinking' for row in reviews['independent_review_waves'])
+                            or any(row.get('phase')=='accepted' for row in reviews['independent_reviews'].values())):
+                        raise ValueError('Settle independent review claims and accepted intentions before restarting the service')
                     if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')) or world.activity_status()['jobs'] or world.owner_work_status()['jobs'] or world.paid_employment_status()['jobs']:
                         raise ValueError('Settle active society work before restarting the service')
                     bridge['shutdown_requested']=True
@@ -299,6 +303,7 @@ def main():
                         'society':society_status,'director':director.status(),'director_control_receipt':bridge.get('director_control_receipt'),
                         'dashboard':{**town_dashboard(society_status,data,bridge['spatial']),
                                      'paid_employment_metrics':society_status['paid_employment_metrics'],
+                                     'independent_review_metrics':society_status['independent_review_metrics'],
                                      'employment_concurrency_metrics':bridge['employment_concurrency']}}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
@@ -309,6 +314,14 @@ def main():
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
                     self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera'),'director_control_receipt':bridge.get('director_control_receipt')})
+                elif self.path in ('/independent-reviews/claim','/independent-reviews/result'):
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if bridge['command']:raise ValueError('Another native command is pending')
+                    if self.path=='/independent-reviews/claim':
+                        result=world.claim_independent_reviews(data['id'],bridge['observation'],data.get('limit',32))
+                    else:
+                        result=world.finish_independent_reviews(data['id'],data['claim_id'],data['results'],bridge['observation'])
+                    self.reply(202,result)
                 elif self.path in ('/goals/claim','/goals/result'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
                     if bridge['command']:raise ValueError('Another native command is pending')

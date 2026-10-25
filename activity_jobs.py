@@ -10,6 +10,7 @@ import math
 import secrets
 from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from activity_leases import activity_leases, reserved_activity_actors, reserved_activity_targets
+from activity_plan_sources import find_activity_plan, independent_plan_authorized
 
 CAPACITY = 2
 IDENTITY = ('actor', 'target', 'slot', 'session', 'epoch')
@@ -83,9 +84,22 @@ class ActivityJobs:
                 'history': [view(job) for job in history if job.get('receipt_acknowledged')][-32:]}
 
     def delegate_rest(self, plan, observation):
-        self._agency_guard(observation)
-        if plan is not self.agency_plan() or plan.get('phase') != 'ready_to_rest':
-            raise ValueError('Delegation requires the current accepted rest intention')
+        independent = (isinstance(plan, dict) and
+                       (self.active or {}).get('independent_plans', {}).get(plan.get('id')) is plan)
+        if independent:
+            self._agency_guard(observation, allow_routines=True)
+            if not independent_plan_authorized(self.active, plan, 'ready_to_rest'):
+                raise ValueError('Delegation requires an exact accepted independent rest review')
+            from resident_goals import occupied
+            if plan['actor'] in occupied(self.active, observation):
+                raise ValueError('Independent rest resident has a foreground or activity conflict')
+            actor = next((row for row in observation.get('residents', []) if row.get('id') == plan['actor']), {})
+            if plan.get('session') != self.session or plan.get('actor_base_id') != actor.get('baseId'):
+                raise ValueError('Independent rest review session or resident identity changed')
+        else:
+            self._agency_guard(observation)
+            if plan is not self.agency_plan() or plan.get('phase') != 'ready_to_rest':
+                raise ValueError('Delegation requires the current accepted rest intention')
         capability = observation.get('activity_jobs') or {}
         if capability.get('available') is not True or type(capability.get('capacity')) is not int or capability['capacity'] != CAPACITY:
             raise ValueError('Two independent native activity slots are unavailable')
@@ -114,7 +128,8 @@ class ActivityJobs:
                'receipt_acknowledged': False, 'release_verified': False}
         if type(actor.get('baseId')) is int:job['actor_base_id'] = actor['baseId']
         jobs[job_id] = job
-        saved = next(item for item in state['plans'] if item['id'] == plan['id'])
+        saved = find_activity_plan(state, plan['id'])
+        if saved is None:raise ValueError('Accepted rest source plan is missing')
         saved.update(phase='delegated', activity_job=job_id)
         person = state['people'][str(plan['actor'])]
         person['agency'].update(state='activity_delegated', event_id=plan['id'],
@@ -207,7 +222,7 @@ class ActivityJobs:
 
     @staticmethod
     def _hold_activity_plan(state, job, reason):
-        plan = next((p for p in state.get('plans', []) if p['id'] == job['source_plan']), None)
+        plan = find_activity_plan(state, job['source_plan'])
         if plan:plan.update(phase='held', outcome='independent_rest_held', error=reason,
                             activity_release_required=not (job.get('release_verified') or job.get('no_effects_issued')), remembered=True)
         for event in state.get('town', {}).get('daily', {}).get('queue', []):
@@ -248,7 +263,7 @@ class ActivityJobs:
                 'source': 'Independent native seated attendance and verified release; authored recovery'}])[-32:]
             state.setdefault('rests', []).append({'id': job['id'], 'status': 'committed', 'evidence': safe,
                 'receipt_hash': digest, 'fatigue_before': before, 'fatigue_after': person['needs']['fatigue']})
-            plan = next((p for p in state.get('plans', []) if p['id'] == job['source_plan']), None)
+            plan = find_activity_plan(state, job['source_plan'])
             if plan:plan.update(phase='complete', outcome='rested_at_bench', remembered=True, activity_release_required=False)
             for event in state.get('town', {}).get('daily', {}).get('queue', []):
                 if event['id'] == job['source_plan']:event.update(status='complete', outcome='rested_at_bench', settled_day=day)

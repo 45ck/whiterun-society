@@ -10,6 +10,7 @@ from activity_metrics import activity_metrics
 from owner_work_metrics import owner_work_metrics
 from paid_employment_metrics import paid_employment_metrics
 from employment_concurrency_metrics import snapshot_metrics
+from independent_review_metrics import independent_review_metrics
 import economy_catalog
 from market_policy import tradable_ids, goods_policy, advertised_goods, policy_hash
 from resident_identity import resident_identity_status
@@ -87,6 +88,7 @@ def observer_state(bridge,society):
     owner_work=owner_work_metrics(society,obs,fresh=connected)
     paid_work=paid_employment_metrics(society,obs,fresh=current)
     concurrency={**(bridge.get('employment_concurrency') or {}),**snapshot_metrics(society,obs,fresh=current)}
+    independent_reviews=independent_review_metrics(society,obs,fresh=current)
     residents=[]
     for key,resident in town.get('residents',{}).items():
         person=society.get('people',{}).get(key,{})
@@ -129,9 +131,10 @@ def observer_state(bridge,society):
         'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
         'resident_control':obs.get('resident_control'),'activity_jobs':activities,'owner_work':owner_work,
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'metrics':{**metrics,'activity_jobs':activities,'owner_work':owner_work,'paid_employment':paid_work,'employment_concurrency':concurrency},'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':{**town_dashboard({**society,'metrics':metrics},obs,spatial,fresh=connected),'activity_jobs':activities,'owner_work':owner_work,'paid_employment_metrics':paid_work,'employment_concurrency_metrics':concurrency},
+        'metrics':{**metrics,'activity_jobs':activities,'owner_work':owner_work,'paid_employment':paid_work,'employment_concurrency':concurrency,'independent_reviews':independent_reviews},'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':{**town_dashboard({**society,'metrics':metrics},obs,spatial,fresh=connected),'activity_jobs':activities,'owner_work':owner_work,'paid_employment_metrics':paid_work,'employment_concurrency_metrics':concurrency,'independent_review_metrics':independent_reviews},
         'paid_employment_metrics':paid_work,
         'employment_concurrency_metrics':concurrency,
+        'independent_review_metrics':independent_reviews,
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),

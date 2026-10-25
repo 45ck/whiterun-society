@@ -1,5 +1,11 @@
 # Current direction: RTS-only
 
+## Independent action reviews during foreground encounters
+
+The current source separates rest/owner-work review claims from the foreground plan. A saved personal rest/work goal can receive a bounded, actionable model choice while other people converse. Separate independent plans preserve exact source events; native jobs still require current identity, availability, capacity and resource checks. Competing choices can fail, and a changed resident does not cancel unaffected decisions in the same wave. The shared scheduler alternates goals/reviews under the existing background model budget. [Contract, inspector stages and acceptance](independent-followthrough.md).
+
+The offline controller integration covers resident goals through separate claims, native seated recovery and owner-work attendance while an unrelated conversation remains intact; owner recipe effects wait for foreground release. Model choices, physics and native APIs are fixtures. The next architectural constraints remain fair inventory settlement opportunities, broader independent social/economic admissions, connected multi-input production and executable spoken commitments. No new runtime installation or audible-gameplay qualification is implied.
+
 ## Independent employer activity during paid attendance
 
 **Source qualification, 26 October 2026:** [hosted run 40210392239](https://github.com/45ck/whiterun-society/actions/runs/40210392239) passed at `a65d957` on Windows and Ubuntu. Per platform: 1,280 Python tests (1,279 passed, one generated-file check initially skipped and subsequently passed), 504 JavaScript tests and six plugin readback checks. Windows compiled both Papyrus scripts. Four new concurrency interoperability cases and six retained paid-work interoperability cases passed with simulated native APIs. [Exact evidence and limits](evidence/employment-concurrency-validation.json). No new game deployment occurred.
