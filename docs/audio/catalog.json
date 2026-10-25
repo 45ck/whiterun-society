@@ -54,5 +54,53 @@
     "sha256": "a368e11f2d1f651fa33660a05ff3f20d4c483203ebde753c76f37cf154e47a68",
     "encounter": "Amren and Saffir \u00b7 combined reply choice",
     "source": "Generated Kokoro utterance used by confirmed overlay playback; not a recording of game audio"
+  },
+  {
+    "file": "followthrough-a-1.wav",
+    "speaker": "Whiterun Guard",
+    "line": "Good morning. The weather's pleasant for a change. I'm Whiterun Guard, what can I do for you?",
+    "sha256": "96057ab95291e3c55c89d712fb4597f78391483b879c44098440e19a02b56e6f",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "followthrough-a-2.wav",
+    "speaker": "Idolaf Battle-Born",
+    "line": "Morning to you. Just looking for some news about the city. Anything interesting happen?",
+    "sha256": "4c28ecc63e5e6875989e4c14807ba12568f182fb7ded15ae3ada60aab0920746",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "followthrough-a-3.wav",
+    "speaker": "Whiterun Guard",
+    "line": "Not much new, the city is quiet this morning. Anything else you'd like to know?",
+    "sha256": "237249fd09a77eed1b7a3bb892b05440ee91b8429b883f4f24e0fa1b43aab3e6",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "followthrough-a-4.wav",
+    "speaker": "Idolaf Battle-Born",
+    "line": "Thanks for the update. Is it usually this quiet at this hour?",
+    "sha256": "49965e8d6f50873e5b9bd9923b7f31f39383b6577b80d6975df86a6b737ae892",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "followthrough-a-5.wav",
+    "speaker": "Whiterun Guard",
+    "line": "Yes, mornings are typically this quiet. Patrols haven't seen much trouble yet. Anything specific you're looking to know about?",
+    "sha256": "2e5a735d481de76fb12cb154c64807a4cb0eeab7c6dc05278e8daf9e7e8399fb",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
+  },
+  {
+    "file": "followthrough-a-6.wav",
+    "speaker": "Idolaf Battle-Born",
+    "line": "That's good to hear. Thanks for the chat.",
+    "sha256": "8b9973f3fd81a4156b690ec2b18d0ad1898b782ad16b43fb5526d913fa2034f1",
+    "encounter": "Guard and Idolaf \u00b7 linked resident plans",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not recorded game audio. City and patrol claims are unverified."
   }
 ]

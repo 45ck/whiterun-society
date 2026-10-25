@@ -28,7 +28,7 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 Residents now wait around observed Skyrim scenes, combat and sleep transitions. Released route failures can be isolated so other residents continue; uncertain effects still stop the run. [Scheduling behavior and evidence](docs/scene-aware-scheduling.md).
 
-Residents can now choose food, rest or work reviews after heard conversations, with source links carried into the next action decision. Blanket guard/duty exclusions and the nearest-six candidate truncation are removed. This is a tested conversation-to-action path; live follow-through and native quest-scene takeover are not yet qualified. [Behavior, restrictions and evidence](docs/conversation-actions.md).
+Residents can now choose food, rest or work reviews after heard conversations, with source links carried into the next action decision. Blanket guard/duty exclusions and the nearest-six candidate truncation are removed. In Skyrim, a guard and Idolaf spoke, chose food reviews, then respectively ate a loaf and visited a market without finding a seller. Dialogue grounding, latency and native quest-scene takeover remain unfinished. [Behavior, restrictions and evidence](docs/conversation-actions.md).
 
 ## Examples from the running prototype
 

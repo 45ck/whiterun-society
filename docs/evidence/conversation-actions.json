@@ -1,0 +1,525 @@
+{
+  "source": "Retained native isolated-lab director, conversation and resident worker receipts",
+  "encounter_run": "society-39d71f1535964256",
+  "continuation_run": "society-5083acbe6a9c481f",
+  "conversation": {
+    "id": "overlap-6866e66f408244d2b23a",
+    "status": "complete",
+    "participants": [
+      {
+        "actor": 225366,
+        "name": "Whiterun Guard",
+        "is_guard": true
+      },
+      {
+        "actor": 108169,
+        "name": "Idolaf Battle-Born",
+        "is_guard": false
+      }
+    ],
+    "calls": {
+      "propose": 6,
+      "select": 6,
+      "social": 4
+    },
+    "elapsed_seconds": 135.342,
+    "release_evidence": {
+      "attendance": {
+        "id": "attend-overlap-6866e66f408244d2b23a",
+        "participants": [
+          {
+            "actor": 225366,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 6
+          },
+          {
+            "actor": 108169,
+            "loaded": true,
+            "ownedPackage": false,
+            "released": true,
+            "slot": 7
+          }
+        ],
+        "phase": "released"
+      },
+      "id": "release-chat-overlap-6866e66f408244d2b23a",
+      "released": true,
+      "status": "applied"
+    },
+    "reply_dispatch_gaps_seconds": [
+      13.023,
+      16.118,
+      9.076,
+      12.281,
+      11.22
+    ],
+    "turns": [
+      {
+        "speaker": 225366,
+        "name": "Whiterun Guard",
+        "line": "Good morning. The weather's pleasant for a change. I'm Whiterun Guard, what can I do for you?",
+        "delivered": true,
+        "audio_seconds": 5.7907
+      },
+      {
+        "speaker": 108169,
+        "name": "Idolaf Battle-Born",
+        "line": "Morning to you. Just looking for some news about the city. Anything interesting happen?",
+        "delivered": true,
+        "audio_seconds": 5.7267
+      },
+      {
+        "speaker": 225366,
+        "name": "Whiterun Guard",
+        "line": "Not much new, the city is quiet this morning. Anything else you'd like to know?",
+        "delivered": true,
+        "audio_seconds": 4.862
+      },
+      {
+        "speaker": 108169,
+        "name": "Idolaf Battle-Born",
+        "line": "Thanks for the update. Is it usually this quiet at this hour?",
+        "delivered": true,
+        "audio_seconds": 3.8593
+      },
+      {
+        "speaker": 225366,
+        "name": "Whiterun Guard",
+        "line": "Yes, mornings are typically this quiet. Patrols haven't seen much trouble yet. Anything specific you're looking to know about?",
+        "delivered": true,
+        "audio_seconds": 7.8147
+      },
+      {
+        "speaker": 108169,
+        "name": "Idolaf Battle-Born",
+        "line": "That's good to hear. Thanks for the chat.",
+        "delivered": true,
+        "audio_seconds": 2.7673
+      }
+    ],
+    "follow_through": [
+      {
+        "actor": 225366,
+        "encounter_id": "overlap-6866e66f408244d2b23a",
+        "event_id": "daily-24-225366",
+        "focus": "food",
+        "heard": [
+          {
+            "delivery_id": "speech-933e06e101475af93cd28d67",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "Morning to you. Just looking for some news about the city. Anything interesting happen?",
+            "speaker": 108169
+          },
+          {
+            "delivery_id": "speech-3b02ab8c4ae921e1ee65024b",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "Thanks for the update. Is it usually this quiet at this hour?",
+            "speaker": 108169
+          },
+          {
+            "delivery_id": "speech-9115b060ed7819bdeb2224f7",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "That's good to hear. Thanks for the chat.",
+            "speaker": 108169
+          }
+        ],
+        "source": "Resident decision after heard speech; a queued review, not a promise or completed action"
+      },
+      {
+        "actor": 108169,
+        "encounter_id": "overlap-6866e66f408244d2b23a",
+        "event_id": "daily-40-108169",
+        "focus": "food",
+        "heard": [
+          {
+            "delivery_id": "speech-172052a4fe98bc901ec54a73",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "Good morning. The weather's pleasant for a change. I'm Whiterun Guard, what can I do for you?",
+            "speaker": 225366
+          },
+          {
+            "delivery_id": "speech-5090d8781690f1699277d48d",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "Not much new, the city is quiet this morning. Anything else you'd like to know?",
+            "speaker": 225366
+          },
+          {
+            "delivery_id": "speech-34713c0e541b1117d8fafc67",
+            "epistemic_status": "heard claim, not verified fact",
+            "line": "Yes, mornings are typically this quiet. Patrols haven't seen much trouble yet. Anything specific you're looking to know about?",
+            "speaker": 225366
+          }
+        ],
+        "source": "Resident decision after heard speech; a queued review, not a promise or completed action"
+      }
+    ]
+  },
+  "background_journeys": {
+    "id": "daily-routes-bfb5b612f653a4d5",
+    "status": "complete",
+    "release_verified": true,
+    "concurrency": {
+      "attendance_overlap_samples": 2719,
+      "overlap_samples": 1213,
+      "peak_owned": 3,
+      "speech_overlap_samples": 664
+    },
+    "members": [
+      {
+        "actor": 182543,
+        "name": "Brenuin",
+        "outcome": "market_seller_not_observed",
+        "choice": "check_market",
+        "native_receipt": {
+          "finished_at": 1792892773670,
+          "id": "lane-daily-20-182543",
+          "movement": {
+            "acquisitionAt": 1792892753084,
+            "activity": {
+              "in_combat": false,
+              "package_id": 182542,
+              "scene_id": 0,
+              "sleep_state": 0
+            },
+            "actor": 182543,
+            "adapter": "papyrus-mailbox",
+            "aliasesConfirmed": true,
+            "at": 1792892752359,
+            "distance": 249.21451896029618,
+            "dynamic": true,
+            "enginePackage": 182542,
+            "expectedPackage": 150996993,
+            "hasOwnedPackage": true,
+            "id": "lane-daily-20-182543",
+            "mailboxAt": 1792892752372,
+            "method": "package",
+            "origin": "resident_decision",
+            "outcome": "applied",
+            "ownedPackage": false,
+            "phase": "applied",
+            "releaseAt": 1792892773654,
+            "serial": 11,
+            "startAt": 1792892752389,
+            "startComplete": true,
+            "startDistance": 1300.762405271284,
+            "startResult": true,
+            "target": 179739,
+            "target_kind": "place"
+          },
+          "release_verified": true,
+          "seller_nearby": false,
+          "slot": 0,
+          "status": "applied"
+        }
+      },
+      {
+        "actor": 1048823,
+        "name": "Whiterun Guard",
+        "outcome": "market_seller_not_observed",
+        "choice": "check_market",
+        "native_receipt": {
+          "finished_at": 1792892772289,
+          "id": "lane-daily-27-1048823",
+          "movement": {
+            "acquisitionAt": 1792892753085,
+            "activity": {
+              "in_combat": false,
+              "package_id": 362465,
+              "scene_id": 0,
+              "sleep_state": 0
+            },
+            "actor": 1048823,
+            "adapter": "papyrus-mailbox",
+            "aliasesConfirmed": true,
+            "at": 1792892752360,
+            "distance": 248.369576376348,
+            "dynamic": true,
+            "enginePackage": 362465,
+            "expectedPackage": 150997009,
+            "hasOwnedPackage": true,
+            "id": "lane-daily-27-1048823",
+            "mailboxAt": 1792892752373,
+            "method": "package",
+            "origin": "resident_decision",
+            "outcome": "applied",
+            "ownedPackage": false,
+            "phase": "applied",
+            "releaseAt": 1792892772273,
+            "serial": 14,
+            "startAt": 1792892752390,
+            "startComplete": true,
+            "startDistance": 859.9439309967433,
+            "startResult": true,
+            "target": 179739,
+            "target_kind": "place"
+          },
+          "release_verified": true,
+          "seller_nearby": false,
+          "slot": 1,
+          "status": "applied"
+        }
+      },
+      {
+        "actor": 108138,
+        "name": "Amren",
+        "outcome": "market_seller_not_observed",
+        "choice": "check_market",
+        "native_receipt": {
+          "finished_at": 1792892819758,
+          "id": "lane-daily-33-108138",
+          "movement": {
+            "acquisitionAt": 1792892753102,
+            "activity": {
+              "in_combat": false,
+              "package_id": 595194,
+              "scene_id": 0,
+              "sleep_state": 0
+            },
+            "actor": 108138,
+            "adapter": "papyrus-mailbox",
+            "aliasesConfirmed": true,
+            "at": 1792892752361,
+            "distance": 247.81281750671909,
+            "dynamic": true,
+            "enginePackage": 595194,
+            "expectedPackage": 150997025,
+            "hasOwnedPackage": true,
+            "id": "lane-daily-33-108138",
+            "mailboxAt": 1792892752374,
+            "method": "package",
+            "origin": "resident_decision",
+            "outcome": "applied",
+            "ownedPackage": false,
+            "phase": "applied",
+            "releaseAt": 1792892819744,
+            "serial": 2,
+            "startAt": 1792892752391,
+            "startComplete": true,
+            "startDistance": 3541.4928776008596,
+            "startResult": true,
+            "target": 179739,
+            "target_kind": "place"
+          },
+          "release_verified": true,
+          "seller_nearby": false,
+          "slot": 2,
+          "status": "applied"
+        }
+      }
+    ]
+  },
+  "linked_outcomes": [
+    {
+      "id": "daily-24-225366",
+      "actor": 225366,
+      "status": "complete",
+      "outcome": "ate_bread",
+      "model_calls": 1,
+      "name": "Whiterun Guard",
+      "conversation_followups": [
+        {
+          "actor": 225366,
+          "encounter_id": "overlap-6866e66f408244d2b23a",
+          "focus": "food",
+          "heard": [
+            {
+              "delivery_id": "speech-933e06e101475af93cd28d67",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "Morning to you. Just looking for some news about the city. Anything interesting happen?",
+              "speaker": 108169
+            },
+            {
+              "delivery_id": "speech-3b02ab8c4ae921e1ee65024b",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "Thanks for the update. Is it usually this quiet at this hour?",
+              "speaker": 108169
+            },
+            {
+              "delivery_id": "speech-9115b060ed7819bdeb2224f7",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "That's good to hear. Thanks for the chat.",
+              "speaker": 108169
+            }
+          ],
+          "source": "Resident decision after heard speech; a queued review, not a promise or completed action"
+        }
+      ],
+      "choices": [
+        "eat_bread"
+      ],
+      "travel": null,
+      "market_visit": null,
+      "release_required": false
+    },
+    {
+      "id": "daily-40-108169",
+      "actor": 108169,
+      "status": "complete",
+      "outcome": "market_seller_not_observed",
+      "model_calls": 1,
+      "name": "Idolaf Battle-Born",
+      "conversation_followups": [
+        {
+          "actor": 108169,
+          "encounter_id": "overlap-6866e66f408244d2b23a",
+          "focus": "food",
+          "heard": [
+            {
+              "delivery_id": "speech-172052a4fe98bc901ec54a73",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "Good morning. The weather's pleasant for a change. I'm Whiterun Guard, what can I do for you?",
+              "speaker": 225366
+            },
+            {
+              "delivery_id": "speech-5090d8781690f1699277d48d",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "Not much new, the city is quiet this morning. Anything else you'd like to know?",
+              "speaker": 225366
+            },
+            {
+              "delivery_id": "speech-34713c0e541b1117d8fafc67",
+              "epistemic_status": "heard claim, not verified fact",
+              "line": "Yes, mornings are typically this quiet. Patrols haven't seen much trouble yet. Anything specific you're looking to know about?",
+              "speaker": 225366
+            }
+          ],
+          "source": "Resident decision after heard speech; a queued review, not a promise or completed action"
+        }
+      ],
+      "choices": [
+        "check_market"
+      ],
+      "travel": {
+        "id": "travel-daily-40-108169",
+        "movement": {
+          "acquisitionAt": 1792893022069,
+          "activity": {
+            "in_combat": false,
+            "package_id": 117442561,
+            "scene_id": 0,
+            "sleep_state": 0
+          },
+          "actor": 108169,
+          "adapter": "papyrus-mailbox",
+          "aliasesConfirmed": true,
+          "at": 1792893021343,
+          "distance": 249.79762254126956,
+          "dynamic": true,
+          "enginePackage": 117442561,
+          "expectedPackage": 117442561,
+          "hasOwnedPackage": true,
+          "id": "travel-daily-40-108169",
+          "mailboxAt": 1792893021356,
+          "method": "package",
+          "origin": "resident_decision",
+          "ownedPackage": true,
+          "phase": "arrived",
+          "serial": 27,
+          "startAt": 1792893021373,
+          "startComplete": true,
+          "startDistance": 4176.9540305180335,
+          "startResult": true,
+          "target": 179739,
+          "target_kind": "place"
+        },
+        "status": "applied"
+      },
+      "market_visit": {
+        "day": 6.34207820892334,
+        "place": 179739,
+        "seller_nearby": false
+      },
+      "release_required": false
+    }
+  ],
+  "metrics": {
+    "resident_choices": 2,
+    "distinct_reviews": 2,
+    "pending": 0,
+    "completed_plans": 2,
+    "held_plans": 0,
+    "focus": {
+      "food": 2
+    },
+    "outcomes": {
+      "ate_bread": 1,
+      "market_seller_not_observed": 1
+    },
+    "scope": "Traceable resident-chosen reviews after heard speech, not proof that language caused an action or that a promise was fulfilled."
+  },
+  "inventory_accounts_compared": 9,
+  "inventory_changes": [
+    {
+      "actor": 225366,
+      "name": "Whiterun Guard",
+      "before": {
+        "gold": 28,
+        "bread": 1,
+        "grain": 0
+      },
+      "after": {
+        "gold": 28,
+        "bread": 0,
+        "grain": 0
+      }
+    }
+  ],
+  "totals_before": {
+    "bread": 2,
+    "gold": 275,
+    "grain": 0
+  },
+  "totals_after": {
+    "bread": 1,
+    "gold": 275,
+    "grain": 0
+  },
+  "runs": [
+    {
+      "id": "society-39d71f1535964256",
+      "model_calls": 19,
+      "results_with_cost": 19,
+      "reported_cost_usd": 0.002052118
+    },
+    {
+      "id": "society-5083acbe6a9c481f",
+      "model_calls": 2,
+      "results_with_cost": 2,
+      "reported_cost_usd": 0.000329448
+    }
+  ],
+  "save_restore": {
+    "name": "WS-FollowThrough-20261025-AY",
+    "checkpoint": 1299,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "limits": [
+    "Guard dialogue contains unverified city and patrol claims; no intentional deception or human realism is established.",
+    "Both residents selected food reviews after city small talk. The trace proves a linked decision path, not that the topic semantically required food or that a promise was fulfilled.",
+    "The original four-event budget ended with both reviews pending. A second two-event run serviced them after the scheduler was changed to prioritize resident follow-ups over demo opportunities.",
+    "No new sale, production, paid work, joint commitment or political action occurred. Rest and work follow-through remain unqualified in Skyrim.",
+    "Native camera mode and release receipts are telemetry, not a new gameplay screenshot or visual acceptance test.",
+    "Quest scene takeover, spatial voice, head and eye gaze, lip sync and human-rated dialogue remain unfinished."
+  ],
+  "inventory_scope": "Only the 9 resident accounts observed in both run snapshots; these totals are not the whole town."
+}

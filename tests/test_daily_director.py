@@ -45,4 +45,12 @@ class DirectorTests(unittest.TestCase):
         state={'society':{'town':{'daily':{'queue':[event]}}},'bridge':{'observation':{'residents':[{'id':7,'isPerson':True}]}}}
         self.assertTrue(event_available(state,event))
 
+    def test_resident_followthrough_precedes_demo_social_alternation(self):
+        meal={'id':'follow','actor':7,'kind':'need_review','priority':.4,'conversation_followups':[{'encounter_id':'heard'}]}
+        ordinary=[{'id':'chat','kind':'social_review','priority':1},{'id':'food','kind':'need_review','priority':.9}]
+        for social_first in (True,False):
+            result=fair_pending(ordinary+[meal],social_first)
+            self.assertEqual(result[0]['id'],'follow')
+            self.assertEqual({e['id'] for e in result},{'follow','chat','food'})
+
 if __name__=='__main__':unittest.main()

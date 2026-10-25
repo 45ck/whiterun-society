@@ -24,9 +24,11 @@ from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 def fair_pending(events, social_first=True):
     """Keep hunger backlogs from starving social life, without inventing events."""
     ordered = sorted(events, key=lambda e: (-e['priority'], e.get('created_day', 0), e['id']))
-    social = [e for e in ordered if e['kind'] == 'social_review']
-    economic = [e for e in ordered if e['kind'] != 'social_review']
-    result = []
+    followups=[e for e in ordered if e.get('conversation_followups')]
+    ordinary=[e for e in ordered if not e.get('conversation_followups')]
+    social = [e for e in ordinary if e['kind'] == 'social_review']
+    economic = [e for e in ordinary if e['kind'] != 'social_review']
+    result = list(followups)
     while social or economic:
         lane = social if social_first else economic
         if not lane: lane = economic if social_first else social
@@ -171,14 +173,15 @@ def main():
             pending=fair_pending((e for e in queue if e['status']=='pending' and e['actor'] in loaded
                             and (e['kind']!='social_review' or args.language_config)),
                            social_first=len(evidence['events'])%2==0)
-            if args.social_opportunities and len(evidence['events'])%2==0 and not any(e['kind']=='social_review' and event_available(state,e) for e in pending):
+            if args.social_opportunities and not any(e.get('conversation_followups') for e in pending) and len(evidence['events'])%2==0 and not any(e['kind']=='social_review' and event_available(state,e) for e in pending):
                 opportunity={'id':'encounter-'+uuid.uuid4().hex[:20],'kind':'social_opportunity','actor':None,
                              'source':'director nearby opportunity; not a claimed urgent need'}
                 if event_available(state,opportunity):pending.insert(0,opportunity)
             if args.parallel_journeys:
                 remaining=args.max_events-len(evidence['events'])
                 overlap=bool(args.language_config and remaining>=3)
-                selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(6 if overlap else 8,remaining-int(overlap)))
+                travel_pending=[e for e in pending if e.get('conversation_followups')] or pending
+                selected=select_routine_events(state['society'],state['bridge']['observation'],travel_pending,min(6 if overlap else 8,remaining-int(overlap)))
                 if len(selected)>=2:
                     ids=[e['id'] for e in selected];batch_id='daily-routes-'+hashlib.sha256('|'.join(ids).encode()).hexdigest()[:16]
                     command=[sys.executable,str(Path(__file__).with_name('run_parallel_routines.py')),
