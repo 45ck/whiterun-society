@@ -17,6 +17,7 @@ from dialogue_context import dialogue_frame,validate_situated_candidates
 from activity_leases import background_social_ready,routine_actors
 from dialogue_policy import POLICIES,candidate_roles
 from inference_receipts import rejected_language_receipt
+from context_window import bounded_social_context
 
 
 def validate_candidates(value):
@@ -185,6 +186,8 @@ class Conversation:
                 if c['turn']>0:
                     context['options'].append({'id':'leave_quietly','effect':'Leave without speaking either proposed line. No unheard farewell or hostility is inferred.'})
                 context['event']['information']='Choose the actual next utterance, a polite ending, or an available silent departure using your own needs, personality, memories, relationship and the latest heard words. A reply is optional. Do not prolong an exhausted topic. The listed effects determine whether this choice ends the encounter.'
+        if phase in ('propose','select'):
+            context=bounded_social_context(context,self.active['people'][str(context['actor_id'])]['memories'])
         claim = {'id':secrets.token_hex(12), 'stage':phase, 'context':context, 'session':self.session}
         c.update(phase='thinking_'+phase, claim=claim)
         state = copy.deepcopy(self.active); state['conversation'] = c
@@ -198,7 +201,9 @@ class Conversation:
         if not isinstance(result, dict) or not isinstance(result.get('model'), str):
             raise ValueError('Missing model provenance')
         if claim['stage'] in SOCIAL_STAGES:
-            stage=claim['stage'];context=social_context(self.active,c,observation,stage)
+            # Revalidate world eligibility, not a newly shifted attention window.
+            # A still-nearby chosen partner need not remain in the nearest shortlist.
+            stage=claim['stage'];context=social_context(self.active,c,observation,stage,bounded=False)
             validate_decision(result['decision'],claim['context'])
             if stage=='respond' and distance(observation,c['initiator'],c['partner'])>500:raise ValueError('Social partner left during response')
             decision=validate_decision(result['decision'],context)

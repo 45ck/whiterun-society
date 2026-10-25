@@ -1,0 +1,9 @@
+{
+  "version": "social-context-v1",
+  "maximum_context_bytes": 12000,
+  "maximum_memories": 8,
+  "relevant_memories": 4,
+  "maximum_memory_bytes": 2600,
+  "maximum_appraisals": 2,
+  "maximum_commitments": 8
+}

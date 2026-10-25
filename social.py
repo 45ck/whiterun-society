@@ -10,6 +10,7 @@ from knowledge import person_view
 from dialogue_context import time_context
 from activity_leases import routine_actors
 from social_followthrough import FOLLOWUPS, followthrough_options, queue_followthrough
+from context_window import bounded_social_context
 
 SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
 SOCIAL_NOTICE_SECONDS=45
@@ -70,7 +71,7 @@ def social_candidates(state,observation,actor,notice=None):
     return sorted(result,key=lambda r:(r['distance'],r['id']))
 
 
-def social_context(state,c,observation,stage):
+def social_context(state,c,observation,stage,*,bounded=True):
     actor=c['initiator'] if stage in ('choose_partner','reflect_first') else c['partner']
     if stage=='continue_dialogue':actor=c['speakers'][c['turn']%2]
     person=state['people'][str(actor)]
@@ -112,7 +113,7 @@ def social_context(state,c,observation,stage):
         if heard:context['options'] += [{'id':'felt_supported','effect':'Record a small positive subjective affinity change of 0.05.'},
                                        {'id':'felt_annoyed','effect':'Record a small negative subjective affinity change of 0.05.'}]
         if heard:context['options']+=followthrough_options(state,observation,actor)
-    return context
+    return bounded_social_context(context,person['memories']) if bounded else context
 
 
 def settle_social(state,c,day):
