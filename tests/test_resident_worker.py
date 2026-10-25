@@ -46,7 +46,7 @@ class ResidentWorkerTests(unittest.TestCase):
                 self.assertGreaterEqual(claim_reads,2)
                 self.assertEqual(plan['claim']['id'],'claim-1')
                 return {'decision':{'action_id':'defer'}}
-            with patch('sys.argv',['worker','--runtime',str(runtime),'--event-id','event','--model-config',str(model)]),\
+            with patch('sys.argv',['worker','--runtime',str(runtime),'--event-id','event','--actor','108186','--model-config',str(model)]),\
                  patch.dict(os.environ,{'WORKER_TEST_KEY':'test'}),\
                  patch('tools.run_resident_event.urllib.request.urlopen',side_effect=request),\
                  patch('tools.run_resident_event.infer',side_effect=infer) as model_call,\

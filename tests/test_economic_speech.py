@@ -12,7 +12,7 @@ class EconomicSpeechTests(unittest.TestCase):
     arrive=fixtures.AgencyTests.arrive
 
     def start(self):
-        self.world.begin_plan('meal-1',self.obs,voiced_trade=True);self.sync()
+        self.world.begin_plan('meal-1',self.obs, 108186,voiced_trade=True);self.sync()
         self.decide('seek_bread');self.arrive()
         self.assertEqual(self.world.agency_plan()['phase'],'economic_attending')
         self.obs['conversationAttendance']={'id':'economic-attend-meal-1','phase':'attending','participants':[

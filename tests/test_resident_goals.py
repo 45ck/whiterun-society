@@ -194,7 +194,8 @@ class ResidentGoalTests(unittest.TestCase):
             'action_id':'approach_108149','reason':'Regression fixture choice','emotion':'calm'}},self.obs);self.sync()
         self.assertEqual(self.world.conversation_status()['phase'],'meeting')
         self.arrival_observation(108186)
-        meeting_ack={'id':'meet-priority-chat','status':'applied','movement':{'actor':99,'target':108149,'ownedPackage':True}}
+        meeting_ack={'id':'meet-priority-chat','status':'applied','movement':{'id':'meet-priority-chat','adapter':'papyrus-mailbox',
+            'aliasesConfirmed':True,'actor':99,'target':108149,'ownedPackage':True}}
         self.obs['ack']=copy.deepcopy(meeting_ack);self.world.observe(self.obs)
         prepared=self.world._read(self.world.transition['next'])
         self.assertEqual(prepared['conversation']['phase'],'respond')

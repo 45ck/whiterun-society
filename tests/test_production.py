@@ -17,14 +17,14 @@ class ProductionTests(unittest.TestCase):
     decide = test_food.FoodTests.decide
 
     def start_work(self):
-        self.world.begin_plan('job',self.obs,kind='work_shift');self.sync()
+        self.world.begin_plan('job',self.obs, 108186,kind='work_shift');self.sync()
         self.decide('offer_shift','job');self.decide('take_shift','job')
         plan=self.world.agency_plan()
         self.obs['ack']={'id':plan['travel_id'],'status':'applied','movement':{'hasOwnedPackage':True,'expectedPackage':99}}
         self.world.observe(self.obs);self.sync()
 
     def test_offer_and_worker_consent_precede_any_effect(self):
-        self.world.begin_plan('job',self.obs,kind='work_shift');self.sync()
+        self.world.begin_plan('job',self.obs, 108186,kind='work_shift');self.sync()
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual(context['actor_id'],108149)
         self.decide('offer_shift','job')
@@ -37,7 +37,7 @@ class ProductionTests(unittest.TestCase):
 
     def test_input_and_wage_shortage_prevent_job_offer(self):
         self.obs['residents'][1]['inventory']['grain']=0
-        self.world.begin_plan('job',self.obs,kind='work_shift');self.sync()
+        self.world.begin_plan('job',self.obs, 108186,kind='work_shift');self.sync()
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual([o['id'] for o in context['options']],['defer'])
 

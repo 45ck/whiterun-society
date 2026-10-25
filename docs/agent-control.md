@@ -132,10 +132,10 @@ inner thoughts. No emotion is invented for its typed choice. Eight hosted calls
 The key stays outside source control; the worker accepts a named environment
 variable. It never makes a model call from the Skyrim update loop.
 
-To run one explicitly triggered event after a fresh world's explicit bootstrap:
+To run one explicitly triggered event after a fresh world's explicit bootstrap, replace `OBSERVED_ACTOR_ID` with the decimal ID of the intended initialized resident from the current observation. `--actor` is required; the worker does not select a default named resident:
 
 ```powershell
-python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id meal-unique-id --model-config PATH_TO_PRIVATE_CONFIG
+python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id meal-unique-id --actor OBSERVED_ACTOR_ID --model-config PATH_TO_PRIVATE_CONFIG
 ```
 
 For Jev, config fields are `provider: openrouter_decisions`,

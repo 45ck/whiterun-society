@@ -7,10 +7,10 @@ import urllib.error
 import argparse
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--method',choices=['path','offset','package'],default='path')
-parser.add_argument('--target',type=int,default=108149)
-parser.add_argument('--actor',type=int,default=108186)
-parser.add_argument('--dynamic',action='store_true')
+parser.add_argument('--method',choices=['package'],default='package')
+parser.add_argument('--target',type=int,required=True)
+parser.add_argument('--actor',type=int,required=True)
+parser.add_argument('--dynamic',action='store_true',default=True,help='Compatibility flag: all probes use the dynamic mailbox')
 parser.add_argument('--root',type=Path,default=Path('D:/WhiterunLab'))
 args=parser.parse_args()
 
@@ -41,7 +41,8 @@ while time.monotonic()<deadline:
         evidence['ack']=ack;evidence['after']=observation
         evidence['passed']=ack.get('status')=='applied' and ack['movement']['startDistance']>250 and ack['movement']['distance']<=250
         if args.method=='package':evidence['passed']=evidence['passed'] and ack['movement']['hasOwnedPackage']
-        if args.dynamic:evidence['passed']=evidence['passed'] and ack['movement'].get('aliasesConfirmed') is True
+        movement=ack.get('movement') or {}
+        evidence['passed']=evidence['passed'] and movement.get('aliasesConfirmed') is True and movement.get('adapter')=='papyrus-mailbox' and movement.get('actor')==args.actor and movement.get('target')==args.target
         break
     time.sleep(2)
 (runtime/('movement-'+args.method+'-'+command['id']+'-evidence.json')).write_text(json.dumps(evidence,indent=2),encoding='utf-8')

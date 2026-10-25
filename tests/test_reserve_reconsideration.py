@@ -19,7 +19,7 @@ class ReserveReconsiderationTests(unittest.TestCase):
     def prepare(self,voiced=False):
         self.policy={'mode':'household_all','reserve_target':0,'observed_bread':3,'reviewed_day':1,'source_event':'old-household-choice'}
         self.world.active['people']['108149']['food_policy']=copy.deepcopy(self.policy)
-        self.world.begin_plan('meal-1',self.obs,voiced_trade=voiced);self.sync()
+        self.world.begin_plan('meal-1',self.obs, 108186,voiced_trade=voiced);self.sync()
         # The buyer learns neither household allocation nor willingness.
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertNotEqual(context['own_food_allocation'].get('policy'),self.policy)

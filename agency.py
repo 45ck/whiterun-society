@@ -74,15 +74,17 @@ class Agency:
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
             raise ValueError('Observation belongs to another save checkpoint')
 
-    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time', voiced_trade=False, natural_trade=False):
+    def begin_plan(self, event_id, observation, actor=None, kind='meal_time', voiced_trade=False, natural_trade=False):
         self._agency_guard(observation)
+        if type(actor) is not int or not 0 < actor <= 0xffffffff or str(actor) not in self.active['people']:
+            raise ValueError('An explicit valid resident actor is required')
         if type(voiced_trade) is not bool:raise ValueError('Voiced trade must be boolean')
         if type(natural_trade) is not bool or natural_trade and not voiced_trade:raise ValueError('Natural wording requires voiced trade')
         if self.conversation_busy():
             raise ValueError('A conversation owns the participants')
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
             raise ValueError('A bounded event ID is required')
-        if kind not in ('meal_time','stock_review','work_shift','need_review') or type(actor) is not int or str(actor) not in self.active['people']:
+        if kind not in ('meal_time','stock_review','work_shift','need_review'):
             raise ValueError('Unsupported resident or event kind')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
@@ -536,6 +538,12 @@ class Agency:
         if plan['phase'] == 'thinking' and plan['claim']['context']['session'] != self.session:
             self.hold_plan(plan['id'], 'Game session changed during inference; do not repeat the claimed call', observation)
         elif plan['phase'] == 'travelling':
+            if plan.get('dynamic_route') is not True:
+                state = copy.deepcopy(self.active)
+                state['plans'][-1].update(phase='held', release_required=True,
+                    error='Saved travel lacks the dynamic mailbox contract; release and review required')
+                self._write(state, 'legacy resident travel held without arrival credit')
+                return
             ack = observation.get('ack') or {}
             if ack.get('id') != plan['travel_id']:
                 return
@@ -547,7 +555,7 @@ class Agency:
             state = copy.deepcopy(self.active)
             updated = state['plans'][-1]
             updated['travel'] = copy.deepcopy(ack)
-            binding_ok=not plan.get('dynamic_route') or (movement.get('aliasesConfirmed') is True
+            binding_ok=(movement.get('aliasesConfirmed') is True
                 and movement.get('adapter')=='papyrus-mailbox' and movement.get('actor')==plan['actor']
                 and movement.get('target')==plan['target']
                 and (plan.get('target_kind')!='place' or movement.get('target_kind')=='place'))

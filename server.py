@@ -18,6 +18,31 @@ from doc_assets import documentation_asset
 from dashboard import town_dashboard
 from spatial_telemetry import SpatialTelemetry
 from tools.checkpoint_http import checkpoint_rejection
+from routing import route_available
+
+
+def begin_agency_event(world, observation, data):
+    """Dispatch an event without selecting a resident on the caller's behalf."""
+    return world.begin_plan(data['id'], observation, data.get('actor'),
+        data.get('kind', 'meal_time'), data.get('voiced_trade', False), data.get('natural_trade', False))
+
+
+def authored_walk_command(world, observation, data, session, command_id):
+    """A new operator request uses the same current route evidence as agents."""
+    world._agency_guard(observation)
+    if session != world.session:
+        raise ValueError('Travel belongs to another game session')
+    if data.get('method', 'package') != 'package' or data.get('dynamic', True) is not True:
+        raise ValueError('Travel requires the dynamic mailbox package protocol')
+    for key in ('actor', 'target'):
+        value=data.get(key)
+        if type(value) is not int or not 0 < value <= 0xffffffff or str(value) not in world.active['people']:
+            raise ValueError('Explicit initialized resident actor and target are required')
+    if not route_available(observation,data['actor'],data['target'],world.active):
+        raise ValueError('Two available observed residents and current mailbox capability are required')
+    return {'id':command_id,'kind':'walk_to','actor':data['actor'],'target':data['target'],
+        'method':'package','dynamic':True,'origin':'operator_request',
+        'session':session,'checkpoint':world.marker}
 
 
 class LocalServer(HTTPServer):
@@ -261,7 +286,7 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'),data.get('voiced_trade',False),data.get('natural_trade',False))
+                    if self.path=='/agency/event': result=begin_agency_event(world,observation,data)
                     elif self.path=='/agency/wording-claim':result=world.claim_economic_wording(data['id'],observation)
                     elif self.path=='/agency/wording-result':result=world.finish_economic_wording(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/agency/audio':result=world.prepare_trade_speech(data['id'],self.checked_audio(data),observation)
@@ -281,14 +306,7 @@ def main():
                     if data['kind']=='test_voice_output' and (director.status()['running'] or world.agency_busy() or world.conversation_busy() or world.routines_busy()):
                         raise ValueError('Pause society and finish the current interaction before the audio check')
                     if data['kind']=='walk_to':
-                        if data.get('method','path') not in ('path','offset','package'): raise ValueError('Unsupported movement method')
-                        if data.get('dynamic') is True:
-                            observed={a['id'] for a in bridge['observation']['residents'] if a.get('isPerson') is True}
-                            managed=set((world.status().get('town') or {}).get('residents',{}))
-                            if data.get('method')!='package' or any(type(data.get(k)) is not int or data[k] not in observed or str(data[k]) not in managed for k in ('actor','target')) or data['actor']==data['target']:
-                                raise ValueError('Dynamic travel requires two observed, initialized adult residents')
-                        elif data.get('actor') not in (108149,108186,108156) or data.get('target') not in (108149,108186,108156) or data['actor']==data['target']:
-                            raise ValueError('Choose two different demo residents')
+                        walk=authored_walk_command(world,bridge['observation'],data,bridge['session'],secrets.token_hex(8))
                     if data['kind']=='prepare_market' and bridge['observation'].get('checkpoint')!=0:
                         raise ValueError('Demo stock is only added before a new-world bootstrap')
                     if data['kind'] in ('save_game','load_game'):
@@ -302,7 +320,7 @@ def main():
                     command={'id':secrets.token_hex(8),'kind':data['kind'],'session':bridge['session']}
                     if data['kind'] in ('save_game','load_game'): command['name']=data['name']
                     if data['kind']=='select_voice_output': command['output']=data['output'].strip()
-                    if data['kind']=='walk_to': command.update(actor=data['actor'],target=data['target'],method=data.get('method','path'),dynamic=data.get('dynamic') is True)
+                    if data['kind']=='walk_to': command=walk
                     bridge['command']=command
                     self.reply(202,command)
                 elif self.path=='/scenario/shortage':

@@ -10,7 +10,7 @@ import secrets
 import time
 from agency import distance
 from decisions import validate_decision
-from routing import dynamic_route
+from routing import route_available
 from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal,valid_social_notice
 from dialogue_context import dialogue_frame,validate_situated_candidates
@@ -39,6 +39,19 @@ def validate_candidates(value):
     if candidates[0]['line'] == candidates[1]['line']:
         raise ValueError('Two distinct alternatives required')
     return candidates
+
+
+def meeting_route(actor, target, session):
+    return {'adapter':'papyrus-mailbox-v1','actor':actor,'target':target,'session':session}
+
+
+def valid_meeting_route(conversation, session):
+    route=conversation.get('meeting_route')
+    speakers=conversation.get('speakers',[])
+    actor=conversation.get('initiator',speakers[0] if len(speakers)==2 else None)
+    target=conversation.get('partner',speakers[1] if len(speakers)==2 else None)
+    return (type(actor) is int and type(target) is int and actor!=target
+            and route==meeting_route(actor,target,session))
 
 
 class Conversation:
@@ -89,7 +102,10 @@ class Conversation:
                 return max([person.get('social_attempt_day',0),person.get('social_clock',0),*prior])
             actor=min(eligible,key=lambda aid:(last_attempt(aid),aid))
             self._social_day(observation)
-        elif actor is None:distance(observation, 108186, 108149)
+        elif actor is None:
+            distance(observation, 108186, 108149)
+            if not route_available(observation,108186,108149,self.active):
+                raise ValueError('Observed mailbox route required for authored encounter')
         else:
             event=next((e for e in self.active.get('town',{}).get('daily',{}).get('queue',[]) if e['id']==event_id),None)
             if type(actor) is not int or not event or event['actor']!=actor or event['kind']!='social_review' or event['status']!='pending':
@@ -110,9 +126,11 @@ class Conversation:
         if old: state.setdefault('conversation_history', []).append(old)
         state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0, 'started_at':time.time(),
             'speakers': [108186,108149], 'turns': [], 'claim': None,'reply_policy':reply_policy,
+            'meeting_route':meeting_route(108186,108149,self.session),
             'source': 'Authored two-person encounter; generated intentions and speech',
             'turn_limit':limit,'max_turns':limit,'max_llm_calls':limit,'max_jev_calls':limit}
         if actor is not None:
+            state['conversation'].pop('meeting_route')
             state['conversation'].update(phase='choose_partner',initiator=actor,partner=None,mode='autonomous_social',
                 speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 and reply_policy=='separate_choice' else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
@@ -216,7 +234,8 @@ class Conversation:
             if stage=='choose_partner':
                 if decision['action_id']=='defer':c.update(phase='complete',outcome='continued_quietly')
                 else:
-                    partner=int(decision['action_id'].split('_')[-1]);c.update(partner=partner,speakers=[c['initiator'],partner],phase='meeting')
+                    partner=int(decision['action_id'].split('_')[-1]);c.update(partner=partner,speakers=[c['initiator'],partner],phase='meeting',
+                        meeting_route=meeting_route(c['initiator'],partner,self.session))
                     chosen=next(p for p in context['nearby_candidates'] if p['id']==partner)
                     c.update(approach_source=chosen['source'],approach_distance=chosen['distance'])
                     state['people'][str(c['initiator'])]['agency'].update(state='approaching_resident',reason='Chose to approach '+person_view(state,c['initiator'],partner)['name'])
@@ -294,8 +313,9 @@ class Conversation:
             return {'id':'attend-'+c['id'],'kind':'conversation_attend','participants':[c['initiator'],c['partner']],
                 'session':session,'checkpoint':self.marker}
         if c and c['phase']=='meeting':
-            actor=c.get('initiator',108186);target=c.get('partner',108149)
-            return {'id':'meet-'+c['id'],'kind':'walk_to','actor':actor,'target':target,'dynamic':dynamic_route(actor,target),
+            if not valid_meeting_route(c,session):return None
+            route=c['meeting_route'];actor=route['actor'];target=route['target']
+            return {'id':'meet-'+c['id'],'kind':'walk_to','actor':actor,'target':target,'dynamic':True,
                 'method':'package','retain':True,'origin':'resident_decision' if c.get('mode') else 'authored_encounter','session':session,'checkpoint':self.marker}
         if c and c['phase']=='releasing':
             return {'id':'release-chat-'+c['id'],'kind':'release_routine','actor':c.get('initiator',108186),
@@ -319,6 +339,8 @@ class Conversation:
     def observe_conversation(self, observation):
         c=self.conversation_status()
         if not c:return
+        if c['phase']=='meeting' and not valid_meeting_route(c,self.session):
+            return self.hold_conversation(c['id'],'Legacy or changed-session meeting requires release; no route replay',observation)
         ack=observation.get('ack') or {}
         if c['phase']=='attending' and ack.get('id')=='attend-'+c['id']:
             if ack.get('status')!='applied' or not self._paired_present(c,observation) or distance(observation,c['initiator'],c['partner'])>500:
@@ -330,11 +352,14 @@ class Conversation:
             return self.hold_conversation(c['id'],'Conversation attendance ownership interrupted',observation)
         if c['phase']=='meeting' and ack.get('id')=='meet-'+c['id']:
             if ack.get('status')!='applied':return self.hold_conversation(c['id'],'Meeting route failed',observation)
-            if c.get('mode')=='autonomous_social':
-                movement=ack.get('movement') or {}
-                if (movement.get('actor')!=c['initiator'] or movement.get('target')!=c['partner'] or
-                    movement.get('ownedPackage') is not True or distance(observation,c['initiator'],c['partner'])>500):
-                    return self.hold_conversation(c['id'],'Social meeting lacks owned nearby attendance',observation)
+            movement=ack.get('movement') or {};route=c['meeting_route']
+            try:nearby=distance(observation,route['actor'],route['target'])<=500
+            except ValueError:nearby=False
+            if (movement.get('id')!=ack['id'] or movement.get('adapter')!='papyrus-mailbox'
+                or movement.get('aliasesConfirmed') is not True or movement.get('actor')!=route['actor']
+                or movement.get('target')!=route['target'] or movement.get('ownedPackage') is not True
+                or not nearby):
+                return self.hold_conversation(c['id'],'Meeting lacks bound mailbox and owned nearby attendance',observation)
             c['phase']='respond' if c.get('mode')=='autonomous_social' else 'propose';c['meeting_evidence']=ack
             state=copy.deepcopy(self.active);state['conversation']=c
             self._write(state,'conversation participants met under owned route');return

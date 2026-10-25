@@ -83,7 +83,7 @@ def main():
     parser.add_argument('--event-id', required=True)
     parser.add_argument('--model-config', type=Path)
     parser.add_argument('--language-config', type=Path,help='Generate and select contextual phrasing around exact economic terms')
-    parser.add_argument('--actor', type=int, default=108186)
+    parser.add_argument('--actor', type=int, required=True)
     parser.add_argument('--voice-trade',action='store_true',help='Speak grounded offers and outcomes before continuing the trade')
     parser.add_argument('--kind', choices=('meal_time','stock_review','work_shift','need_review'), default='meal_time')
     args = parser.parse_args()

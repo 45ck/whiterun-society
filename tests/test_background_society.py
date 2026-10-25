@@ -98,7 +98,7 @@ class BackgroundSocietyTests(unittest.TestCase):
             'decision':{'action_id':'defer','reason':'Quiet choice','emotion':'calm'}},self.obs);self.sync()
         self.assertEqual(self.world.conversation_status()['phase'],'complete')
         with self.assertRaises(ValueError):self.world.start_conversation('another',self.obs)
-        with self.assertRaises(ValueError):self.world.begin_plan('meal',self.obs)
+        with self.assertRaises(ValueError):self.world.begin_plan('meal',self.obs, 108186)
 
     def test_background_mode_requires_capability_and_reserves_two_slots(self):
         with self.assertRaisesRegex(ValueError,'protocol'):self.world.begin_routines('bad',self.events,self.obs,background=True)

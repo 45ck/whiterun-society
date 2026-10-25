@@ -63,7 +63,7 @@ class ParallelRoutineTests(unittest.TestCase):
     def test_other_activity_cannot_steal_claimed_residents(self):
         self.start()
         with self.assertRaises(ValueError):self.world.review_population(self.obs)
-        with self.assertRaises(ValueError):self.world.begin_plan('other',self.obs)
+        with self.assertRaises(ValueError):self.world.begin_plan('other',self.obs, 108186)
         with self.assertRaises(ValueError):self.world.start_conversation('other',self.obs)
         with self.assertRaises(ValueError):self.world.plan_trade('other',self.obs,108186,108149)
 
@@ -81,7 +81,7 @@ class ParallelRoutineTests(unittest.TestCase):
     def test_unverified_release_keeps_the_native_reconciliation_guard(self):
         self.start();self.choose();self.complete(lambda rows:rows[0].update(release_verified=False))
         self.assertEqual(self.world.active['pending']['status'],'held')
-        with self.assertRaises(ValueError):self.world.begin_plan('other',self.obs)
+        with self.assertRaises(ValueError):self.world.begin_plan('other',self.obs, 108186)
 
     def test_loading_during_inference_or_execution_does_not_replay(self):
         self.start();old=copy.deepcopy(self.obs);self.choose()

@@ -48,7 +48,7 @@ class MarketDayTests(unittest.TestCase):
 
     def test_stage_must_settle_and_unrelated_events_are_rejected(self):
         self.start()
-        with self.assertRaisesRegex(ValueError,'owns'):self.world.begin_plan('unrelated',self.obs)
+        with self.assertRaisesRegex(ValueError,'owns'):self.world.begin_plan('unrelated',self.obs, 108186)
         with self.assertRaisesRegex(ValueError,'settled'):self.world.advance_market_day('day','day-work',self.obs)
 
     def test_completed_day_cannot_be_replayed_after_starting_another_day(self):

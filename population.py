@@ -9,10 +9,11 @@ import hashlib
 import math
 import re
 from resident_control import sync_resident_assignments
+from routing import actor_route_supported
 
 TRAITS=('openness','conscientiousness','extraversion','agreeableness','neuroticism')
 NEEDS=('hunger','fatigue','social_contact','safety','comfort')
-CONTROLLED_ROUTES={108149,108186,108156}
+ROUTE_SUPPORT_BASIS='observed_executor_person_v1'
 
 
 def seeded_value(seed,actor,field,low=.2,high=.8):
@@ -20,7 +21,7 @@ def seeded_value(seed,actor,field,low=.2,high=.8):
     return round(low+(high-low)*int.from_bytes(raw[:4],'big')/(2**32-1),3)
 
 
-def person_seed(actor,seed,day):
+def person_seed(actor,seed,day,observation=None):
     actor_id=actor['id'];guard=actor.get('isGuard') is True
     traits={name:seeded_value(seed,actor_id,name) for name in TRAITS}
     return {'profile':{'name':actor['name'],'role':'guard' if guard else 'resident; occupation not yet assigned',
@@ -37,7 +38,8 @@ def person_seed(actor,seed,day):
         'goals':[{'kind':'household_food','priority':.7},{'kind':'livelihood','priority':.6},{'kind':'belonging','priority':.4}],
         'commitments':[],'household':'household-'+str(actor_id),
         'agency':{'state':'awaiting_first_daily_plan','next_review_day':day,
-            'native_route_supported':actor_id in CONTROLLED_ROUTES},
+            'native_route_supported':actor_route_supported(observation or {},actor_id),
+            'native_route_support_basis':ROUTE_SUPPORT_BASIS},
         'initialization':{'seed':seed,'source':'observed adult NPC; authored psychological and social state'}}
 
 
@@ -114,8 +116,9 @@ class Population:
         added=[]
         for actor in actors:
             key=str(actor['id'])
+            supported=actor_route_supported(observation,actor['id'])
             if key in town['residents']:continue
-            new=person_seed(actor,seed,day)
+            new=person_seed(actor,seed,day,observation)
             if key in state['people']:
                 old=state['people'][key]
                 # Preserve actual memories, authored legacy personality, hunger and policies.
@@ -124,6 +127,7 @@ class Population:
                 for name,value in new['needs'].items():old['needs'].setdefault(name,value)
             else:state['people'][key]=new
             person=state['people'][key];household=person['household']
+            person['agency'].update(native_route_supported=supported,native_route_support_basis=ROUTE_SUPPORT_BASIS)
             town['households'][household]={'members':[actor['id']],
                 'resource_owner':actor['id'],'daily_food_units':1,'obligations':[],
                 'provenance':'Authored single-adult household placeholder; canonical family membership unverified'}
@@ -131,8 +135,14 @@ class Population:
                 'classification_source':actor.get('classificationSource','native ActorTypeNPC keyword'),
                 'initial_observed_inventory':copy.deepcopy(actor['inventory']),
                 'observed_game_day':day,'is_guard':actor.get('isGuard') is True,
-                'native_route_supported':actor['id'] in CONTROLLED_ROUTES}
+                'native_route_supported':supported,'native_route_support_basis':ROUTE_SUPPORT_BASIS}
             added.append(actor['id'])
+        # Refresh every managed resident, including absent rows whose support
+        # can no longer be inferred from an older observation.
+        for key,resident in town['residents'].items():
+            supported=actor_route_supported(observation,int(key))
+            resident.update(native_route_supported=supported,native_route_support_basis=ROUTE_SUPPORT_BASIS)
+            state['people'][key].setdefault('agency',{}).update(native_route_supported=supported,native_route_support_basis=ROUTE_SUPPORT_BASIS)
         # Census is observation, not business formation. Existing save-bound
         # charters survive; new enterprises require an explicit specification.
         town['census_events'].append({'id':event_id,'added':added,'observed_day':day,'session':self.session})
@@ -143,7 +153,15 @@ class Population:
     def population_status(self):
         if not self.active or not self.active.get('town'):return None
         town=copy.deepcopy(self.active['town'])
+        for resident in town['residents'].values():
+            if (resident.get('native_route_support_basis')!=ROUTE_SUPPORT_BASIS or
+                    type(resident.get('native_route_supported')) is not bool):
+                resident['native_route_supported']=None
+        support=[r.get('native_route_supported') for r in town['residents'].values()]
         town['counts']={'residents':len(town['residents']),'households':len(town['households']),
             'businesses':len(town['businesses']),
-            'native_route_supported':sum(r['native_route_supported'] for r in town['residents'].values())}
+            'native_route_supported':sum(value is True for value in support),
+            'native_route_unavailable':sum(value is False for value in support),
+            'native_route_unknown':sum(value is not True and value is not False for value in support)}
+        town['native_route_support_scope']='Last census or daily-review executor and person evidence; not path reachability, movement ownership, or free activity slots. Historical ID-derived flags are unknown until refreshed.'
         return town

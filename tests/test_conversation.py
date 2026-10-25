@@ -21,7 +21,9 @@ class ConversationTests(unittest.TestCase):
 
     def start(self):
         self.world.start_conversation('chat',self.obs);self.sync()
-        self.obs['ack']={'id':'meet-chat','status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']={'id':'meet-chat','status':'applied','movement':{'id':'meet-chat','adapter':'papyrus-mailbox',
+            'aliasesConfirmed':True,'actor':108186,'target':108149,'ownedPackage':True}}
+        self.world.observe(self.obs);self.sync()
 
     def release(self):
         self.obs['ack']={'id':'release-chat-chat','status':'applied','released':True}
@@ -84,7 +86,7 @@ class ConversationTests(unittest.TestCase):
 
     def test_economic_plan_is_not_started_during_conversation(self):
         self.start()
-        with self.assertRaisesRegex(ValueError,'conversation'):self.world.begin_plan('meal',self.obs)
+        with self.assertRaisesRegex(ValueError,'conversation'):self.world.begin_plan('meal',self.obs, 108186)
         with self.assertRaisesRegex(ValueError,'conversation'):self.world.plan_trade('trade',self.obs,108186,108149)
 
     def reject_playback(self,extra):

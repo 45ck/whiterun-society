@@ -48,7 +48,8 @@ class SocialTests(unittest.TestCase):
     def meet(self):
         self.decide('approach_108149')
         command=self.world.pending(self.obs['session']);self.assertTrue(command['dynamic'])
-        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'actor':99,'target':108149,'ownedPackage':True}}
+        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'id':command['id'],'adapter':'papyrus-mailbox',
+            'aliasesConfirmed':True,'actor':99,'target':108149,'ownedPackage':True}}
         self.world.observe(self.obs);self.sync()
 
     def speak(self):
@@ -131,7 +132,7 @@ class SocialTests(unittest.TestCase):
             self.assertFalse(candidate['name_known'])
             self.assertEqual(candidate['name'],'an unfamiliar resident')
         self.sync()
-        with self.assertRaisesRegex(ValueError,'conversation'):self.world.begin_plan('intruder',self.obs)
+        with self.assertRaisesRegex(ValueError,'conversation'):self.world.begin_plan('intruder',self.obs,actor=99)
 
     def test_failed_release_cannot_create_affinity_or_social_recovery(self):
         self.begin();self.meet();self.decide('chat')

@@ -40,11 +40,11 @@ baking recipe. The Wheat form 0x4b0ba was verified from the owned Skyrim.esm rec
 Use the isolated lab and a synchronized society. Both residents must be loaded.
 The initial two grain are an explicit demo import with its own journal, not
 production. This helper cannot replenish an already imported timeline or create
-gold:
+gold. Replace `OBSERVED_ACTOR_ID` below with the decimal ID of the intended initialized, currently observed worker. `--actor` is required; an omitted actor does not select a named resident:
 
 ```powershell
 python tools/prepare_production.py --root D:\WhiterunLab
-python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id work-unique-id --kind work_shift --model-config D:\WhiterunLab\runtime\jev-config.json
+python tools/run_resident_event.py --runtime D:\WhiterunLab\runtime --event-id work-unique-id --actor OBSERVED_ACTOR_ID --kind work_shift --model-config D:\WhiterunLab\runtime\jev-config.json
 ```
 
 Supply the provider key through the environment variable named in the local model

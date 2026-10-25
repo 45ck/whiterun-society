@@ -5,7 +5,8 @@ activity. Unsupported rest, social and travel actions remain explicitly unmet.
 """
 import copy
 import math
-from routing import route_available
+from routing import actor_route_supported
+from population import ROUTE_SUPPORT_BASIS
 from labour import work_opportunities
 from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from social import social_candidates
@@ -66,9 +67,11 @@ class DailyLife:
             person['needs_clock'] = day
             actor = actors.get(key)
             agency = person['agency']
-            supported=bool(actor) and int(key) not in reserved and (any(route_available(observation,int(key),int(other),state) for other in actors if other!=key) or bool(market_opportunity(state,observation,int(key))))
+            supported=actor_route_supported(observation,int(key))
             resident['native_route_supported']=supported
             agency['native_route_supported']=supported
+            resident['native_route_support_basis']=ROUTE_SUPPORT_BASIS
+            agency['native_route_support_basis']=ROUTE_SUPPORT_BASIS
             if int(key) in reserved:continue  # Age needs; retain the accepted job and saved invitations.
             # An unaccepted invitation is not an obligation. Reassess it after
             # aging needs, so old low-priority work cannot starve a resident's

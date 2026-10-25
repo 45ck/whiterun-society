@@ -14,6 +14,8 @@ class AgencyTests(unittest.TestCase):
             {'id': 108186, 'x': 1000, 'y': 0, 'z': 0, 'inventory': {'gold': 9, 'bread': 0, 'grain': 0}},
             {'id': 108149, 'x': 0, 'y': 0, 'z': 0, 'inventory': {'gold': 10, 'bread': 3, 'grain': 0}},
             {'id': 108156, 'x': -1000, 'y': 0, 'z': 0, 'inventory': {'gold': 12, 'bread': 0, 'grain': 0}}]}
+        self.obs['routing']={'available':True,'adapter':'papyrus-mailbox-v1'}
+        for resident in self.obs['residents']:resident['isPerson']=True
         self.world.observe(self.obs)
         self.world.bootstrap(self.obs)
         self.sync()
@@ -32,7 +34,7 @@ class AgencyTests(unittest.TestCase):
         self.fail('Checkpoint loop did not settle')
 
     def start(self):
-        self.world.begin_plan('meal-1', self.obs)
+        self.world.begin_plan('meal-1', self.obs, 108186)
         self.sync()
 
     def decide(self, action):
@@ -46,7 +48,9 @@ class AgencyTests(unittest.TestCase):
 
     def arrive(self, owned=True):
         self.obs['residents'][0]['x'] = 200
-        self.obs['ack'] = {'id': 'travel-meal-1', 'status': 'applied', 'movement': {'hasOwnedPackage': owned}}
+        self.obs['ack'] = {'id': 'travel-meal-1', 'status': 'applied', 'movement': {
+            'hasOwnedPackage': owned, 'aliasesConfirmed':True, 'adapter':'papyrus-mailbox',
+            'actor':108186, 'target':108149}}
         self.world.observe(self.obs)
         self.sync()
 
@@ -78,7 +82,7 @@ class AgencyTests(unittest.TestCase):
         self.assertFalse(self.world.agency_busy())
         self.assertIsNone(self.world.pending('a'))
         # A second event receives the actual earlier trade memory.
-        self.world.begin_plan('meal-2', self.obs)
+        self.world.begin_plan('meal-2', self.obs, 108186)
         self.sync()
         claim = self.world.claim_plan_decision('meal-2', self.obs)['claim']
         self.assertEqual(claim['context']['memories'][0]['event_id'], 'meal-meal-1')
@@ -191,7 +195,67 @@ class AgencyTests(unittest.TestCase):
     def test_replayed_event_does_not_repeat_hunger_or_model_claim(self):
         self.start(); self.decide('defer')
         hunger = self.world.status()['people']['108186']['needs']['hunger']
-        result = self.world.begin_plan('meal-1', self.obs)
+        result = self.world.begin_plan('meal-1', self.obs, 108186)
         self.assertTrue(result['duplicate'])
         self.assertEqual(self.world.status()['people']['108186']['needs']['hunger'], hunger)
         self.assertIsNone(self.world.transition)
+
+    def test_missing_and_invalid_actor_rejected_without_state_changes(self):
+        from server import begin_agency_event
+        before=copy.deepcopy(self.world.active)
+        marker=self.world.marker
+        changes=self.world.db.total_changes
+        for actor in (None,True,False,'108186',108186.0,0,-1,0x100000000,987654321):
+            for api in (False,True):
+                with self.subTest(actor=actor,api=api),self.assertRaisesRegex(ValueError,'explicit valid resident'):
+                    if api:begin_agency_event(self.world,self.obs,{'id':'invalid-actor','actor':actor})
+                    else:self.world.begin_plan('invalid-actor',self.obs,actor)
+                self.assertEqual(self.world.active,before)
+                self.assertEqual(self.world.marker,marker)
+                self.assertEqual(self.world.db.total_changes,changes)
+                self.assertIsNone(self.world.transition)
+        with self.assertRaisesRegex(ValueError,'explicit valid resident'):
+            self.world.begin_plan('missing-actor',self.obs)
+        with self.assertRaisesRegex(ValueError,'explicit valid resident'):
+            begin_agency_event(self.world,self.obs,{'id':'missing-actor'})
+        self.assertEqual(self.world.active,before)
+        self.assertEqual(self.world.db.total_changes,changes)
+
+    def test_event_dispatch_accepts_an_explicit_new_resident_and_replays_idempotently(self):
+        from server import begin_agency_event
+        actor=7654321
+        self.world.active['people'][str(actor)]=copy.deepcopy(self.world.active['people']['108186'])
+        self.obs['residents'].append({**self.obs['residents'][0],'id':actor})
+        original=copy.deepcopy(self.world.active['people']['108186'])
+        data={'id':'new-resident','actor':actor}
+        result=begin_agency_event(self.world,self.obs,data)
+        self.assertEqual(result['plan']['actor'],actor)
+        self.sync()
+        before=copy.deepcopy(self.world.active)
+        changes=self.world.db.total_changes
+        self.assertTrue(begin_agency_event(self.world,self.obs,data)['duplicate'])
+        self.assertEqual(self.world.active,before)
+        self.assertEqual(self.world.db.total_changes,changes)
+        self.assertEqual(self.world.active['people']['108186'],original)
+        with self.assertRaisesRegex(ValueError,'reused'):
+            begin_agency_event(self.world,self.obs,{**data,'actor':108186})
+        self.assertEqual(self.world.active,before)
+
+    def test_legacy_saved_travel_is_held_before_cached_arrival_ack(self):
+        self.start();self.decide('seek_bread')
+        current=copy.deepcopy(self.world.active)
+        for flag in (None,False,1):
+            with self.subTest(dynamic_route=flag):
+                state=copy.deepcopy(current)
+                if flag is None:state['plans'][-1].pop('dynamic_route',None)
+                else:state['plans'][-1]['dynamic_route']=flag
+                self.world._write(state,'offline legacy saved plan fixture')
+                self.obs['checkpoint']=self.world.transition['next']
+                self.arrive()  # Cached applied arrival is present as the saved plan binds.
+                plan=self.world.agency_plan()
+                self.assertEqual(plan['phase'],'held')
+                self.assertIn('dynamic mailbox',plan['error'])
+                self.assertTrue(plan['release_required'])
+                self.assertIsNone(plan['travel'])
+                self.assertEqual(self.world.pending('a')['kind'],'release_routine')
+                self.assertEqual(self.world.state(),[])

@@ -14,6 +14,8 @@ class FoodTests(unittest.TestCase):
         self.obs={'session':'food-test','checkpoint':0,'ready':True,'economy_catalog':native_catalog(),'residents':[
             {'id':108186,'x':0,'y':0,'z':0,'inventory':{'gold':12,'bread':1,'grain':0}},
             {'id':108149,'x':100,'y':0,'z':0,'inventory':{'gold':5,'bread':3,'grain':0}}]}
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':True}
+        for resident in self.obs['residents']:resident['isPerson']=True
         self.world.observe(self.obs);self.world.bootstrap(self.obs);self.sync()
 
     def tearDown(self):
@@ -49,13 +51,13 @@ class FoodTests(unittest.TestCase):
         self.world.begin_plan('food-1',self.obs,108149,'stock_review');self.sync();self.decide('reserve_two')
         stock=allocation(self.world.active['people']['108149'],{'bread':1})
         self.assertEqual((stock['household'],stock['for_sale']),(1,0))
-        self.world.begin_plan('buyer',self.obs);self.sync()
+        self.world.begin_plan('buyer',self.obs, 108186);self.sync()
         context=self.world.claim_plan_decision('buyer',self.obs)['claim']['context']
         self.assertEqual(context['own_food_allocation'],{'allocated':False,'unallocated':1})
 
     def test_consumption_binds_intent_then_observes_effect_before_hunger_changes(self):
         self.obs['residents'][0]['inventory']['grain']=4
-        self.world.begin_plan('food-1',self.obs);self.sync()
+        self.world.begin_plan('food-1',self.obs, 108186);self.sync()
         self.decide('eat_bread')
         c=self.world.pending('food-test')
         self.assertEqual(c['kind'],'inventory_consume')
@@ -76,7 +78,7 @@ class FoodTests(unittest.TestCase):
         self.assertEqual(self.world.status()['people']['108186']['needs']['hunger'],.75)
 
     def test_ack_without_inventory_effect_cannot_reduce_hunger(self):
-        self.world.begin_plan('food-1',self.obs);self.sync();self.decide('eat_bread')
+        self.world.begin_plan('food-1',self.obs, 108186);self.sync();self.decide('eat_bread')
         c=self.world.pending('food-test');self.obs['ack']=native_ack(c)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'held')
@@ -84,7 +86,7 @@ class FoodTests(unittest.TestCase):
         self.assertEqual(self.world.status()['consumptions'],[])
 
     def test_consumption_rejects_unverified_catalog_without_food_or_need_effects(self):
-        self.world.begin_plan('food-1',self.obs);self.sync()
+        self.world.begin_plan('food-1',self.obs, 108186);self.sync()
         # Authored ready decision fixture isolates the inventory-intent boundary.
         self.world.agency_plan()['phase']='ready_to_eat'
         before=copy.deepcopy(self.world.active)
