@@ -20,7 +20,7 @@ class SettlementTests(unittest.TestCase):
             state={'bridge':{'session':'test-session','last_seen':time.time(),'command':None,
                     'observation':{'residents':[{'id':7,'isPerson':True}]}},
                    'society':{'error':None,'transition':None,'town':{'daily':{'queue':[event]}}}}
-            failed=False;reads_after_worker=0
+            failed=False;reads_after_worker=0;clock=[0.0]
             def request(req,timeout):
                 nonlocal reads_after_worker
                 if req.full_url.endswith('/town/review'):result={'duplicate':True}
@@ -41,10 +41,11 @@ class SettlementTests(unittest.TestCase):
                 (runtime/name).write_text(json.dumps({'event_id':'need-1','model_calls':1}))
                 return Mock(returncode=1)
             output=runtime/'receipt.json'
-            argv=['director','--root',str(root),'--max-events','1','--model-config','fixture.json','--receipt',str(output)]
+            argv=['director','--root',str(root),'--max-events','1','--watch-seconds','30','--model-config','fixture.json','--receipt',str(output)]
             with patch('sys.argv',argv),patch('tools.run_daily_life.urllib.request.urlopen',side_effect=request),\
                  patch('tools.run_daily_life.subprocess.run',side_effect=worker) as call,\
-                 patch('tools.run_daily_life.time.sleep'),patch('builtins.print'):
+                 patch('tools.run_daily_life.time.monotonic',side_effect=lambda:clock[0]),\
+                 patch('tools.run_daily_life.time.sleep',side_effect=lambda seconds:clock.__setitem__(0,clock[0]+seconds)),patch('builtins.print'):
                 main()
             receipt=json.loads(output.read_text())
             self.assertEqual(call.call_count,1)

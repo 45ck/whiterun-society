@@ -20,7 +20,7 @@ class SceneDirectorTests(unittest.TestCase):
             state={'bridge':{'session':'test','last_seen':time.time(),'command':None,'observation':{'residents':[row]}},
                 'society':{'error':None,'transition':None,'scene_handoffs':[],
                     'town':{'residents':{'7':{}},'daily':{'queue':[event]}}}}
-            order=[];reads=0
+            order=[];reads=0;clock=[0.0]
             def request(req,**kwargs):
                 nonlocal reads
                 path=req.full_url.split(':12345')[-1]
@@ -45,10 +45,11 @@ class SceneDirectorTests(unittest.TestCase):
                 state['society']['plan']={'id':event['id'],'phase':'complete','outcome':'deferred','decisions':[{'decision':{'action_id':'defer'}}]}
                 return Mock(returncode=0)
             output=runtime/'receipt.json'
-            with patch('sys.argv',['director','--root',str(root),'--max-events','1','--model-config','fixture.json','--scene-handoffs','--receipt',str(output)]),\
+            with patch('sys.argv',['director','--root',str(root),'--max-events','1','--watch-seconds','30','--model-config','fixture.json','--scene-handoffs','--receipt',str(output)]),\
                  patch('tools.run_daily_life.urllib.request.urlopen',side_effect=request),\
                  patch('tools.run_daily_life.subprocess.run',side_effect=worker) as call,\
-                 patch('tools.run_daily_life.time.sleep'),patch('builtins.print'):
+                 patch('tools.run_daily_life.time.monotonic',side_effect=lambda:clock[0]),\
+                 patch('tools.run_daily_life.time.sleep',side_effect=lambda seconds:clock.__setitem__(0,clock[0]+seconds)),patch('builtins.print'):
                 main()
             receipt=json.loads(output.read_text());self.assertEqual(call.call_count,1)
             self.assertEqual(receipt['status'],'complete');self.assertEqual(len(receipt['scene_handoffs']),1)

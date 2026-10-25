@@ -20,7 +20,7 @@ window.drawConversation=()=>{
   card.hidden=true;document.getElementById('speech-caption').hidden=true;return;
  }
  if(plan?.voiced_trade&&!['complete','held'].includes(plan.phase)&&(plan.economic_speech||plan.economic_turns?.length)){
-  card.hidden=false;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
+  card.hidden=false;document.getElementById('work-card').hidden=true;
   const stage={economic_propose:'Finding words',economic_thinking_propose:'Finding words',economic_select:'Choosing a reply',economic_thinking_select:'Choosing a reply',economic_synthesize:'Preparing voice',economic_speaking:'Speaking and listening',economic_attending:'Meeting nearby'}[plan.phase]||plan.phase.replaceAll('_',' ');
   text('conversation-stage',(plan.employment_dialogue?'Employment':'Trade')+' · '+stage);
   text('notice',plan.employment_dialogue?(plan.outcome==='paid_work_completed'?'Bread and wage verified':'Employment terms · wages follow verified work'):plan.purchase_completed?'Inventory transfer verified':'Offers and agreement are not yet a completed sale');
@@ -31,7 +31,7 @@ window.drawConversation=()=>{
  if(!c)return;
  const activePlan=state?.society?.plan&&!['complete','held'].includes(state.society.plan.phase);
  if(['complete','held'].includes(c.phase)&&activePlan){card.hidden=true;document.getElementById('speech-caption').hidden=true;return;}
- document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
+ document.getElementById('work-card').hidden=true;
  const speaking=c.phase==='speaking';
  if(speaking&&!state.camera?.manual){focusId=c.current.speaker;document.getElementById('focus-card').hidden=true;text('camera-label',names[focusId]+' · speaking');}
  document.getElementById('conversation-stage').textContent=c.phase==='complete'?(c.outcome||'Both residents heard and remember').replaceAll('_',' '):c.phase==='held'?'Conversation paused':c.phase==='meeting'?'Walking over to talk':c.phase==='releasing'?'Returning to the day':c.phase.includes('propose')?'Language model: forming intentions':c.phase.includes('select')?'Jev: choosing an intention':c.phase==='synthesize'?'Creating a local voice':c.phase==='speaking'?'Speaking · listening':c.phase.replaceAll('_',' ');

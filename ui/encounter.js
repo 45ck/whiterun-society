@@ -46,7 +46,7 @@ window.drawEncounter=()=>{
  const panel=document.getElementById('resident-inspector');panel.hidden=!displayResident;
  if(!displayResident)return;
  document.getElementById('focus-card').hidden=true;
- document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
+ document.getElementById('conversation-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
  panel.replaceChildren();panel.append(window.residentMedia.portrait(state.residents?.find(r=>r.id===displayResident)||{id:displayResident,name:person.profile.name},84));inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);

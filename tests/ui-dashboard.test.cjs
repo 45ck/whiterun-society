@@ -131,6 +131,36 @@ test('movie camera-follow card cannot obscure the encounter during any dialogue 
   assert.equal(w.document.getElementById('focus-card').hidden,false);assert.notEqual(w.getComputedStyle(w.document.getElementById('focus-card')).display,'none');
  }finally{dom.window.close();}
 });
+
+test('legacy market-day records stay in collapsed labelled history and cannot replace live rest or work',()=>{
+ const {dom,w}=native();try{
+  const day={id:'old-controlled-sequence',status:'complete',cursor:4,source:'Authored finite sequence of opportunities; residents choose outcomes',results:[{actor:71,kind:'meal_time',outcome:'ate_bread',status:'complete'}],metrics:{production:1,trades:0,consumptions:1,gold_before:14,gold_after:14}};
+  const data={residents:[],trades:[],director:{running:true},camera:{manual:false,mode:'focus',id:71},society:{people:{71:{profile:{name:'New resident'}},72:{profile:{name:'Employer'}}},market_day:day,plan:{id:'current-rest',actor:71,kind:'need_review',phase:'resting',decisions:[]}}};
+  w.whiterunRender(data);
+  const history=w.document.getElementById('scenario-history');
+  assert.equal(w.document.getElementById('day-card'),null);assert.equal(history.hidden,false);assert.equal(history.open,false);
+  assert.equal(history.closest('.sidebar')!==null,true);
+  assert.match(history.textContent,/Controlled scenario history/);assert.match(history.textContent,/not current town activity/);
+  assert.match(history.textContent,/New resident · meal time · ate bread/);assert.match(history.textContent,/Recorded participant gold: 14 → 14/);
+  assert.doesNotMatch(history.textContent,/Ysolda|Carlotta|Paid work|Household stock review|A day in the town/);
+  history.open=true;
+  day.status='running';day.metrics=undefined;day.results=[];
+  data.society.plan={id:'current-work',actor:71,target:72,kind:'work_shift',phase:'working',decisions:[]};
+  w.whiterunRender(data);
+  assert.equal(history.open,true);assert.match(history.textContent,/Recorded status: running/);assert.match(history.textContent,/No settled results recorded/);
+  assert.doesNotMatch(history.textContent,/14 → 14|Scenario totals/);assert.equal(w.document.getElementById('work-card').hidden,false);
+  delete data.society.market_day;w.whiterunRender(data);assert.equal(history.hidden,true);
+ }finally{dom.window.close();}
+});
+
+test('controlled history renders saved actor and outcome labels as text without inventing future stages',()=>{
+ const {dom,w}=native();try{
+  w.whiterunRender({residents:[],trades:[],director:{running:false},society:{people:{93:{profile:{name:'<img src=x onerror=alert(1)>'}}},market_day_history:[{id:'history',status:'held',results:[{actor:93,kind:'new_activity_kind',outcome:'declined'}],metrics:{trades:0}}]}});
+  const history=w.document.getElementById('scenario-history');assert.match(history.textContent,/new activity kind · declined/);
+  assert.equal(history.querySelector('img'),null);assert.match(history.textContent,/— production · 0 purchases · — meals/);
+  assert.doesNotMatch(history.textContent,/Next:|Following the residents/);
+ }finally{dom.window.close();}
+});
 test('charts render accessible distinct units, unknowns and untrusted labels as text',()=>{
  const {dom,w}=native();try{const d=dashboard();d.control_scope='<img src=x onerror=alert(1)>';const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
  assert.equal(root.querySelectorAll('svg[role="img"]').length,1);assert.match(root.querySelector('svg').getAttribute('aria-label'),/Agent task 1/);

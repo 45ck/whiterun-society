@@ -61,7 +61,7 @@ class CohortIsolationTests(unittest.TestCase):
             (runtime/'bridge-config.json').write_text(json.dumps({'port':12345,'token':'test-only'}))
             state=settled_state();state['society']['routine_batch']=None
             for event in state['society']['town']['daily']['queue']:event['status']='pending'
-            calls=[]
+            calls=[];clock=[0.0]
             def request(req,timeout):
                 result={'duplicate':True} if req.full_url.endswith('/town/review') else state
                 return io.BytesIO(json.dumps(result).encode())
@@ -78,11 +78,13 @@ class CohortIsolationTests(unittest.TestCase):
                     state['society']['town']['daily']['queue'][2]['status']='complete'
                 return Mock(returncode=0)
             output=runtime/'receipt.json'
-            argv=['director','--root',str(root),'--max-events','3','--parallel-journeys',
+            argv=['director','--root',str(root),'--max-events','3','--watch-seconds','30','--parallel-journeys',
                   '--model-config','fixture.json','--receipt',str(output)]
             with patch('sys.argv',argv),patch('tools.run_daily_life.urllib.request.urlopen',side_effect=request),\
                  patch('tools.run_daily_life.select_routine_events',side_effect=lambda s,o,events,limit:events[:2]),\
-                 patch('tools.run_daily_life.subprocess.run',side_effect=worker),patch('builtins.print'):
+                 patch('tools.run_daily_life.subprocess.run',side_effect=worker),\
+                 patch('tools.run_daily_life.time.monotonic',side_effect=lambda:clock[0]),\
+                 patch('tools.run_daily_life.time.sleep',side_effect=lambda seconds:clock.__setitem__(0,clock[0]+seconds)),patch('builtins.print'):
                 if released:main()
                 else:
                     with self.assertRaisesRegex(ValueError,'unresolved effects'):main()

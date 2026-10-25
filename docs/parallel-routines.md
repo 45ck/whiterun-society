@@ -44,7 +44,7 @@ An older managed save may be migrated with `--allow-added-plugin WhiterunLanes.e
 The daily director now accepts:
 
 ```powershell
-python tools/run_daily_life.py --root D:\WhiterunLab --model-config D:\WhiterunLab\runtime\jev-config.json --max-events 8 --parallel-journeys
+python tools/run_daily_life.py --root D:\WhiterunLab --model-config D:\WhiterunLab\runtime\jev-config.json --max-events 8 --watch-seconds 600 --parallel-journeys
 ```
 
 Provide the authorized model key through the configured environment variable. The director groups two to eight eligible food-search events within the remaining event budget, then falls back to normal event handling for others. Selection, capacity and budget behaviour are unit tested; the live run above invoked the cohort worker directly. This flag does not start a permanent background service.

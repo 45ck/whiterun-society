@@ -7,10 +7,9 @@
 /* Left-side encounter panels own this space while visible. Keep their full
    content scrollable above the camera bar instead of covering it with a
    second, redundant camera-follow card. */
-#town-card,#work-card,#day-card,#conversation-card{max-height:calc(100vh - 275px);overflow-y:auto;overscroll-behavior:contain}
+#town-card,#work-card,#conversation-card{max-height:calc(100vh - 275px);overflow-y:auto;overscroll-behavior:contain}
 #town-card:not([hidden]) ~ #focus-card,
 #work-card:not([hidden]) ~ #focus-card,
-#day-card:not([hidden]) ~ #focus-card,
 #conversation-card:not([hidden]) ~ #focus-card,
 #resident-inspector:not([hidden]) ~ #focus-card{display:none}
 </style></head><body>
@@ -32,12 +31,7 @@
  <div class="row" style="margin-top:12px"><span>1 grain → 2 loaves</span><span id="work-wage" style="color:var(--gold)"></span></div>
  <div class="small" style="margin-top:8px">Simulated production · animation pending</div>
 </section>
-<section id="day-card" class="panel" hidden style="position:absolute;top:163px;left:28px;width:292px;padding:16px 19px">
- <div class="eyebrow">A day in the town</div><div class="section-title">Work, trade &amp; food</div>
- <div id="day-steps" class="small" style="margin-top:12px;line-height:1.8"></div>
- <div id="day-detail" style="margin-top:12px;color:var(--gold);line-height:1.5"></div>
- <div class="small" style="margin-top:10px">Residents choose. Refusal changes the outcome.</div>
-</section>
+
 <aside class="sidebar panel">
  <div class="row"><button id="society-play">Play society</button><button id="society-pause">Pause</button></div><div id="society-state" class="small">Checking simulation</div><div id="personal-goal-budget" class="small" role="status">Personal decision budget unavailable</div><div id="dispatch-state" class="small" role="status">Activity dispatch unavailable</div><div id="audio-state" class="small"></div><details><summary class="small" style="cursor:pointer">Voice output settings</summary><label class="small" for="voice-output">NPC voice output</label><select id="voice-output" style="background:#203330;color:inherit;padding:8px;max-width:100%"><option value="">Windows default</option></select><button id="voice-output-test">Test voice output</button><button id="voice-output-choose" hidden>Choose output device</button><div id="voice-output-status" class="small" role="status">Checking audio output</div></details><div class="small">Up to 96 events / 60 min. Pause settles the current interaction.</div>
  <div class="row"><div><div class="label">The city, right now</div><div class="section-title">People & exchange</div></div><span id="live-badge" class="badge">WAITING</span></div>
@@ -48,6 +42,7 @@
  <div class="divider"></div>
  <div><div class="label">Latest economic event</div><div id="trade" style="margin-top:10px" class="trade"><div class="empty">Waiting for the trade journal…</div></div></div>
  <div class="divider"></div><div><div class="label">Resident decisions</div><div id="decisions" class="small" style="margin-top:8px">Waiting for an event. No background thinking.</div></div>
+ <details id="scenario-history" hidden style="margin-top:12px"><summary class="small" style="cursor:pointer">Controlled scenario history</summary><div id="scenario-history-entries" class="small" style="max-height:220px;overflow:auto;line-height:1.5"></div></details>
  <div class="status" id="status">Inspecting the live world. The economy is an early prototype.</div>
 </aside>
 <section id="conversation-card" class="panel" hidden style="position:absolute;top:163px;left:28px;width:292px;padding:16px 19px">
@@ -88,6 +83,32 @@ function residentActivity(id){
  if(hold?.ownedPackage&&hold.expectedPackage===r.activity?.package_id){const goal=state.society?.people?.[String(id)]?.standing_goal;if(hold.mode==='go_to')return (hold.phase==='arrived'?'Reached ':'Walking to ')+(goal?.target?.name||'chosen destination');if(['review_pending','reviewed'].includes(goal?.phase))return (goal.focus?goal.focus.charAt(0).toUpperCase()+goal.focus.slice(1):'Personal')+' review '+(goal.phase==='review_pending'?'pending':'recorded');if(goal?.phase==='quiet')return 'Chosen quiet interval';if(goal?.phase==='arrived')return 'At chosen destination';return 'Awaiting a decision · society control';}
  if(hold&&['failed','package_not_acquired'].includes(hold.phase))return 'Control issue · '+hold.phase.replaceAll('_',' ');
  return r.activity?.package_id?'Native routine':'Activity unobserved';
+}
+function renderScenarioHistory(society){
+ const records=[...(society?.market_day_history||[]),society?.market_day].filter(Boolean);
+ const history=document.getElementById('scenario-history'),entries=document.getElementById('scenario-history-entries');
+ history.hidden=records.length===0;entries.replaceChildren();
+ if(!records.length)return;
+ const add=(parent,tag,value)=>{const node=document.createElement(tag);node.textContent=value;parent.append(node);return node;};
+ const pretty=value=>String(value??'unrecorded').replaceAll('_',' ');
+ const measured=value=>Number.isFinite(value)?value:'—';
+ add(entries,'p','Authored finite opportunities retained from this save. These records are not current town activity.');
+ if(records.length>5)add(entries,'p','Showing the last 5 of '+records.length+' retained controlled sequences.');
+ for(const record of records.slice(-5).reverse()){
+  const section=document.createElement('section');section.style.marginTop='12px';entries.append(section);
+  add(section,'strong','Controlled sequence · '+(record.id||'identifier unrecorded'));
+  add(section,'div','Recorded status: '+pretty(record.status));
+  if(record.source)add(section,'div',record.source);
+  if(!(record.results||[]).length)add(section,'div','No settled results recorded.');
+  for(const result of record.results||[]){
+   const actor=society?.people?.[String(result.actor)]?.profile?.name||names[result.actor]||(result.actor?'Resident '+result.actor:'Resident unrecorded');
+   add(section,'div',actor+' · '+pretty(result.kind)+' · '+pretty(result.outcome||result.status));
+  }
+  if(record.metrics){const m=record.metrics;
+   add(section,'div',`Scenario totals: ${measured(m.production)} production · ${measured(m.trades)} purchases · ${measured(m.consumptions)} meals`);
+   add(section,'div',`Recorded participant gold: ${measured(m.gold_before)} → ${measured(m.gold_after)}`);
+  }
+ }
 }
 function draw(){if(!state)return;renderTownCharts(document.getElementById('town-charts'),state.dashboard);const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
  for(const [id,p] of Object.entries(state.society?.people||{}))names[id]=p.profile.name;
@@ -150,8 +171,7 @@ function draw(){if(!state)return;renderTownCharts(document.getElementById('town-
  const workPlan=society?.plan&&(society.plan.kind==='work_shift'||society.plan.work_terms||ownerWork)?society.plan:null;
  document.getElementById('work-card').hidden=!workPlan;
  if(workPlan){text('work-title',ownerWork?'Owned production':'Bread & wages');text('work-participants',ownerWork?`${names[workPlan.actor]} works their own grain`:`${names[workPlan.target]} commissions · ${names[workPlan.actor]} considers or performs the shift`);const w=state.productionWork,finished=['paid_work_completed','owner_work_completed'].includes(workPlan.outcome);document.getElementById('work-progress').max=workPolicy.work_minutes;document.getElementById('work-progress').value=finished?workPolicy.work_minutes:(w?.id==='produce-'+workPlan.id?w.workedMinutes:0);text('work-wage',ownerWork?'No wage transfer':workPolicy.wage_gold+' gold wage');text('work-stage',finished?(ownerWork?'Owned output verified · gold unchanged':'Output made · wage received'):workPlan.phase==='working'?`${w?.workedMinutes??0} / ${workPolicy.work_minutes} game minutes`:workPlan.phase==='travelling'?(workPlan.intent==='ask_work'?'Approaching to ask about work':'Walking to the agreed job'):(workPlan.outcome||workPlan.phase).replaceAll('_',' '));}
- const day=society?.market_day&&(society.market_day.status!=='complete'||!workPlan)?society.market_day:null;document.getElementById('day-card').hidden=!day;
- if(day){document.getElementById('work-card').hidden=true;const steps=document.getElementById('day-steps');steps.replaceChildren();['Paid work','Household stock review',"Ysolda’s meal","Carlotta’s meal"].forEach((label,i)=>{const line=document.createElement('div');line.textContent=(i<day.cursor?'✓ ':i===day.cursor&&day.status==='running'?'› ':'○ ')+label+(day.results[i]?' · '+(day.results[i].outcome||day.results[i].status).replaceAll('_',' '):'');line.style.color=i===day.cursor?'var(--gold)':'var(--muted)';steps.append(line);});text('day-detail',day.status==='complete'?`${day.metrics.production} batch · ${day.metrics.trades} purchase · ${day.metrics.consumptions} meal\nParticipant gold: ${day.metrics.gold_before} → ${day.metrics.gold_after}`:day.status==='held'?'Paused for review · no automatic retry':society.plan?.phase==='working'?`Work attendance: ${state.productionWork?.workedMinutes??0} / 30 game minutes`:'Following the residents’ next decision');}
+ renderScenarioHistory(society);
  const svg=document.getElementById('map');window.residentMedia.renderMap(svg,actors.filter(a=>state.society?.town?.residents?.[String(a.id)]),focusId,id=>choose('focus',id),{speaker:state.speech?.status==='playing'?(society?.plan?.economic_speech?.actor||society?.conversation?.current?.speaker):null});
 }
 window.drawTown=()=>{
@@ -159,7 +179,7 @@ window.drawTown=()=>{
  const active=c&&!['complete','held'].includes(c.phase)||plan&&!['complete','held'].includes(plan.phase);
  const card=document.getElementById('town-card');card.hidden=!daily||active||!document.getElementById('resident-inspector').hidden;
  if(card.hidden)return;
- for(const id of ['conversation-card','day-card','work-card'])document.getElementById(id).hidden=true;
+ for(const id of ['conversation-card','work-card'])document.getElementById(id).hidden=true;
  const people=Object.keys(town.residents).map(id=>state.society.people[id]),pending=daily.queue.filter(e=>e.status==='pending');
  text('town-population',town.counts.residents+' lives in the ledger');
  const rows=document.getElementById('town-needs');rows.replaceChildren();

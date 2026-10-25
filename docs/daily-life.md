@@ -12,14 +12,14 @@ The population now contains **29 observed residents** after a second census adde
 - Scheduled meals do not apply the old demonstration event's extra 0.35 hunger. Food use accounts for elapsed game time before the verified reduction, then subsequent reviews age only the post-meal period.
 - Observe current weather/outdoor status without inventing past exposure or reducing needs merely because a plan was proposed.
 
-The director is explicitly bounded to three resident events, five inference calls per event, and up to 600 seconds of watching. No worker is left running indefinitely. Closing, loading or losing the game connection stops the worker. This is not yet a complete autonomous town calendar.
+The initial trial used three resident events. Current session limits are versioned in [director-policy.json](../config/director-policy.json) and described in [purposeful agency](purposeful-agency.md). A zero-second window reviews observed needs but launches no model or native actions; execution requires an explicit positive scheduling window. Already-started work settles when that window ends. Closing, loading or losing the game connection stops new scheduling. This is not yet a complete autonomous town calendar.
 
 ```powershell
 # Review only; no model configuration or paid calls needed.
 python tools/run_daily_life.py --root D:\WhiterunLab --watch-seconds 50
 
 # Execute up to three eligible opportunities using the configured environment key.
-python tools/run_daily_life.py --root D:\WhiterunLab --max-events 3 --model-config D:\WhiterunLab\runtime\jev-config.json
+python tools/run_daily_life.py --root D:\WhiterunLab --max-events 3 --watch-seconds 600 --model-config D:\WhiterunLab\runtime\jev-config.json
 ```
 
 ## Live evidence and limits
