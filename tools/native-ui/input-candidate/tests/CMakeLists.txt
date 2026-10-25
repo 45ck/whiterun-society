@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.23)
+project(WhiterunInputPolicyTests LANGUAGES CXX)
+add_executable(InputPolicyTests InputPolicyTests.cpp)
+target_compile_features(InputPolicyTests PRIVATE cxx_std_20)
+enable_testing()
+add_test(NAME input-policy COMMAND InputPolicyTests)

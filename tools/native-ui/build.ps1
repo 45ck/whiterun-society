@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$OutputRoot)
+param(
+    [Parameter(Mandatory)][string]$OutputRoot,
+    [ValidateSet('upstream-unchanged', 'input-candidate')][string]$Variant = 'upstream-unchanged'
+)
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 
@@ -18,6 +21,8 @@ $outcome = 'failed'
 $dependencyRepairs = @()
 $compiler = $null
 $msvc = $null
+$baselineOutcome = 'failed'
+$candidateOutcome = 'not-requested'
 
 function Invoke-Logged {
     param([string]$Name, [string]$Command, [string[]]$Arguments)
@@ -50,11 +55,19 @@ try {
         compiler_selection_scope = 'Discovered/requested compiler; effective dependencies independently audited in effective-dependency-compiler.json'
         vcpkg_commit = $manifest.vcpkg.commit; vcpkg_tool_sha256 = $manifest.vcpkg.tool_sha256
         vcpkg_engine_release = $manifest.vcpkg.tool_release; vcpkg_registry_tool_release = $manifest.vcpkg.registry_tool_release
-        upstream_commit = $manifest.upstream.commit; variant = 'upstream-unchanged'
+        upstream_commit = $manifest.upstream.commit; variant = 'upstream-unchanged'; requested_variant = $Variant
         dependency_helper_repairs = $dependencyRepairs
         runtime_qualified = $false; byte_identical_rebuild_verified = $false
     }
     $identity | ConvertTo-Json -Depth 12 | Set-Content "$root/evidence/build-identity.json"
+    if ($Variant -eq 'input-candidate') {
+        $candidateOutcome = 'policy-tests-failed'
+        Invoke-Logged 'policy-tests-configure' $cmake @('-S', "$PSScriptRoot/input-candidate/tests", '-B', "$root/policy-tests", '-G', 'Visual Studio 17 2022', '-A', 'x64', '-T', "v143,version=$msvc", "-DCMAKE_GENERATOR_INSTANCE=$($vs.installationPath)")
+        Invoke-Logged 'policy-tests-build' $cmake @('--build', "$root/policy-tests", '--config', 'Release', '--parallel', '4')
+        # Pure coordinate/state tests execute only on this hosted worker, never in Skyrim.
+        Invoke-Logged 'policy-tests-run' "$root/policy-tests/Release/InputPolicyTests.exe" @()
+        $candidateOutcome = 'policy-tests-passed'
+    }
     $env:VCPKG_ROOT = "$root/vcpkg"
     $env:VCPKG_DOWNLOADS = "$root/downloads"
     $env:VCPKG_BINARY_SOURCES = 'clear'
@@ -92,6 +105,29 @@ try {
     if (-not (Get-ChildItem "$root/evidence/licenses" -Filter '*cef-prebuilt*')) { throw 'CEF license missing' }
     if (-not (Get-ChildItem "$root/evidence/licenses" -Filter '*commonlibsse-ng*')) { throw 'CommonLib license missing' }
     $outcome = 'compiled-unqualified'
+    $baselineOutcome = 'compiled-unqualified'
+    Copy-Item -LiteralPath "$root/build/CMakeCache.txt" -Destination "$root/evidence/baseline-CMakeCache.txt"
+    if ($Variant -eq 'input-candidate') {
+        $candidateOutcome = 'failed'
+        $outcome = 'candidate-failed'
+        New-Item -ItemType Directory -Path "$root/evidence/candidate/artifacts" -Force | Out-Null
+        # The completed baseline DLL/PDB above remain untouched in evidence/artifacts.
+        Invoke-Logged 'candidate-source-patch' 'python' @("$PSScriptRoot/apply_candidate.py", '--root', "$root/upstream", '--receipt', "$root/evidence/candidate/source-patch.json")
+        Copy-Item "$PSScriptRoot/input-candidate/changes.patch" "$root/evidence/candidate/reviewed-changes.patch"
+        Copy-Item "$PSScriptRoot/input-candidate/candidate.json" "$root/evidence/candidate/candidate-manifest.json"
+        $candidateConfigure = @($configure | ForEach-Object { if ($_ -like '-DOUTPUT_PATH=*') { "-DOUTPUT_PATH=$root/candidate-stage" } else { $_ } })
+        $candidateConfigure | ConvertTo-Json | Set-Content "$root/evidence/candidate/configure-arguments.json"
+        Invoke-Logged 'candidate-configure' $cmake $candidateConfigure
+        Invoke-Logged 'candidate-verify-compiler' 'python' @("$PSScriptRoot/compiler_policy.py", '--root', $root, '--msvc-version', $msvc, '--compiler', $compiler)
+        Invoke-Logged 'candidate-compile' $cmake @('--build', "$root/build", '--config', 'Release', '--target', 'NirnLabUIPlatform', '--parallel', '4')
+        foreach ($extension in @('dll', 'pdb')) {
+            $source = "$root/candidate-stage/Data/NirnLabUIPlatform/NirnLabUIPlatform.$extension"
+            if (-not (Test-Path -LiteralPath $source)) { throw "Candidate $extension missing" }
+            Copy-Item -LiteralPath $source -Destination "$root/evidence/candidate/artifacts/NirnLabUIPlatform.$extension"
+        }
+        $candidateOutcome = 'compiled-unqualified'
+        $outcome = 'candidate-compiled-unqualified'
+    }
 }
 finally {
     if ($compiler -and $msvc -and (Test-Path "$root/vcpkg/buildtrees")) {
@@ -132,7 +168,7 @@ finally {
             Copy-Item -LiteralPath $_.FullName -Destination "$root/evidence/dependency-sbom/$triplet-$($_.Directory.Name).json"
         }
     }
-    [ordered]@{ status=$outcome; native_input_fixed=$false; runtime_qualified=$false; application_patches=@(); dependency_helper_repairs=$dependencyRepairs; warning='Unchanged upstream lacks the lab save-compatibility flag. Do not deploy this baseline artifact.' } |
+    [ordered]@{ status=$outcome; baseline_status=$baselineOutcome; candidate_status=$candidateOutcome; requested_variant=$Variant; native_input_fixed=$false; runtime_qualified=$false; baseline_application_patches=@(); candidate_application_patches=$(if ($Variant -eq 'input-candidate') { @('save-and-opt-in-mouse-v1') } else { @() }); dependency_helper_repairs=$dependencyRepairs; warning='Baseline lacks the save-compatibility flag. Candidate is opt-in and runtime-unqualified. Neither artifact is deployed automatically.' } |
         ConvertTo-Json -Depth 8 | Set-Content "$root/evidence/result.json"
     Get-ChildItem "$root/evidence" -File -Recurse | ForEach-Object {
         [ordered]@{ path=[IO.Path]::GetRelativePath("$root/evidence", $_.FullName); bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }

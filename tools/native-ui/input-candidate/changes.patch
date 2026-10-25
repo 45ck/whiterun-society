@@ -1,0 +1,569 @@
+--- a/src/UIPlatform/Menus/MultiLayerMenu.cpp
++++ b/src/UIPlatform/Menus/MultiLayerMenu.cpp
+@@ -35,6 +35,7 @@
+         // IMenu props
+         depthPriority = 8;
+         menuFlags.set(RE::UI_MENU_FLAGS::kAlwaysOpen);
++        menuFlags.set(RE::UI_MENU_FLAGS::kAllowSaving);
+         menuFlags.set(RE::UI_MENU_FLAGS::kCustomRendering);
+         menuFlags.set(RE::UI_MENU_FLAGS::kAssignCursorToRenderer);
+         inputContext = Context::kNone;
+--- a/src/UIPlatform/Hooks/WinProcHook.h
++++ b/src/UIPlatform/Hooks/WinProcHook.h
+@@ -20,6 +20,7 @@
+     public:
+         static inline sigslot::signal<bool> OnWindowInactive;
+         static inline sigslot::signal<> OnWndInputLangChange;
++        static inline sigslot::signal<HWND, UINT, WPARAM, LPARAM, bool&> OnWindowMessage;
+         static bool Install();
+     };
+ }
+--- a/src/UIPlatform/Hooks/WinProcHook.cpp
++++ b/src/UIPlatform/Hooks/WinProcHook.cpp
+@@ -4,7 +4,10 @@
+ {
+     LRESULT WinProcHook::WinProcFuncHook(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+     {
+-        if (uMsg == WM_ACTIVATE && wParam == WA_INACTIVE)
++        bool handled = false;
++        OnWindowMessage(hwnd, uMsg, wParam, lParam, handled);
++
++        if (uMsg == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE)
+         {
+             OnWindowInactive(ShutdownHook::IsGameClosing);
+         }
+@@ -14,6 +17,7 @@
+             OnWndInputLangChange();
+         }
+ 
++        if (handled) return 0;
+         return s_winProcFuncOrigin(hwnd, uMsg, wParam, lParam);
+     }
+ 
+--- a/src/UIPlatform/CEF/DefaultBrowser.h
++++ b/src/UIPlatform/CEF/DefaultBrowser.h
+@@ -5,6 +5,7 @@
+ #include "CEF/NirnLabCefClient.h"
+ #include "Services/CEFService.h"
+ #include "Hooks/WinProcHook.h"
++#include "Hooks/WhiterunMouseRoute.h"
+ #include "JS/JSFunctionStorage.h"
+ #include "JS/JSEventFuncInfo.h"
+ #include "Converters/CefValueToJSONConverter.h"
+@@ -19,6 +20,9 @@
+     {
+     protected:
+         std::shared_ptr<spdlog::logger> m_logger = nullptr;
++        std::shared_ptr<NL::Input::WhiterunMouseRoute> m_inputRoute;
++        sigslot::scoped_connection m_onWindowMessage_Connection;
++        sigslot::scoped_connection m_onBeforeBrowserClose_Connection;
+         CefRefPtr<NirnLabCefClient> m_cefClient = nullptr;
+         std::shared_ptr<NL::JS::JSFunctionStorage> m_jsFuncStorage = nullptr;
+ 
+@@ -71,6 +75,7 @@
+ 
+         CefRefPtr<NirnLabCefClient> GetCefClient();
+         bool IsReadyAndLog();
++        void TickInputDiagnostics();
+ 
+         void AddFunctionCallbackAndSendMessage(const NL::JS::JSFuncInfo& a_callbackInfo);
+         void RemoveFunctionCallbackAndSendMessage(const char* a_objectName, const char* a_funcName);
+--- a/src/UIPlatform/CEF/DefaultBrowser.cpp
++++ b/src/UIPlatform/CEF/DefaultBrowser.cpp
+@@ -8,9 +8,16 @@
+     {
+         ThrowIfNullptr(DefaultBrowser, a_logger);
+         m_logger = a_logger;
++        m_inputRoute = std::make_shared<NL::Input::WhiterunMouseRoute>(m_logger);
++        m_onWindowMessage_Connection = NL::Hooks::WinProcHook::OnWindowMessage.connect(
++            [route = m_inputRoute](HWND window, UINT message, WPARAM wparam, LPARAM lparam, bool& handled) {
++                route->OnWindowMessage(window, message, wparam, lparam, handled);
++            });
+ 
+         ThrowIfNullptr(DefaultBrowser, a_cefClient);
+         m_cefClient = a_cefClient;
++        m_onBeforeBrowserClose_Connection = m_cefClient->onBeforeBrowserClose.connect(
++            [route = m_inputRoute](CefRefPtr<CefBrowser>) { route->Detach(); });
+ 
+         ThrowIfNullptr(DefaultBrowser, a_jsFuncStorage);
+         m_jsFuncStorage = a_jsFuncStorage;
+@@ -60,11 +67,14 @@
+ 
+         m_onAfterBrowserCreated_Connection = m_cefClient->onAfterBrowserCreated.connect([&](CefRefPtr<CefBrowser> a_cefBrowser) {
+             std::lock_guard locker(m_urlMutex);
+-            // load url
++            m_inputRoute->Attach(a_cefBrowser, m_cefClient->GetRenderHandler());
++            m_isFocusedCached = NL::Input::CacheFocusOnAttach(m_isFocused, m_isFocusedCached);
++            // Preserve the upstream cached URL handling before resetting page readiness.
+             if (m_isUrlCached)
+             {
+                 LoadBrowserURL(m_urlCache.c_str(), m_clearJSFunctions);
+             }
++            m_isPageLoaded = false;
+         });
+ 
+         m_onMainFrameLoadStart_Connection = m_cefClient->onMainFrameLoadStart.connect([&]() {
+@@ -121,6 +131,9 @@
+ 
+     DefaultBrowser::~DefaultBrowser()
+     {
++        m_onWindowMessage_Connection.disconnect();
++        m_inputRoute->SetFocused(false);
++        m_inputRoute->Detach();
+         auto browser = m_cefClient->GetBrowser();
+         if (browser != nullptr)
+         {
+@@ -230,6 +243,7 @@
+     void __cdecl DefaultBrowser::SetBrowserVisible(bool a_value)
+     {
+         m_cefClient->GetRenderLayer()->SetVisible(a_value);
++        m_inputRoute->SetVisible(a_value);
+         if (!a_value)
+         {
+             SetBrowserFocused(false);
+@@ -250,7 +264,7 @@
+     void __cdecl DefaultBrowser::SetBrowserFocused(bool a_value)
+     {
+         std::lock_guard locker(m_urlMutex);
+-        if (m_isFocused == a_value)
++        if (!NL::Input::ShouldApplyFocus(m_isFocused, a_value, m_isFocusedCached))
+         {
+             return;
+         }
+@@ -282,6 +296,7 @@
+         m_cefClient->GetBrowser()->GetHost()->SetFocus(a_value);
+         m_isFocusedCached = false;
+         m_isFocused = a_value;
++        m_inputRoute->SetFocused(a_value);
+         if (m_isFocused)
+         {
+             auto& cdata = RE::PlayerControls::GetSingleton()->data;
+@@ -422,6 +437,16 @@
+ 
+ #pragma region RE::MenuEventHandler
+ 
++    void DefaultBrowser::TickInputDiagnostics()
++    {
++        m_inputRoute->SetVisible(m_cefClient->GetRenderLayer()->GetVisible());
++        if (const auto point = m_inputRoute->Tick())
++        {
++            m_currentMousePosX = static_cast<float>(point->x);
++            m_currentMousePosY = static_cast<float>(point->y);
++        }
++    }
++
+     bool DefaultBrowser::CanProcess(RE::InputEvent* a_event)
+     {
+         return IsBrowserFocused();
+@@ -429,6 +454,8 @@
+ 
+     bool DefaultBrowser::ProcessMouseMove(RE::MouseMoveEvent* a_event)
+     {
++        m_inputRoute->RecordNativeMove(m_currentMousePosX, m_currentMousePosY);
++        if (m_inputRoute->SuppressNativeMouse()) return true;
+         if (!IsBrowserFocused())
+         {
+             return false;
+@@ -451,6 +478,9 @@
+     {
+         CheckToggleFocusKeys(a_event);
+         CheckToggleVisibleKeys(a_event);
++        const bool mouse = a_event->GetDevice() == RE::INPUT_DEVICE::kMouse;
++        m_inputRoute->RecordNativeButton(mouse);
++        if (mouse && m_inputRoute->SuppressNativeMouse()) return true;
+ 
+         if (!IsBrowserFocused())
+         {
+--- a/src/UIPlatform/Menus/CEFMenu.cpp
++++ b/src/UIPlatform/Menus/CEFMenu.cpp
+@@ -69,6 +69,7 @@
+ 
+     void CEFMenu::Draw()
+     {
++        m_browser->TickInputDiagnostics();
+         m_cefRenderLayer->Draw();
+     }
+ 
+--- /dev/null
++++ b/src/UIPlatform/Hooks/InputPolicy.h
+@@ -0,0 +1,72 @@
++#pragma once
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <optional>
++#include <string_view>
++
++namespace NL::Input
++{
++    enum class Mode { Native, Diagnostics, Win32Mouse };
++    inline Mode ParseMode(std::string_view value)
++    {
++        if (value == "diagnostics") return Mode::Diagnostics;
++        if (value == "win32-mouse") return Mode::Win32Mouse;
++        return Mode::Native;
++    }
++    struct Point { int x; int y; };
++    inline std::optional<Point> MapPoint(double x, double y, int clientWidth, int clientHeight,
++                                        int viewWidth, int viewHeight, bool dragging)
++    {
++        if (!std::isfinite(x) || !std::isfinite(y) || clientWidth <= 0 || clientHeight <= 0 ||
++            viewWidth <= 0 || viewHeight <= 0 || clientWidth > 32768 || clientHeight > 32768 ||
++            viewWidth > 32768 || viewHeight > 32768) return std::nullopt;
++        if (!dragging && (x < 0 || y < 0 || x >= clientWidth || y >= clientHeight)) return std::nullopt;
++        return Point{static_cast<int>(std::floor(std::clamp(x * viewWidth / clientWidth, 0.0, double(viewWidth - 1)))),
++                     static_cast<int>(std::floor(std::clamp(y * viewHeight / clientHeight, 0.0, double(viewHeight - 1))))};
++    }
++    inline bool RouteActive(Mode mode, bool focused, bool visible, bool foreground, bool owner)
++    {
++        return mode == Mode::Win32Mouse && focused && visible && foreground && owner;
++    }
++    inline bool ShouldApplyFocus(bool current, bool requested, bool cached)
++    {
++        return current != requested || cached;
++    }
++    inline bool CacheFocusOnAttach(bool requested, bool cached)
++    {
++        return requested || cached;
++    }
++    inline std::uint8_t LogicalButtons(std::uint8_t physical, bool swapped)
++    {
++        return swapped ? ((physical & 1) << 1) | ((physical & 2) >> 1) | (physical & 4) : physical & 7;
++    }
++    inline std::uint8_t MissingReleases(std::uint8_t held, std::uint8_t physical)
++    {
++        return held & ~physical & 7;
++    }
++    struct Buttons
++    {
++        std::uint8_t held = 0;
++        bool Down(std::uint8_t bit)
++        {
++            if (bit != 1 && bit != 2 && bit != 4) return false;
++            if (held & bit) return false;
++            held |= bit;
++            return true;
++        }
++        bool Up(std::uint8_t bit)
++        {
++            if (bit != 1 && bit != 2 && bit != 4) return false;
++            if (!(held & bit)) return false;
++            held &= ~bit;
++            return true;
++        }
++        std::uint8_t ReleaseAll()
++        {
++            const auto previous = held;
++            held = 0;
++            return previous;
++        }
++    };
++}
+--- /dev/null
++++ b/src/UIPlatform/Hooks/WhiterunMouseRoute.h
+@@ -0,0 +1,56 @@
++#pragma once
++#include "PCH.h"
++#include "Hooks/InputPolicy.h"
++#include <atomic>
++#include <array>
++#include <mutex>
++
++namespace NL::Input
++{
++    // Owns CEF references, never a DefaultBrowser pointer. Hook callbacks retain a
++    // shared_ptr so an in-flight callback cannot access a destroyed browser wrapper.
++    class WhiterunMouseRoute
++    {
++        inline static std::atomic<WhiterunMouseRoute*> s_owner{nullptr};
++        mutable std::recursive_mutex m_mutex;
++        Mode m_mode = Mode::Native;
++        bool m_focused = false, m_visible = true;
++        HWND m_window = nullptr;
++        CefRefPtr<CefBrowser> m_browser;
++        CefRefPtr<CefRenderHandler> m_render;
++        std::shared_ptr<spdlog::logger> m_logger;
++        Buttons m_buttons;
++        Point m_last{0, 0};
++        bool m_hasPoint = false;
++        std::array<int, 3> m_clickCounts{1, 1, 1};
++        std::uint64_t m_winMessages = 0, m_winKeyMessages = 0, m_nativeMoves = 0, m_nativeButtons = 0, m_nativeKeys = 0;
++        std::uint64_t m_forwarded = 0, m_rejected = 0, m_syntheticReleases = 0;
++        std::uint64_t m_lastLog = 0, m_logRows = 0;
++        float m_nativeX = 0, m_nativeY = 0;
++        unsigned m_lastMessage = 0;
++        int m_clientWidth = 0, m_clientHeight = 0, m_viewWidth = 0, m_viewHeight = 0;
++        int m_messageX = 0, m_messageY = 0, m_cursorX = 0, m_cursorY = 0;
++        bool m_cursorValid = false;
++        unsigned m_dpi = 0;
++
++        bool Active() const;
++        unsigned Modifiers() const;
++        void ReleaseAll();
++        void PollDrag();
++        void Snapshot();
++        void Trace();
++
++    public:
++        explicit WhiterunMouseRoute(std::shared_ptr<spdlog::logger> logger);
++        ~WhiterunMouseRoute();
++        void Attach(CefRefPtr<CefBrowser> browser, CefRefPtr<CefRenderHandler> render);
++        void Detach();
++        void SetFocused(bool focused);
++        void SetVisible(bool visible);
++        void OnWindowMessage(HWND window, UINT message, WPARAM wparam, LPARAM lparam, bool& handled);
++        void RecordNativeMove(float x, float y);
++        void RecordNativeButton(bool mouse);
++        bool SuppressNativeMouse();
++        std::optional<Point> Tick();
++    };
++}
+--- /dev/null
++++ b/src/UIPlatform/Hooks/WhiterunMouseRoute.cpp
+@@ -0,0 +1,246 @@
++#include "Hooks/WhiterunMouseRoute.h"
++
++namespace NL::Input
++{
++    WhiterunMouseRoute::WhiterunMouseRoute(std::shared_ptr<spdlog::logger> logger) : m_logger(std::move(logger))
++    {
++        char value[32]{};
++        const auto length = GetEnvironmentVariableA("WHITERUN_UI_INPUT_MODE", value, sizeof(value));
++        if (length > 0 && length < sizeof(value)) m_mode = ParseMode(value);
++    }
++    WhiterunMouseRoute::~WhiterunMouseRoute()
++    {
++        Detach();
++    }
++    void WhiterunMouseRoute::Attach(CefRefPtr<CefBrowser> browser, CefRefPtr<CefRenderHandler> render)
++    {
++        std::lock_guard lock(m_mutex);
++        m_browser = browser;
++        m_render = render;
++    }
++    bool WhiterunMouseRoute::Active() const
++    {
++        return m_window && m_browser && m_render && (!GetCapture() || GetCapture() == m_window) &&
++            RouteActive(m_mode, m_focused, m_visible, GetForegroundWindow() == m_window, s_owner.load() == this);
++    }
++    unsigned WhiterunMouseRoute::Modifiers() const
++    {
++        unsigned result = 0;
++        if (GetKeyState(VK_SHIFT) & 0x8000) result |= EVENTFLAG_SHIFT_DOWN;
++        if (GetKeyState(VK_CONTROL) & 0x8000) result |= EVENTFLAG_CONTROL_DOWN;
++        if (GetKeyState(VK_MENU) & 0x8000) result |= EVENTFLAG_ALT_DOWN;
++        if (m_buttons.held & 1) result |= EVENTFLAG_LEFT_MOUSE_BUTTON;
++        if (m_buttons.held & 2) result |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
++        if (m_buttons.held & 4) result |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
++        return result;
++    }
++    void WhiterunMouseRoute::ReleaseAll()
++    {
++        const auto previous = m_buttons.ReleaseAll();
++        if (m_browser && previous)
++        {
++            m_browser->GetHost()->SendCaptureLostEvent();
++            CefMouseEvent event{};
++            event.x = m_last.x; event.y = m_last.y; event.modifiers = Modifiers();
++            for (const auto bit : {1, 2, 4})
++            {
++                if (!(previous & bit)) continue;
++                const auto type = bit == 1 ? MBT_LEFT : bit == 2 ? MBT_RIGHT : MBT_MIDDLE;
++                m_browser->GetHost()->SendMouseClickEvent(event, type, true, 1);
++                ++m_syntheticReleases;
++            }
++        }
++    }
++    void WhiterunMouseRoute::Detach()
++    {
++        std::lock_guard lock(m_mutex);
++        // OnBeforeClose forbids further browser calls. Clear references and state
++        // without synthesizing CEF events, including from queued hook callbacks.
++        m_focused = false;
++        m_buttons.ReleaseAll();
++        m_browser = nullptr;
++        m_render = nullptr;
++        m_hasPoint = false;
++        auto expected = this;
++        s_owner.compare_exchange_strong(expected, nullptr);
++    }
++    void WhiterunMouseRoute::PollDrag()
++    {
++        if (!Active() || !m_buttons.held) return;
++        Snapshot();
++        // Never steal or release Skyrim's HWND capture. Outside-client motion is
++        // sampled while a held gesture is active; missing releases are reconciled.
++        if (m_cursorValid)
++        {
++            const auto mapped = MapPoint(m_cursorX, m_cursorY, m_clientWidth, m_clientHeight,
++                                         m_viewWidth, m_viewHeight, true);
++            if (mapped && (mapped->x != m_last.x || mapped->y != m_last.y) &&
++                (m_cursorX < 0 || m_cursorY < 0 || m_cursorX >= m_clientWidth || m_cursorY >= m_clientHeight))
++            {
++                m_last = *mapped;
++                CefMouseEvent event{};
++                event.x = m_last.x; event.y = m_last.y; event.modifiers = Modifiers();
++                m_browser->GetHost()->SendMouseMoveEvent(event, false);
++                ++m_forwarded;
++            }
++        }
++        const std::uint8_t physical = ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) ? 1 : 0) |
++            ((GetAsyncKeyState(VK_RBUTTON) & 0x8000) ? 2 : 0) |
++            ((GetAsyncKeyState(VK_MBUTTON) & 0x8000) ? 4 : 0);
++        const auto released = MissingReleases(m_buttons.held, LogicalButtons(physical, GetSystemMetrics(SM_SWAPBUTTON) != 0));
++        for (const auto bit : {1, 2, 4})
++        {
++            if (!(released & bit) || !m_buttons.Up(bit)) continue;
++            CefMouseEvent event{};
++            event.x = m_last.x; event.y = m_last.y; event.modifiers = Modifiers();
++            const int index = bit == 1 ? 0 : bit == 2 ? 1 : 2;
++            m_browser->GetHost()->SendMouseClickEvent(event,
++                bit == 1 ? MBT_LEFT : bit == 2 ? MBT_RIGHT : MBT_MIDDLE, true, m_clickCounts[index]);
++            ++m_syntheticReleases;
++        }
++    }
++    void WhiterunMouseRoute::SetFocused(bool focused)
++    {
++        std::lock_guard lock(m_mutex);
++        m_focused = focused;
++        if (focused && m_visible && m_mode == Mode::Win32Mouse && m_browser) s_owner.store(this);
++        else
++        {
++            ReleaseAll();
++            auto expected = this;
++            s_owner.compare_exchange_strong(expected, nullptr);
++        }
++    }
++    void WhiterunMouseRoute::SetVisible(bool visible)
++    {
++        std::lock_guard lock(m_mutex);
++        if (m_visible == visible) return;
++        m_visible = visible;
++        if (visible && m_focused && m_mode == Mode::Win32Mouse && m_browser) s_owner.store(this);
++        else if (!visible)
++        {
++            ReleaseAll();
++            auto expected = this;
++            s_owner.compare_exchange_strong(expected, nullptr);
++        }
++    }
++    void WhiterunMouseRoute::Snapshot()
++    {
++        if (!m_window) return;
++        RECT rect{};
++        if (GetClientRect(m_window, &rect))
++        {
++            m_clientWidth = rect.right - rect.left; m_clientHeight = rect.bottom - rect.top;
++        }
++        else m_clientWidth = m_clientHeight = 0;
++        POINT cursor{};
++        m_cursorValid = GetCursorPos(&cursor) && ScreenToClient(m_window, &cursor);
++        if (m_cursorValid) { m_cursorX = cursor.x; m_cursorY = cursor.y; }
++        if (m_render && m_browser)
++        {
++            CefRect view{};
++            m_render->GetViewRect(m_browser, view);
++            m_viewWidth = view.width; m_viewHeight = view.height;
++        }
++        using GetDpi = UINT(WINAPI*)(HWND);
++        static auto getDpi = reinterpret_cast<GetDpi>(GetProcAddress(GetModuleHandleW(L"user32.dll"), "GetDpiForWindow"));
++        m_dpi = getDpi ? getDpi(m_window) : 0;
++    }
++    void WhiterunMouseRoute::Trace()
++    {
++        if (m_mode == Mode::Native || !m_focused || !m_visible || !m_logger || m_logRows >= 600) return;
++        const auto now = GetTickCount64();
++        if (m_lastLog && now - m_lastLog < 1000) return;
++        m_lastLog = now; ++m_logRows;
++        Snapshot();
++        // Deliberately no keyboard codes, text, URLs, window titles or process details.
++        nlohmann::json row = {{"tick_ms", now}, {"row", m_logRows}, {"mode", m_mode == Mode::Diagnostics ? "diagnostics" : "win32-mouse"},
++            {"foreground", m_window && GetForegroundWindow() == m_window}, {"owner", s_owner.load() == this},
++            {"win_mouse_messages", m_winMessages}, {"win_key_messages", m_winKeyMessages}, {"native_moves", m_nativeMoves}, {"native_mouse_buttons", m_nativeButtons}, {"native_key_events", m_nativeKeys},
++            {"forwarded", m_forwarded}, {"rejected", m_rejected}, {"synthetic_releases", m_syntheticReleases},
++            {"held", m_buttons.held}, {"last_mouse_message", m_lastMessage}, {"client", {m_clientWidth, m_clientHeight}},
++            {"view", {m_viewWidth, m_viewHeight}}, {"message_xy", {m_messageX, m_messageY}},
++            {"win_cursor_valid", m_cursorValid}, {"win_cursor_xy", {m_cursorX, m_cursorY}},
++            {"native_cursor_xy", {m_nativeX, m_nativeY}}, {"forwarded_xy", {m_last.x, m_last.y}}, {"window_dpi", m_dpi}};
++        m_logger->info("WSINPUT {}", row.dump());
++    }
++    void WhiterunMouseRoute::RecordNativeMove(float x, float y)
++    {
++        std::lock_guard lock(m_mutex);
++        if (!m_focused || !m_visible || m_mode == Mode::Native) return;
++        ++m_nativeMoves; m_nativeX = x; m_nativeY = y;
++    }
++    void WhiterunMouseRoute::RecordNativeButton(bool mouse)
++    {
++        std::lock_guard lock(m_mutex);
++        if (m_focused && m_visible && m_mode != Mode::Native)
++        {
++            if (mouse) ++m_nativeButtons;
++            else ++m_nativeKeys;
++        }
++    }
++    bool WhiterunMouseRoute::SuppressNativeMouse()
++    {
++        std::lock_guard lock(m_mutex);
++        // Other still-focused browser wrappers must not receive duplicate native
++        // mouse events while one Win32 route owns delivery.
++        return m_window && m_browser && m_render &&
++            RouteActive(m_mode, m_focused, m_visible, GetForegroundWindow() == m_window, s_owner.load() != nullptr);
++    }
++    std::optional<Point> WhiterunMouseRoute::Tick()
++    {
++        std::lock_guard lock(m_mutex);
++        if ((!Active() || !m_visible) && m_buttons.held) ReleaseAll();
++        PollDrag();
++        Trace();
++        return Active() && m_hasPoint ? std::optional<Point>(m_last) : std::nullopt;
++    }
++    void WhiterunMouseRoute::OnWindowMessage(HWND window, UINT message, WPARAM wparam, LPARAM lparam, bool& handled)
++    {
++        if (m_mode == Mode::Native) return;
++        std::lock_guard lock(m_mutex);
++        m_window = window;
++        if ((message == WM_KEYDOWN || message == WM_KEYUP || message == WM_SYSKEYDOWN || message == WM_SYSKEYUP ||
++             message == WM_CHAR || message == WM_SYSCHAR) && m_focused && m_visible) ++m_winKeyMessages;
++        if (message == WM_KILLFOCUS || message == WM_CANCELMODE || message == WM_CAPTURECHANGED ||
++            (message == WM_ACTIVATE && LOWORD(wparam) == WA_INACTIVE))
++        {
++            ReleaseAll();
++            return;
++        }
++        const bool move = message == WM_MOUSEMOVE;
++        const bool wheel = message == WM_MOUSEWHEEL || message == WM_MOUSEHWHEEL;
++        const bool doubleClick = message == WM_LBUTTONDBLCLK || message == WM_RBUTTONDBLCLK || message == WM_MBUTTONDBLCLK;
++        const bool down = doubleClick || message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN || message == WM_MBUTTONDOWN;
++        const bool up = message == WM_LBUTTONUP || message == WM_RBUTTONUP || message == WM_MBUTTONUP;
++        if (!move && !wheel && !down && !up) return;
++        if (!m_focused || !m_visible) return;
++        ++m_winMessages; m_lastMessage = message;
++        POINT point{static_cast<short>(LOWORD(lparam)), static_cast<short>(HIWORD(lparam))};
++        if (wheel && !ScreenToClient(window, &point)) { ++m_rejected; return; }
++        m_messageX = point.x; m_messageY = point.y;
++        if (handled || !Active()) return;
++        if (GetCapture() && GetCapture() != window) { ++m_rejected; return; }
++        Snapshot();
++        const auto mapped = MapPoint(point.x, point.y, m_clientWidth, m_clientHeight, m_viewWidth, m_viewHeight, m_buttons.held != 0);
++        if (!mapped) { ++m_rejected; return; }
++        m_last = *mapped; m_hasPoint = true;
++        const std::uint8_t bit = message == WM_LBUTTONDOWN || message == WM_LBUTTONUP || message == WM_LBUTTONDBLCLK ? 1 :
++            message == WM_RBUTTONDOWN || message == WM_RBUTTONUP || message == WM_RBUTTONDBLCLK ? 2 : 4;
++        if (down && !m_buttons.Down(bit)) { handled = true; return; }
++        if (up && !m_buttons.Up(bit)) { handled = true; return; }
++        const int buttonIndex = bit == 1 ? 0 : bit == 2 ? 1 : 2;
++        if (down) m_clickCounts[buttonIndex] = doubleClick ? 2 : 1;
++        CefMouseEvent event{};
++        event.x = mapped->x; event.y = mapped->y; event.modifiers = Modifiers();
++        const auto host = m_browser->GetHost();
++        if (move) host->SendMouseMoveEvent(event, false);
++        else if (wheel)
++        {
++            const int delta = static_cast<short>(HIWORD(wparam));
++            host->SendMouseWheelEvent(event, message == WM_MOUSEHWHEEL ? delta : 0, message == WM_MOUSEWHEEL ? delta : 0);
++        }
++        else host->SendMouseClickEvent(event, bit == 1 ? MBT_LEFT : bit == 2 ? MBT_RIGHT : MBT_MIDDLE, up, m_clickCounts[buttonIndex]);
++        ++m_forwarded; handled = true;
++    }
++}

@@ -1,7 +1,15 @@
-name: Native UI baseline build
+name: Native UI reviewed build
 
 on:
   workflow_dispatch:
+    inputs:
+      variant:
+        description: Build unchanged baseline only, or baseline followed by reviewed input candidate
+        type: choice
+        default: upstream-unchanged
+        options:
+          - upstream-unchanged
+          - input-candidate
 
 permissions:
   contents: read
@@ -16,20 +24,21 @@ jobs:
     timeout-minutes: 90
     env:
       NATIVE_UI_NAME: whiterun-native-${{ github.run_id }}-${{ github.run_attempt }}
+      NATIVE_UI_VARIANT: ${{ inputs.variant }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - name: Verify preparation helpers
         run: python -m unittest discover -s tools/native-ui -p test_prepare.py -v
-      - name: Build unchanged pinned upstream with the hosted compiler
+      - name: Build pinned baseline and optional reviewed candidate with the hosted compiler
         shell: pwsh
-        run: ./tools/native-ui/build.ps1 -OutputRoot "$env:RUNNER_TEMP/$env:NATIVE_UI_NAME"
+        run: ./tools/native-ui/build.ps1 -OutputRoot "$env:RUNNER_TEMP/$env:NATIVE_UI_NAME" -Variant $env:NATIVE_UI_VARIANT
       - name: Retain build evidence, including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: native-ui-upstream-unqualified-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ inputs.variant == 'input-candidate' && 'native-ui-input-candidate-unqualified' || 'native-ui-upstream-unqualified' }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/${{ env.NATIVE_UI_NAME }}/evidence/
           if-no-files-found: warn
           retention-days: 14

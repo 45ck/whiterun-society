@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "id": "save-and-opt-in-mouse-v1",
+  "upstream_commit": "c9514ac16434e2edc2bbfb348be2fcdc47e1d6e2",
+  "default_mode": "native",
+  "qualified": false,
+  "edits": [
+    {
+      "path": "src/UIPlatform/Menus/MultiLayerMenu.cpp",
+      "original_sha256": "c3be742a0b54c9f5e4977de6e03099234440fb51a8369cf4a3be03acbeea6d20",
+      "result_sha256": "59ce5f8fb50550ee6fad6563f5736479f423fdcf3692df92cccee220a2d5a022",
+      "replacements": [
+        {
+          "old": "        menuFlags.set(RE::UI_MENU_FLAGS::kAlwaysOpen);",
+          "new": "        menuFlags.set(RE::UI_MENU_FLAGS::kAlwaysOpen);\n        menuFlags.set(RE::UI_MENU_FLAGS::kAllowSaving);"
+        }
+      ]
+    },
+    {
+      "path": "src/UIPlatform/Hooks/WinProcHook.h",
+      "original_sha256": "aa88f54529e94ea97fe0dd1a4dfac5ff23ef1e4b84755f11f2554f257997de91",
+      "result_sha256": "5012f0704a96af60952d454e6148189e24add22751ae185707a15d23cc747383",
+      "replacements": [
+        {
+          "old": "        static inline sigslot::signal<> OnWndInputLangChange;",
+          "new": "        static inline sigslot::signal<> OnWndInputLangChange;\n        static inline sigslot::signal<HWND, UINT, WPARAM, LPARAM, bool&> OnWindowMessage;"
+        }
+      ]
+    },
+    {
+      "path": "src/UIPlatform/Hooks/WinProcHook.cpp",
+      "original_sha256": "514eec7d05a5b78a6d37cfdc3181251cdcc82cb2231f72d9e839222e4324c9d0",
+      "result_sha256": "90713b2cc3f29520c81b5ae8831739e6c60ed78d9cec797b0a1fd8df218c46af",
+      "replacements": [
+        {
+          "old": "        if (uMsg == WM_ACTIVATE && wParam == WA_INACTIVE)",
+          "new": "        bool handled = false;\n        OnWindowMessage(hwnd, uMsg, wParam, lParam, handled);\n\n        if (uMsg == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE)"
+        },
+        {
+          "old": "        return s_winProcFuncOrigin(hwnd, uMsg, wParam, lParam);",
+          "new": "        if (handled) return 0;\n        return s_winProcFuncOrigin(hwnd, uMsg, wParam, lParam);"
+        }
+      ]
+    },
+    {
+      "path": "src/UIPlatform/CEF/DefaultBrowser.h",
+      "original_sha256": "30afea321687f2e0389667938660f47651af3088e6092b6147813e69adc52d45",
+      "result_sha256": "2e2d423f612b5a767a5ffdcc1ff565c5d4d824f6891629c33d46766c7dd0c303",
+      "replacements": [
+        {
+          "old": "#include \"Hooks/WinProcHook.h\"",
+          "new": "#include \"Hooks/WinProcHook.h\"\n#include \"Hooks/WhiterunMouseRoute.h\""
+        },
+        {
+          "old": "        std::shared_ptr<spdlog::logger> m_logger = nullptr;",
+          "new": "        std::shared_ptr<spdlog::logger> m_logger = nullptr;\n        std::shared_ptr<NL::Input::WhiterunMouseRoute> m_inputRoute;\n        sigslot::scoped_connection m_onWindowMessage_Connection;\n        sigslot::scoped_connection m_onBeforeBrowserClose_Connection;"
+        },
+        {
+          "old": "        bool IsReadyAndLog();",
+          "new": "        bool IsReadyAndLog();\n        void TickInputDiagnostics();"
+        }
+      ]
+    },
+    {
+      "path": "src/UIPlatform/CEF/DefaultBrowser.cpp",
+      "original_sha256": "16cb3d439e31b4095878d8482fc88eaf2cb51759f313725eef44aab853e36ab1",
+      "result_sha256": "aea91da23a20e02412ee7d74a338ee8135a55d21bae047a94782791670c42337",
+      "replacements": [
+        {
+          "old": "        m_logger = a_logger;",
+          "new": "        m_logger = a_logger;\n        m_inputRoute = std::make_shared<NL::Input::WhiterunMouseRoute>(m_logger);\n        m_onWindowMessage_Connection = NL::Hooks::WinProcHook::OnWindowMessage.connect(\n            [route = m_inputRoute](HWND window, UINT message, WPARAM wparam, LPARAM lparam, bool& handled) {\n                route->OnWindowMessage(window, message, wparam, lparam, handled);\n            });"
+        },
+        {
+          "old": "        m_cefClient = a_cefClient;",
+          "new": "        m_cefClient = a_cefClient;\n        m_onBeforeBrowserClose_Connection = m_cefClient->onBeforeBrowserClose.connect(\n            [route = m_inputRoute](CefRefPtr<CefBrowser>) { route->Detach(); });"
+        },
+        {
+          "old": "        m_onAfterBrowserCreated_Connection = m_cefClient->onAfterBrowserCreated.connect([&](CefRefPtr<CefBrowser> a_cefBrowser) {\n            std::lock_guard locker(m_urlMutex);\n            // load url\n            if (m_isUrlCached)\n            {\n                LoadBrowserURL(m_urlCache.c_str(), m_clearJSFunctions);\n            }\n        });",
+          "new": "        m_onAfterBrowserCreated_Connection = m_cefClient->onAfterBrowserCreated.connect([&](CefRefPtr<CefBrowser> a_cefBrowser) {\n            std::lock_guard locker(m_urlMutex);\n            m_inputRoute->Attach(a_cefBrowser, m_cefClient->GetRenderHandler());\n            m_isFocusedCached = NL::Input::CacheFocusOnAttach(m_isFocused, m_isFocusedCached);\n            // Preserve the upstream cached URL handling before resetting page readiness.\n            if (m_isUrlCached)\n            {\n                LoadBrowserURL(m_urlCache.c_str(), m_clearJSFunctions);\n            }\n            m_isPageLoaded = false;\n        });"
+        },
+        {
+          "old": "    DefaultBrowser::~DefaultBrowser()\n    {",
+          "new": "    DefaultBrowser::~DefaultBrowser()\n    {\n        m_onWindowMessage_Connection.disconnect();\n        m_inputRoute->SetFocused(false);\n        m_inputRoute->Detach();"
+        },
+        {
+          "old": "        m_cefClient->GetRenderLayer()->SetVisible(a_value);",
+          "new": "        m_cefClient->GetRenderLayer()->SetVisible(a_value);\n        m_inputRoute->SetVisible(a_value);"
+        },
+        {
+          "old": "        if (m_isFocused == a_value)",
+          "new": "        if (!NL::Input::ShouldApplyFocus(m_isFocused, a_value, m_isFocusedCached))"
+        },
+        {
+          "old": "        m_isFocused = a_value;\n        if (m_isFocused)",
+          "new": "        m_isFocused = a_value;\n        m_inputRoute->SetFocused(a_value);\n        if (m_isFocused)"
+        },
+        {
+          "old": "    bool DefaultBrowser::CanProcess(RE::InputEvent* a_event)",
+          "new": "    void DefaultBrowser::TickInputDiagnostics()\n    {\n        m_inputRoute->SetVisible(m_cefClient->GetRenderLayer()->GetVisible());\n        if (const auto point = m_inputRoute->Tick())\n        {\n            m_currentMousePosX = static_cast<float>(point->x);\n            m_currentMousePosY = static_cast<float>(point->y);\n        }\n    }\n\n    bool DefaultBrowser::CanProcess(RE::InputEvent* a_event)"
+        },
+        {
+          "old": "    bool DefaultBrowser::ProcessMouseMove(RE::MouseMoveEvent* a_event)\n    {",
+          "new": "    bool DefaultBrowser::ProcessMouseMove(RE::MouseMoveEvent* a_event)\n    {\n        m_inputRoute->RecordNativeMove(m_currentMousePosX, m_currentMousePosY);\n        if (m_inputRoute->SuppressNativeMouse()) return true;"
+        },
+        {
+          "old": "        CheckToggleVisibleKeys(a_event);\n\n        if (!IsBrowserFocused())",
+          "new": "        CheckToggleVisibleKeys(a_event);\n        const bool mouse = a_event->GetDevice() == RE::INPUT_DEVICE::kMouse;\n        m_inputRoute->RecordNativeButton(mouse);\n        if (mouse && m_inputRoute->SuppressNativeMouse()) return true;\n\n        if (!IsBrowserFocused())"
+        }
+      ]
+    },
+    {
+      "path": "src/UIPlatform/Menus/CEFMenu.cpp",
+      "original_sha256": "6e5a904b7720bc970ecbd42386c6b8bee8ab232729b036b1a01cf8f59fead18a",
+      "result_sha256": "c22ff82cf1441cb1978bc5f0ac4df2f5511f53bf97133d704a341bc2b386ed3b",
+      "replacements": [
+        {
+          "old": "    void CEFMenu::Draw()\n    {\n        m_cefRenderLayer->Draw();",
+          "new": "    void CEFMenu::Draw()\n    {\n        m_browser->TickInputDiagnostics();\n        m_cefRenderLayer->Draw();"
+        }
+      ]
+    }
+  ],
+  "additions": [
+    {
+      "path": "src/UIPlatform/Hooks/InputPolicy.h",
+      "source": "InputPolicy.h",
+      "sha256": "34ba0d5c8dd834d51726596ec291c6eb7958f2d76e90a3eb28c25527e4b7a8e8"
+    },
+    {
+      "path": "src/UIPlatform/Hooks/WhiterunMouseRoute.h",
+      "source": "WhiterunMouseRoute.h",
+      "sha256": "ffbf797b9d6bfed6351b83faafb9562963de68fbd881e1a0c0f7f8e1010d014a"
+    },
+    {
+      "path": "src/UIPlatform/Hooks/WhiterunMouseRoute.cpp",
+      "source": "WhiterunMouseRoute.cpp",
+      "sha256": "367943acfb3025602e2f7b5ab1121f2ea70cf80e220810de9bd4cd71b3590301"
+    }
+  ],
+  "patch_sha256": "0dd87fe7e743b702e461740d28bb4611b095cc3e65dc5b9c59a2f9949cd0d4a1"
+}

@@ -15,6 +15,9 @@ spec.loader.exec_module(prepare)
 compiler_spec = importlib.util.spec_from_file_location('native_ui_compiler_policy', HERE / 'compiler_policy.py')
 compiler_policy = importlib.util.module_from_spec(compiler_spec)
 compiler_spec.loader.exec_module(compiler_policy)
+candidate_spec = importlib.util.spec_from_file_location('native_ui_candidate', HERE / 'apply_candidate.py')
+candidate = importlib.util.module_from_spec(candidate_spec)
+candidate_spec.loader.exec_module(candidate)
 
 
 class PreparationTests(unittest.TestCase):
@@ -195,6 +198,82 @@ class PreparationTests(unittest.TestCase):
         for version in ['14.29.30133', 'latest', '14.44.35207\nset(UNREVIEWED ON)']:
             with self.subTest(version=version), self.assertRaises(ValueError):
                 compiler_policy.version_checked(version)
+
+    def test_candidate_sources_and_review_diff_match_manifest(self):
+        manifest = json.loads((HERE / 'input-candidate/candidate.json').read_text())
+        candidate.validate(manifest)
+        self.assertEqual(manifest['default_mode'], 'native')
+        self.assertFalse(manifest['qualified'])
+
+    def test_candidate_rejects_unreviewed_scope_or_default(self):
+        for change in ['path', 'default', 'qualified', 'template_hash']:
+            manifest = json.loads((HERE / 'input-candidate/candidate.json').read_text())
+            if change == 'path': manifest['edits'][0]['path'] = '../../game/NirnLabUIPlatform.dll'
+            elif change == 'default': manifest['default_mode'] = 'win32-mouse'
+            elif change == 'qualified': manifest['qualified'] = True
+            else: manifest['additions'][0]['sha256'] = '0' * 64
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                candidate.validate(manifest)
+
+    def test_candidate_source_edits_fail_on_changed_base_or_duplicate_context(self):
+        original, result = b'before', b'after'
+        spec = {'original_sha256': candidate.digest(original), 'result_sha256': candidate.digest(result),
+                'replacements': [{'old': 'before', 'new': 'after'}]}
+        self.assertEqual(candidate.apply_edit(original, spec), result)
+        with self.assertRaises(ValueError): candidate.apply_edit(b'changed', spec)
+        with self.assertRaises(ValueError): candidate.apply_edit(original, {**spec, 'result_sha256': '0' * 64})
+        duplicate = b'before before'
+        with self.assertRaises(ValueError):
+            candidate.apply_edit(duplicate, {**spec, 'original_sha256': candidate.digest(duplicate)})
+
+    def test_cached_focus_fix_is_bound_to_the_upstream_condition(self):
+        manifest = json.loads((HERE / 'input-candidate/candidate.json').read_text())
+        source = next(row for row in manifest['edits'] if row['path'].endswith('/DefaultBrowser.cpp'))
+        focus = [row for row in source['replacements'] if row['old'].strip() == 'if (m_isFocused == a_value)']
+        self.assertEqual(len(focus), 1)
+        self.assertIn('ShouldApplyFocus(m_isFocused, a_value, m_isFocusedCached)', focus[0]['new'])
+
+    def test_candidate_close_hook_detaches_without_browser_calls(self):
+        manifest = json.loads((HERE / 'input-candidate/candidate.json').read_text())
+        source = next(row for row in manifest['edits'] if row['path'].endswith('/DefaultBrowser.cpp'))
+        close = [row for row in source['replacements'] if 'onBeforeBrowserClose.connect' in row['new']]
+        self.assertEqual(len(close), 1)
+        self.assertIn('[route = m_inputRoute](CefRefPtr<CefBrowser>) { route->Detach(); }', close[0]['new'])
+        destructor = next(row for row in source['replacements'] if 'DefaultBrowser::~DefaultBrowser()' in row['old'])
+        self.assertIn('m_inputRoute->Detach();', destructor['new'])
+        route = (HERE / 'input-candidate/WhiterunMouseRoute.cpp').read_text()
+        detach = route.split('void WhiterunMouseRoute::Detach()', 1)[1].split('void WhiterunMouseRoute::PollDrag()', 1)[0]
+        self.assertIn('std::lock_guard lock(m_mutex)', detach)
+        for required in ['m_browser = nullptr;', 'm_render = nullptr;', 'm_buttons.ReleaseAll();', 'compare_exchange_strong']:
+            self.assertIn(required, detach)
+        self.assertNotIn('GetHost()', detach)
+        self.assertNotIn('ReleaseAll();', detach.replace('m_buttons.ReleaseAll();', ''))
+
+    def test_candidate_does_not_change_hwnd_capture_and_polls_only_mouse(self):
+        route = (HERE / 'input-candidate/WhiterunMouseRoute.cpp').read_text()
+        for forbidden in ['SetCapture(', 'ReleaseCapture(', 'PostMessage', 'GetAsyncKeyState(VK_SHIFT)', 'GetAsyncKeyState(VK_CONTROL)']:
+            self.assertNotIn(forbidden, route)
+        self.assertEqual(route.count('GetAsyncKeyState('), 3)
+        poll = route.split('void WhiterunMouseRoute::PollDrag()', 1)[1].split('void WhiterunMouseRoute::SetFocused', 1)[0]
+        self.assertIn('if (!Active() || !m_buttons.held) return;', poll)
+        self.assertIn('MissingReleases(m_buttons.held, LogicalButtons(physical, GetSystemMetrics(SM_SWAPBUTTON) != 0))', poll)
+        self.assertIn('!m_buttons.Up(bit)', poll)
+
+    def test_candidate_new_browser_defers_requested_focus_until_its_page_loads(self):
+        manifest = json.loads((HERE / 'input-candidate/candidate.json').read_text())
+        source = next(row for row in manifest['edits'] if row['path'].endswith('/DefaultBrowser.cpp'))
+        created = next(row['new'] for row in source['replacements'] if 'm_onAfterBrowserCreated_Connection =' in row['old'])
+        self.assertIn('CacheFocusOnAttach(m_isFocused, m_isFocusedCached)', created)
+        self.assertLess(created.index('std::lock_guard locker(m_urlMutex)'), created.index('m_inputRoute->Attach'))
+        self.assertLess(created.index('LoadBrowserURL('), created.index('m_isPageLoaded = false;'))
+
+    def test_candidate_native_mouse_suppression_includes_focused_non_owner(self):
+        route = (HERE / 'input-candidate/WhiterunMouseRoute.cpp').read_text()
+        suppression = route.split('bool WhiterunMouseRoute::SuppressNativeMouse()', 1)[1].split('std::optional<Point>', 1)[0]
+        self.assertIn('m_window && m_browser && m_render', suppression)
+        self.assertIn('s_owner.load() != nullptr', suppression)
+        self.assertNotIn('s_owner.load() == this', suppression)
+        self.assertIn('RouteActive(m_mode, m_focused, m_visible, GetForegroundWindow() == m_window', suppression)
 
 
 if __name__ == '__main__':
