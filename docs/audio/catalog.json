@@ -610,5 +610,53 @@
     "sha256": "b4f56c3eb593738f326c5abeb9966cc67baf56a48687908b89d0676315d6d190",
     "encounter": "daily-61-108185",
     "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "concurrent-rest-c2-1.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "Hello there. It is good to exchange a few words. A brief pause and a little conversation can be pleasant, without any business to settle.",
+    "sha256": "dcb47dcf263095d41f739b8f35acbbd523bc82437783dcd2493341d8505a5450",
+    "seconds": 8.638,
+    "delivery_id": "speech-dc41dc753e3aed4f343b1e89",
+    "trial_id": "rest-voice-26c225a511a54e45",
+    "model_generated": false,
+    "source": "Authored protocol-fixture line synthesized by local Kokoro and used by verified overlay playback; not autonomous dialogue or a recording of game audio",
+    "encounter": "C2 controlled concurrent rest and voice · zero cloud calls"
+  },
+  {
+    "file": "concurrent-rest-c2-2.wav",
+    "speaker": "Heimskr",
+    "line": "Yes, a short rest can be welcome, and so can a friendly word. I like having a moment to listen without needing to make a promise.",
+    "sha256": "dbc2134854a2b829712da6a96f6bab0d0bfd1371022113b28f275a4480e6841b",
+    "seconds": 8.062,
+    "delivery_id": "speech-c051390103ff33202af7b57d",
+    "trial_id": "rest-voice-26c225a511a54e45",
+    "model_generated": false,
+    "source": "Authored protocol-fixture line synthesized by local Kokoro and used by verified overlay playback; not autonomous dialogue or a recording of game audio",
+    "encounter": "C2 controlled concurrent rest and voice · zero cloud calls"
+  },
+  {
+    "file": "concurrent-rest-c2-3.wav",
+    "speaker": "Jon Battle-Born",
+    "line": "I understand. Sometimes a simple greeting and a little patience are enough. Thank you for taking the time to exchange a few words with me.",
+    "sha256": "5cb79cc1c6330a44585a3ab6e1413c202d6545a378b657604bd0224df49640a8",
+    "seconds": 8.8413,
+    "delivery_id": "speech-4396adce7d39ae3ea3c427e0",
+    "trial_id": "rest-voice-26c225a511a54e45",
+    "model_generated": false,
+    "source": "Authored protocol-fixture line synthesized by local Kokoro and used by verified overlay playback; not autonomous dialogue or a recording of game audio",
+    "encounter": "C2 controlled concurrent rest and voice · zero cloud calls"
+  },
+  {
+    "file": "concurrent-rest-c2-4.wav",
+    "speaker": "Heimskr",
+    "line": "You are welcome. I have enjoyed this brief conversation, and I appreciate your courtesy. Take care, and may the rest of your day go well.",
+    "sha256": "bf8a2a9980f60697614e6392697597732b345238ebc1191a5382c797c079c911",
+    "seconds": 8.8473,
+    "delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+    "trial_id": "rest-voice-26c225a511a54e45",
+    "model_generated": false,
+    "source": "Authored protocol-fixture line synthesized by local Kokoro and used by verified overlay playback; not autonomous dialogue or a recording of game audio",
+    "encounter": "C2 controlled concurrent rest and voice · zero cloud calls"
   }
 ]

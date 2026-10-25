@@ -132,7 +132,7 @@ No continuous livestream or 24/7 automation has been launched by this plan. A fu
 
 ## Delivery order and exit conditions
 
-1. **Remove long-action queue blocking.** Implement the concurrent-rest slice specified below: two independent seated breaks plus one disjoint conversation or economic event, actor/seat reservations, independently ticked native activities and serialized effect settlement. Preserve the repaired lease/receipt ordering. Exit with observed overlap, exact recovery accounting and retained interruption/reload failures.
+1. **Extend the qualified concurrent-rest slice.** Two independent seated breaks plus a disjoint authored voice encounter passed the cumulative native overlap target in C2; C1's autonomous refusal did not. Preserve actor/seat reservations, independent native ticks and serialized settlement. Next qualify rest with a meal/trade, interrupted active-job recovery, unforced choices and measured queue fairness before extending owner-work attendance.
 2. **Instrument before claiming depth.** Add save-aware activity/spatial time series, explicit sample coverage, data-driven targets and per-resident inspection. Exit with replayable evidence exports and tested missing-data/reload behaviour.
 3. **Connect meaningful daily life.** Turn arrival into a new, state-informed opportunity for actual work, trade, rest or social interaction. Add commitment completion/breach records. Exit with unforced chains, truthful speech and observed consequences.
 4. **Expand the economy and social mechanisms.** Add finite upstream supply, multi-stage production, enterprise accounting and causally linked disagreements/reconciliation. Exit against the relevant multi-trial acceptance protocols above.
@@ -148,31 +148,31 @@ Stationary owner work now has native fixture evidence: zero model calls, ten cre
 
 Native RTS input remains a separate unresolved gate. Automatic policy review blocked the offline toolchain-layout action before execution, so the native input rebuild is unbuilt. The full society, reliable native controls, long-run autonomy, richer economic/social mechanisms and continuous-broadcast qualification remain active work rather than achieved outcomes.
 
-## Immediate architecture priority — concurrent self-care without blocking the town
+## Concurrent self-care — implemented slice and remaining gates
 
-The latest live run exposed a more important bottleneck than model-call capacity. A 30-game-minute seated break occupied roughly 150 wall seconds while about 25 overdue reviews remained queued. Personal goals could still be chosen and journeys could finish, but residents' meaningful follow-up actions waited behind the single foreground action. These are current-run diagnostic observations, not a completed long-run benchmark. Valid rest is purposeful stationary activity; preventing unrelated residents from acting throughout that rest is an architectural limitation.
+The motivating live run exposed a bottleneck beyond model-call capacity. A 30-game-minute seated break occupied roughly 150 wall seconds while about 25 overdue reviews remained queued. Personal goals could still be chosen and journeys could finish, but meaningful follow-up actions waited behind the single foreground action. These were diagnostic observations, not a completed long-run benchmark. Valid rest is purposeful stationary activity; preventing unrelated residents from acting throughout that rest was the execution limitation addressed by this slice.
 
-The code explains the blockage. `Rest.plan_rest` stores the entire rest command in `active['pending']`; the bridge processes it through one pending-command slot and one `createRestController` instance; `run_daily_life.py` waits for the foreground worker to reach a terminal outcome. `Conversation.start_conversation` rejects another busy resident event. Existing independent standing journeys do not remove these foreground constraints. A larger inference allowance or a different queue ordering cannot create the missing execution concurrency.
+Previously, `Rest.plan_rest` stored the full rest in `active['pending']`, and the worker waited for terminal attendance. When the two-slot capability is available, it now delegates to `ActivityJobs`: `activity_start_rest` acknowledges admission promptly, two native controllers tick independently, and `activity_ack_receipt` frees durable completed/held leases after verified release. The old foreground path remains the compatibility fallback without that capability. Conversations and inventory mutations still use one foreground pipeline.
 
-### Smallest vertical slice to build next
+### Qualified mechanism; autonomous and economic gates remain
 
-Implement **two independent rest jobs at distinct observed benches while one disjoint existing foreground conversation or economic event progresses**. Keep one foreground conversation and the existing serialized inventory-effect protocol for this slice. Use dynamic eligible actors and bench references, with no fixed named participants. First qualify the mechanism using explicit fixtures, then test unforced choices separately.
+The implemented slice supports **two independent rest jobs at distinct observed benches while a disjoint foreground event progresses**. C2 used authored rest choices and four authored local Kokoro turns, with zero cloud calls. It verified **28.359 cumulative seconds** of two-seat/voice overlap against a **10-second cumulative target**; the longest continuous interval was **7.375 seconds**. Both rests completed and released. C1 retained its zero-overlap autonomous brief refusal. [Native evidence, actual screenshots and limits](concurrent-activities.md) · [C2 compact receipt](concurrent-rest-controlled-trial.json).
 
-An accepted rest decision should hand off to a saved background job. It must not become a completed rest merely to free the foreground slot. The initiating worker returns a distinct `delegated` result only after the handoff and reservations are durably bound. Its daily event stays `started` until the background job actually completes or holds. The director can then schedule another eligible resident without waiting through the first resident's attendance interval.
+An accepted rest decision hands off to a saved background job without becoming completed merely to free the foreground slot. The worker returns `delegated` only after committed native admission; the daily event stays `started` until completion or hold. The director can schedule another eligible resident during attendance. This mechanism is implemented; a measured multi-run reduction in backlog and starvation is not yet qualified.
 
 This handoff is necessary for correctness: simply starting several current `run_resident_event.py` processes would race the singleton plan, pending command, native rest controller and state writes.
 
-### Proposed saved state and ownership
+### Implemented saved state and ownership
 
-The following schema is a proposed implementation contract, not current runtime state:
+The actual first-slice schema uses derived reservations rather than separate actor/place tables:
 
 | Record | Minimum fields | Owner and invariant |
 | --- | --- | --- |
-| `activity_jobs[job_id]` | Kind, actor identity, source event/goal, selected decision receipt, session/epoch, phase, slot, target seat, requested duration, policy snapshot/hash, start-command ID, native progress, terminal receipt, settlement ID | The service is the sole state writer. Job phases include reserved, starting, travelling, active, releasing, ready-to-settle, complete and held. |
-| `actor_leases[actor_id]` | Job/foreground owner ID, native epoch, acquired checkpoint, lifecycle state, suspended standing-goal ID | One exclusive physical activity per actor. Standing continuity is suspended beneath the lease and resumes only after verified release. |
-| `place_leases[seat_ref]` | Job ID, slot, epoch, expected reference/space, release state | One reserved owner per seat for the first slice, plus fresh native occupancy checks. Another engine actor occupying the seat invalidates admission or holds the job. |
-| Foreground plan pointer | Explicit foreground plan ID, with plans retrievable by ID | Detaching a rest job clears foreground occupancy without deleting its plan or labelling it complete. Legacy saves without this pointer require a migration rule. |
-| `activity_settlements[job_id]` | Terminal receipt hash, committed checkpoint, before/after fatigue and clocks, memory/outcome linkage | At most one recovery application per job. Repeated receipts return the existing settlement; arrival or elapsed wall time alone cannot grant recovery. |
+| `activity_jobs[job_id]` | Actor/reference identity, `source_plan`, session, epoch, slot, target, policy snapshot, saved phase, receipt/hash and release/ack flags | Service owns checkpoint writes. Saved phases are prepared, running, complete and held; detailed travel/rest/release phases come from native telemetry. |
+| Derived actor/seat/slot leases | Unacknowledged saved jobs and current native jobs/receipts | One owner per actor, seat and slot. Terminal or held work remains reserved until release and durable acknowledgement. |
+| `activity_orphans[identity_hash]` | Original native identity, held receipt/hash, release proof, acknowledgement, `recovery_applied=false` | Reconcile native work absent from an older saved lineage without importing future fatigue, memory or intention. |
+| Existing plan list | Latest foreground-compatible plan, with delegated source plans retained by ID | `agency_busy` excludes delegated plans. Completion updates the original `source_plan`, preserving newer plans; no new foreground-pointer field was introduced. |
+| Job receipt plus `rests` and memory records | Receipt hash, before/after fatigue, source identity and clocks | At most one recovery application per saved job. Arrival or elapsed wall time alone cannot grant recovery. |
 
 Admission atomically reserves the actor, native rest slot and seat at one checkpoint. A conflict rejects or defers the whole reservation; it must not acquire half the resources. Foreground social/economic selection, personal-goal claims and other background admission consult the same actor-lease registry. Multi-person encounters acquire their participant set atomically and revalidate availability at the relevant decision boundary. They must not select an actor already resting or working.
 
@@ -180,13 +180,13 @@ Expiry is a request to release and reconcile, not proof that a native task stopp
 
 ### Native transport and execution contract
 
-Add an explicit versioned background-rest capability and a second independent furniture-routing slot. `createPapyrusRouterController` already accepts an offset; each rest controller must receive its own stable slot offset, quest/mailbox and active state. Preserve existing plugin form IDs. Additional plugin records require an isolated save/plugin-manifest migration and matching rollback artifacts before live qualification; do not silently invalidate existing managed-save proofs.
+`WhiterunActivities.esp` adds two independent furniture-routing slots with distinct offsets, quests/mailboxes and controller state. Existing plugin identities were preserved. BX restored 17/17 compared fields with the append allowed; settled-job save BY restored 18/18 including activity history. These checks do not prove active-job save/load recovery. Capability telemetry advertises availability and capacity; the stored rest policy is versioned.
 
-Proposed commands are `activity_start`, `activity_cancel` and `activity_release_receipt`, each carrying job ID, kind, actor, seat, slot, epoch/session, policy hash and bound checkpoint. Names and shape should be finalized with tests before wiring them into the bridge.
+Implemented transport commands are **`activity_start_rest`** and **`activity_ack_receipt`**, carrying the immutable assignment identity, bounded rest duration and admission checkpoint. Acknowledging an old-session receipt carries current command session plus original `job_session`. Cancellation is internal to the native controller on session/assignment/freshness loss; a public `activity_cancel` command and arbitrary activity kinds are not implemented.
 
-- `activity_start` validates the saved reservation and native capabilities, installs a finite task and promptly acknowledges **accepted/started**, without holding the command channel for the full rest. Exact furniture arrival and 30 minutes of qualified attendance remain later milestones.
+- `activity_start_rest` validates the saved reservation and native capabilities, installs a finite task and promptly acknowledges **accepted**, without holding the command channel for the full rest. Exact furniture arrival and 30 minutes of qualified attendance remain later milestones.
 - A per-slot native controller ticks every frame independently of whichever foreground command is active. It verifies owned package, exact furniture reference, seated state, native time, session, slot and lease. It never accumulates rest during travel, pause, unloaded time, a clock jump or lost attendance.
-- Each heartbeat reports bounded `activity_jobs` progress and an `activity_receipts` collection. Completed/held receipts remain available until the service acknowledges their durable settlement. One chat acknowledgement cannot overwrite a rest completion, and one rest completion cannot replace another's receipt.
+- Each heartbeat reports `activity_jobs.jobs` progress and `activity_jobs.receipts`. Completed/held receipts remain available until the service acknowledges durable settlement. One chat acknowledgement cannot overwrite a rest completion, and one rest completion cannot replace another's receipt. The public saved projection retains leased jobs plus up to 32 acknowledged history rows.
 - Cancellation releases only the job's own native slot. The terminal receipt distinguishes stopped activity, verified release, earned attendance and any unresolved native ownership. Repeated starts or cancellations with the same immutable identity are idempotent; conflicting reuse is rejected.
 
 Checkpoint equality is required when admitting a new start/effect. An already admitted, non-mutating attendance job must continue through unrelated checkpoint changes in the same valid session and lease epoch; otherwise every conversation memory write would interrupt rest. Session changes and explicit cancellation invalidate it. Native heartbeat freshness remains bounded, with a stop/release response when the supervising service disappears.
@@ -205,11 +205,11 @@ The first slice should choose conservative, explicit recovery over inferred prog
 
 A terminal receipt received before a checkpoint finishes stays in the inbox. If the service restarts after committing recovery but before acknowledging the native receipt, the settlement ID/receipt hash prevents a second recovery. Preserve unresolved receipts and leases until reconciliation is visible. Stop/deadline controls stop new admissions immediately, then settle or explicitly cancel the already accepted jobs under their bounded lifecycle; report which jobs remain active or held.
 
-### Proposed implementation ownership and test gates
+### Implemented modules and remaining test gates
 
 | Work package | Likely modules | Minimum gate before integration |
 | --- | --- | --- |
-| Saved job lifecycle and reservations | New activity-jobs module; `activity_leases.py`, `rest.py`, `agency.py`, `lineage.py` | Atomic actor/seat/slot ownership, explicit foreground detachment, legacy-save migration and idempotent settlement |
+| Saved job lifecycle and reservations | `activity_jobs.py`, `activity_leases.py`, `rest.py`, `agency.py`, `lineage.py` | Atomic actor/seat/slot ownership, delegated foreground detachment, legacy-save defaults and idempotent settlement |
 | Native parallel attendance | `bridge/rest.js`, `bridge/papyrus-router.js`, bridge command dispatch and plugin builder | Two independent slots; start acknowledgement separate from completion; per-slot release; receipt retention and epoch checks |
 | Scheduling and inference | `tools/run_daily_life.py`, resident worker, goal scheduler and admission endpoints | Delegated events remain started; fair admission continues without blocking on attendance; all model claims retain shared budget accounting |
 | Observation and UI | Dashboard/observer metrics and activity inspector | Running physical jobs, queued reviews, actively inferring actors, settlement waits, reservations and held releases shown separately |
@@ -217,7 +217,7 @@ A terminal receipt received before a checkpoint finishes stays in the inbox. If 
 
 Required regression cases include two actors choosing the same bench; a speaker also proposed for rest; native occupancy changing after reservation; stale or replaced actor identity; one job timing out while the other succeeds; two terminal receipts arriving during one checkpoint; duplicate/lost acknowledgements; old-session receipts; pause/unload/clock jumps; provider failure before admission; and stop/budget exhaustion with accepted jobs still running. Add mutation tests proving that a rejected or incomplete rest grants zero fatigue recovery and that a replayed completion cannot grant it twice.
 
-The first native acceptance case should use at least four disjoint residents: two on two benches plus a two-person conversation. Demonstrate at least ten cumulative seconds of simultaneous verified seated attendance and issued voice playback across delivered turns, with actual participant/slot receipts. A second case overlaps rest with a separate meal or consented trade and verifies exact inventories. Count resting residents as active self-care even though their displacement is near zero.
+The first native acceptance case used four disjoint residents: two on two benches plus two speakers. C2 passed ten cumulative seconds of simultaneous verified seated attendance and subsequently completed voice playback. It did not pass or claim ten continuous seconds. A separate native case must still overlap rest with a meal or consented trade and verify exact inventories. Count resting residents as active self-care even though their displacement is near zero.
 
 Before claiming the queue bottleneck is repaired, compare a controlled backlog with the previous serialized protocol: record admission-to-start time, maximum/median pending age, overdue resident count, active physical job count, purpose-to-effect completion, per-actor starvation and all failures. The target is that unrelated eligible work can start and finish during the long break—not that all residents move constantly or that a faster chart hides missing outcomes. Repeated unforced runs and larger-capacity qualification follow the small native slice; they are not yet implemented or proven.
 

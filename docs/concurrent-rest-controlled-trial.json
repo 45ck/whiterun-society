@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "trial_id": "rest-voice-26c225a511a54e45",
+  "trial_label": "C2",
+  "date": "2026-10-25",
+  "source_sha256": "6b2a92771f2a60fa28940f0b1f60c6ecd77b3f7818c78992378af26ae6654dba",
+  "status": "qualified",
+  "qualified": true,
+  "source_scope": "Curated native protocol evidence. No full state, provider payloads, credentials, process details or personal filesystem paths.",
+  "qualification_scope": "Two authored native rests plus disjoint authored local-voice dialogue; cumulative overlap threshold only. Not an autonomy or human realism test.",
+  "controlled_dialogue": true,
+  "rest_choice_mode": "Authored integration fixture",
+  "rest_model_calls": 0,
+  "cloud_model_calls": 0,
+  "jobs": [
+    {
+      "job_id": "rest-1a4a7ac0366ff37b7d5c78e8",
+      "source_plan": "daily-93-108138",
+      "actor": 108138,
+      "target": 945258,
+      "slot": 0,
+      "completion_at_admission": false,
+      "id": "rest-1a4a7ac0366ff37b7d5c78e8",
+      "phase": "complete",
+      "release_verified": true,
+      "receipt_hash": "6adf44160768e2a24f47269d3de250a42c64a1f093b637a0c96dbc608bd981be",
+      "receipt_acknowledged": true,
+      "outcome": "rested_at_bench"
+    },
+    {
+      "job_id": "rest-3fc241fa858df01611b18f99",
+      "source_plan": "daily-68-108149",
+      "actor": 108149,
+      "target": 586077,
+      "slot": 1,
+      "completion_at_admission": false,
+      "id": "rest-3fc241fa858df01611b18f99",
+      "phase": "complete",
+      "release_verified": true,
+      "receipt_hash": "cf357e0163f6779ced3c42d8a7672d913c29565648b3ac04809b2e6817145eae",
+      "receipt_acknowledged": true,
+      "outcome": "rested_at_bench"
+    }
+  ],
+  "native_rest_completions_verified": true,
+  "conversation": {
+    "id": "rest-voice-26c225a511a54e45",
+    "model_generated": false,
+    "model_calls": 0,
+    "receipt_sha256": "5e962a51ba375c263bfa8d2a86ef1d8bf4d0d771f62672e3ed9efc7b73bcaf7d",
+    "participants": [
+      108162,
+      108170
+    ],
+    "outcome": "social_exchange_completed",
+    "completion_verified": true,
+    "elapsed_seconds": 83.832,
+    "verified_deliveries": 4,
+    "synthesis": [
+      {
+        "turn": 0,
+        "audio_seconds": 8.638,
+        "synthesis_seconds": 2.906
+      },
+      {
+        "turn": 1,
+        "audio_seconds": 8.062,
+        "synthesis_seconds": 2.532
+      },
+      {
+        "turn": 2,
+        "audio_seconds": 8.8413,
+        "synthesis_seconds": 3.094
+      },
+      {
+        "turn": 3,
+        "audio_seconds": 8.8473,
+        "synthesis_seconds": 2.937
+      }
+    ],
+    "native_turns": [
+      {
+        "delivery_id": "speech-dc41dc753e3aed4f343b1e89",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 8.758,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-dc41dc753e3aed4f343b1e89",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 176.3698122584658,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 876,
+            "sum_error_degrees": 186.04330100273557
+          },
+          "playedSeconds": 8.638,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "delivery_id": "speech-c051390103ff33202af7b57d",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 8.174,
+          "facing": [
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-c051390103ff33202af7b57d",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 3.0270831075540627e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 810,
+            "sum_error_degrees": 0.018339563600875408
+          },
+          "playedSeconds": 8.062,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "delivery_id": "speech-4396adce7d39ae3ea3c427e0",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 8.922,
+          "facing": [
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-4396adce7d39ae3ea3c427e0",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0007879305701408157,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 868,
+            "sum_error_degrees": 0.6742707814728419
+          },
+          "playedSeconds": 8.841333,
+          "status": "ended",
+          "volume": 1
+        }
+      },
+      {
+        "delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 8.941,
+          "facing": [
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108170,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-c8f8bbd182cfeca003494bfb",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0007879305701408157,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 898,
+            "sum_error_degrees": 0.7008484636792218
+          },
+          "playedSeconds": 8.847333,
+          "status": "ended",
+          "volume": 1
+        }
+      }
+    ],
+    "audio_scope": "Local Kokoro generation with CEF overlay playback telemetry. Not a recording of device speakers or proof of user audibility. Body yaw is not head/eye gaze or raycast.",
+    "public_audio": [
+      {
+        "file": "audio/concurrent-rest-c2-1.wav",
+        "sha256": "dcb47dcf263095d41f739b8f35acbbd523bc82437783dcd2493341d8505a5450",
+        "delivery_id": "speech-dc41dc753e3aed4f343b1e89",
+        "seconds": 8.638,
+        "speaker": "Jon Battle-Born",
+        "line": "Hello there. It is good to exchange a few words. A brief pause and a little conversation can be pleasant, without any business to settle."
+      },
+      {
+        "file": "audio/concurrent-rest-c2-2.wav",
+        "sha256": "dbc2134854a2b829712da6a96f6bab0d0bfd1371022113b28f275a4480e6841b",
+        "delivery_id": "speech-c051390103ff33202af7b57d",
+        "seconds": 8.062,
+        "speaker": "Heimskr",
+        "line": "Yes, a short rest can be welcome, and so can a friendly word. I like having a moment to listen without needing to make a promise."
+      },
+      {
+        "file": "audio/concurrent-rest-c2-3.wav",
+        "sha256": "5cb79cc1c6330a44585a3ab6e1413c202d6545a378b657604bd0224df49640a8",
+        "delivery_id": "speech-4396adce7d39ae3ea3c427e0",
+        "seconds": 8.8413,
+        "speaker": "Jon Battle-Born",
+        "line": "I understand. Sometimes a simple greeting and a little patience are enough. Thank you for taking the time to exchange a few words with me."
+      },
+      {
+        "file": "audio/concurrent-rest-c2-4.wav",
+        "sha256": "bf8a2a9980f60697614e6392697597732b345238ebc1191a5382c797c079c911",
+        "delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+        "seconds": 8.8473,
+        "speaker": "Heimskr",
+        "line": "You are welcome. I have enjoyed this brief conversation, and I appreciate your courtesy. Take care, and may the rest of your day go well."
+      }
+    ],
+    "audio_source_checkpoint": 3183,
+    "audio_source_checkpoint_sha256": "3a6fea081865069bead1a3f293067b4e989979967474dce37cd94f57e32e26ef"
+  },
+  "required_verified_cumulative_overlap_seconds": 10,
+  "overlap": {
+    "verified_voice_and_two_seated_seconds": 28.359,
+    "longest_continuous_verified_overlap_seconds": 7.375,
+    "unverified_playing_overlap_seconds": 0,
+    "method": "Sum only adjacent samples <=1.75s apart, both exact seats verified and same speech playing; count only subsequently verified completed playback. Report cumulative and continuous time separately."
+  },
+  "sampling": {
+    "sample_count": 119,
+    "two_exact_seated_samples": 67,
+    "speech_playing_samples": 32,
+    "last_sample_elapsed_seconds": 135.0,
+    "sampling_limit_seconds": 600,
+    "first_two_exact_seated_sample_seconds": 39.969,
+    "last_two_exact_seated_sample_seconds": 114.391,
+    "scope": "Correlated update samples; cumulative verified overlap is summed from qualified adjacent samples, not the span between first and last observation."
+  },
+  "final_sample_checkpoint": 3183,
+  "selected_samples": [
+    {
+      "elapsed_seconds": 0.094,
+      "checkpoint": 3125,
+      "exact_seated_actors": [],
+      "two_exact_seated": false,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-ff2d1be667d44e08",
+      "conversation_phase": "complete",
+      "speech_status": null
+    },
+    {
+      "elapsed_seconds": 39.969,
+      "checkpoint": 3137,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "choose_partner",
+      "speech_status": null
+    },
+    {
+      "elapsed_seconds": 53.688,
+      "checkpoint": 3148,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-dc41dc753e3aed4f343b1e89",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 57.875,
+      "checkpoint": 3148,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-dc41dc753e3aed4f343b1e89",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 76.0,
+      "checkpoint": 3156,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-c051390103ff33202af7b57d",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 93.985,
+      "checkpoint": 3164,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-4396adce7d39ae3ea3c427e0",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 112.282,
+      "checkpoint": 3172,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 114.391,
+      "checkpoint": 3172,
+      "exact_seated_actors": [
+        108138,
+        108149
+      ],
+      "two_exact_seated": true,
+      "playing_delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 115.454,
+      "checkpoint": 3172,
+      "exact_seated_actors": [
+        108138
+      ],
+      "two_exact_seated": false,
+      "playing_delivery_id": "speech-c8f8bbd182cfeca003494bfb",
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "speaking",
+      "speech_status": "playing"
+    },
+    {
+      "elapsed_seconds": 135.0,
+      "checkpoint": 3183,
+      "exact_seated_actors": [],
+      "two_exact_seated": false,
+      "playing_delivery_id": null,
+      "conversation_id": "rest-voice-26c225a511a54e45",
+      "conversation_phase": "complete",
+      "speech_status": "ended"
+    }
+  ],
+  "limits": [
+    "Authored choices and four authored lines; no autonomous interaction-selection success claimed.",
+    "28.359 seconds is cumulative; longest continuous verified interval is 7.375 seconds, below 10 seconds.",
+    "No overlapping meal, sale, production or owner-work transaction qualified here.",
+    "No active-job save/load qualification or long-run stability qualification.",
+    "One elevated camera screenshot is clearer but does not qualify all viewing angles or occlusion handling.",
+    "No human realism, lip-sync, eye-contact/raycast or user-audibility claim."
+  ],
+  "prior_trial": "concurrent-rest-first-trial.json",
+  "assets": {
+    "architecture": "images/concurrent-resident-lives.png",
+    "architecture_prompt": "images/concurrent-resident-lives.prompt.md",
+    "actual_clearer_camera": "images/concurrent-rest-voice-native.jpg",
+    "prior_camera_defect": "images/concurrent-rest-camera-occlusion.jpg"
+  }
+}

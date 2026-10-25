@@ -122,6 +122,12 @@ Captured game or observer interface — historical prototype
 
 ![Concurrent rest camera occlusion](images/concurrent-rest-camera-occlusion.jpg)
 
+## Concurrent rest voice native
+
+Captured game or observer interface — historical prototype
+
+![Concurrent rest voice native](images/concurrent-rest-voice-native.jpg)
+
 ## Context window completed hud
 
 Captured game or observer interface — historical prototype
