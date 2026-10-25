@@ -72,6 +72,17 @@ def simulation_metrics(state):
     followup_plans=[p for p in plans if p.get('id') in followup_ids]
     followup_queue=[e for e in (state.get('town') or {}).get('daily',{}).get('queue',[]) if e['id'] in followup_ids]
     economic_turns=[t for p in plans for t in p.get('economic_turns',[]) if t.get('delivered')]
+    negotiations=[p for p in plans if p.get('economic_pair')]
+    committed_trade_ids={r.get('id') for r in state.get('trades',[]) if r.get('status')=='committed' and r.get('id')}
+    trade_outcomes=Counter()
+    for p in negotiations:
+        # A delivered acceptance or a completed plan is not an inventory receipt.
+        category=('sale' if p.get('trade_id') in committed_trade_ids else
+                  'technical_failure' if p.get('phase')=='held' else
+                  'active' if p.get('phase')!='complete' else
+                  'seller_refused' if p.get('outcome')=='seller_declined' else
+                  'buyer_left' if p.get('outcome')=='left_without_food' else 'other')
+        trade_outcomes[category]+=1
     option_counts=[len(d['context']['options']) for p in plans for d in p.get('decisions',[]) if isinstance(d.get('context',{}).get('options'),list)]
     total_actions=sum(actions.values())
     interrupted=[c for c in terminal if c.get('interruption')]
@@ -144,6 +155,9 @@ def simulation_metrics(state):
             'results_with_cost':sum(number(v) for v in model_cost),
             'cost_coverage':'Retained accepted results and claim-bound language rejection receipts. Older rejections and other failed calls may exist only in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
+            'negotiations':{'n':len(negotiations),'outcomes':dict(trade_outcomes),
+                'scope':'Retained voiced trade plans, including staged experiments. Sales require committed inventory receipts; refusals are choices, not technical failures.'},
+            'household_release_sales':sum(r.get('status')=='committed' and bool(r.get('reserve_release')) for r in state.get('trades',[])),
             'voiced_trade_plans':sum(bool(p.get('voiced_trade') and p.get('economic_pair')) for p in plans),
             'delivered_trade_utterances':len(economic_turns),
             'spoken_trade_acts':dict(Counter(t['act'] for t in economic_turns)),

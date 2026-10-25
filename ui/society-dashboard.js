@@ -35,5 +35,18 @@ function renderTownCharts(root,data){
  const flow=section('Economy in this save'),tiles=add(flow,'div',undefined,'town-flow');
  for(const [key,label] of [['committed_sales','Completed sales'],['committed_production','Production shifts'],['committed_meals','Meals eaten'],['active_enterprises','Open businesses']]){const tile=add(tiles,'div');add(tile,'strong',data.economy[key]??'—');add(tile,'span',label);}
  add(flow,'p',data.economy_scope,'town-chart-note');
+ const negotiation=data.economy.negotiations;
+ if(negotiation){
+  const trade=section('What happened to trade offers?');
+  const outcomes=[['sale','Completed sale','#9dc9ac'],['seller_refused','Seller refused','#e0bd72'],['buyer_left','Buyer left','#6ab5b6'],['active','In progress','#a39ac3'],['technical_failure','Technical failure','#d5967f'],['other','Other / unclassified','#8296a0']];
+  for(const [key,label,color] of outcomes){
+   const count=negotiation.outcomes[key]||0,item=add(trade,'div',undefined,'town-need'),line=add(item,'div',undefined,'town-need-label');
+   add(line,'span',label);add(line,'span',`${count} / ${negotiation.n}`);
+   const track=add(item,'div',undefined,'town-need-track');track.setAttribute('role','meter');track.setAttribute('aria-label',label);track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(negotiation.n||1));track.setAttribute('aria-valuenow',String(count));
+   const fill=add(track,'div',undefined,'town-need-fill');fill.style.width=(negotiation.n?count/negotiation.n*100:0)+'%';fill.style.background=color;
+  }
+  add(trade,'p',negotiation.n?negotiation.scope:'No retained voiced trade plans yet.','town-chart-note');
+  add(trade,'p',`${data.economy.household_release_sales??'Unknown'} committed sales released one reserved loaf. Remaining household stock stays reserved.`,'town-chart-note');
+ }
 }
 if(typeof module!=='undefined')module.exports={renderTownCharts};

@@ -45,6 +45,14 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(m['distinct_observed_sale_prices'],1)
         self.assertEqual(m['supported_production_recipes'],1)
 
+    def test_trade_refusals_failures_and_acceptance_are_not_sales(self):
+        cases=[('complete','seller_declined'),('complete','left_without_food'),('held',None),('ready_to_trade',None),('complete','bought_bread'),('complete','bought_bread')]
+        plans=[{'id':str(i),'phase':phase,'outcome':outcome,'economic_pair':[1,2],'trade_id':str(i)} for i,(phase,outcome) in enumerate(cases)]
+        m=simulation_metrics({'plans':plans,'trades':[{'id':'5','status':'committed','command':{}}]})['economy']
+        self.assertEqual(m['negotiations']['n'],6)
+        self.assertEqual(m['negotiations']['outcomes'],{'seller_refused':1,'buyer_left':1,'technical_failure':1,'active':1,'other':1,'sale':1})
+        self.assertEqual(m['committed_sales'],1)
+
     def test_nonfinite_and_negative_timings_are_not_samples(self):
         self.assertEqual(distribution([None,True,-1,float('nan'),2,4]),{'n':2,'mean':3,'median':3,'p95':4})
 

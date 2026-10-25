@@ -170,5 +170,37 @@
     "line": "Sorry to make you repeat yourself. I'll leave you be now. Safe travels.",
     "encounter": "Standing control to conversation and back",
     "source": "Generated Kokoro utterance used in a completed native encounter; not a game recording. Repetition and dialogue grounding remain imperfect."
+  },
+  {
+    "file": "reserve-offer-1.wav",
+    "speaker": "Bergritte Battle-Born",
+    "line": "Would you sell me one loaf for 3 gold?",
+    "sha256": "7a93fc2074901598cc5c46a1bd3faf738b2b3347cdf84b953c890ba6383e946b",
+    "encounter": "A household reserve is a choice: offer and refusal",
+    "source": "Deterministic economic wording selected by real Jev decisions and spoken by Kokoro; native playback verified, not a recording of game audio."
+  },
+  {
+    "file": "reserve-offer-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "f20f2fa4cf3d4d16afac311e1cd630d0c382decc2b6afd11abdadf3706a1994a",
+    "encounter": "A household reserve is a choice: offer and refusal",
+    "source": "Deterministic economic wording selected by real Jev decisions and spoken by Kokoro; native playback verified, not a recording of game audio."
+  },
+  {
+    "file": "reserve-offer-3.wav",
+    "speaker": "Bergritte Battle-Born",
+    "line": "Would 5 gold change your mind? That is my final offer for one loaf.",
+    "sha256": "1dbd1b9bbccef57e69a40847f8e045e746ca51b002d94517ae8fa8e50e4f487f",
+    "encounter": "A household reserve is a choice: offer and refusal",
+    "source": "Deterministic economic wording selected by real Jev decisions and spoken by Kokoro; native playback verified, not a recording of game audio."
+  },
+  {
+    "file": "reserve-offer-4.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "4603c5a09cc3d5ef81bd56812334ddd0cf538c13f79e989d3d0314ab5790ac1f",
+    "encounter": "A household reserve is a choice: offer and refusal",
+    "source": "Deterministic economic wording selected by real Jev decisions and spoken by Kokoro; native playback verified, not a recording of game audio."
   }
 ]

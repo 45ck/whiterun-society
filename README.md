@@ -8,6 +8,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Resident ownership and voices:** [native continuity qualification](docs/resident-continuity.md): 29 enrolled residents, separate standby/task charts, two completed four-line encounters, and saved policy recovery. Standby and audible output are verified separately from natural dialogue and economic success.
 
+**Trade choices and audio:** sellers can reconsider one reserved loaf for an actual offer without unlocking their remaining household stock. A live four-line negotiation ended in refusal with unchanged inventories; the charts distinguish refusal, technical failure and committed sale. NPC voice output is now set to Realtek, with software output signal verified. [Implementation, audio and limits](docs/reserve-reconsideration.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
 **Visual documentation:** [all 30 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
@@ -182,7 +184,7 @@ python tools/launch_demo.py --root D:\WhiterunLab
 
 The helper starts the local service, deploys the bridge, and launches the isolated profile. It waits up to three minutes for a new game session to report a loaded player, cell and actor. A stale heartbeat cannot prove a new launch succeeded. Progress and timings appear in the console; `runtime/last-launch.json` records readiness evidence. By default the profile starts a fresh Whiterun observation scenario automatically, bypassing character creation and Helgen. Add `--save WS-YOUR-SAVE` to restore an existing managed scenario and verify its recorded local proof. This does not import a campaign save.
 
-Observer mode protects the player from combat and uses a raised free camera. The game runs while unfocused so development does not stop NPC routines. Nearby actors are read from the engine, filtered for loaded 3D, and reported every two seconds. Only numeric form IDs survive between frames; native handles are reacquired before commands. The separate economic simulation is not yet driving those actors. A prepared playable character and a return-to-player control are future work.
+The RTS observer uses a raised free camera and disables player movement, fighting and activation. The game runs while unfocused. Nearby actors are read from the engine and reported every two seconds; native handles are reacquired before commands. Native society rules now drive bounded resident choices, exchanges and encounters. The standalone farm–bakery simulation remains separate, and meaningful persistent routines remain unfinished. Direct player participation is deferred.
 
 ## Physical trade journal
 

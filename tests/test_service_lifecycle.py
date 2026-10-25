@@ -82,6 +82,14 @@ class ServiceLifecycleTests(unittest.TestCase):
                 self.assertEqual(post('/heartbeat',observation)['director_control_receipt']['status'],'rejected')
                 observation.pop('director_control')
                 self.assertEqual(control_reply['presentation']['dashboard']['population'],1)
+                for invalid in (None,True,'',' '*5,'x'*161):
+                    with self.assertRaises(urllib.error.HTTPError) as invalid_output:
+                        post('/command',{'kind':'select_voice_output','output':invalid})
+                    self.assertEqual(invalid_output.exception.code,400)
+                output_command=post('/command',{'kind':'select_voice_output','output':' Realtek '})
+                self.assertEqual(output_command['output'],'Realtek')
+                observation['ack']={'id':output_command['id'],'status':'applied'}
+                post('/heartbeat',observation);observation.pop('ack')
                 specification={'id':'new-bakery','expected_revision':0,'name':'New bakery','custodian':7,
                     'active':True,'capabilities':['bread_recipe','retail_food'],'production_policy':{'wage_gold':4}}
                 observer_headers={'Origin':origin,'X-Observer-Token':observer_token,'Content-Type':'application/json'}

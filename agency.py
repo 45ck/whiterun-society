@@ -166,8 +166,10 @@ class Agency:
             options = [{'id': 'decline', 'effect': 'Decline the request; keep your goods.'}]
             if inventory['bread'] > 0 and (not stock['allocated'] or stock['for_sale']>0):
                 options.append({'id': 'sell_bread', 'effect': f'Agree to sell one carried loaf for {price} gold to the nearby buyer.'})
+            elif inventory['bread'] > 0:
+                options.append({'id':'sell_reserved_bread','effect':f'Reconsider your household allocation for this offer only: release ONE of your {inventory["bread"]} reserved loaves and sell it for {price} gold. Your household will have one less loaf. Keep your standing reserve policy for all remaining stock. You may instead refuse.'})
             buyer_name=person_view(self.active,actor,plan['actor'])['name']
-            information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer.'
+            information = f'{buyer_name} is nearby and offers {price} gold for one loaf. Choose freely whether to sell. Refusal does not reveal your motive to the buyer. A household allocation is your revisable intention, not an external ban: weigh your own hunger, remaining food, money and memories before releasing a reserved loaf. No household stock or motive is disclosed to the buyer.'
         elif reconsidering:
             options = [{'id': 'leave_without_food', 'effect': 'End this negotiation without buying food; preserve your money and leave the seller alone.'}]
             options += visits()
@@ -251,6 +253,8 @@ class Agency:
             raise ValueError('The chosen employment terms changed while deciding')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
+        if chosen in ('sell_bread','sell_reserved_bread') and current['own_food_allocation']!=claim['context']['own_food_allocation']:
+            raise ValueError('Household allocation changed while deciding')
         state = copy.deepcopy(self.active)
         updated = state['plans'][-1]
         updated['decisions'].append({'actor_id': current['actor_id'], 'context': claim['context'],
@@ -293,8 +297,15 @@ class Agency:
             updated['dynamic_route']=dynamic_route(updated['actor'],updated['target'])
         elif action == 'raise_offer':
             updated.update(phase='consent', unit_price=5)
-        elif action == 'sell_bread':
+        elif action in ('sell_bread','sell_reserved_bread'):
             updated['phase'] = 'ready_to_trade'
+            if action=='sell_reserved_bread':
+                updated['reserve_release']={'plan_id':event_id,'trade_id':updated['trade_id'],
+                    'buyer':updated['actor'],'seller':updated['target'],'quantity':1,
+                    'unit_price':updated.get('unit_price',3),
+                    'policy':copy.deepcopy(state['people'][str(updated['target'])].get('food_policy')),
+                    'inventory':{k:current['observed_inventory'][k] for k in ('gold','bread')},
+                    'decision_claim_id':claim_id}
         elif action == 'decline':
             self._remember_refusal(state, updated)
             if updated.get('unit_price', 3) == 3:
@@ -316,7 +327,7 @@ class Agency:
             updated.update(phase='complete',outcome='bought_bread')
         else:
             updated.update(phase='complete', outcome='deferred')
-        speech_act={'raise_offer':'counteroffer','sell_bread':'accept','decline':'refuse','leave_without_food':'leave'}.get(action)
+        speech_act={'raise_offer':'counteroffer','sell_bread':'accept','sell_reserved_bread':'accept','decline':'refuse','leave_without_food':'leave'}.get(action)
         if claim['stage']=='reconsider' and action.startswith(('visit_','visit_person_')) and updated.get('economic_attendance'):speech_act='leave'
         if speech_act:self.queue_trade_speech(state,updated,speech_act)
         return {'checkpoint': self._write(state, 'resident decision accepted'), 'plan': updated}

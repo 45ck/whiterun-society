@@ -102,7 +102,7 @@ on('browserMessage',event=>{
   if(message?.type==='society-director'&&['play','pause'].includes(message.action)){
     directorControl={id:'control-'+Date.now()+'-'+Math.random().toString(16).slice(2,10),action:message.action};return;
   }
-  if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null};return;}
+  if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null,selection:message.selection||null};return;}
   if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30)};return;}
   if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='free';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
@@ -294,6 +294,7 @@ on('update', () => {
           if (global.getValue()!==command.next) throw new Error('Checkpoint write not observed');
         }
         else if (command.kind === 'test_voice_output') {if(!sp.browser)throw Error('Overlay unavailable');sp.browser.executeJavaScript('window.whiterunTestVoice && window.whiterunTestVoice('+JSON.stringify(command.id)+');');}
+        else if (command.kind === 'select_voice_output') {if(!sp.browser)throw Error('Overlay unavailable');sp.browser.executeJavaScript('window.whiterunSelectVoiceOutput && window.whiterunSelectVoiceOutput('+JSON.stringify(command.id)+','+JSON.stringify(command.output)+');');}
         else if (command.kind === 'notify') sp.Debug.notification('Whiterun Society: command received from local service');
         else if (command.kind === 'prepare_market') {
           if (checkpointValue()!==0) throw new Error('Demo setup requires a new-world marker');

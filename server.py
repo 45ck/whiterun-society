@@ -257,7 +257,9 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command'] or world.pending(bridge['session']): raise ValueError('command pending')
-                    if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to','test_voice_output'): raise ValueError('unknown command')
+                    if data.get('kind') not in ('notify','look_at_player','save_game','load_game','prepare_market','walk_to','test_voice_output','select_voice_output'): raise ValueError('unknown command')
+                    if data['kind']=='select_voice_output' and (not isinstance(data.get('output'),str) or not 1<=len(data['output'].strip())<=160):
+                        raise ValueError('Choose a permitted audio output label or default')
                     if (world.agency_busy() or world.conversation_busy() or world.routines_busy()) and data['kind'] in ('prepare_market','walk_to'):
                         raise ValueError('A resident currently owns the task')
                     if data['kind']=='test_voice_output' and (director.status()['running'] or world.agency_busy() or world.conversation_busy() or world.routines_busy()):
@@ -283,6 +285,7 @@ def main():
                         if data['kind']=='load_game' and not path.is_file(): raise ValueError('Isolated save not found')
                     command={'id':secrets.token_hex(8),'kind':data['kind'],'session':bridge['session']}
                     if data['kind'] in ('save_game','load_game'): command['name']=data['name']
+                    if data['kind']=='select_voice_output': command['output']=data['output'].strip()
                     if data['kind']=='walk_to': command.update(actor=data['actor'],target=data['target'],method=data.get('method','path'),dynamic=data.get('dynamic') is True)
                     bridge['command']=command
                     self.reply(202,command)

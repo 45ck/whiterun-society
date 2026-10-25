@@ -55,3 +55,7 @@ The bounded director now has operator start/stop controls, social/economic inter
 ## Standing resident ownership
 
 The additive priority-90 continuity layer is native-qualified below priority-95 interactions. All 29 initialized residents have save-bound slots; two guard pairs completed eight spoken lines and returned to standing control. The first activity remains explicit standby, not a personal daily routine. Dialogue still shows repetitive questions and unsupported activity claims; current-activity context is now supplied. Persistent work/home/leisure destinations, endogenous businesses, connected production, politics and native RTS input acceptance remain required. [Implementation, audio routing and evidence](resident-continuity.md)
+
+## Food allocation and visible negotiation outcomes
+
+A household reserve no longer removes the seller's agency at an actual offer. One-off consent can release one loaf at agreed terms while preserving the reserve on remaining stock. A native Jev trial still refused both authored offers; it produced four voiced lines and no sale, with all 17 saved fields restored. Charts now distinguish refusal from technical failure and inventory-backed sale. Realtek voice routing is selected and signal-tested at Calvin's request. Next work must qualify a consented native sale and address production and rest bottlenecks without forcing successful outcomes or inventing resources. [Protocol, evidence and limits](reserve-reconsideration.md)

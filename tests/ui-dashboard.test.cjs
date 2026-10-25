@@ -47,7 +47,7 @@ const testVoice=(options={})=>{
  w.setInterval=()=>1;w.skyrimPlatform={sendMessage:m=>messages.push(m)};
  class FakeAudio{constructor(){this.volume=1;this.muted=false;audio.push(this);}setSinkId(id){this.sink=id;return options.fail?Promise.reject(new Error('Unavailable output')):Promise.resolve();}play(){this.played=true;return Promise.resolve();}pause(){this.paused=true;}}
  w.Audio=FakeAudio;w.HTMLMediaElement.prototype.setSinkId=FakeAudio.prototype.setSinkId;
- Object.defineProperty(w.navigator,'mediaDevices',{value:{enumerateDevices:async()=>[{kind:'audiooutput',deviceId:'default',label:'System speakers'},{kind:'audiooutput',deviceId:'headset',label:'Headset'}],addEventListener(){}}});
+ Object.defineProperty(w.navigator,'mediaDevices',{value:{enumerateDevices:async()=>options.devices||[{kind:'audiooutput',deviceId:'default',label:'System speakers'},{kind:'audiooutput',deviceId:'headset',label:'Headset'}],addEventListener(){}}});
  for(const script of w.document.scripts)vm.runInContext(script.src?read(path.basename(script.src)):script.textContent,dom.getInternalVMContext());
  return {dom,w,messages,audio};
 };
@@ -58,6 +58,30 @@ test('voice output preference routes the next line without changing Windows or r
 });
 test('an unavailable selected voice output fails visibly instead of claiming playback',async()=>{
  const {dom,w,audio,messages}=testVoice({fail:true});try{await new Promise(r=>setImmediate(r));w.whiterunSpeak({id:'test-line',actor:1,line:'Hello',tone:'calm',audio:{file:'fixture.wav'}});await new Promise(r=>setImmediate(r));assert.equal(audio[0].played,undefined);assert.equal(messages.find(m=>m.type==='society-speech').status,'failed');
+ }finally{dom.window.close();}
+});
+test('operator voice selection requires a unique permitted device and preserves the selection after a rejected request',async()=>{
+ const {dom,w,audio,messages}=testVoice();try{
+ await w.whiterunSelectVoiceOutput('pick','Headset');assert.equal(messages.at(-1).selection.status,'selected');
+ await w.whiterunSelectVoiceOutput('missing','Realtek');assert.equal(messages.at(-1).selection.status,'failed');
+ w.whiterunSpeak({id:'line',actor:1,line:'Hello',audio:{file:'fixture.wav'}});await new Promise(r=>setImmediate(r));assert.equal(audio[0].sink,'headset');
+ await w.whiterunSelectVoiceOutput('default','default');assert.equal(w.localStorage.getItem('whiterun-voice-output'),'');
+ }finally{dom.window.close();}
+});
+test('trade chart separates refused offers, active agreements and committed sales',()=>{
+ const {dom,w}=native();try{const d=dashboard();d.economy.negotiations={n:3,outcomes:{seller_refused:1,active:2},scope:'Receipts only'};d.economy.household_release_sales=0;
+ const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
+ assert.equal(root.querySelector('[aria-label="Seller refused"]').getAttribute('aria-valuenow'),'1');
+ assert.equal(root.querySelector('[aria-label="Completed sale"]').getAttribute('aria-valuenow'),'0');
+ assert.equal(root.querySelector('[aria-label="In progress"]').getAttribute('aria-valuemax'),'3');
+ assert.match(root.textContent,/0 committed sales released one reserved loaf/);
+ d.economy.negotiations={n:0,outcomes:{}};w.renderTownCharts(root,d);assert.match(root.textContent,/No retained voiced trade plans/);assert.equal(root.innerHTML.includes('NaN'),false);
+ }finally{dom.window.close();}
+});
+test('ambiguous output labels cannot silently select the wrong speakers',async()=>{
+ const {dom,w,messages}=testVoice({devices:[{kind:'audiooutput',deviceId:'a',label:'Realtek front'},{kind:'audiooutput',deviceId:'b',label:'Realtek rear'}]});try{
+ await w.whiterunSelectVoiceOutput('ambiguous','Realtek');assert.equal(messages.at(-1).selection.status,'failed');assert.equal(messages.at(-1).selection.reason,'Ambiguous output label');
+ assert.equal(w.localStorage.getItem('whiterun-voice-output'),null);
  }finally{dom.window.close();}
 });
 

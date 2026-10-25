@@ -1,13 +1,14 @@
 // Select a permitted output without requesting microphone access or changing Windows defaults.
-let voiceSink='',voiceOutputLabel='Windows default',voiceOutputError=null;
+let voiceSink='',voiceOutputLabel='Windows default',voiceOutputError=null,voiceSelection=null;
 try{voiceSink=localStorage.getItem('whiterun-voice-output')||'';}catch(_){}
-function reportVoiceOutput(extra={}){send({type:'society-audio-output',label:voiceOutputLabel,error:voiceOutputError,supported:typeof HTMLMediaElement.prototype.setSinkId==='function',...extra});}
+function reportVoiceOutput(extra={}){send({type:'society-audio-output',label:voiceOutputLabel,error:voiceOutputError,selection:voiceSelection,supported:typeof HTMLMediaElement.prototype.setSinkId==='function',...extra});}
 async function refreshVoiceOutputs(){
  const select=document.getElementById('voice-output'),status=document.getElementById('voice-output-status');
- select.replaceChildren();const add=(id,label)=>{const option=document.createElement('option');option.value=id;option.textContent=label;select.append(option);};add('','Windows default');
+ const add=(id,label)=>{const option=document.createElement('option');option.value=id;option.textContent=label;select.append(option);};
  const supported=typeof HTMLMediaElement.prototype.setSinkId==='function';select.disabled=!supported;
  try{
   const devices=await navigator.mediaDevices?.enumerateDevices?.()||[];
+  select.replaceChildren();add('','Windows default');
   for(const device of devices.filter(d=>d.kind==='audiooutput'&&!['default','communications'].includes(d.deviceId)))add(device.deviceId,device.label||'Permitted output '+select.options.length);
   if(!Array.from(select.options).some(o=>o.value===voiceSink)){voiceSink='';try{localStorage.removeItem('whiterun-voice-output');}catch(_){}voiceOutputError='Saved output unavailable; using Windows default';}
   select.value=voiceSink;voiceOutputLabel=select.selectedOptions[0].textContent;
@@ -26,6 +27,20 @@ document.getElementById('voice-output').onchange=event=>{
  voiceSink=event.target.value;voiceOutputError=null;voiceOutputLabel=event.target.selectedOptions[0].textContent;
  try{localStorage.setItem('whiterun-voice-output',voiceSink);}catch(_){}
  document.getElementById('voice-output-status').textContent=voiceOutputLabel+' · applies to next voice';reportVoiceOutput();
+};
+// The local operator command uses this same permitted-device picker. It never
+// changes the system default or guesses a device ID from another application.
+window.whiterunSelectVoiceOutput=async(id,requested)=>{
+ await refreshVoiceOutputs();
+ const select=document.getElementById('voice-output'),label=String(requested).trim().toLowerCase();
+ const matches=Array.from(select.options).filter(o=>label==='default'?o.value==='':o.value!==''&&o.textContent.toLowerCase().includes(label));
+ if(!label||matches.length!==1||(select.disabled&&label!=='default')){
+  voiceSelection={id,status:'failed',requested,reason:matches.length>1?'Ambiguous output label':'Output unavailable or unsupported'};
+ }else{
+  select.value=matches[0].value;select.onchange({target:select});
+  voiceSelection={id,status:'selected',requested,label:voiceOutputLabel};
+ }
+ reportVoiceOutput();
 };
 const chooseOutput=document.getElementById('voice-output-choose');chooseOutput.hidden=typeof navigator.mediaDevices?.selectAudioOutput!=='function';
 chooseOutput.onclick=async()=>{try{const device=await navigator.mediaDevices.selectAudioOutput();voiceSink=device.deviceId;voiceOutputError=null;try{localStorage.setItem('whiterun-voice-output',voiceSink);}catch(_){}await refreshVoiceOutputs();}catch(error){voiceOutputError='Output selection: '+error.name;document.getElementById('voice-output-status').textContent=voiceOutputError;reportVoiceOutput();}};

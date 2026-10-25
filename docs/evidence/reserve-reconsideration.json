@@ -1,0 +1,447 @@
+{
+  "scope": "One operator-selected pending need review; model selected actions. Native refusal evidence, not an autonomous sale or natural-language negotiation.",
+  "event": "daily-29-108168",
+  "actor": 108168,
+  "seller": 108149,
+  "model_calls": 4,
+  "status": "complete",
+  "outcome": "seller_declined",
+  "decisions": [
+    {
+      "actor_id": 108168,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "seek_bread",
+        "emotion": "unspecified",
+        "reason": "Selected action: Walk to Carlotta Valentia, a publicly registered food seller, and offer 3 gold for one loaf. Stock is unknown and they may refuse."
+      },
+      "elapsed_seconds": 0.813,
+      "probabilities": {
+        "defer": 0.01,
+        "rest_at_bench": 0.23,
+        "seek_bread": 0.4,
+        "seek_work": 0.18,
+        "visit_person_108140": 0,
+        "visit_person_108149": 0.07,
+        "visit_person_108164": 0,
+        "visit_person_108167": 0.06,
+        "visit_person_108170": 0.05,
+        "visit_person_108185": 0,
+        "visit_person_225390": 0
+      },
+      "usage": {
+        "cost": 0.000212394,
+        "input_tokens": 5057,
+        "output_tokens": 159
+      }
+    },
+    {
+      "actor_id": 108149,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "decline",
+        "emotion": "unspecified",
+        "reason": "Selected action: Decline the request; keep your goods."
+      },
+      "elapsed_seconds": 0.579,
+      "probabilities": {
+        "decline": 0.94,
+        "sell_reserved_bread": 0.06
+      },
+      "usage": {
+        "cost": 0.000179886,
+        "input_tokens": 4283,
+        "output_tokens": 36
+      }
+    },
+    {
+      "actor_id": 108168,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "raise_offer",
+        "emotion": "unspecified",
+        "reason": "Selected action: Make one final offer of 5 gold for one loaf instead of 3. Pay only if the seller agrees; she may refuse again."
+      },
+      "elapsed_seconds": 0.61,
+      "probabilities": {
+        "leave_without_food": 0.04,
+        "raise_offer": 0.54,
+        "visit_person_108140": 0,
+        "visit_person_108149": 0.05,
+        "visit_person_108164": 0.01,
+        "visit_person_108167": 0.16,
+        "visit_person_108170": 0.18,
+        "visit_person_108185": 0.01,
+        "visit_person_225390": 0.01
+      },
+      "usage": {
+        "cost": 0.00020097,
+        "input_tokens": 4785,
+        "output_tokens": 140
+      }
+    },
+    {
+      "actor_id": 108149,
+      "model": "typesafe/jev-1.14-20261014",
+      "decision": {
+        "action_id": "decline",
+        "emotion": "unspecified",
+        "reason": "Selected action: Decline the request; keep your goods."
+      },
+      "elapsed_seconds": 0.578,
+      "probabilities": {
+        "decline": 0.85,
+        "sell_reserved_bread": 0.15
+      },
+      "usage": {
+        "cost": 0.000179886,
+        "input_tokens": 4283,
+        "output_tokens": 36
+      }
+    }
+  ],
+  "seller_options": [
+    [
+      "decline",
+      "sell_reserved_bread"
+    ],
+    [
+      "decline",
+      "sell_reserved_bread"
+    ]
+  ],
+  "turns": [
+    {
+      "act": "offer",
+      "actor": 108168,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "7a93fc2074901598cc5c46a1bd3faf738b2b3347cdf84b953c890ba6383e946b.wav",
+        "seconds": 2.336,
+        "sha256": "7a93fc2074901598cc5c46a1bd3faf738b2b3347cdf84b953c890ba6383e946b",
+        "voice": "bf_emma"
+      },
+      "delivered": true,
+      "delivery_id": "speech-2ed85050837194442eb6dcd5",
+      "ended_at": 1792898938.94011,
+      "line": "Would you sell me one loaf for 3 gold?",
+      "listener": 108149,
+      "origin_session": "1792898886595-0.2679397642547421",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.493,
+        "facing": [
+          {
+            "actor": 108168,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-2ed85050837194442eb6dcd5",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 174.0891534714998,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 258,
+          "sum_error_degrees": 177.06092028178568
+        },
+        "playedSeconds": 2.336,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792898935.2039676,
+      "resume_phase": "consent",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "refuse",
+      "actor": 108149,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "f20f2fa4cf3d4d16afac311e1cd630d0c382decc2b6afd11abdadf3706a1994a.wav",
+        "seconds": 2.8393,
+        "sha256": "f20f2fa4cf3d4d16afac311e1cd630d0c382decc2b6afd11abdadf3706a1994a",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "delivery_id": "speech-3c443793ebb1a6cb10c5a2ab",
+      "ended_at": 1792898946.7090256,
+      "line": "No, I will not sell a loaf on those terms.",
+      "listener": 108168,
+      "origin_session": "1792898886595-0.2679397642547421",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.938,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108168,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-3c443793ebb1a6cb10c5a2ab",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.0007470783398275671,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 302,
+          "sum_error_degrees": 0.08392062365396669
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792898942.836319,
+      "resume_phase": "reconsider",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "counteroffer",
+      "actor": 108168,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "1dbd1b9bbccef57e69a40847f8e045e746ca51b002d94517ae8fa8e50e4f487f.wav",
+        "seconds": 4.404,
+        "sha256": "1dbd1b9bbccef57e69a40847f8e045e746ca51b002d94517ae8fa8e50e4f487f",
+        "voice": "bf_emma"
+      },
+      "delivered": true,
+      "delivery_id": "speech-0b0e4bfa1490e35a251a8ac5",
+      "ended_at": 1792898956.6094227,
+      "line": "Would 5 gold change your mind? That is my final offer for one loaf.",
+      "listener": 108149,
+      "origin_session": "1792898886595-0.2679397642547421",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 4.611,
+        "facing": [
+          {
+            "actor": 108168,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-0b0e4bfa1490e35a251a8ac5",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.00040114941214142164,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 476,
+          "sum_error_degrees": 0.18811419001121976
+        },
+        "playedSeconds": 4.404,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792898950.9722655,
+      "resume_phase": "consent",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    },
+    {
+      "act": "refuse",
+      "actor": 108149,
+      "audio": {
+        "engine": "kokoro-onnx-0.6.1",
+        "file": "4603c5a09cc3d5ef81bd56812334ddd0cf538c13f79e989d3d0314ab5790ac1f.wav",
+        "seconds": 2.8393,
+        "sha256": "4603c5a09cc3d5ef81bd56812334ddd0cf538c13f79e989d3d0314ab5790ac1f",
+        "voice": "bf_alice"
+      },
+      "delivered": true,
+      "delivery_id": "speech-d406d2c9aef0c21abf45d3c9",
+      "ended_at": 1792898964.8840418,
+      "line": "No, I will not sell a loaf on those terms.",
+      "listener": 108168,
+      "origin_session": "1792898886595-0.2679397642547421",
+      "playback": {
+        "channel": "CEF overlay audio",
+        "elapsedSeconds": 2.936,
+        "facing": [
+          {
+            "actor": 108149,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          },
+          {
+            "actor": 108168,
+            "bodyTurnRequested": true,
+            "headLookRequested": true
+          }
+        ],
+        "id": "speech-d406d2c9aef0c21abf45d3c9",
+        "muted": false,
+        "nearbyThroughout": true,
+        "orientation": {
+          "max_error_degrees": 0.00040114941214142164,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 302,
+          "sum_error_degrees": 0.11548575496294688
+        },
+        "playedSeconds": 2.839333,
+        "status": "ended",
+        "volume": 1
+      },
+      "prepared_at": 1792898960.757192,
+      "resume_phase": "complete",
+      "source": "Deterministic wording of accepted economic terms; not generated dialogue"
+    }
+  ],
+  "inventory": {
+    "before": [
+      {
+        "id": 108168,
+        "name": "Bergritte Battle-Born",
+        "inventory": {
+          "gold": 35,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      {
+        "id": 108149,
+        "name": "Carlotta Valentia",
+        "inventory": {
+          "gold": 102,
+          "bread": 5,
+          "grain": 20
+        }
+      }
+    ],
+    "after": [
+      {
+        "id": 108168,
+        "name": "Bergritte Battle-Born",
+        "inventory": {
+          "gold": 35,
+          "bread": 0,
+          "grain": 0
+        }
+      },
+      {
+        "id": 108149,
+        "name": "Carlotta Valentia",
+        "inventory": {
+          "gold": 102,
+          "bread": 5,
+          "grain": 20
+        }
+      }
+    ]
+  },
+  "food_policy": {
+    "before": {
+      "mode": "household_all",
+      "observed_bread": 5,
+      "reserve_target": 0,
+      "reviewed_day": 1.5014872550964355,
+      "source": "resident selected among authored allocation policies",
+      "source_event": "daily-9-108149"
+    },
+    "after": {
+      "mode": "household_all",
+      "observed_bread": 5,
+      "reserve_target": 0,
+      "reviewed_day": 1.5014872550964355,
+      "source": "resident selected among authored allocation policies",
+      "source_event": "daily-9-108149"
+    }
+  },
+  "save_restore": {
+    "name": "WS-Reserve-20261025-BE",
+    "checkpoint": 1659,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "scene_handoffs": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "audio_diagnostic": {
+    "selection": {
+      "label": "Speakers (Realtek(R) Audio)",
+      "error": null,
+      "supported": true,
+      "status": "ready",
+      "test": {
+        "error": null,
+        "id": "b6f4f7148d13d2e3",
+        "muted": false,
+        "playedSeconds": 2.74,
+        "status": "ended",
+        "volume": 1
+      },
+      "selection": {
+        "id": "fa37c02fb6bbd57b",
+        "label": "Speakers (Realtek(R) Audio)",
+        "requested": "Realtek",
+        "status": "selected"
+      }
+    },
+    "outputs": [
+      {
+        "device": "DELL S3222DGM (NVIDIA High Definition Audio)",
+        "endpoint_peak": 0.0,
+        "game_process_peak": null
+      },
+      {
+        "device": "Speakers (Realtek(R) Audio)",
+        "endpoint_peak": 0.430528461933136,
+        "game_process_peak": 0.24014025926589966
+      },
+      {
+        "device": "Speakers (Yeti Stereo Microphone)",
+        "endpoint_peak": 0.0,
+        "game_process_peak": null
+      }
+    ],
+    "scope": "Saved sample after the economic encounter, not a new resident interaction; output signal, not human listening."
+  },
+  "restored_control": {
+    "player_controls": {
+      "request": "requested",
+      "movement": false,
+      "fighting": false,
+      "activate": false
+    },
+    "audio_output": {
+      "label": "Speakers (Realtek(R) Audio)",
+      "error": null,
+      "supported": true,
+      "status": "ready",
+      "test": null,
+      "selection": null
+    },
+    "plan_release_required": false
+  }
+}

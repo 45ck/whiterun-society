@@ -25,6 +25,7 @@ from enterprises import Enterprises
 from economic_speech import EconomicSpeech
 from scene_handoffs import SceneHandoffs
 from resident_control import ResidentControl
+from trade_consent import reserved_sale_consent
 
 MAX_MARKER = 2**24 - 1
 
@@ -192,13 +193,15 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         if before['buyer']['gold'] < cost or before['seller']['bread'] < quantity:
             raise ValueError('Insufficient observed funds or bread')
         stock = allocation(self.active['people'].get(str(seller), {}), before['seller'])
-        if stock['allocated'] and stock['for_sale'] < quantity:
+        reserve_consent=reserved_sale_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before['seller'])
+        if stock['allocated'] and stock['for_sale'] < quantity and not reserve_consent:
             raise ValueError('This trade would spend the resident\'s household reserve')
         after = {'buyer': {'gold': before['buyer']['gold']-cost, 'bread': before['buyer']['bread']+quantity},
                  'seller': {'gold': before['seller']['gold']+cost, 'bread': before['seller']['bread']-quantity}}
         command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
                        quantity=quantity, cost=cost, before=before, after=after)
         record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
+        if reserve_consent:record['reserve_release']=copy.deepcopy(reserve_consent)
         state = copy.deepcopy(self.active)
         state['pending'] = record
         if agency_plan:
