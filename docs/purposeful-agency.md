@@ -122,7 +122,7 @@ The personal-goal lane held after a valid model result was stored while a foregr
 
 The resulting save `WS-Purposeful-20261025-BV` at checkpoint 3054 restored all 17 compared fields. This proves the captured save state, including goal follow-through; it does not prove long-term stability.
 
-The worker repair retains paid results while waiting for native effects, bounded by 600 seconds and the saved claim lifetime. Only an explicit same-session, pre-mutation busy response permits result-submission retry. Inference is not repeated. Failures now preserve their stage and exception category. Native acceptance of this repair is being tested separately.
+The worker repair retains paid results while waiting for native effects, bounded by 600 seconds and the saved claim lifetime. Only an explicit same-session, pre-mutation busy response permits result-submission retry. Inference is not repeated. Failures now preserve their stage and exception category. The extended wait has regression coverage; a fresh long-native-effect overlap is still unqualified.
 
 The native screenshot before the UI correction also exposed a historical scripted scenario appearing as current activity. That card is now removed from live movie view; retained scenarios appear in collapsed, explicitly controlled history using actual saved actors and outcomes.
 
@@ -132,9 +132,17 @@ The most important remaining throughput issue is structural: foreground rest/wor
 
 ## Test scope
 
-The integrated check set reported **501 passing Python tests**, followed by **five focused integration checks**, and **204 passing JavaScript tests**. These validate the exercised rules, queue ordering, policy snapshots, follow-through contracts and native adapter behaviour. The controlled in-game trial adds physical evidence for stationary owner work. Neither test counts nor that fixture establish all-resident agency or human realism.
+Revision `e702d19` passed **535 Python tests and 209 JavaScript tests on both hosted Windows and Linux**, including generated plugin builds and Windows Papyrus compilation. These validate the exercised rules, queue ordering, policy snapshots, follow-through contracts and native adapter behaviour. The controlled in-game trial adds physical evidence for stationary owner work. Neither test counts nor that fixture establish all-resident agency or human realism.
 
 Later deadline enforcement exposed six legacy fixtures that omitted a positive scheduling window. Their action/release assertions were preserved and their clocks made deterministic. Revision `e8b82bd` passed the complete 519-test Python suite and JavaScript checks on both hosted Windows and Linux; the current local JavaScript suite passed 209 tests. The settlement repair has 31 additional focused checks; its hosted result is tracked separately.
+
+## Final native goal qualification
+
+The follow-up exposed two further defects before inference: evolved goal state exceeded the context limit, and claim identity was inspected before the checkpoint containing it had bound. The first is repaired with a lossless compact action catalogue and bounded prior-goal execution metadata. The second now waits for binding before validating identity. Their failed records remain distinct from the repaired trial.
+
+A fresh native wave then made **nine model calls, accepted all nine decisions and confirmed all nine arrivals**. All 29 compared inventory accounts remained unchanged, and no rest recovery was granted merely for arrival. Reported provider cost was **US$0.002328732**. Every choice was rest-oriented travel, so this validates execution in a tired population, not broad behavioural variety. The new save at checkpoint 3091 restored all 17 compared fields. [Final qualification and retained failures](purposeful-final-qualification.json).
+
+The lab remains paused after the bounded trials. No continuous broadcast or automatic paid loop was started.
 
 Required next evidence includes unforced focus selection followed by actual meals/rest/work/conversations, repeated fair dispatch under a backlog, foreground speech while meaningful goals progress, save/resume of unresolved follow-through and owner work, and native failures that release cleanly without duplicated effects. Broader supply chains, causal relationship consequences, verified productive places/animations and long-run observation remain active work.
 

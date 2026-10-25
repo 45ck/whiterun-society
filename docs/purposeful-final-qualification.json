@@ -1,0 +1,69 @@
+{
+  "schema": "purposeful-final-qualification-v1",
+  "date": "2026-10-25",
+  "repaired_native_wave": {
+    "id": "personal-goals-postcontext-bx",
+    "status": "complete",
+    "model_calls": 9,
+    "accepted": 9,
+    "rejected": 0,
+    "confirmed_arrivals": 9,
+    "actors": [
+      108138,
+      108165,
+      108167,
+      108170,
+      108183,
+      108185,
+      225392,
+      225408,
+      225390
+    ],
+    "chosen_families": {
+      "visit_to_review_rest": 9
+    },
+    "reported_provider_cost_usd": 0.002328732,
+    "inventories_equal": true,
+    "inventory_accounts_compared": 29,
+    "new_rest_effects": 0,
+    "source_sha256": "68e2f203cb1c7c4994a6582ad6534221a3b93cacd19181c48160d70ecc5f5105"
+  },
+  "save_reload": {
+    "name": "WS-GoalsContext-20261025-BX",
+    "checkpoint": 3091,
+    "fields_matched": 17,
+    "fields_compared": 17
+  },
+  "validation": {
+    "commit": "e702d19b75071bffd46668fb9ac9155673efbd22",
+    "python_tests": 535,
+    "javascript_tests": 209,
+    "hosted_platforms": [
+      "ubuntu-latest",
+      "windows-latest"
+    ],
+    "status": "passed",
+    "ci_url": "https://github.com/45ck/whiterun-society/actions/runs/40181514109"
+  },
+  "retained_failures": [
+    {
+      "run_id": "society-d38d490306ac4689",
+      "stage": "claim_request",
+      "model_calls": 0,
+      "cause": "Evolved personal-goal context exceeded attention budget; redundant fields now losslessly compacted"
+    },
+    {
+      "wave_id": "personal-goals-postcontext-bw",
+      "stage": "claim_binding",
+      "model_calls": 0,
+      "cause": "Claim identity inspected before checkpoint binding; now validated after transition clears",
+      "recovery": "Explicitly closed with failed results, no invented decisions; fresh inference waited for normal cooldown"
+    }
+  ],
+  "limits": [
+    "All nine decisions chose rest-oriented travel; this is not evidence of diverse human behaviour.",
+    "Arrival did not grant rest recovery, production or a sale.",
+    "The extended paid-result wait passed regression tests, but the long-native-effect overlap has not yet been requalified in game.",
+    "Independent concurrent rest/work and reliable native RTS input remain unfinished."
+  ]
+}
