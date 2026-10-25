@@ -3,6 +3,7 @@ import unittest
 import test_social as fixtures
 from social import social_candidates, social_context
 from metrics import simulation_metrics
+from catalog_fixture import native_ack
 
 
 class SocialFollowthroughTests(unittest.TestCase):
@@ -40,7 +41,7 @@ class SocialFollowthroughTests(unittest.TestCase):
         command=self.world.pending(self.obs['session']);self.assertEqual(command['kind'],'inventory_consume')
         actor=next(r for r in self.obs['residents'] if r['id']==99)
         self.assertNotEqual(actor['inventory'],command['after'])
-        actor['inventory']=copy.deepcopy(command['after']);self.obs['ack']={'id':command['id'],'status':'applied'}
+        actor['inventory']=copy.deepcopy(command['after']);self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['outcome'],'ate_bread')
         self.assertEqual(self.world.agency_plan()['conversation_followups'][0]['encounter_id'],c['id'])

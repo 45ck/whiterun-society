@@ -2,6 +2,7 @@ import copy
 import unittest
 import test_lineage as fixtures
 from agency_metrics import economic_network
+from catalog_fixture import native_ack
 
 
 class TradeCommodityReceiptTests(unittest.TestCase):
@@ -33,7 +34,7 @@ class TradeCommodityReceiptTests(unittest.TestCase):
         c=self.world.pending(self.obs['session']);self.assertEqual(c['commodity'],'grain')
         for role,actor in [('buyer',108186),('seller',108149)]:
             next(a for a in self.obs['residents'] if a['id']==actor)['inventory']=copy.deepcopy(c['after'][role])
-        self.obs['ack']={'id':'grain-1','status':'applied'};self.world.observe(self.obs);self.bind()
+        self.obs['ack']=native_ack(c);self.world.observe(self.obs);self.bind()
         self.world.active['trades'].append({'id':'held','status':'held','command':{'commodity':'iron'}})
         m=economic_network(self.world.active)
         self.assertEqual(m['distinct_goods'],2);self.assertEqual(m['goods_receipts'],{'bread':1,'grain':1})

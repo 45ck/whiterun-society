@@ -29,7 +29,7 @@ class PlacesTests(unittest.TestCase):
         self.start();context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertIn('check_market',[o['id'] for o in context['options']])
         self.assertNotIn('seek_bread',[o['id'] for o in context['options']])
-        self.assertEqual(context['observed_inventory'],{'gold':9,'bread':0})
+        self.assertEqual(context['observed_inventory'],{'gold':9,'bread':0,'grain':0})
         self.decide('check_market')
         command=self.world.pending('a')
         self.assertEqual((command['target'],command['target_kind'],command['dynamic']),(MARKET,'place',True))

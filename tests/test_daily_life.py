@@ -1,6 +1,7 @@
 import copy
 import unittest
 import test_population
+from catalog_fixture import native_ack
 
 
 class DailyLifeTests(unittest.TestCase):
@@ -203,7 +204,7 @@ class DailyLifeTests(unittest.TestCase):
         command=self.world.pending(self.obs['session'])
         actor=next(a for a in self.obs['residents'] if a['id']==99)
         actor['inventory'].update(command['after'])
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertAlmostEqual(self.world.active['people']['99']['needs']['hunger'],.185)
         event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)

@@ -2,6 +2,7 @@ import copy
 import unittest
 import test_labour
 from labour import work_opportunities
+from catalog_fixture import native_ack
 
 
 class EmploymentSpeechTests(unittest.TestCase):
@@ -95,7 +96,7 @@ class EmploymentSpeechTests(unittest.TestCase):
         command=self.world.pending(self.obs['session']);self.assertEqual(command['kind'],'inventory_produce')
         for a in self.obs['residents']:
             if a['id'] in (99,108149):a['inventory']=copy.deepcopy(command['after']['worker' if a['id']==99 else 'employer'])
-        self.obs['ack']={'id':command['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
         self.assertEqual(contracts()[0]['status'],'completed')
         self.assertNotEqual(self.attend(),first,'A completed native attendance command cannot be replayed')
         self.assertIn('received 2 gold',self.speak()['line']);self.release()
