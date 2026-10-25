@@ -116,6 +116,19 @@ class PreparationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
             prepare.apply_dependency_repairs(Path(directory), manifest['dependency_helper_repairs'])
 
+    def test_dependency_repairs_cannot_be_missing_duplicated_or_expanded(self):
+        for change in ['missing', 'duplicate', 'extra_literal']:
+            manifest = self.manifest()
+            repairs = manifest['dependency_helper_repairs']
+            if change == 'missing':
+                repairs.pop()
+            elif change == 'duplicate':
+                repairs[1] = repairs[0]
+            else:
+                repairs[1]['replacements'].append({'old': 'unreviewed', 'new': 'unreviewed'})
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                prepare.validate_manifest(manifest)
+
 
 if __name__ == '__main__':
     unittest.main()

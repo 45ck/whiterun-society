@@ -74,6 +74,28 @@
       "reason": "Hosted run 40185640549: pkgconf1.8.0 asset returned404 from all six mirrors. Preserve application/library sources and update only the pkg-config helper URL and checksum.",
       "local_asset_verification": "Not downloaded: MSYS2 mirrors reported expired TLS certificates. Verification was not disabled. Package SHA512 comes from the exact Microsoft helper source above.",
       "application_source_modified": false
+    },
+    {
+      "id": "runtime-retired-msys2-archive",
+      "path": "scripts/cmake/vcpkg_acquire_msys.cmake",
+      "original_sha256": "439bdfd5ffb301ba19a974e7c759dacea6750442ec207f2d0520a1faf11301c0",
+      "result_sha256": "f725a824bed6e4175a57672235db65b233ce58794e9d7ee2cf98b7e0a1ce15ff",
+      "replacements": [
+        {
+          "old": "https://mirror.msys2.org/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst",
+          "new": "https://mirror.msys2.org/msys/x86_64/msys2-runtime-3.6.10-4-x86_64.pkg.tar.zst"
+        },
+        {
+          "old": "fbdcf2572d242b14ef3b39f29a6119ee58705bad651c9da48ffd11e80637e8d767d20ed5d562f67d92eecd01f7fc3bc351af9d4f84fb9b321d2a9aff858b3619",
+          "new": "b0380c668456dbbcbee5695181be446357b9e1765a51cdf7140f247ccb06c37e064c79b17a0d50f3faa21eb13d08f228608ceb729a87c0862742e8b6161bc281"
+        }
+      ],
+      "source_commit": "817892b0ecbc6af994dd6df999c73faf795adbf2",
+      "source_url": "https://raw.githubusercontent.com/microsoft/vcpkg/817892b0ecbc6af994dd6df999c73faf795adbf2/scripts/cmake/vcpkg_acquire_msys.cmake",
+      "source_helper_sha256": "fb2fa02e0a8cca4b9422ec3ea120821b6a4017078c0347dd3dc80da1abb5c228",
+      "reason": "Hosted run40186289068 fetched pinned pkgconf successfully, then automatically requested retired MSYS2 runtime3.4.6. Replace only runtime URL andchecksum.",
+      "local_asset_verification": "Not downloaded or executed locally. Exact package SHA512 verified in pinned Microsoft source. TLS verification remains enabled.",
+      "application_source_modified": false
     }
   ]
 }

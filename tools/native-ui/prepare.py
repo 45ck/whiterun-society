@@ -10,6 +10,10 @@ import urllib.request
 import zipfile
 
 HERE = Path(__file__).resolve().parent
+DEPENDENCY_REPAIR_PATHS = {
+    'pkgconfig-retired-msys2-archive': 'scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake',
+    'runtime-retired-msys2-archive': 'scripts/cmake/vcpkg_acquire_msys.cmake',
+}
 
 
 def sha256(path):
@@ -46,16 +50,16 @@ def validate_manifest(manifest):
     if vcpkg['triplet'] != 'x64-windows-static':
         raise ValueError('Unreviewed triplet')
     repairs = manifest.get('dependency_helper_repairs', [])
-    if len(repairs) != 1 or repairs[0].get('id') != 'pkgconfig-retired-msys2-archive':
-        raise ValueError('Exactly the reviewed pkg-config dependency repair is required')
-    repair = repairs[0]
-    if repair.get('path') != 'scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake' or repair.get('application_source_modified') is not False:
-        raise ValueError('Unreviewed dependency repair scope')
-    for key in ['original_sha256', 'result_sha256', 'source_helper_sha256']:
-        if not re.fullmatch('[0-9a-f]{64}', repair.get(key, '')):
-            raise ValueError('Dependency repair checksum missing')
-    if len(repair.get('replacements', [])) != 2:
-        raise ValueError('Dependency repair must replace only the package URL and hash')
+    if len(repairs) != 2 or {item.get('id') for item in repairs} != set(DEPENDENCY_REPAIR_PATHS):
+        raise ValueError('Exactly the two reviewed dependency repairs are required')
+    for repair in repairs:
+        if repair.get('path') != DEPENDENCY_REPAIR_PATHS[repair['id']] or repair.get('application_source_modified') is not False:
+            raise ValueError('Unreviewed dependency repair scope')
+        for key in ['original_sha256', 'result_sha256', 'source_helper_sha256']:
+            if not re.fullmatch('[0-9a-f]{64}', repair.get(key, '')):
+                raise ValueError('Dependency repair checksum missing')
+        if len(repair.get('replacements', [])) != 2:
+            raise ValueError('Dependency repair must replace only the package URL and hash')
 
 
 def repair_bytes(original, repair):
@@ -76,7 +80,7 @@ def apply_dependency_repairs(root, repairs):
     receipts = []
     for repair in repairs:
         # This is deliberately not a generic arbitrary-file patch interface.
-        if repair['path'] != 'scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake':
+        if repair.get('id') not in DEPENDENCY_REPAIR_PATHS or repair['path'] != DEPENDENCY_REPAIR_PATHS[repair['id']]:
             raise ValueError('Unreviewed dependency helper path')
         target = Path(root) / repair['path']
         target.write_bytes(repair_bytes(target.read_bytes(), repair))
