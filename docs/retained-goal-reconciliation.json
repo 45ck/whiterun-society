@@ -1,0 +1,88 @@
+{
+  "scope": "Explicit reconciliation of the existing paid result; original failed run retained unchanged",
+  "wave_id": "goals-8b35558691b54725927d",
+  "new_model_calls": 0,
+  "original_model_calls": 1,
+  "original_receipt_sha256": "0d9117ef2134e8026b99843877056f4d1a31134da98bc7ccfbf8e39504bf4e30",
+  "status": "complete",
+  "response": {
+    "checkpoint": 3053,
+    "results": [
+      {
+        "actor": 182543,
+        "accepted": true,
+        "failure": null,
+        "decision": {
+          "action_id": "visit_rest_586075",
+          "reason": "Selected action: Walk to Whiterun bench (575.1 game units), then reconsider rest. Review a seated break at an observed available bench. Rest, exact furniture attendance and recovery require a later validated action.",
+          "emotion": "unspecified"
+        },
+        "model": "typesafe/jev-1.14-20261014",
+        "provenance": "model_decision",
+        "claimed_day": 10.86920166015625,
+        "decided_day": 11.01479434967041,
+        "attempted": true,
+        "option_count": 24,
+        "option_families": [
+          "quiet",
+          "review_food",
+          "review_rest",
+          "review_social",
+          "review_work",
+          "visit_bench_area",
+          "visit_public_place",
+          "visit_to_review_food",
+          "visit_to_review_rest",
+          "visit_to_review_social"
+        ],
+        "chosen_family": "visit_to_review_rest",
+        "elapsed_seconds": 1.078,
+        "usage": {
+          "cost": 0.000258426
+        }
+      }
+    ]
+  },
+  "results": [
+    {
+      "accepted": true,
+      "actor": 182543,
+      "attempted": true,
+      "chosen_family": "visit_to_review_rest",
+      "claimed_day": 10.86920166015625,
+      "decided_day": 11.01479434967041,
+      "decision": {
+        "action_id": "visit_rest_586075",
+        "emotion": "unspecified",
+        "reason": "Selected action: Walk to Whiterun bench (575.1 game units), then reconsider rest. Review a seated break at an observed available bench. Rest, exact furniture attendance and recovery require a later validated action."
+      },
+      "elapsed_seconds": 1.078,
+      "failure": null,
+      "model": "typesafe/jev-1.14-20261014",
+      "option_count": 24,
+      "option_families": [
+        "quiet",
+        "review_food",
+        "review_rest",
+        "review_social",
+        "review_work",
+        "visit_bench_area",
+        "visit_public_place",
+        "visit_to_review_food",
+        "visit_to_review_rest",
+        "visit_to_review_social"
+      ],
+      "provenance": "model_decision",
+      "usage": {
+        "cost": 0.000258426
+      }
+    }
+  ],
+  "goal": {
+    "id": "goals-8b35558691b54725927d-182543",
+    "phase": "travelling",
+    "focus": "rest",
+    "action_id": "visit_rest_586075"
+  },
+  "original_receipt_unchanged": true
+}

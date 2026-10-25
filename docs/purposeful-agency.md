@@ -97,9 +97,44 @@ The first live attempt was deliberately stopped after one completed employer ref
 
 [Offline request-size evidence](goal-context-window-evidence.json). Expired, unstarted social intentions with no available partner now release their follow-through instead of trapping the resident indefinitely. Started interactions retain their existing settlement protocol. A resident's body heading no longer rotates a continuous single-subject movie shot, though geometry clearance remains unverified. Paused runs are labelled Paused rather than complete.
 
-## Validation and open acceptance work
+## Autonomous native run and retained failure
+
+The next bounded run completed seven foreground activities: three spoken employer refusals, three verified seated rests and one meal. Six goal-linked reviews completed, while 20 remained pending. Rest intentions sometimes led to asking about work or eating after reconsideration; the original focus did not force the later action.
+
+| Measured item | Result and scope |
+| --- | --- |
+| Observation | 545 samples across 667.448 wall seconds, including terminal observation |
+| Personal inference | 29 calls; two completed waves and one held wave |
+| Peak movement | 27 position-observed movers; 25 owned travelling packages; 23 travel intentions, sampled separately |
+| Voice delivery | Six ended native overlay playback receipts, 33.379 seconds total |
+| Economic effects | No new sales or production; one carried bread consumed; aggregate gold and grain unchanged |
+| Completed self-care | Three verified rests and one meal |
+| Personal follow-through | Six completed goal-linked reviews out of 26; 20 still pending |
+| Reported provider cost | US$0.009839528; excludes local compute and is not a billing reconciliation |
+
+[Sanitized terminal evidence](purposeful-run-evidence.json) · [Six selected synthesized voice assets](https://45ck.github.io/whiterun-society/#voice-example).
+
+The dialogue remains too formal and repetitive. An initiator says “Thanks for asking” while making the inquiry, and another reply uses “Thank you for reaching out.” Measured reply preparation gaps were 9.07–12.38 seconds. Ended playback does not establish natural timing, role-appropriate wording, lip sync or human realism.
+
+![Native run showing retained personal-goal failure](images/purposeful-run-held-goal-lane.jpg)
+
+The personal-goal lane held after a valid model result was stored while a foreground rest occupied the native action channel beyond a 40-second settlement window. The original run retains that failure. After it settled, explicit reconciliation applied the same still-valid claim and stored result, with **zero additional model calls** and the original receipt unchanged. The resulting goal was accepted and travelled; this was recovery, not a new autonomous trial. [Separate reconciliation receipt](retained-goal-reconciliation.json).
+
+The resulting save `WS-Purposeful-20261025-BV` at checkpoint 3054 restored all 17 compared fields. This proves the captured save state, including goal follow-through; it does not prove long-term stability.
+
+The worker repair retains paid results while waiting for native effects, bounded by 600 seconds and the saved claim lifetime. Only an explicit same-session, pre-mutation busy response permits result-submission retry. Inference is not repeated. Failures now preserve their stage and exception category. Native acceptance of this repair is being tested separately.
+
+The native screenshot before the UI correction also exposed a historical scripted scenario appearing as current activity. That card is now removed from live movie view; retained scenarios appear in collapsed, explicitly controlled history using actual saved actors and outcomes.
+
+![Earlier native rest review with the misleading historical card](images/purposeful-live-rest-review.jpg)
+
+The most important remaining throughput issue is structural: foreground rest/work occupies the shared action channel, so other meaningful reviews wait. [The next concurrent-activity slice](simulation-roadmap.md) separates long attendance from short serialized effect commits. Quiet and legitimate rest remain valid; waiting behind an unrelated long action is a capacity defect.
+
+## Test scope
 
 The integrated check set reported **501 passing Python tests**, followed by **five focused integration checks**, and **204 passing JavaScript tests**. These validate the exercised rules, queue ordering, policy snapshots, follow-through contracts and native adapter behaviour. The controlled in-game trial adds physical evidence for stationary owner work. Neither test counts nor that fixture establish all-resident agency or human realism.
+
+Later deadline enforcement exposed six legacy fixtures that omitted a positive scheduling window. Their action/release assertions were preserved and their clocks made deterministic. Revision `e8b82bd` passed the complete 519-test Python suite and JavaScript checks on both hosted Windows and Linux; the current local JavaScript suite passed 209 tests. The settlement repair has 31 additional focused checks; its hosted result is tracked separately.
 
 Required next evidence includes unforced focus selection followed by actual meals/rest/work/conversations, repeated fair dispatch under a backlog, foreground speech while meaningful goals progress, save/resume of unresolved follow-through and owner work, and native failures that release cleanly without duplicated effects. Broader supply chains, causal relationship consequences, verified productive places/animations and long-run observation remain active work.
 

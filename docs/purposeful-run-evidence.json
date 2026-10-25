@@ -1,0 +1,826 @@
+{
+  "schema": "purposeful-run-evidence-v1",
+  "run_id": "society-68654a51636c433f",
+  "status": "complete",
+  "scope": "Sanitized terminal observation of one native Skyrim run. No hypothetical successes, raw snapshots, credentials or provider prompts.",
+  "sources": {
+    "run_sha256": "1e75cad286e9e1d60da656a653d9f724837cefdb90b2f2cd6d24a4dac877dd99",
+    "sampler_sha256": "68c3dbb1403286b7e2fd9af1993a49eebd163fe30ccc67504988c4bb6c01f281",
+    "sample_count": 545
+  },
+  "duration_seconds": 667.448,
+  "duration_scope": "First to last telemetry sample, including terminal observation; not configured session budget.",
+  "events": [
+    {
+      "id": "daily-58-108156",
+      "actor": 108156,
+      "status": "complete",
+      "outcome": "employer_declined",
+      "model_calls": 2,
+      "name": "Adrianne Avenicci",
+      "intent": "ask_work",
+      "phases": [
+        "choose",
+        "travelling",
+        "economic_attending",
+        "economic_propose",
+        "economic_select",
+        "economic_synthesize",
+        "economic_speaking",
+        "job_offer",
+        "economic_propose",
+        "economic_select",
+        "economic_synthesize",
+        "economic_speaking",
+        "complete"
+      ],
+      "receipt_sha256": "78259d91ed804d3abb5446c09766de39ad194d71fe820e2c11e35b0ff481718f"
+    },
+    {
+      "id": "daily-58-108165",
+      "actor": 108165,
+      "status": "complete",
+      "outcome": "rested_at_bench",
+      "model_calls": 1,
+      "name": "Olfina Gray-Mane",
+      "intent": null,
+      "phases": [
+        "choose",
+        "resting",
+        "complete"
+      ],
+      "receipt_sha256": "7ec978072698808e0d35234afba8754599d411cd5d63ed62db5d17992cba70f1"
+    },
+    {
+      "id": "daily-58-108167",
+      "actor": 108167,
+      "status": "complete",
+      "outcome": "employer_declined",
+      "model_calls": 2,
+      "name": "Olfrid Battle-Born",
+      "intent": "ask_work",
+      "phases": [
+        "choose",
+        "travelling",
+        "economic_attending",
+        "economic_propose",
+        "economic_select",
+        "economic_synthesize",
+        "economic_speaking",
+        "job_offer",
+        "economic_propose",
+        "economic_select",
+        "economic_synthesize",
+        "economic_speaking",
+        "complete"
+      ],
+      "receipt_sha256": "7a2c17e19c19c1b44b3e0c61bf65880d707fb508fab4e0067d09b590a17086ff"
+    },
+    {
+      "id": "daily-58-108170",
+      "actor": 108170,
+      "status": "complete",
+      "outcome": "rested_at_bench",
+      "model_calls": 1,
+      "name": "Jon Battle-Born",
+      "intent": null,
+      "phases": [
+        "choose",
+        "resting",
+        "complete"
+      ],
+      "receipt_sha256": "157e49c279fc0409f7ebd27e74b6ab56151837fd19777f9894e2d6fd40e380ca"
+    },
+    {
+      "id": "daily-61-108183",
+      "actor": 108183,
+      "status": "complete",
+      "outcome": "ate_bread",
+      "model_calls": 1,
+      "name": "Aela the Huntress",
+      "intent": null,
+      "phases": [
+        "choose",
+        "consuming",
+        "complete"
+      ],
+      "receipt_sha256": "503192433f31ed6e13334d2005469015751a3d5d53dc2dcce27a1cfb7a5f68da"
+    },
+    {
+      "id": "daily-61-108185",
+      "actor": 108185,
+      "status": "complete",
+      "outcome": "employer_declined",
+      "model_calls": 2,
+      "name": "Olava the Feeble",
+      "intent": "ask_work",
+      "phases": [
+        "choose",
+        "travelling",
+        "economic_attending",
+        "economic_propose",
+        "economic_synthesize",
+        "economic_speaking",
+        "job_offer",
+        "economic_propose",
+        "economic_select",
+        "economic_synthesize",
+        "economic_speaking",
+        "complete"
+      ],
+      "receipt_sha256": "eadf3703e112dc973ede9fb3710694e6a6624a3acf6da5587b2eb84d47faae90"
+    },
+    {
+      "id": "daily-61-225390",
+      "actor": 225390,
+      "status": "complete",
+      "outcome": "rested_at_bench",
+      "model_calls": 1,
+      "name": "Whiterun Guard",
+      "intent": null,
+      "phases": [
+        "choose",
+        "resting",
+        "complete"
+      ],
+      "receipt_sha256": "62746a3b0698b6db37accf4d64d8eb2fb923a30aeb317035c3b447a505e8a452"
+    }
+  ],
+  "outcome_counts": {
+    "employer_declined": 3,
+    "rested_at_bench": 3,
+    "ate_bread": 1
+  },
+  "goal_lane": {
+    "status": "held",
+    "error": "Goal worker did not settle; lane held without replay",
+    "model_calls": 29,
+    "completed_waves": 2,
+    "held_waves": 1,
+    "waves": [
+      {
+        "id": "goals-04aaacb2808c47b1a75f",
+        "status": "complete",
+        "model_calls": 27,
+        "reserved_limit": 27,
+        "exit_code": 0,
+        "reported_cost": 0.007017276,
+        "cost_reports": 27,
+        "failed_results": 0
+      },
+      {
+        "id": "goals-e6b5ec5175044306b15c",
+        "status": "complete",
+        "model_calls": 1,
+        "reserved_limit": 1,
+        "exit_code": 0,
+        "reported_cost": 0.000259686,
+        "cost_reports": 1,
+        "failed_results": 0
+      },
+      {
+        "id": "goals-8b35558691b54725927d",
+        "status": "held",
+        "model_calls": 1,
+        "reserved_limit": 1,
+        "exit_code": 1,
+        "reserved_unconfirmed_calls": 0,
+        "error": "Goal worker did not settle; lane held without replay"
+      }
+    ],
+    "held_paid_result_retained": true,
+    "diagnosis": "A valid paid result was persisted but not committed. A foreground rest spanned the 40-second settlement window. No exact exception stack was retained, so the precise wait that raised is unconfirmed.",
+    "recovery": "Not included. Any later recovery must be separately evidenced; the held result remains a failure in this run."
+  },
+  "goal_followthrough": {
+    "linked_reviews": 26,
+    "status_counts": {
+      "complete": 6,
+      "pending": 20
+    },
+    "focus_counts": {
+      "rest": 22,
+      "food": 4
+    },
+    "reviews": [
+      {
+        "id": "daily-58-108165",
+        "actor": 108165,
+        "status": "complete",
+        "outcome": "rested_at_bench",
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108165",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-58-108167",
+        "actor": 108167,
+        "status": "complete",
+        "outcome": "employer_declined",
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108167",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-58-108170",
+        "actor": 108170,
+        "status": "complete",
+        "outcome": "rested_at_bench",
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108170",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-61-108183",
+        "actor": 108183,
+        "status": "complete",
+        "outcome": "ate_bread",
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108183",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-61-108185",
+        "actor": 108185,
+        "status": "complete",
+        "outcome": "employer_declined",
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108185",
+            "focus": "food",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-61-225390",
+        "actor": 225390,
+        "status": "complete",
+        "outcome": "rested_at_bench",
+        "links": [
+          {
+            "goal_id": "goals-e6b5ec5175044306b15c-225390",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-61-225392",
+        "actor": 225392,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225392",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-61-225408",
+        "actor": 225408,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225408",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-66-108138",
+        "actor": 108138,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108138",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-66-108197",
+        "actor": 108197,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108197",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-66-225368",
+        "actor": 225368,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225368",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-68-108149",
+        "actor": 108149,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108149",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-68-108160",
+        "actor": 108160,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108160",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-68-108169",
+        "actor": 108169,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108169",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-68-225409",
+        "actor": 225409,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225409",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-72-108164",
+        "actor": 108164,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108164",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-72-843123",
+        "actor": 843123,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-843123",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-74-1106614",
+        "actor": 1106614,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-1106614",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-75-108140",
+        "actor": 108140,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108140",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-75-108186",
+        "actor": 108186,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108186",
+            "focus": "food",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-77-108196",
+        "actor": 108196,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108196",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-79-225366",
+        "actor": 225366,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225366",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-80-225386",
+        "actor": 225386,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-225386",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "goal-5c292656d355bf21b0dc503c",
+        "actor": 108162,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108162",
+            "focus": "food",
+            "trigger": "decision",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "daily-83-1048823",
+        "actor": 1048823,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-1048823",
+            "focus": "food",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      },
+      {
+        "id": "goal-a7d67955b703f57cd28eca07",
+        "actor": 108156,
+        "status": "pending",
+        "outcome": null,
+        "links": [
+          {
+            "goal_id": "goals-04aaacb2808c47b1a75f-108156",
+            "focus": "rest",
+            "trigger": "arrival",
+            "model": "typesafe/jev-1.14-20261014",
+            "policy_version": "goal-opportunities-v1"
+          }
+        ]
+      }
+    ],
+    "scope": "Goal arrival triggers independent review. A different action is not goal-intent fulfillment; pending reviews are not completed."
+  },
+  "speech": {
+    "delivered_turns": 6,
+    "played_seconds": 33.379291,
+    "turns": [
+      {
+        "event_id": "daily-58-108156",
+        "actor": 108156,
+        "speaker": "Adrianne Avenicci",
+        "listener": 108149,
+        "act": "work_request",
+        "line": "I am a bit tired. Are you hiring for that 10-minute bread-making shift? Thanks for asking.",
+        "asset": "audio/purposeful-58-108156-1.wav",
+        "sha256": "76d482f4ccea75444952fabc3d573fa9b663693aae723e1dc59688e7e3e5f9fd",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 5.242,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 49.41949231371723,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 548,
+          "sum_error_degrees": 54.24697331567711
+        }
+      },
+      {
+        "event_id": "daily-58-108156",
+        "actor": 108149,
+        "speaker": "Carlotta Valentia",
+        "listener": 108156,
+        "act": "work_unavailable",
+        "line": "I'm feeling pretty worn out myself. I am not offering you a shift right now. Thanks for understanding.",
+        "asset": "audio/purposeful-58-108156-2.wav",
+        "sha256": "d2b77ee05d40d37ae50b5b8a64627fa3643e024d1673772a9d18bbcabf90bcd2",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 6.485958,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 0.0002478505314229551,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 680,
+          "sum_error_degrees": 0.005574494180109468
+        }
+      },
+      {
+        "event_id": "daily-58-108167",
+        "actor": 108167,
+        "speaker": "Olfrid Battle-Born",
+        "listener": 108149,
+        "act": "work_request",
+        "line": "I appreciate you taking the time. Are you hiring for that 10-minute bread-making shift? Thank you for considering it.",
+        "asset": "audio/purposeful-58-108167-1.wav",
+        "sha256": "15e37590d3b8b182c15ad8799bedf26836f6fcfd419c6929eadce776c8099d61",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 7.177333,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 25.175063998797896,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 718,
+          "sum_error_degrees": 52.00892343336238
+        }
+      },
+      {
+        "event_id": "daily-58-108167",
+        "actor": 108149,
+        "speaker": "Carlotta Valentia",
+        "listener": 108167,
+        "act": "work_unavailable",
+        "line": "I appreciate your interest. I am not offering you a shift right now. Thank you for reaching out.",
+        "asset": "audio/purposeful-58-108167-2.wav",
+        "sha256": "2e8849782f7e70315b8ba86f69a6c93601abcdbae772c0709d5978377ba0d365",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 5.9,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 0.002953474661467226,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 590,
+          "sum_error_degrees": 0.5872362394854918
+        }
+      },
+      {
+        "event_id": "daily-61-108185",
+        "actor": 108185,
+        "speaker": "Olava the Feeble",
+        "listener": 108149,
+        "act": "work_request",
+        "line": "Are you hiring for that 10-minute bread-making shift?",
+        "asset": "audio/purposeful-61-108185-1.wav",
+        "sha256": "5fec29dc6d6e27d94c3a4079608b1f128f1c58709319713c7af1fd22e04edea6",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 3.153333,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 90.59470257031751,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 336,
+          "sum_error_degrees": 11496.85049820465
+        }
+      },
+      {
+        "event_id": "daily-61-108185",
+        "actor": 108149,
+        "speaker": "Carlotta Valentia",
+        "listener": 108185,
+        "act": "work_unavailable",
+        "line": "I do not have any openings tonight. I am not offering you a shift right now. Take care.",
+        "asset": "audio/purposeful-61-108185-2.wav",
+        "sha256": "b4f56c3eb593738f326c5abeb9966cc67baf56a48687908b89d0676315d6d190",
+        "engine": "kokoro-onnx-0.6.1",
+        "played_seconds": 5.420667,
+        "channel": "CEF overlay audio",
+        "status": "ended",
+        "nearby_throughout": true,
+        "muted": false,
+        "volume": 1,
+        "orientation": {
+          "max_error_degrees": 51.71835257963562,
+          "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+          "samples": 560,
+          "sum_error_degrees": 22786.647667676778
+        }
+      }
+    ],
+    "prepared_reply_gaps": [
+      {
+        "event_id": "daily-58-108156",
+        "seconds": 12.384989,
+        "definition": "Next selected turn prepared_at minus previous turn ended_at; not measured physical audible silence"
+      },
+      {
+        "event_id": "daily-58-108167",
+        "seconds": 9.547841,
+        "definition": "Next selected turn prepared_at minus previous turn ended_at; not measured physical audible silence"
+      },
+      {
+        "event_id": "daily-61-108185",
+        "seconds": 9.073478,
+        "definition": "Next selected turn prepared_at minus previous turn ended_at; not measured physical audible silence"
+      }
+    ],
+    "scope": "Ended, unmuted CEF overlay receipts with nearby participants. Audio assets are synthesized files, not captured game audio. Physical speaker audibility, lip sync and eye-raycast contact are not qualified."
+  },
+  "economy": {
+    "new_ledger_records": {
+      "trades": 0,
+      "production": 0,
+      "consumptions": 1,
+      "rests": 3
+    },
+    "matched_inventory_actors": 29,
+    "totals_before": {
+      "gold": 964,
+      "bread": 5,
+      "grain": 20
+    },
+    "totals_after": {
+      "gold": 964,
+      "bread": 4,
+      "grain": 20
+    },
+    "totals_delta": {
+      "gold": 0,
+      "bread": -1,
+      "grain": 0
+    },
+    "changed_inventories": [
+      {
+        "actor": 108183,
+        "name": "Aela the Huntress",
+        "before": {
+          "gold": 20,
+          "bread": 1,
+          "grain": 0
+        },
+        "after": {
+          "gold": 20,
+          "bread": 0,
+          "grain": 0
+        }
+      }
+    ],
+    "scope": "Only matched actor inventory observations and new ledger records in this run. Zero trades and production must not be described as a functioning productive economy."
+  },
+  "spatial": {
+    "peak_observed_moving": 27,
+    "peak_owned_travelling_packages": 25,
+    "peak_travel_intentions": 23,
+    "scope": "Observed moving is position telemetry; owned travelling is native package state. Peaks may occur at different samples and neither implies productive activity."
+  },
+  "provider_reported_costs": {
+    "economic_decisions_usd": 0.00130746,
+    "wording_and_selection_usd": 0.00099668,
+    "completed_goal_waves_usd": 0.007276962,
+    "held_goal_inference_usd": 0.000258426,
+    "total_reported_usd": 0.009839528
+  },
+  "cost_scope": "USD usage cost fields persisted in these exact economic and goal receipts, including the held paid inference. Excludes local speech compute, hardware, game and service costs; not a provider invoice audit.",
+  "economic_call_counts": {
+    "economic_decisions": 10,
+    "wording_and_selection": 11
+  },
+  "limitations": [
+    "One operative bread employer repeatedly declined while fatigued and reserving household food.",
+    "Three voiced refusals are social/economic negotiation evidence, not successful sales or production.",
+    "Long serial foreground work and held goal lane left follow-up reviews pending.",
+    "Psychological variables are authored simulation state, not validated human realism scores."
+  ]
+}

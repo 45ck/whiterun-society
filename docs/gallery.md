@@ -338,6 +338,18 @@ Captured game or observer interface — historical prototype
 
 ![Prepared speech native](images/prepared-speech-native.jpg)
 
+## Purposeful live rest review
+
+Captured game or observer interface — historical prototype
+
+![Purposeful live rest review](images/purposeful-live-rest-review.jpg)
+
+## Purposeful run held goal lane
+
+Captured game or observer interface — historical prototype
+
+![Purposeful run held goal lane](images/purposeful-run-held-goal-lane.jpg)
+
 ## Resident follow live
 
 Captured game or observer interface — historical prototype

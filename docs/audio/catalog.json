@@ -562,5 +562,53 @@
     "sha256": "92b719986547ad7e5da64541adda9ad46f83a02a886f26dfe951cfa4fcf2faa4",
     "encounter": "Context repair native conversation",
     "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored."
+  },
+  {
+    "file": "purposeful-58-108156-1.wav",
+    "speaker": "Adrianne Avenicci",
+    "line": "I am a bit tired. Are you hiring for that 10-minute bread-making shift? Thanks for asking.",
+    "sha256": "76d482f4ccea75444952fabc3d573fa9b663693aae723e1dc59688e7e3e5f9fd",
+    "encounter": "daily-58-108156",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "purposeful-58-108156-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I'm feeling pretty worn out myself. I am not offering you a shift right now. Thanks for understanding.",
+    "sha256": "d2b77ee05d40d37ae50b5b8a64627fa3643e024d1673772a9d18bbcabf90bcd2",
+    "encounter": "daily-58-108156",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "purposeful-58-108167-1.wav",
+    "speaker": "Olfrid Battle-Born",
+    "line": "I appreciate you taking the time. Are you hiring for that 10-minute bread-making shift? Thank you for considering it.",
+    "sha256": "15e37590d3b8b182c15ad8799bedf26836f6fcfd419c6929eadce776c8099d61",
+    "encounter": "daily-58-108167",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "purposeful-58-108167-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I appreciate your interest. I am not offering you a shift right now. Thank you for reaching out.",
+    "sha256": "2e8849782f7e70315b8ba86f69a6c93601abcdbae772c0709d5978377ba0d365",
+    "encounter": "daily-58-108167",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "purposeful-61-108185-1.wav",
+    "speaker": "Olava the Feeble",
+    "line": "Are you hiring for that 10-minute bread-making shift?",
+    "sha256": "5fec29dc6d6e27d94c3a4079608b1f128f1c58709319713c7af1fd22e04edea6",
+    "encounter": "daily-61-108185",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
+  },
+  {
+    "file": "purposeful-61-108185-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I do not have any openings tonight. I am not offering you a shift right now. Take care.",
+    "sha256": "b4f56c3eb593738f326c5abeb9966cc67baf56a48687908b89d0676315d6d190",
+    "encounter": "daily-61-108185",
+    "source": "Generated Kokoro utterance selected for confirmed CEF overlay playback; not recorded game audio"
   }
 ]
