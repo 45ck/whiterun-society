@@ -81,6 +81,8 @@ class Production:
                 return
             state['plans'][-1].update(phase='complete', outcome='paid_work_completed')
             settle_contract(state, state['plans'][-1], 'paid_work_completed')
+            if state['plans'][-1].get('employment_dialogue'):
+                self.queue_trade_speech(state,state['plans'][-1],'work_receipt')
             for role, other in [('worker', 'employer'), ('employer', 'worker')]:
                 person = state['people'][str(command[role])]
                 person['memories'].append({'event_id': pending['id'], 'kind': 'paid_work',

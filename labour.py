@@ -6,6 +6,7 @@ wages and working hours are authored scenario policy, not discovered economics.
 from routing import route_available
 from knowledge import person_view
 from enterprises import production_policy
+from employment import recently_refused
 
 def work_opportunities(state, observation, worker):
     town = state.get('town') or {}
@@ -22,6 +23,8 @@ def work_opportunities(state, observation, worker):
         if any(type(stock.get(k)) is not int or stock[k] < 0 for k in ('gold', 'bread', 'grain')):
             continue
         policy = production_policy(business)
+        if recently_refused(state, worker, business_id, business.get('revision', 0), observation.get('gameDays')):
+            continue
         if stock['gold'] < policy['wage_gold'] or stock['grain'] < 1 or stock['bread'] >= policy['target_bread']:
             continue
         opportunities.append({'business_id': business_id, 'employer': employer,

@@ -1,0 +1,517 @@
+{
+  "natural": {
+    "selection": "Operator selected nearest currently feasible pending food review; not a forced sale",
+    "actor": 108165,
+    "employer": 108149,
+    "outcome": "employer_declined",
+    "phase": "complete",
+    "exit_code": 0,
+    "decisions": [
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_work",
+          "emotion": "unspecified",
+          "reason": "Selected action: Ask Carlotta Valentia about an advertised 10-game-minute bread-making shift paying 4 gold. The employer must offer and you must accept. No wage is guaranteed."
+        },
+        "elapsed_seconds": 0.859,
+        "usage": {
+          "cost": 0.00018963,
+          "input_tokens": 4515,
+          "output_tokens": 113
+        }
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "defer",
+          "emotion": "unspecified",
+          "reason": "Selected action: Do not offer this job; keep your resources."
+        },
+        "elapsed_seconds": 6.453,
+        "usage": {
+          "cost": 0.000176442,
+          "input_tokens": 4201,
+          "output_tokens": 34
+        }
+      }
+    ],
+    "reported_model_cost": 0.000366072,
+    "balances_before": {
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "balances_after": {
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "turns": [
+      {
+        "act": "work_request",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "Are you hiring for that 10-minute bread-making shift?",
+        "audio_file": "employment-natural-1.wav",
+        "seconds": 3.152,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.312,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-22b88ddafd99a355c55b2016",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 171.8081893679094,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 344,
+            "sum_error_degrees": 173.78522639085242
+          },
+          "playedSeconds": 3.151958,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907535.1676147
+      },
+      {
+        "act": "work_unavailable",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "I am not offering you a shift right now.",
+        "audio_file": "employment-natural-2.wav",
+        "seconds": 2.6627,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.776,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-40be6674a0af26803511e30e",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.005711928306709524,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 294,
+            "sum_error_degrees": 0.22688963468817747
+          },
+          "playedSeconds": 2.662667,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907549.4910755
+      }
+    ],
+    "duration_seconds": 38.322,
+    "duration_scope": "Sampled native worker interval including approach, synthesis, decision and playback",
+    "production_receipts": [],
+    "contract": [],
+    "personal_refusals": [
+      {
+        "business_id": "business-108149",
+        "day": 9.051156044006348,
+        "event_id": "speech-40be6674a0af26803511e30e",
+        "kind": "employment_unavailable",
+        "other": 108149,
+        "revision": 1,
+        "source": "Heard the employer decline this request; private reason unknown"
+      }
+    ],
+    "next_review_day": 9.06185785929362,
+    "observation_day": 9.05160903930664,
+    "eligible_jobs_in_after_snapshot": []
+  },
+  "fixture": {
+    "selection": {
+      "actor": 108164,
+      "employer": 108149,
+      "distance": 654.922314261128,
+      "source": "Nearest presently feasible public job; offer and acceptance are controlled choices"
+    },
+    "actor": 108164,
+    "employer": 108149,
+    "outcome": "paid_work_completed",
+    "phase": "complete",
+    "exit_code": 0,
+    "decisions": [
+      {
+        "actor_id": 108149,
+        "model": "controlled-employment-fixture",
+        "decision": {
+          "action_id": "offer_shift",
+          "emotion": "calm",
+          "reason": "Authored native employment qualification choice"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      },
+      {
+        "actor_id": 108164,
+        "model": "controlled-employment-fixture",
+        "decision": {
+          "action_id": "take_shift",
+          "emotion": "calm",
+          "reason": "Authored native employment qualification choice"
+        },
+        "elapsed_seconds": null,
+        "usage": {}
+      }
+    ],
+    "reported_model_cost": 0,
+    "balances_before": {
+      "108164": {
+        "gold": 34,
+        "bread": 0,
+        "grain": 0
+      },
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 98,
+        "bread": 6,
+        "grain": 19
+      },
+      "108164": {
+        "gold": 38,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "turns": [
+      {
+        "act": "work_request",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "Are you hiring for that 10-minute bread-making shift?",
+        "audio_file": "employment-fixture-1.wav",
+        "seconds": 2.912,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.035,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-5df395225e51d1c322d504e0",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 43.355723324751125,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 320,
+            "sum_error_degrees": 84.52350370226509
+          },
+          "playedSeconds": 2.912,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907633.7659566
+      },
+      {
+        "act": "work_offer",
+        "actor": 108149,
+        "listener": 108164,
+        "line": "I can offer 4 gold for 10 minutes of bread-making. I supply the grain and pay after the work is done.",
+        "audio_file": "employment-fixture-2.wav",
+        "seconds": 6.4166,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 6.506,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-c25cb18a440c4b2f049ac3e1",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.062293874877468625,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 684,
+            "sum_error_degrees": 4.08912597938388
+          },
+          "playedSeconds": 6.416625,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907646.6589618
+      },
+      {
+        "act": "work_accept",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "I accept. 10 minutes of bread-making for 4 gold, paid after the work.",
+        "audio_file": "employment-fixture-3.wav",
+        "seconds": 4.2853,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.376,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-4ae1adbee0c594b539ff24d9",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.005898770875546688,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 448,
+            "sum_error_degrees": 0.48283828925923444
+          },
+          "playedSeconds": 4.285292,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907656.0231602
+      },
+      {
+        "act": "work_receipt",
+        "actor": 108164,
+        "listener": 108149,
+        "line": "The bread is made and I have received 4 gold. Thank you.",
+        "audio_file": "employment-fixture-4.wav",
+        "seconds": 3.2267,
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.345,
+          "facing": [
+            {
+              "actor": 108164,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-22c3c49d63737cdf63d2e085",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0010566034358134857,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 346,
+            "sum_error_degrees": 0.3608649318712196
+          },
+          "playedSeconds": 3.226667,
+          "status": "ended",
+          "volume": 1
+        },
+        "ended_at": 1792907699.5490487
+      }
+    ],
+    "duration_seconds": 87.312,
+    "duration_scope": "Sampled native worker interval including approach, synthesis, decision and playback",
+    "production_receipts": [
+      {
+        "command": {
+          "after": {
+            "employer": {
+              "bread": 6,
+              "gold": 98,
+              "grain": 19
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 38,
+              "grain": 0
+            }
+          },
+          "before": {
+            "employer": {
+              "bread": 4,
+              "gold": 102,
+              "grain": 20
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 34,
+              "grain": 0
+            }
+          },
+          "employer": 108149,
+          "expected_package": 117442561,
+          "id": "produce-voiced-employment-fixture-20261025",
+          "kind": "inventory_produce",
+          "wage_gold": 4,
+          "work_minutes": 10,
+          "worker": 108164
+        },
+        "evidence": {
+          "ack": {
+            "animation_verified": false,
+            "id": "produce-voiced-employment-fixture-20261025",
+            "inventory": {
+              "employer": {
+                "bread": 6,
+                "gold": 98,
+                "grain": 19
+              },
+              "worker": {
+                "bread": 0,
+                "gold": 38,
+                "grain": 0
+              }
+            },
+            "mechanism": "native_recipe_and_wage",
+            "status": "applied",
+            "work": {
+              "actor": 108164,
+              "attendance": {
+                "distance": 88.97317033411423,
+                "package_owned": true
+              },
+              "expectedPackage": 117442561,
+              "id": "produce-voiced-employment-fixture-20261025",
+              "ownedPackage": false,
+              "phase": "complete",
+              "requiredMinutes": 10,
+              "wageGold": 4,
+              "workedMinutes": 10
+            }
+          },
+          "actual": {
+            "employer": {
+              "bread": 6,
+              "gold": 98,
+              "grain": 19
+            },
+            "worker": {
+              "bread": 0,
+              "gold": 38,
+              "grain": 0
+            }
+          },
+          "session": "1792907498310-0.22121162961776197"
+        },
+        "id": "produce-voiced-employment-fixture-20261025",
+        "status": "committed"
+      }
+    ],
+    "contract": [
+      {
+        "employer": 108149,
+        "id": "voiced-employment-fixture-20261025",
+        "outcome": "paid_work_completed",
+        "production_id": "produce-voiced-employment-fixture-20261025",
+        "source": "Employer offer and worker consent; no completed work yet",
+        "status": "completed",
+        "terms": {
+          "bread_per_shift": 2,
+          "grain_per_shift": 1,
+          "source": "Authored enterprise policy; one grain becomes two bread after qualified labour",
+          "target_bread": 12,
+          "wage_gold": 4,
+          "work_minutes": 10
+        },
+        "worker": 108164
+      }
+    ],
+    "personal_refusals": [],
+    "next_review_day": 8.281528155008951,
+    "observation_day": 9.085187911987305,
+    "eligible_jobs_in_after_snapshot": [
+      {
+        "business_id": "business-108149",
+        "employer": 108149,
+        "employer_name": "Carlotta Valentia",
+        "revision": 1,
+        "policy": {
+          "target_bread": 12,
+          "wage_gold": 4,
+          "grain_per_shift": 1,
+          "bread_per_shift": 2,
+          "work_minutes": 10,
+          "source": "Authored enterprise policy; one grain becomes two bread after qualified labour"
+        }
+      }
+    ]
+  },
+  "restoration": {
+    "save": "WS-Employment-20261025-BL",
+    "compared_fields": 17,
+    "all_matched": true,
+    "checkpoint": 2037
+  },
+  "limits": [
+    "Only the refusal branch was model-chosen. Acceptance and production used a controlled fixture.",
+    "Recipe and terms are authored. No work animation or lip sync.",
+    "Post-refusal alternative choice is unit-tested but has not been qualified in a subsequent live review.",
+    "No physical audio-device listening check or long-running society qualification in this trial."
+  ]
+}

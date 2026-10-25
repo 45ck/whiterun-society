@@ -114,6 +114,7 @@ function render(){if(!state)return;renderTownCharts(el('town-charts'),state.dash
    ['Feasible options per decision',`${m.resident_plans.feasible_options_per_decision.mean??'unknown'} mean · n=${m.resident_plans.feasible_options_per_decision.n} · includes staged fixtures`],
    ['Sales / production / meals',`${ec.committed_sales} / ${ec.committed_production} / ${ec.committed_meals}`],
    ['Voiced trade acts',`${ec.delivered_trade_utterances??0} delivered · ${JSON.stringify(ec.spoken_trade_acts||{})} · terms are deterministic, decisions are model-driven`],
+   ['Employment encounters',`${ec.employment_encounters?.n??0} requests · ${ec.employment_encounters?.delivered_utterances??0} spoken turns · ${JSON.stringify(ec.employment_encounters?.outcomes||{})} · wages require production receipts`],
    ['Gold conservation',ratio(ec.gold_conservation)],['Economic breadth',`${ec.supported_sale_goods} sale good · ${ec.supported_production_recipes} recipe · ${ec.supported_supply_chain_transforms} transformation step`],
    ['Sales variety',`${ec.distinct_observed_sale_prices} observed prices · authored quotes`],
    ['Relationship state',`${s.positive_affinity_edges} positive / ${s.negative_affinity_edges} negative directed edges`],

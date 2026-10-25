@@ -21,6 +21,7 @@ from enterprises import plan_work_policy, current_work_terms
 from owner_production import owner_work_opportunities
 from procurement import grain_procurement
 from bargaining import PRICING_POLICY, own_prices, price_choices, record_quote, accept_quote, quote_valid
+from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_MINUTES
 
 TERMINAL = ('complete', 'held')
 
@@ -110,6 +111,7 @@ class Agency:
             jobs = work_opportunities(state, observation, actor)
             if jobs:
                 plan.update(phase='job_offer', target=jobs[0]['employer'], work_terms=jobs[0])
+                if voiced_trade:approach_employer(plan)
             elif actor == 108186 and not state.get('town'):
                 plan.update(phase='job_offer', target=108149)  # Original standalone demo.
             else:
@@ -326,6 +328,7 @@ class Agency:
         elif action == 'seek_work' or action.startswith('seek_work_'):
             job = current['work_options'][action]
             updated.update(phase='job_offer', target=job['employer'], work_terms=job)
+            if updated.get('voiced_trade'):approach_employer(updated)
         elif action.startswith('work_own_'):
             updated.update(phase='ready_to_self_work',intent='owner_production',own_work_terms=current['work_options'][action])
         elif action == 'offer_shift':
@@ -339,11 +342,8 @@ class Agency:
                 updated['travel'] = None
                 travel_id += '-replan-' + str(len(updated['decisions']))
             target = updated['target'] if action == 'take_shift' else current['option_targets'][action]
-            if action == 'take_shift' and updated.get('work_terms'):
-                terms = updated['work_terms']
-                state['town']['businesses'][terms['business_id']]['contracts'].append({
-                    'id':event_id,'worker':updated['actor'],'employer':target,'status':'accepted',
-                    'terms':copy.deepcopy(terms['policy']), 'source':'Employer offer and worker consent; no completed work yet'})
+            if action == 'take_shift' and not updated.get('employment_dialogue'):
+                accept_contract(state, updated)
             if action.startswith('procure_grain_'):updated.update(commodity='grain',trade_id='input-'+event_id)
             updated.update(phase='travelling', target=target,
                            intent='procure_grain' if action.startswith('procure_grain_') else 'seek_bread' if action.startswith('seek_bread') else action, travel_id=travel_id, release_required=True)
@@ -386,12 +386,17 @@ class Agency:
             updated['phase']='ready_to_eat'
         elif action == 'keep_food':
             updated.update(phase='complete',outcome='bought_bread')
+        elif action == 'defer' and claim['stage']=='job_offer' and updated.get('employment_dialogue'):
+            updated.update(phase='complete', outcome='employer_declined')
         else:
             updated.update(phase='complete', outcome='deferred')
         speech_act={'raise_offer':'counteroffer','sell_grain':'accept','sell_bread':'accept','sell_reserved_bread':'accept','decline':'refuse','leave_without_food':'leave'}.get(action)
         if action.startswith('bid_price_'):speech_act='offer' if updated['offer_round']==1 else 'counteroffer'
         if action.startswith('ask_price_'):speech_act='seller_counteroffer'
         if action=='accept_counterprice':speech_act='buyer_accept'
+        if updated.get('employment_dialogue'):
+            if claim['stage']=='job_offer':speech_act='work_offer' if action=='offer_shift' else 'work_unavailable'
+            elif claim['stage']=='job_accept':speech_act='work_accept' if action=='take_shift' else 'work_decline'
         if claim['stage']=='reconsider' and action.startswith(('visit_','visit_person_')) and updated.get('economic_attendance'):speech_act='leave'
         if speech_act:self.queue_trade_speech(state,updated,speech_act)
         return {'checkpoint': self._write(state, 'resident decision accepted'), 'plan': updated}
@@ -460,7 +465,9 @@ class Agency:
                 person['agency'].update(state='quiet_interval' if plan['phase']=='complete' else 'held',
                     reason='Last scheduled outcome: '+str(plan.get('outcome') or plan.get('error','held')))
                 day=observation.get('gameDays')
-                if type(day) in (int,float) and math.isfinite(day):person['agency']['next_review_day']=day+1/24
+                if type(day) in (int,float) and math.isfinite(day):
+                    minutes=REVIEW_AFTER_REFUSAL_MINUTES if plan.get('outcome')=='employer_declined' else 60
+                    person['agency']['next_review_day']=day+minutes/1440
             self._write(state,'resident remembers the observed plan outcome')
             return
         if not plan or plan['phase'] in TERMINAL:
@@ -492,13 +499,15 @@ class Agency:
                     if nearby:updated.update(phase='consent',target=sellers[0]['id'],target_kind='resident')
                     else:updated.update(phase='complete',outcome='market_seller_not_observed')
                 else:
-                    updated['phase'] = {'seek_bread':'consent','procure_grain':'consent','take_shift':'ready_to_work'}.get(plan['intent'], 'complete')
+                    updated['phase'] = {'seek_bread':'consent','procure_grain':'consent','take_shift':'ready_to_work','ask_work':'job_offer'}.get(plan['intent'], 'complete')
                     if updated['phase'] == 'complete':updated['outcome'] = 'visited_only'
             else:
                 updated.update(phase='held', error='Travel did not establish owned arrival')
             if updated['phase']=='consent':
                 if updated.get('pricing_policy')==PRICING_POLICY:updated['phase']='quote'
                 else:self.queue_trade_speech(state,updated,'offer')
+            elif updated['phase']=='job_offer' and updated.get('employment_dialogue'):
+                self.queue_trade_speech(state,updated,'work_request')
             self._write(state, 'resident travel outcome observed')
         elif plan['phase'] == 'ready_to_trade':
             try:

@@ -8,6 +8,8 @@ Updated 25 October 2026 from Calvin's explicit direction. This plan preserves th
 
 ## Accepted direction
 
+- Employment must be an observable encounter. Voiced job searches now require approach, heard offer/refusal, heard acceptance and verified work before a spoken receipt. Personal refusal memory advances the needs review and avoids repeating the same unchanged request for one game hour. One live refusal and a separate controlled paid shift are native-qualified; unforced hiring and repeated cycles remain required. [Implementation and evidence](employment-encounters.md).
+
 - Movie view now frames nearby participants together, follows travel and holds the last shot at idle. One controlled native voiced sale qualified this composition. Camera collision, low-light readability and sustained video qualification remain open. [Screenshots and evidence](movie-camera.md).
 
 - Native scene ownership can now be interrupted through a save-bound handoff rather than imposing an unconditional wait. Jev still chooses what the released resident does. Scene scripts and other participants can be affected; broad quest compatibility remains unqualified. [Protocol, controls and live evidence](native-scene-handoff.md)

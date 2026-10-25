@@ -212,3 +212,18 @@ test('economic encounter timing cannot reuse an earlier conversation inference',
  assert.match(w.document.getElementById('encounter-pipeline').textContent,/Controlled protocol test/);
  }finally{dom.window.close();}
 });
+
+test('employment shows work progress between spoken terms and receipt',()=>{
+ const {dom,w}=native();try{
+ const plan={id:'job',kind:'work_shift',actor:1,target:2,voiced_trade:true,employment_dialogue:true,phase:'working',
+  work_terms:{policy:{wage_gold:4,work_minutes:10}},economic_turns:[{actor:1,act:'work_accept',line:'I accept.'}]};
+ const state={residents:[],director:{running:true},society:{people:{},town:{residents:{}},plan},productionWork:{workedMinutes:3}};
+ w.whiterunRender(state);
+ assert.equal(w.document.getElementById('conversation-card').hidden,true);
+ assert.equal(w.document.getElementById('work-card').hidden,false);
+ assert.match(w.document.getElementById('work-card').textContent,/3 \/ 10/);
+ w.whiterunRender({...state,society:{...state.society,plan:{...plan,phase:'economic_speaking',economic_speech:{actor:1,audio:{seconds:2}}}}});
+ assert.match(w.document.getElementById('conversation-stage').textContent,/Employment/);
+ assert.equal(w.document.getElementById('conversation-card').hidden,false);
+ }finally{dom.window.close();}
+});

@@ -1,5 +1,10 @@
 [
   {
+    "file": "employment-encounter-loop.png",
+    "title": "Employment encounter loop",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "grain-market-loop.png",
     "title": "Grain market loop",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -67,6 +72,16 @@
   {
     "file": "conversation-closeup.jpg",
     "title": "Conversation closeup",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "employment-agreement-fixture.jpg",
+    "title": "Employment agreement fixture",
+    "kind": "Controlled native protocol fixture \u2014 authored choices, not autonomous behaviour"
+  },
+  {
+    "file": "employment-refusal-native.jpg",
+    "title": "Employment refusal native",
     "kind": "Captured game or observer interface \u2014 historical prototype"
   },
   {

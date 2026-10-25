@@ -72,7 +72,10 @@ def simulation_metrics(state):
     followup_plans=[p for p in plans if p.get('id') in followup_ids]
     followup_queue=[e for e in (state.get('town') or {}).get('daily',{}).get('queue',[]) if e['id'] in followup_ids]
     economic_turns=[t for p in plans for t in p.get('economic_turns',[]) if t.get('delivered')]
-    negotiations=[p for p in plans if p.get('economic_pair')]
+    trade_turns=[t for t in economic_turns if not t['act'].startswith('work_')]
+    work_turns=[t for t in economic_turns if t['act'].startswith('work_')]
+    employment_plans=[p for p in plans if p.get('employment_dialogue')]
+    negotiations=[p for p in plans if p.get('economic_pair') and not p.get('employment_dialogue')]
     committed_trade_ids={r.get('id') for r in state.get('trades',[]) if r.get('status')=='committed' and r.get('id')}
     trade_outcomes=Counter()
     for p in negotiations:
@@ -180,9 +183,13 @@ def simulation_metrics(state):
             'negotiations':{'n':len(negotiations),'outcomes':dict(trade_outcomes),
                 'scope':'Retained voiced trade plans, including staged experiments. Sales require committed inventory receipts; refusals are choices, not technical failures.'},
             'household_release_sales':sum(r.get('status')=='committed' and bool(r.get('reserve_release')) for r in state.get('trades',[])),
-            'voiced_trade_plans':sum(bool(p.get('voiced_trade') and p.get('economic_pair')) for p in plans),
-            'delivered_trade_utterances':len(economic_turns),
-            'spoken_trade_acts':dict(Counter(t['act'] for t in economic_turns)),
+            'voiced_trade_plans':sum(bool(p.get('voiced_trade')) for p in negotiations),
+            'delivered_trade_utterances':len(trade_turns),
+            'spoken_trade_acts':dict(Counter(t['act'] for t in trade_turns)),
+            'employment_encounters':{'n':len(employment_plans),
+                'outcomes':dict(Counter(p.get('outcome') or p['phase'] for p in employment_plans)),
+                'delivered_utterances':len(work_turns),'spoken_acts':dict(Counter(t['act'] for t in work_turns)),
+                'scope':'Employment requests and heard terms; output and wages require separate native production receipts. Includes controlled tests.'},
             'speech_scope':'Deterministic terms driven by resident decisions. Heard acceptance is not a committed sale. Includes staged protocol tests.',
             'committed_meals':sum(r['status']=='committed' for r in state.get('consumptions',[])),
             'gold_conservation':rate(sum(conserved),len(conserved)),

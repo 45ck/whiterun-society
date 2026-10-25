@@ -2,6 +2,12 @@
 
 All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.
 
+## Employment encounter loop
+
+Generated system illustration — not gameplay
+
+![Employment encounter loop](images/employment-encounter-loop.png)
+
 ## Grain market loop
 
 Generated system illustration — not gameplay
@@ -85,6 +91,18 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 Captured game or observer interface — historical prototype
 
 ![Conversation closeup](images/conversation-closeup.jpg)
+
+## Employment agreement fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Employment agreement fixture](images/employment-agreement-fixture.jpg)
+
+## Employment refusal native
+
+Captured game or observer interface — historical prototype
+
+![Employment refusal native](images/employment-refusal-native.jpg)
 
 ## Food consumption restored
 

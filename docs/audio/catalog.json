@@ -330,5 +330,53 @@
     "sha256": "e2dff791b5564d92ac4a90ebfdae78e4ae40b545f88085c578daba3be35223df",
     "source": "Controlled integration fixture with authored choices; synthesized Kokoro utterance used in native playback, not a recording of game audio",
     "encounter": "Grain supply chain \u2014 consume sale"
+  },
+  {
+    "file": "employment-natural-1.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "Are you hiring for that 10-minute bread-making shift?",
+    "sha256": "1304e8564956b66538cc695891885b5df7ea8c2efd3a368d91e37f9d429fce25",
+    "source": "Model-selected employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 natural"
+  },
+  {
+    "file": "employment-natural-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I am not offering you a shift right now.",
+    "sha256": "26b5279999a7fef4e207cdff01486c867fe929a0d153f0bd3ff833266a2134d0",
+    "source": "Model-selected employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 natural"
+  },
+  {
+    "file": "employment-fixture-1.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "Are you hiring for that 10-minute bread-making shift?",
+    "sha256": "a18d8d96892f8a61b63b2d2f7139c443b31eb1e4321f02d47ef2f1ca43acde0f",
+    "source": "Controlled native employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 fixture"
+  },
+  {
+    "file": "employment-fixture-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I can offer 4 gold for 10 minutes of bread-making. I supply the grain and pay after the work is done.",
+    "sha256": "dac1b6a8b38d2fc18a89a438247df7ba92196578b24bfdbc96f402017644a7da",
+    "source": "Controlled native employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 fixture"
+  },
+  {
+    "file": "employment-fixture-3.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "I accept. 10 minutes of bread-making for 4 gold, paid after the work.",
+    "sha256": "be96bd5f214e423b3cd8803978a511a826e588ef6e7c1990de6518a783d96271",
+    "source": "Controlled native employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 fixture"
+  },
+  {
+    "file": "employment-fixture-4.wav",
+    "speaker": "Fralia Gray-Mane",
+    "line": "The bread is made and I have received 4 gold. Thank you.",
+    "sha256": "c708ac25c7ad3b506dc80d0b249a663e83e729b785e9f9715791d4bf85fc0326",
+    "source": "Controlled native employment choices; deterministic wording, synthesized Kokoro utterance used in game, not a recording of game audio",
+    "encounter": "Employment \u2014 fixture"
   }
 ]

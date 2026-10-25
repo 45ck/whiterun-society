@@ -4,6 +4,16 @@ from metrics import simulation_metrics,distribution
 
 
 class MetricsTests(unittest.TestCase):
+    def test_employment_dialogue_does_not_count_as_goods_negotiation(self):
+        state={'plans':[{'id':'job','phase':'complete','outcome':'employer_declined','voiced_trade':True,
+            'employment_dialogue':True,'economic_pair':[1,2],
+            'economic_turns':[{'act':'work_request','delivered':True},{'act':'work_unavailable','delivered':True}]}]}
+        economy=simulation_metrics(state)['economy']
+        self.assertEqual(economy['negotiations']['n'],0)
+        self.assertEqual(economy['delivered_trade_utterances'],0)
+        self.assertEqual(economy['employment_encounters']['delivered_utterances'],2)
+        self.assertEqual(economy['employment_encounters']['outcomes'],{'employer_declined':1})
+
     def test_bargaining_prices_separate_bids_asks_and_native_payments(self):
         plan={'id':'p','phase':'ready_to_trade','pricing_policy':'resident-bargaining-v1','trade_id':'t',
               'counter_quote_accepted':True,'decisions':[

@@ -20,9 +20,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Movie camera:** conversations now use a stable pair shot instead of the wide RTS framing. A controlled native four-line negotiation kept both residents visible through a one-loaf, seven-septim sale. [Screenshots, telemetry and remaining collision limits](docs/movie-camera.md).
 
+**Voiced employment:** residents approach to ask for work, hear an offer or refusal, and remember the result. A live Jev search ended in a spoken refusal; a separate controlled shift completed four spoken turns, two loaves and a conserved four-septim wage. [Infographic, screenshots, audio and receipts](docs/employment-encounters.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 47 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 50 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -231,7 +233,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (47)</summary>
+<summary>Browse every finished project image (50)</summary>
+
+### Employment encounter loop
+
+Generated system illustration — not gameplay
+
+![Employment encounter loop](docs/images/employment-encounter-loop.png)
 
 ### Grain market loop
 
@@ -316,6 +324,18 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 Captured game or observer interface — historical prototype
 
 ![Conversation closeup](docs/images/conversation-closeup.jpg)
+
+### Employment agreement fixture
+
+Controlled native protocol fixture — authored choices, not autonomous behaviour
+
+![Employment agreement fixture](docs/images/employment-agreement-fixture.jpg)
+
+### Employment refusal native
+
+Captured game or observer interface — historical prototype
+
+![Employment refusal native](docs/images/employment-refusal-native.jpg)
 
 ### Food consumption restored
 
