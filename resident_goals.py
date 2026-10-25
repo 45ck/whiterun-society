@@ -12,7 +12,7 @@ from routing import activity_blocker
 from inference_receipts import usage_receipt
 from dialogue_context import time_context
 from goal_opportunities import purposeful_options,pending_goal_review,queue_goal_review
-from context_window import bounded_goal_context
+from context_window import bounded_goal_context,expanded_goal_actions
 
 ACTIVE=('complete','held')
 POLICY_PATH=Path(__file__).parent/'config/resident-goals.json'
@@ -58,7 +58,9 @@ def same_space(a,b):
 
 
 def families(context):
-    if 'goal_actions' in context:return {o['id']:context['goal_actions'][o['id']]['family'] for o in context['options']}
+    if 'goal_actions' in context:
+        actions=expanded_goal_actions(context)
+        return {o['id']:actions[o['id']]['family'] for o in context['options']}
     sites={str(s['id']):s['kind'] for s in context['destinations']}
     return {o['id']:'quiet' if o['id']=='quiet' else 'visit_'+sites[o['id'].removeprefix('visit_')] for o in context['options']}
 

@@ -4,7 +4,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from context_window import bounded_goal_context,encoded_size
+from context_window import bounded_goal_context,encoded_size,expanded_goal_actions
 from decision_provider import infer_jev
 from test_context_window import crowded_context
 
@@ -30,8 +30,9 @@ class GoalContextWindowTests(unittest.TestCase):
         context=goal_context_fixture();before=copy.deepcopy(context)
         self.assertGreater(encoded_size(context),16000)
         result=bounded_goal_context(context)
-        for key in ('options','destinations','goal_actions','own_inventory','own_commitments','profile'):
+        for key in ('options','destinations','own_inventory','own_commitments','profile'):
             self.assertEqual(result[key],context[key],key)
+        self.assertEqual(expanded_goal_actions(result),context['goal_actions'])
         for key in set(context['public_opportunities'])-{'nearby_people'}:
             self.assertEqual(result['public_opportunities'][key],context['public_opportunities'][key],key)
         self.assertEqual(result['previous_goal']['action_id'],'quiet')
@@ -84,6 +85,28 @@ class GoalContextWindowTests(unittest.TestCase):
                 result=fixture.world.finish_resident_goals('wave',wave['claim_id'],fixture.results(wave),fixture.obs)
             self.assertTrue(all(r['accepted'] for r in result['results']))
         finally:fixture.tearDown()
+
+    def test_lossless_action_catalogue_supports_old_claims_and_rejects_malformed_columns(self):
+        from resident_goals import families
+        context=goal_context_fixture();result=bounded_goal_context(context)
+        self.assertEqual(families(context),families(result))
+        self.assertEqual(expanded_goal_actions(context),expanded_goal_actions(result))
+        broken=copy.deepcopy(result);broken['goal_action_fields'].reverse()
+        with self.assertRaises(ValueError):expanded_goal_actions(broken)
+        broken=copy.deepcopy(result);broken['goal_actions']['quiet'].pop()
+        with self.assertRaises(ValueError):expanded_goal_actions(broken)
+
+    def test_growing_previous_goal_executor_data_cannot_exhaust_current_choice_budget(self):
+        context=goal_context_fixture()
+        context['previous_goal'].update(native_receipt={'telemetry':'x'*20000},
+            target={'id':4,'name':'Previous public place','kind':'public_place','position':[1,2,3],'space':{'telemetry':'x'*20000}},
+            follow_through={'event_id':'prior-review','focus':'rest','status':'complete','outcome':'rested','debug':'x'*20000})
+        result=bounded_goal_context(context)
+        self.assertLessEqual(encoded_size(result),14000)
+        self.assertEqual(result['options'],context['options'])
+        self.assertEqual(result['previous_goal']['target'],{'id':4,'name':'Previous public place','kind':'public_place'})
+        self.assertEqual(result['previous_goal']['follow_through'],{'event_id':'prior-review','focus':'rest','status':'complete','outcome':'rested'})
+        self.assertGreater(result['context_window']['previous_goal_executor_fields_omitted'],3)
 
 
 if __name__=='__main__':unittest.main()

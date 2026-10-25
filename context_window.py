@@ -207,6 +207,20 @@ def bounded_economic_context(context,own_memories=None):
     return result
 
 
+GOAL_ACTION_FIELDS=('family','focus','target_id','trigger')
+
+
+def expanded_goal_actions(context):
+    """Read old dict-form claims or the lossless columnar executor catalogue."""
+    actions=context.get('goal_actions',{})
+    if 'goal_action_fields' not in context:return copy.deepcopy(actions)
+    if context['goal_action_fields']!=list(GOAL_ACTION_FIELDS) or not isinstance(actions,dict):
+        raise ValueError('Invalid compact goal action fields')
+    if any(not isinstance(row,list) or len(row)!=len(GOAL_ACTION_FIELDS) for row in actions.values()):
+        raise ValueError('Invalid compact goal action row')
+    return {key:dict(zip(GOAL_ACTION_FIELDS,row)) for key,row in actions.items()}
+
+
 def bounded_goal_context(context):
     """Bound personal-goal attention without changing any executable action.
 
@@ -215,6 +229,10 @@ def bounded_goal_context(context):
     This is a preclaim view; neither saved memories nor personal goals change.
     """
     policy=load_policy();result=copy.deepcopy(context);budget=policy['maximum_goal_context_bytes']
+    actions=expanded_goal_actions(context)
+    if actions and all(isinstance(row,dict) and set(row)==set(GOAL_ACTION_FIELDS) for row in actions.values()):
+        result['goal_action_fields']=list(GOAL_ACTION_FIELDS)
+        result['goal_actions']={key:[row[field] for field in GOAL_ACTION_FIELDS] for key,row in actions.items()}
     public=result.get('public_opportunities',{})
     people=public.get('nearby_people',[])
     relevant={p.get('id') for p in people if isinstance(p,dict)}-{None}
@@ -228,6 +246,12 @@ def bounded_goal_context(context):
         fields={'id','action_id','phase','decided_day','next_review_day','target','focus','follow_through','source','error'}
         previous_omitted=sorted(set(previous)-fields)
         result['previous_goal']={k:v for k,v in previous.items() if k in fields}
+        for key,keep in (('target',{'id','name','kind'}),
+                         ('follow_through',{'event_id','focus','status','outcome','queued_day','settled_day','review_expires_day'})):
+            value=result['previous_goal'].get(key)
+            if isinstance(value,dict):
+                previous_omitted.extend(key+'.'+field for field in value if field not in keep)
+                result['previous_goal'][key]={field:item for field,item in value.items() if field in keep}
     for person in people:
         if 'my_relationship' in person:
             person['my_relationship']=relationship_view(person['my_relationship'],{**policy,'maximum_appraisals':0})
@@ -235,7 +259,7 @@ def bounded_goal_context(context):
             'nearby_people_considered':len(people),'memories_available':len(memories),
             'memories_included':len(result['own_memories']),'previous_goal_executor_fields_omitted':len(previous_omitted),
             'options_preserved':len(result.get('options',[])),
-            'scope':'Actor-owned evidence only. Nearby people are a bounded attention window for a possible later social review, not the full population. Omission is not forgetting or absence. All executable choices, destinations, goal action mappings, resources and public economic terms remain unchanged.'}
+            'scope':'Actor-owned evidence only. Nearby people are an attention window, not the full population; omission is not forgetting or absence. All choices, current destinations, resources and public economic terms remain exact. goal_action_fields names the lossless columns of goal_actions. Previous-goal coordinates and executor telemetry are omitted, not its intention or outcome.'}
     result['context_window']=window
     # social_candidates is already nearest-first. No option is removed: a
     # separate later social decision chooses an actual consenting partner.

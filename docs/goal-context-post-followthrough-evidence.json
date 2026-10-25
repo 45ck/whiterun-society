@@ -1,0 +1,68 @@
+{
+  "source_run": "society-d38d490306ac4689",
+  "failed_wave": "goals-e8813316020649a9add1",
+  "source_receipt_sha256": "fed9382a1068079d75d8f1d3e052f82455eed11f006786b521686787442c6596",
+  "qualification": "Offline current saved before-state replay; all6 due actors; mocked provider transport only. No inference or runtime mutation. All choice, resource, destination and public terms preserved; action catalogue losslessly encoded.",
+  "rows": [
+    {
+      "actor_id": 108165,
+      "raw_context_bytes": 17589,
+      "bounded_context_bytes": 13853,
+      "provider_payload_bytes": 13921,
+      "options_preserved": 24,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "1d5f94d3b8d4364e84d0ba683f6a2d5e9e4e6e9dd60760b0087c537851a7272e"
+    },
+    {
+      "actor_id": 108167,
+      "raw_context_bytes": 28172,
+      "bounded_context_bytes": 13812,
+      "provider_payload_bytes": 13848,
+      "options_preserved": 26,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "744890e66ed91ca544c9891b035c1a78d70672c90cdf36d5bb623a4bcdd6dd17"
+    },
+    {
+      "actor_id": 108170,
+      "raw_context_bytes": 25901,
+      "bounded_context_bytes": 13937,
+      "provider_payload_bytes": 14005,
+      "options_preserved": 24,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "173d2bc8855edf7237bb25a52f26ed62976f6c00c3e04329cbf9cdedda58e39d"
+    },
+    {
+      "actor_id": 108183,
+      "raw_context_bytes": 19977,
+      "bounded_context_bytes": 13954,
+      "provider_payload_bytes": 13990,
+      "options_preserved": 26,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "b716d822e117a65c1b7694f3d4c1c1592b595f9443511fb5233f763c8e92cc0c"
+    },
+    {
+      "actor_id": 108185,
+      "raw_context_bytes": 27852,
+      "bounded_context_bytes": 13940,
+      "provider_payload_bytes": 14008,
+      "options_preserved": 24,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "487ca23c2f2a9b85482a634d6f611cc905ab6425bb6e0d12c051443eabb6e015"
+    },
+    {
+      "actor_id": 225390,
+      "raw_context_bytes": 21792,
+      "bounded_context_bytes": 13769,
+      "provider_payload_bytes": 13805,
+      "options_preserved": 26,
+      "goal_action_rows_lossless": true,
+      "public_terms_preserved": true,
+      "payload_sha256": "843cfe972a6910500aff7a5e9a4a930859b4e5d12d8d5ca650cc2c2631ec4e84"
+    }
+  ]
+}
