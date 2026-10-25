@@ -17,6 +17,7 @@ import uuid
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from social import social_candidates
 from parallel_routines import select_routine_events
+from routing import activity_blocker
 
 
 def fair_pending(events, social_first=True):
@@ -40,7 +41,7 @@ def event_available(state,event):
         return any(social_candidates(society,observation,int(key)) for key in society['town']['residents'])
     current=next((e for e in society['town']['daily']['queue'] if e['id']==event['id']),None)
     if not current or current['status']!='pending':return False
-    if not any(r['id']==event['actor'] and r.get('isPerson') is True for r in observation['residents']):return False
+    if not any(r['id']==event['actor'] and r.get('isPerson') is True and not activity_blocker(r) for r in observation['residents']):return False
     return event['kind']!='social_review' or bool(social_candidates(society,observation,event['actor']))
 
 
@@ -57,6 +58,30 @@ def isolated_before_action(state, event):
             and not plan.get('travel') and not plan.get('release_required')
             and not society.get('error') and not society.get('transition')
             and not state['bridge'].get('command'))
+
+
+def isolated_released_cohort(state, batch_id):
+    """Continue other people only after committed receipts prove lease release.
+
+    A terminal worker or a held phase alone never proves that native actions
+    stopped. A concurrent conversation must also have completed successfully.
+    """
+    society=state['society'];batch=society.get('routine_batch') or {}
+    if (batch.get('id')!=batch_id or batch.get('session')!=state['bridge'].get('session')
+            or batch.get('phase')!='held' or batch.get('settled') is not True
+            or batch.get('release_verified') is not True or batch.get('unverified_release')
+            or society.get('error') or society.get('transition') or society.get('unsettled_effect')
+            or state['bridge'].get('command')):return False
+    conversation=society.get('conversation') or {};plan=society.get('plan') or {}
+    if conversation and conversation.get('phase')!='complete':return False
+    if plan and (plan.get('phase') not in ('complete','held') or plan.get('release_required')):return False
+    members=batch.get('members') or []
+    queue={e['id']:e for e in society['town']['daily']['queue']}
+    return bool(members) and all(
+        m.get('phase') in ('complete','held')
+        and queue.get(m.get('event_id'),{}).get('status')==m['phase']
+        and (not m.get('command') or m.get('receipt',{}).get('release_verified') is True)
+        for m in members)
 
 
 def main():
@@ -145,7 +170,16 @@ def main():
                         if receipt.get('social_event'):evidence['events'].append({**receipt['social_event'],'cohort':batch_id})
                     record()
                     if result.returncode:raise ValueError('Concurrent resident activity held; completed receipts retained')
-                    if batch['phase']=='held':raise ValueError('Independent journey held; no automatic repeat')
+                    if batch['phase']=='held':
+                        if not isolated_released_cohort(current,batch_id):
+                            raise ValueError('Independent journey has unresolved effects; director stopped')
+                        for item in evidence['events']:
+                            if item.get('cohort')==batch_id and item['status']=='held':
+                                item['continued_other_residents']=True
+                        record()
+                    # Never repeat a cohort member from this cached queue,
+                    # even if another service revision later changes its status.
+                    pending=[e for e in pending if e['id'] not in ids]
             for event in pending:
                 if stopping() or len(evidence['events'])>=args.max_events:break
                 current=fresh()

@@ -1,5 +1,6 @@
 """Authored public-place knowledge, distinct from knowledge of people or stock."""
 import math
+from routing import activity_blocker
 
 MARKET = 0x2BE1B  # Owned Skyrim.esm: WhiterunMarketplaceMarker.
 
@@ -13,7 +14,7 @@ def market_opportunity(state, observation, actor):
         return None
     resident = next((r for r in observation.get('residents', [])
                      if r['id'] == actor and r.get('isPerson') is True and r.get('isGuard') is False), None)
-    if not resident:
+    if not resident or activity_blocker(resident):
         return None
     day = observation.get('gameDays')
     if type(day) not in (int, float) or not math.isfinite(day):

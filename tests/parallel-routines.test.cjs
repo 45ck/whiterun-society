@@ -5,6 +5,7 @@ function fixture(extra=0){
  let clock=0;const rows=[{x:2000,pkg:42,loaded:true},{x:3000,pkg:42,loaded:true},...Array.from({length:extra},(_,i)=>({x:100+i*100,pkg:42,loaded:true}))];
  const space={getParentCell:()=>({isInterior:()=>false}),getWorldSpace:()=>({getFormID:()=>1}),isDisabled:()=>false};
  const actors=rows.map((row,i)=>({...space,getFormID:()=>99+i,is3DLoaded:()=>row.loaded,isDead:()=>false,isChild:()=>false,
+  getCurrentScene:()=>null,isInCombat:()=>false,getSleepState:()=>0,
   getPositionX:()=>row.x,getPositionY:()=>0,getPositionZ:()=>0,getCurrentPackage:()=>({getFormID:()=>row.pkg}),evaluatePackage:()=>{}}));
  const target={...space,getFormID:()=>0x2be1b,getPositionX:()=>0,getPositionY:()=>0,getPositionZ:()=>0};
  const list=()=>{let v=[];return {revert:()=>v=[],addForm:f=>v.push(f),getSize:()=>v.length,getAt:i=>v[i]};};

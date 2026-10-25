@@ -36,6 +36,16 @@ function harness(nativeGlobal=false) {
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 
+test('native activity reports actual scene identity and unknown API availability',async()=>{
+  const h=harness();h.actor.getCurrentScene=()=>({getFormID:()=>888});
+  h.actor.isInCombat=()=>false;h.actor.getSleepState=()=>0;
+  h.handlers.get('update')();await settle();
+  assert.deepEqual(JSON.parse(JSON.stringify(h.requests[0].residents[0].activity)),
+    {scene_id:888,in_combat:false,sleep_state:0,package_id:null});
+  h.actor.getCurrentScene=undefined;h.advance();h.handlers.get('update')();await settle();
+  assert.equal(h.requests.at(-1).residents[0].activity.scene_id,null);
+});
+
 test('heartbeat is built from observed game state',async()=>{
   const h=harness();h.handlers.get('update')();await settle();
   assert.equal(h.requests[0].player.cell,'Test cell');

@@ -20,9 +20,12 @@ def select_routine_events(state, observation, events, limit=8):
     if (observation.get('parallel_routines') or {}).get('available') is not True:return []
     actors={r['id']:r for r in observation.get('residents',[])};selected=[];seen=set()
     for event in events:
+        # The director also passes transient social opportunities, which have
+        # no persisted daily status or actor yet. They are not travel jobs.
+        if event.get('kind')!='need_review' or event.get('status')!='pending':continue
         actor=event['actor'];native=actors.get(actor);person=state.get('people',{}).get(str(actor),{})
         if len(selected)>=limit:break
-        if actor in seen or event['status']!='pending' or event['kind']!='need_review' or not native:continue
+        if actor in seen or not native:continue
         # Keep the richer negotiation/work/rest choices when the merchant can
         # already be reached. A travel-only cohort must not erase those options.
         if food_sellers(state, observation, actor):continue
@@ -103,9 +106,11 @@ class ParallelRoutines:
                     if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor})}
             jobs.append(job);member.update(phase='travelling',command=job)
             state['people'][str(actor)]['agency'].update(state='travelling',reason='Chosen public-market journey in an independent native slot')
-        updated['phase']='travelling' if jobs else 'complete'
+        updated['phase']='travelling' if jobs else ('held' if any(m['phase']=='held' for m in updated['members']) else 'complete')
         if jobs:state['pending']={'id':batch_id,'status':'pending','command':{'id':batch_id,'kind':'background_routines' if updated.get('background') else 'parallel_routines','jobs':jobs,'origin_session':self.session}}
-        else:self._settle_routines(state,observation)
+        else:
+            updated['release_verified']=True  # No native job was issued.
+            self._settle_routines(state,observation)
         return {'checkpoint':self._write(state,'independent choices accepted; concurrent journeys prepared')}
 
     def hold_routines(self, batch_id, reason, observation):
@@ -123,6 +128,9 @@ class ParallelRoutines:
             person=state['people'][str(member['actor'])];outcome=member.get('outcome','journey_held')
             memory={'event_id':member['event_id'],'kind':outcome,'place':MARKET,'day':day,
                     'source':'Independent native journey receipt' if member.get('receipt') else 'Own decision or interrupted claim'}
+            movement=(member.get('receipt') or {}).get('movement') or {}
+            if outcome=='journey_held' and movement.get('failureReason'):
+                memory.update(failure_reason=movement['failureReason'],engine_package=movement.get('enginePackage'),session=batch['session'])
             person['memories']=(person['memories']+[memory])[-32:]
             person['agency'].update(state='quiet_interval' if member['phase']=='complete' else 'held',reason='Last independent journey: '+outcome)
             if type(day) in (int,float) and math.isfinite(day):person['agency']['next_review_day']=day+(0 if outcome=='market_seller_observed' else 1/24)

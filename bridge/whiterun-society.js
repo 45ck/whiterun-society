@@ -326,6 +326,7 @@ on('update', () => {
         space={cell:ownCell.getFormID(),interior,world:world?world.getFormID():null};
       }}catch(_){}
       residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,space,
+        activity:observeNativeActivity(resident),
         classificationSource:isPerson===null?'unavailable':'native ActorTypeNPC keyword; child/dead filters applied',
         x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
     }

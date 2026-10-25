@@ -3,6 +3,7 @@ const {createRestController}=require('../bridge/rest.js');
 function fixture(){
  let clock=0,game=1,x=2000,running=false,current=42,sit=0,furniture=0,occupied=false,combat=false,releasePackage=true;
  const actor={getFormID:()=>99,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,hasKeyword:()=>true,isInCombat:()=>combat,
+  getCurrentScene:()=>null,getSleepState:()=>0,
   getPositionX:()=>x,getPositionY:()=>0,getPositionZ:()=>0,getCurrentPackage:()=>({getFormID:()=>current}),evaluatePackage:()=>{},
   getSitState:()=>sit,getFurnitureReference:()=>furniture?{getFormID:()=>furniture}:null};
  const seat={getFormID:()=>0x8f15b,is3DLoaded:()=>true,getPositionX:()=>0,getPositionY:()=>0,getPositionZ:()=>0,isFurnitureInUse:()=>occupied};

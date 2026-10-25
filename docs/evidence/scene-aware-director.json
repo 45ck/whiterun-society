@@ -1,0 +1,570 @@
+{
+  "run": "society-32b80455ec3e4eea",
+  "status": "complete",
+  "source": "Retained director and worker receipts; isolated Skyrim lab",
+  "initial_startup_failure": {
+    "run": "society-685267621bd84e4e",
+    "error": "'status'",
+    "events_started": 0,
+    "model_calls": 0,
+    "correction": "Filter transient social opportunities before reading persisted travel status"
+  },
+  "native_activity_before": [
+    {
+      "actor": 225386,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 862925
+      }
+    },
+    {
+      "actor": 108169,
+      "name": "Idolaf Battle-Born",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 837714
+      }
+    },
+    {
+      "actor": 108156,
+      "name": "Adrianne Avenicci",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 837715
+      }
+    },
+    {
+      "actor": 1106614,
+      "name": "Lillith Maiden-Loom",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 718143
+      }
+    },
+    {
+      "actor": 225368,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 864589
+      }
+    },
+    {
+      "actor": 108185,
+      "name": "Olava the Feeble",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 181166
+      }
+    },
+    {
+      "actor": 843123,
+      "name": "Sigurd",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 843126
+      }
+    },
+    {
+      "actor": 108170,
+      "name": "Jon Battle-Born",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 600635
+      }
+    },
+    {
+      "actor": 108186,
+      "name": "Ysolda",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 181177
+      }
+    },
+    {
+      "actor": 108149,
+      "name": "Carlotta Valentia",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 542716
+      }
+    },
+    {
+      "actor": 1048823,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 362465
+      }
+    },
+    {
+      "actor": 108138,
+      "name": "Amren",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 647351
+      }
+    },
+    {
+      "actor": 108140,
+      "name": "Saffir",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 647352
+      }
+    },
+    {
+      "actor": 225409,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 864593
+      }
+    },
+    {
+      "actor": 108196,
+      "name": "Nazeem",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 924588
+      }
+    },
+    {
+      "actor": 108165,
+      "name": "Olfina Gray-Mane",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 586073
+      }
+    },
+    {
+      "actor": 108160,
+      "name": "Anoriath",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 179747
+      }
+    },
+    {
+      "actor": 108164,
+      "name": "Fralia Gray-Mane",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 179755
+      }
+    },
+    {
+      "actor": 108197,
+      "name": "Ahlam",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 1073830
+      }
+    },
+    {
+      "actor": 225408,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 864593
+      }
+    },
+    {
+      "actor": 229976,
+      "name": "Commander Caius",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 1041104
+      }
+    },
+    {
+      "actor": 108168,
+      "name": "Bergritte Battle-Born",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 542711
+      }
+    },
+    {
+      "actor": 182543,
+      "name": "Brenuin",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 596250
+      }
+    },
+    {
+      "actor": 108162,
+      "name": "Heimskr",
+      "activity": {
+        "scene_id": 237915,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 237916
+      }
+    },
+    {
+      "actor": 108248,
+      "name": "Ria",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 147035
+      }
+    },
+    {
+      "actor": 225392,
+      "name": "Whiterun Guard",
+      "activity": {
+        "scene_id": 0,
+        "in_combat": false,
+        "sleep_state": 0,
+        "package_id": 864589
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "encounter-64cf664b7ccf4209a013",
+      "actor": 108165,
+      "status": "complete",
+      "outcome": "social_exchange_completed",
+      "model_calls": 12,
+      "name": "Olfina Gray-Mane",
+      "speakers": [
+        {
+          "actor": 108165,
+          "name": "Olfina Gray-Mane"
+        },
+        {
+          "actor": 108196,
+          "name": "Nazeem"
+        }
+      ],
+      "calls": {
+        "propose": 3,
+        "select": 3,
+        "social": 6
+      },
+      "duration_seconds": 65.979,
+      "release_evidence": {
+        "attendance": {
+          "id": "attend-encounter-64cf664b7ccf4209a013",
+          "participants": [
+            {
+              "actor": 108165,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 6
+            },
+            {
+              "actor": 108196,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 7
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-encounter-64cf664b7ccf4209a013",
+        "released": true,
+        "status": "applied"
+      },
+      "synthesis_timings": [
+        {
+          "turn": 0,
+          "seconds": 1.157,
+          "engine_seconds": 1.157
+        },
+        {
+          "turn": 1,
+          "seconds": 1.985,
+          "engine_seconds": 1.985
+        },
+        {
+          "turn": 2,
+          "seconds": 1.171,
+          "engine_seconds": 1.171
+        }
+      ],
+      "turns": [
+        {
+          "speaker": 108165,
+          "name": "Olfina Gray-Mane",
+          "line": "Afternoon, Nazeem. How have you been these days?",
+          "delivered": true,
+          "audio_seconds": 2.856
+        },
+        {
+          "speaker": 108196,
+          "name": "Nazeem",
+          "line": "Not bad, Olfina. Had a bite to eat earlier, so I'm resting comfortably now.",
+          "delivered": true,
+          "audio_seconds": 5.2887
+        },
+        {
+          "speaker": 108165,
+          "name": "Olfina Gray-Mane",
+          "line": "Glad to hear you're resting well. Take care, Nazeem.",
+          "delivered": true,
+          "audio_seconds": 3.4187
+        }
+      ],
+      "reply_dispatch_gaps_seconds": [
+        10.573,
+        11.628
+      ]
+    },
+    {
+      "id": "daily-9-108165",
+      "actor": 108165,
+      "status": "complete",
+      "outcome": "ate_bread",
+      "model_calls": 1,
+      "name": "Olfina Gray-Mane",
+      "choices": [
+        "eat_bread"
+      ]
+    },
+    {
+      "id": "encounter-d505815640834231b44e",
+      "actor": 108168,
+      "status": "complete",
+      "outcome": "social_exchange_completed",
+      "model_calls": 15,
+      "name": "Bergritte Battle-Born",
+      "speakers": [
+        {
+          "actor": 108168,
+          "name": "Bergritte Battle-Born"
+        },
+        {
+          "actor": 182543,
+          "name": "Brenuin"
+        }
+      ],
+      "calls": {
+        "propose": 4,
+        "select": 4,
+        "social": 7
+      },
+      "duration_seconds": 149.646,
+      "release_evidence": {
+        "attendance": {
+          "id": "attend-encounter-d505815640834231b44e",
+          "participants": [
+            {
+              "actor": 108168,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 6
+            },
+            {
+              "actor": 182543,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 7
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-encounter-d505815640834231b44e",
+        "released": true,
+        "status": "applied"
+      },
+      "synthesis_timings": [
+        {
+          "turn": 0,
+          "seconds": 1.422,
+          "engine_seconds": 1.422
+        },
+        {
+          "turn": 1,
+          "seconds": 1.312,
+          "engine_seconds": 1.312
+        },
+        {
+          "turn": 2,
+          "seconds": 1.062,
+          "engine_seconds": 1.062
+        },
+        {
+          "turn": 3,
+          "seconds": 1.094,
+          "engine_seconds": 1.094
+        }
+      ],
+      "turns": [
+        {
+          "speaker": 108168,
+          "name": "Bergritte Battle-Born",
+          "line": "Good afternoon, Brenuin. The weather is quite pleasant today.",
+          "delivered": true,
+          "audio_seconds": 3.6633
+        },
+        {
+          "speaker": 182543,
+          "name": "Brenuin",
+          "line": "Good afternoon to you too. How has your day been so far?",
+          "delivered": true,
+          "audio_seconds": 3.838
+        },
+        {
+          "speaker": 108168,
+          "name": "Bergritte Battle-Born",
+          "line": "It's been fine. I should rest now, though. Take care.",
+          "delivered": true,
+          "audio_seconds": 2.9527
+        },
+        {
+          "speaker": 182543,
+          "name": "Brenuin",
+          "line": "Take care then. It was nice talking with you.",
+          "delivered": true,
+          "audio_seconds": 3.1327
+        }
+      ],
+      "reply_dispatch_gaps_seconds": [
+        9.995,
+        10.703,
+        12.578
+      ]
+    },
+    {
+      "id": "daily-11-108248",
+      "actor": 108248,
+      "status": "complete",
+      "outcome": "ate_bread",
+      "model_calls": 1,
+      "name": "Ria",
+      "choices": [
+        "eat_bread"
+      ]
+    }
+  ],
+  "inventory_accounts_compared": 29,
+  "inventory_changes": [
+    {
+      "actor": 108165,
+      "name": "Olfina Gray-Mane",
+      "before": {
+        "gold": 33,
+        "bread": 1,
+        "grain": 0
+      },
+      "after": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    {
+      "actor": 108248,
+      "name": "Ria",
+      "before": {
+        "gold": 20,
+        "bread": 2,
+        "grain": 0
+      },
+      "after": {
+        "gold": 20,
+        "bread": 1,
+        "grain": 0
+      }
+    }
+  ],
+  "totals_before": {
+    "bread": 25,
+    "gold": 964,
+    "grain": 20
+  },
+  "totals_after": {
+    "bread": 23,
+    "gold": 964,
+    "grain": 20
+  },
+  "save_restore": {
+    "name": "WS-SceneAware-20261025-AW",
+    "checkpoint": 1093,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "limits": [
+    "The live run contained no new held travel cohort; continuation after released route failure is integration-tested, not qualified here in Skyrim.",
+    "Busy-to-free scene transitions and the new 15-second acquisition limit are tested with controlled native adapters, not observed in this run.",
+    "No new sale, employment, production or political action occurred in this run.",
+    "Delivered speech uses the overlay voice pipeline; spatial audio, eye gaze, lip sync and human-rated realism remain unqualified."
+  ],
+  "model_calls": 29,
+  "results_with_cost": 29,
+  "reported_cost_usd": 0.002905604
+}

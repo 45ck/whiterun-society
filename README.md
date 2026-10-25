@@ -26,6 +26,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. Mercury 2.5 is now the experimental lab default after a complete two-turn voiced encounter: 58.811 seconds including approach and playback, with US$0.000718912 reported across two language requests and six Jev decisions. Grounding failures from earlier probes remain documented; one successful scene is not broad qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
+Residents now wait around observed Skyrim scenes, combat and sleep transitions. Released route failures can be isolated so other residents continue; uncertain effects still stop the run. [Scheduling behavior and evidence](docs/scene-aware-scheduling.md).
+
 ## Examples from the running prototype
 
 ### Independent lives around a conversation
@@ -36,7 +38,7 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 Background travel now has six native slots, leaving two for one disjoint conversation. Actor reservations prevent a traveller from also being selected as a speaker; arrival receipts preserve another encounter's pending speech. The observer reports travel/attendance and travel/speech overlap separately. Current businesses provide seller IDs dynamically.
 
-**Observed in Skyrim:** Adrianne and Idolaf completed three voiced turns while Amren travelled. Native telemetry recorded 591 travel/speech overlap frames and verified independent release. Ahlam's separate route never acquired its package and timed out; that failure remains counted. All 29 compared inventories stayed unchanged. [Listen to the generated utterances](https://45ck.github.io/whiterun-society/#voice-example) · [Architecture, receipts and limitations](docs/concurrent-society.md).
+**Observed in Skyrim:** Adrianne and Idolaf completed three voiced turns while Amren travelled. Native telemetry recorded 591 travel/speech overlap frames and verified independent release. Heimskr's separate route never acquired its package and timed out; that failure remains counted. All 29 compared inventories stayed unchanged. [Listen to the generated utterances](https://45ck.github.io/whiterun-society/#voice-example) · [Architecture, receipts and limitations](docs/concurrent-society.md).
 
 ### Conversations in an established town
 

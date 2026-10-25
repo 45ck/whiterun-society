@@ -10,7 +10,7 @@ from decisions import validate_decision
 from food import allocation
 from production import work_inventory
 from market_day import event_for
-from routing import route_available, dynamic_route
+from routing import route_available, dynamic_route, activity_blocker
 from labour import work_opportunities, settle_contract
 from rest import rest_opportunities
 from places import MARKET, market_opportunity, at_market
@@ -65,6 +65,8 @@ class Agency:
                 if plan['actor'] != actor or plan['kind'] != kind or plan.get('voiced_trade',False)!=voiced_trade:
                     raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
+        native=next((r for r in observation.get('residents',[]) if r['id']==actor),None)
+        if native and activity_blocker(native):raise ValueError('Resident currently occupied: '+activity_blocker(native))
         scenario=self.active.get('market_day')
         if scenario and scenario['status']!='complete':
             expected=event_for(scenario)

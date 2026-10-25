@@ -1,6 +1,6 @@
 # Independent lives in a shared town
 
-The town should continue around an encounter. The background protocol lets up to six residents travel while one disjoint pair uses the conversation channel. **A subsequent live trial observed Amren travelling while Adrianne and Idolaf completed three voiced turns. Ahlam's separate route failed to acquire its package and timed out.** One concurrent traveller and one encounter are qualified; the six-traveller capacity and broad continuous society are not.
+The town should continue around an encounter. The background protocol lets up to six residents travel while one disjoint pair uses the conversation channel. **A subsequent live trial observed Amren travelling while Adrianne and Idolaf completed three voiced turns. Heimskr's separate route failed to acquire its package and timed out.** One concurrent traveller and one encounter are qualified; the six-traveller capacity and broad continuous society are not.
 
 ![Generated architecture illustration, not a gameplay screenshot](images/independent-lives-observed.png)
 
@@ -55,10 +55,14 @@ Background cohorts now save the disjoint nearby candidates observed before trave
 
 Current native observations include interior-cell/exterior-world identity. Proximity does not compare coordinates across different interiors or worlds. A notice cannot resurrect an unloaded actor, survive a changed game session, or be consumed by two encounters. Only the selected initiator's noticed candidate list enters the conversation record and model context. Lost or expired options are revalidated before execution.
 
-Trial `background-20261025-c` used two Jev travel decisions and twelve conversation calls, with **US$0.001766578 reported** across retained results. Amren completed his market journey but found no seller. Ahlam never owned his expected package and timed out; both travel slots released. Adrianne chose to approach Idolaf, who chose to chat; the conversation ended politely after three delivered turns and released both attendance slots. Native telemetry recorded **2,558 travel/attendance frames and 591 travel/speech frames**. These correlated update counts are not durations or acoustic timestamps. [Compact receipt, transcript and failure](evidence/observed-overlap.json)
+Trial `background-20261025-c` used two Jev travel decisions and twelve conversation calls, with **US$0.001766578 reported** across retained results. Amren completed his market journey but found no seller. Heimskr never owned his expected package and timed out; both travel slots released. Adrianne chose to approach Idolaf, who chose to chat; the conversation ended politely after three delivered turns and released both attendance slots. Native telemetry recorded **2,558 travel/attendance frames and 591 travel/speech frames**. These correlated update counts are not durations or acoustic timestamps. [Compact receipt, transcript and failure](evidence/observed-overlap.json)
 
 The notice was consumed 11.895 seconds after capture. The chosen speakers were already 126 units apart, so this trial does **not** exercise the extended-range branch or establish that notices caused the successful overlap. It does qualify the integrated disjoint travel/attendance/overlay-speech path. All 29 compared inventories were unchanged. Save `WS-Overlap-20261025-AV`, checkpoint 1001, restored all 16 compared fields after completion; mid-overlap save/load remains unqualified.
 
 The encounter took 60.948 seconds. Warm synthesis took 1.234, 1.266 and 1.094 seconds, but the two reply dispatch gaps were **10.587 and 9.389 seconds**. The selected waking-time claim, “I've been up since dawn,” lacks explicit support in the supplied context. Thus the successful execution does not establish human realism or adequate dialogue grounding. [Listen to the three generated utterance assets](https://45ck.github.io/whiterun-society/#voice-example); these are not a recording of the game's audio output.
 
 The observer exposes notices consumed, terminal unused notices, notice-to-start timing and the fraction of background cohorts with observed speech overlap. The previous two zero-overlap trials remain in the denominator: this lineage has one observed overlap among three terminal background cohorts. Local validation passed 253 Python and 106 JavaScript tests; seven focused documentation/service tests passed after adding the audio gallery.
+
+## Occupied residents and released failures
+
+The planner now senses native scene/combat/sleep activity, limits never-acquired packages separately from walking time, and isolates verified released cohort failures. [Behavior, tests and qualification](scene-aware-scheduling.md).

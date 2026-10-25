@@ -24,3 +24,11 @@ class ObserverTests(unittest.TestCase):
         self.assertNotIn('command',result);self.assertEqual(before,self.society)
         result=observer_state({'last_seen':0,'observation':self.obs},self.society)
         self.assertFalse(result['connected'])
+
+    def test_current_scene_occupancy_is_visible_without_inventing_an_agent_intention(self):
+        self.obs['residents'][0]['activity']={'scene_id':888,'in_combat':False,'sleep_state':0,'package_id':42}
+        result=observer_state({'last_seen':time.time(),'observation':self.obs},self.society)
+        self.assertEqual(result['residents'][0]['activity_blocker'],'native_scene')
+        self.assertEqual(result['residents'][0]['native_activity']['scene_id'],888)
+        self.assertIsNone(result['residents'][1]['native_activity'])
+        self.assertEqual(result['residents'][1]['activity_blocker'],'not_loaded')

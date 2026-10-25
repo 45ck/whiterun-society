@@ -4,6 +4,7 @@ import time
 from collections import Counter
 from statistics import mean
 from enterprises import production_policy
+from routing import activity_blocker
 
 
 def camera_request(data, observation, society):
@@ -40,6 +41,8 @@ def observer_state(bridge,society):
         residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),'is_guard':resident.get('is_guard',False),
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
             'race':actor.get('race') if actor else None,
+            'native_activity':actor.get('activity') if actor else None,
+            'activity_blocker':activity_blocker(actor) if actor else 'not_loaded',
             'inventory':stock.get(key),'person':person,'household':resident.get('household')})
     businesses = []
     for key, business in town.get('businesses', {}).items():
