@@ -21,6 +21,8 @@ The next slice lets separate business owners accumulate observed work attendance
 
 The current supported recipe uses **one grain to produce two bread, with zero gold paid**. This slice validates that recipe in code; arbitrary data-defined transformations remain future work. The owner works their own account, so this is not a wage transaction, validated productivity model, or claim of profit. The owner must currently own and steward an active enterprise with the recipe capability. Charter revision, policy, identity, available grain and account reservations are rechecked before the effect is admitted.
 
+The [data-driven economy gap audit](data-driven-economy-gap.md) identifies the remaining commodity and recipe assumptions, the proposed shared catalogue, and the native item verification required before expanding production.
+
 ## Saved job and native execution
 
 `owner_work_jobs.py` stores `work_jobs[job_id]` with the original `source_plan`, actor/base identity, existing Citizens slot, session/epoch, business ID and revision, recipe ID, policy snapshot/version, required game minutes, input reservation, attendance evidence, settlement state and release/acknowledgement flags. Its schema is `owner-work-jobs-v1`. Source-plan IDs remain attached after a newer foreground event starts; completing one owner's job must not complete or replace somebody else's plan.
@@ -47,7 +49,7 @@ Native receipts absent from an older saved lineage enter `work_orphans`. They ma
 
 ## Exact automated regression obligations
 
-The implementation has dedicated service tests in `tests/test_owner_work_jobs.py`, real checkpoint/SQLite integration tests in `tests/test_owner_work_integration.py`, and native-controller test code. The latest focused review reports **20 native-controller automated tests and seven Python integration tests passing**; these are code-level tests, not Skyrim execution. The full-suite run remains in progress, so no final aggregate is claimed here. Required cases include:
+The implementation has dedicated service tests in `tests/test_owner_work_jobs.py`, real checkpoint/SQLite integration tests in `tests/test_owner_work_integration.py`, and native-controller test code. The final suites include **21 native-controller automated tests and seven Python integration tests**; these are code-level tests, not Skyrim execution. Hosted full-suite evidence is linked above. Required cases include:
 
 - Four independent mailbox reservations without consuming the two rest slots; rejection of duplicate actor, account, business or mailbox ownership.
 - Admission leaves inventory unchanged and the source event unfinished. Qualified attendance persists without creating bread. Changed enterprise revision/policy, missing grain, expired token or changed actor identity rejects recipe preparation.
@@ -60,6 +62,10 @@ The implementation has dedicated service tests in `tests/test_owner_work_jobs.py
 Passing an authored test proves the specified code path against its test observations. It does not substitute for native package behavior, physical inventories, audible output or a successful live recovery.
 
 ## Planned native acceptance: two owners and a separate conversation
+
+`tools/qualify_owner_work.py` now provides an offline/read-only preflight and a separately selected trial mode. Its 17 offline tests pass. Inspect a saved `/state` response with `--state-file snapshot.json --output preflight.json`, or use `--inspect-live --output preflight.json` for authenticated loopback reads. Neither mode creates stock, charters, reviews or jobs. Trial execution requires `--execute-authorized-trial` and separate operator authorization; the flag itself does not grant permission.
+
+The read-only check on 25 October found one eligible owner, no eligible pending need reviews, and no advertised installed independent-work capacity. The second registered enterprise remains planned metalworking. These are unmet prerequisites, not failed production attempts. No native trial was run. The harness requires two settled production proofs, four verified voice deliveries and at least ten cumulative seconds of qualified voice/work overlap; work-only evidence cannot pass the combined case. Cached observations add no elapsed credit, and failed execution returns a nonzero exit status while preserving its evidence.
 
 Use an isolated managed save and dynamically identified eligible enterprises, owners and disjoint speakers. Record whether initial resources or decisions are authored fixture inputs. Do not silently credit authored choices as agent autonomy. Preserve the plugin manifest and baseline checkpoint, inventories, plans and leases.
 
