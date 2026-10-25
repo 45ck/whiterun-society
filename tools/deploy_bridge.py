@@ -26,6 +26,7 @@ movement=(Path(__file__).resolve().parents[1]/'bridge'/'movement.js').read_text(
 source=source.replace('__MOVEMENT_FACTORY__',movement)
 router=(Path(__file__).resolve().parents[1]/'bridge'/'papyrus-router.js').read_text().split('\nif(typeof module')[0]
 source=source.replace('__PAPYRUS_ROUTER_FACTORY__',router)
+source=source.replace('__RESIDENT_CONTROL_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge/resident-control.js').read_text(encoding='utf-8-sig').split('\nif(typeof module')[0])
 source=source.replace('__SCENE_HANDOFF_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'scene-handoffs.js').read_text().split('\nif(typeof module')[0])
 source=source.replace('__PLACE_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'places.js').read_text().split('\nif(typeof module')[0])
 rest=(Path(__file__).resolve().parents[1]/'bridge'/'rest.js').read_text().split('\nif(typeof module')[0]

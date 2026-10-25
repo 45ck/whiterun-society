@@ -15,10 +15,14 @@ def town_dashboard(society, observation):
         elif isinstance(value,list):
             for child in value:leases(child)
     for key in ('movement','parallel_routines','conversationAttendance','rest'):leases(observation.get(key))
-    control={key:0 for key in ('agent','scene','native','unknown','unloaded')}
+    standby=set()
+    for a in (observation.get('resident_control') or {}).get('activities',[]):
+        actor=str(a.get('actor'));row=loaded.get(actor);package=a.get('expectedPackage')
+        if row and a.get('ownedPackage') is True and type(package) is int and package>0 and (row.get('activity') or {}).get('package_id')==package:standby.add(actor)
+    control={key:0 for key in ('agent','standby','scene','native','unknown','unloaded')}
     for key in managed:
         row=loaded.get(key);activity=(row or {}).get('activity') or {}
-        category=('unloaded' if row is None else 'agent' if key in owned else 'scene' if activity.get('scene_id')
+        category=('unloaded' if row is None else 'agent' if key in owned else 'scene' if activity.get('scene_id') else 'standby' if key in standby
                   else 'native' if activity.get('package_id') else 'unknown')
         control[category]+=1
     accounts={str(r['id']):r.get('inventory',{}) for r in observation.get('inventory_observations',[])}

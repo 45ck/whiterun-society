@@ -73,7 +73,11 @@ function residentActivity(id){
  if(active(c)&&c.speakers?.includes(id))return c.phase==='speaking'?(c.current?.speaker===id?'Speaking':'Listening'):'Conversation · '+c.phase.replaceAll('_',' ');
  if(active(p)&&[p.actor,...(p.economic_pair||[])].includes(id))return p.phase.replaceAll('_',' ');
  const a=state.parallel_routines?.activities?.find(x=>x.actor===id);if(a&&['travelling','walking','requesting'].includes(a.phase))return 'Agent journey · '+(names[a.target]||'chosen destination');
- const r=state.residents?.find(x=>x.id===id);return !r?'Outside loaded area':r.activity?.scene_id?'Native scene':r.activity?.package_id?'Native routine':'Activity unobserved';
+ const r=state.residents?.find(x=>x.id===id),hold=state.resident_control?.activities?.find(x=>x.actor===id);
+ if(!r)return 'Outside loaded area';if(r.activity?.scene_id)return 'Native scene';
+ if(hold?.ownedPackage&&hold.expectedPackage===r.activity?.package_id)return 'Awaiting a decision · society control';
+ if(hold&&['failed','package_not_acquired'].includes(hold.phase))return 'Control issue · '+hold.phase.replaceAll('_',' ');
+ return r.activity?.package_id?'Native routine':'Activity unobserved';
 }
 function draw(){if(!state)return;renderTownCharts(document.getElementById('town-charts'),state.dashboard);const actors=state.residents||[],trades=(state.trades||[]),committed=trades.filter(t=>t.status==='committed');
  for(const [id,p] of Object.entries(state.society?.people||{}))names[id]=p.profile.name;

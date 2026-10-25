@@ -8,6 +8,7 @@ import copy
 import hashlib
 import math
 import re
+from resident_control import sync_resident_assignments
 
 TRAITS=('openness','conscientiousness','extraversion','agreeableness','neuroticism')
 NEEDS=('hunger','fatigue','social_contact','safety','comfort')
@@ -135,6 +136,7 @@ class Population:
         # Census is observation, not business formation. Existing save-bound
         # charters survive; new enterprises require an explicit specification.
         town['census_events'].append({'id':event_id,'added':added,'observed_day':day,'session':self.session})
+        sync_resident_assignments(town)
         return {'checkpoint':self._write(state,'classified town population initialized without minting resources'),
             'added':added,'population':len(town['residents'])}
 

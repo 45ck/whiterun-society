@@ -4,6 +4,18 @@ from conversation import validate_candidates
 from dialogue_metrics import dialogue_metrics
 
 class DialogueContextTests(unittest.TestCase):
+    def test_current_activity_is_own_observed_state_not_role_or_other_resident_state(self):
+        c={'speakers':[1,2],'turn':0,'max_turns':4,'turns':[]}
+        obs={'residents':[{'id':1,'activity':{'package_id':55}}],
+             'resident_control':{'activities':[{'actor':1,'ownedPackage':True,'expectedPackage':55,'phase':'holding'},
+                                                {'actor':2,'ownedPackage':True,'expectedPackage':66,'phase':'holding'}]}}
+        frame=dialogue_frame(c,obs,{'profile':{'role':'guard'}},1)
+        self.assertEqual(frame['own_current_activity']['kind'],'awaiting_decision')
+        obs['residents'][0]['activity']['package_id']=42
+        self.assertEqual(dialogue_frame(c,obs,{'profile':{'role':'guard'}},1)['own_current_activity']['kind'],'not_semantically_observed')
+        obs['resident_control']['activities'][0]['phase']='interaction_priority'
+        self.assertEqual(dialogue_frame(c,obs,{},1)['own_current_activity']['kind'],'interaction_in_progress')
+
     def test_time_bands_and_unknown_clock(self):
         for hour,period in ((4,'night'),(5,'morning'),(11,'morning'),(12,'afternoon'),(17,'evening'),(22,'night')):
             self.assertEqual(time_context(4+hour/24)['period'],period)

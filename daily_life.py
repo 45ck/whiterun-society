@@ -11,6 +11,7 @@ from rest import rest_opportunities, FATIGUE_PER_GAME_HOUR
 from social import social_candidates
 from places import market_opportunity
 from opportunities import food_sellers
+from resident_control import sync_resident_assignments
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -34,6 +35,7 @@ class DailyLife:
             return {'duplicate': True, 'next_review_day': daily['last_day'] + INTERVAL}
         state = copy.deepcopy(self.active)
         town = state['town']
+        sync_resident_assignments(town)
         daily = town.setdefault('daily', {'last_day': day, 'sequence': 0, 'queue': [], 'reviews': []})
         daily['sequence'] += 1
         actors = {str(a['id']): a for a in observation.get('residents', []) if a.get('isPerson') is True}

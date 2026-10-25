@@ -6,6 +6,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **RTS controls and charts:** [implementation and runtime qualification](docs/rts-experience.md). Play starts resident decisions; Pause settles the current interaction. Movie view follows current activity, with no automatic tours.
 
+**Resident ownership and voices:** [native continuity qualification](docs/resident-continuity.md): 29 enrolled residents, separate standby/task charts, two completed four-line encounters, and saved policy recovery. Standby and audible output are verified separately from natural dialogue and economic success.
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
 **Visual documentation:** [all 30 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.

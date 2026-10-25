@@ -12,6 +12,8 @@ const production=createProductionController(()=>sp);
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __PAPYRUS_ROUTER_FACTORY__
+__RESIDENT_CONTROL_FACTORY__
+const residentControl=createResidentControl(()=>sp);
 __SCENE_HANDOFF_FACTORY__
 const sceneHandoffs=createSceneHandoffController(()=>sp);
 __PLACE_FACTORY__
@@ -27,7 +29,7 @@ __SPEECH_FACTORY__
 const speech=createSpeechController(()=>sp);
 __OBSERVER_CAMERA_FACTORY__
 const observerCamera=createObserverCamera();
-let remoteCamera=null;
+let remoteCamera=null,lastPresentationAt=0;
 let movementSource=null;
 let routineRecoveryNeeded=true;
 const config = __BRIDGE_CONFIG__;
@@ -69,7 +71,7 @@ function on(event, callback) { registrations.push(sp.on(event, callback)); }
 function reset() {
   directorControl=null;playerControlRequest=null;audioOutput=null;
   lastAckSent=null;
-  sceneHandoffs.reset();
+  sceneHandoffs.reset();residentControl.reset();lastPresentationAt=0;
   observerCamera.reset();remoteCamera=null;
   endowments.reset();
   speech.reset();conversationAttendance.reset();
@@ -443,6 +445,16 @@ on('update', () => {
   }}catch(_){}
   try {if(sp.Utility&&typeof sp.Utility.getINIBool==='function')audioEnabled=sp.Utility.getINIBool('bEnableAudio:Audio');} catch(_) {}
   function controlEnabled(name){try{return typeof sp.Game[name]==='function'?sp.Game[name]():null;}catch(_){return null;}}
+  const societyState=presentation.society,foreground=new Set();
+  const plan=societyState?.plan,chat=societyState?.conversation,batch=societyState?.routine_batch;
+  if(plan&&(!['complete','held'].includes(plan.phase)||plan.release_required)){for(const id of [plan.actor,plan.target,...(plan.economic_pair||[])])if(id)foreground.add(id);}
+  if(chat&&!['complete','held'].includes(chat.phase))for(const id of chat.speakers||[])foreground.add(id);
+  if(batch&&!['complete','held'].includes(batch.phase))for(const m of batch.members||[])foreground.add(m.actor);
+  const controlFresh=Date.now()-lastPresentationAt<10000&&!societyState?.error;
+  // A checkpoint transition pauses new bindings; it must not release every
+  // standing task while a disjoint conversation commits a memory.
+  if(!controlFresh||(!societyState?.transition&&societyState?.checkpoint===checkpointValue()))
+    residentControl.tick(societyState?.town?.resident_control,residents,controlFresh,[...foreground]);
   const observation = {
     director_control:directorControl,
     player_controls:{request:playerControlRequest,
@@ -450,6 +462,7 @@ on('update', () => {
       fighting:controlEnabled('isFightingControlsEnabled'),
       activate:controlEnabled('isActivateControlsEnabled')},
     transport:{cadence_ms:cadence,previous_request_interval_ms:lastSent?Date.now()-lastSent:null},
+    resident_control:residentControl.status(),
     ui_health:uiHealth,audio_output:audioOutput,
     camera:{...observerCamera.status(),mode:cameraMode,id:cameraActor,position:typeof sp.getFreeCameraPosition==='function'?sp.getFreeCameraPosition():null},
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
@@ -467,7 +480,7 @@ on('update', () => {
       if (session===currentSession && response.status===200) {
         const result=JSON.parse(response.body);pending=result.command;
         if(directorControl&&result.director_control_receipt?.id===directorControl.id)directorControl=null;
-        if(result.presentation) presentation=result.presentation;
+        if(result.presentation){presentation=result.presentation;lastPresentationAt=Date.now();}
         if(result.observer_camera&&result.observer_camera.request_id!==observerCamera.status().request_id)remoteCamera=result.observer_camera;
       }
     }).catch(error => sp.writeLogs('whiterun-society',String(error))).finally(()=>{busy=false;});

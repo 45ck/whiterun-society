@@ -16,6 +16,15 @@ def dialogue_frame(conversation,observation,person,actor):
     heard=[t for t in turns if t['listener']==actor]
     last=heard[-1]['selected']['line'] if heard else None
     listener=conversation['speakers'][1-conversation['turn']%2]
+    continuity=next((a for a in (observation.get('resident_control') or {}).get('activities',[]) if a.get('actor')==actor),None)
+    own_activity={'kind':'not_semantically_observed','source':'A native package ID or occupational role does not establish a current task'}
+    if continuity:
+        row=next((r for r in observation.get('residents',[]) if r.get('id')==actor),{})
+        package=(row.get('activity') or {}).get('package_id')
+        if continuity.get('ownedPackage') is True and package and package==continuity.get('expectedPackage'):
+            own_activity={'kind':'awaiting_decision','source':'Observed society standby package; not work, patrol, production or a promise to resume them'}
+        elif continuity.get('phase')=='interaction_priority':
+            own_activity={'kind':'interaction_in_progress','source':'Society interaction temporarily supersedes standby; no other duty is established'}
     return {'clock':time_context(observation.get('gameDays')),
         'delivered_turns':len(turns),'is_refusal':conversation.get('response')=='decline',
         'last_line_heard':last,'last_line_has_question_mark':bool(last and '?' in last),
@@ -23,11 +32,13 @@ def dialogue_frame(conversation,observation,person,actor):
         'approach_reason':conversation.get('source','Nearby encounter; no prior shared topic'),
         'closing_reason':'The resident declined this approach; no conversation has happened yet' if conversation.get('response')=='decline' else 'The resident selected a polite ending' if conversation.get('end_after_turn') else 'Encounter turn budget is ending' if conversation['turn']>=conversation.get('max_turns',2)-1 else None,
         'own_recorded_commitments':person.get('commitments',[]),
+        'own_current_activity':own_activity,
         'physical_capabilities':['talk','listen','end this conversation'],
         'not_observed':['current work orders or deadlines','forge temperature','a promise to sit or execute another task','the other resident private motives or stock'],
         'rules':['Address the latest question or acknowledge uncertainty before changing topic.',
             'Do not restart a greeting after already speaking in this encounter.',
             'A farewell needs no invented excuse or appointment.',
+            'Your occupational role is not evidence of a current shift, patrol, work order or task to resume.',
             'Do not propose sitting or another physical task that this social interaction cannot execute.',
             'Use time-of-day greetings only when the clock supports them.']}
 

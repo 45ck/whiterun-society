@@ -18,7 +18,7 @@ def plugin_manifest(root):
     profile=root/'mod-organizer/profiles/Default/plugins.txt'
     if not profile.is_file():raise ValueError('Managed plugin list is unavailable')
     result=[]
-    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp','whiterunlanes.esp'}
+    owned={'whiterunsociety.esp','whiterunagents.esp','whiterunrouter.esp','whiterunrest.esp','whiterunlanes.esp','whiteruncitizens.esp'}
     for line in profile.read_text(encoding='utf-8-sig').splitlines():
         if not line.startswith('*'):continue
         name=line[1:]
@@ -33,7 +33,7 @@ def plugin_manifest(root):
 
 def plugins_compatible(expected, actual, addition=None):
     if expected==actual:return True
-    return (addition=='WhiterunLanes.esp' and len(actual)==len(expected)+1 and actual[:-1]==expected
+    return (addition in ('WhiterunLanes.esp','WhiterunCitizens.esp') and len(actual)==len(expected)+1 and actual[:-1]==expected
             and actual[-1].get('name')==addition and bool(actual[-1].get('sha256')))
 
 
@@ -71,7 +71,7 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--name', required=True)
     parser.add_argument('--restore', action='store_true')
-    parser.add_argument('--allow-added-plugin',choices=('WhiterunLanes.esp',))
+    parser.add_argument('--allow-added-plugin',choices=('WhiterunLanes.esp','WhiterunCitizens.esp'))
     args = parser.parse_args()
     if not re.fullmatch(r'WS-[A-Za-z0-9_-]{1,48}', args.name):
         raise ValueError('Use an isolated WS- save name')

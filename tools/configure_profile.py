@@ -9,12 +9,15 @@ parser.add_argument('--root',type=Path,required=True)
 parser.add_argument('--audio-diagnostic',action='store_true',help='Disable audio for an explicitly labelled diagnostic run')
 parser.add_argument('--experimental-rest',action='store_true',help='Opt into the unqualified seated-rest plugin; a cold launch has hung')
 parser.add_argument('--experimental-routines',action='store_true',help='Enable the experimental eight-slot routing plugin')
+parser.add_argument('--experimental-resident-control',action='store_true',help='Enable additive resident continuity control')
 args=parser.parse_args()
 root=args.root.resolve()
 if args.experimental_rest and not (root/'game/Data/WhiterunRest.esp').is_file():
     raise ValueError('Build and stage WhiterunRest.esp before opting into the rest experiment')
 if args.experimental_routines and not (root/'game/Data/WhiterunLanes.esp').is_file():
     raise ValueError('Build and stage WhiterunLanes.esp before enabling independent routing')
+if args.experimental_resident_control and not (root/'game/Data/WhiterunCitizens.esp').is_file():
+    raise ValueError('Stage WhiterunCitizens.esp before enabling resident control')
 profile=root/'mod-organizer'/'profiles'/'Default'
 settings=configparser.ConfigParser()
 settings.read(profile/'settings.ini')
@@ -47,7 +50,10 @@ print('Observer profile: automatic Whiterun start; local saves and INIs; 1280x72
 
 plugins=profile/'plugins.txt'
 lines=plugins.read_text(encoding='utf-8-sig').splitlines() if plugins.exists() else []
-for name in ('WhiterunSociety.esp','WhiterunAgents.esp','WhiterunRouter.esp','WhiterunRest.esp','WhiterunLanes.esp'):
+for name in ('WhiterunSociety.esp','WhiterunAgents.esp','WhiterunRouter.esp','WhiterunRest.esp','WhiterunLanes.esp','WhiterunCitizens.esp'):
+    if name=='WhiterunCitizens.esp' and not args.experimental_resident_control:
+        lines=[line.lstrip('*') if line.lstrip('*').lower()==name.lower() else line for line in lines]
+        continue
     if name=='WhiterunLanes.esp' and not args.experimental_routines:
         lines=[line.lstrip('*') if line.lstrip('*').lower()==name.lower() else line for line in lines]
         continue

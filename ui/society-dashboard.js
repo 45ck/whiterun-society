@@ -17,7 +17,7 @@ function renderTownCharts(root,data){
  const section=title=>{const e=add(root,'section');add(e,'h3',title);return e;};
  const control=section('Who controls the residents?'),row=add(control,'div',undefined,'town-control');
  const svg=doc.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 120 120');svg.setAttribute('role','img');row.append(svg);
- const labels=[['agent','Agent task','#9dc9ac'],['scene','Native scene','#d5967f'],['native','Other native routine','#a39ac3'],['unknown','Unknown','#8296a0'],['unloaded','Not loaded','#45565f']];
+ const labels=[['agent','Agent task','#9dc9ac'],['standby','Agent standby','#6ab5b6'],['scene','Native scene','#d5967f'],['native','Other native routine','#a39ac3'],['unknown','Unknown','#8296a0'],['unloaded','Not loaded','#45565f']];
  const total=labels.reduce((n,[k])=>n+(data.control[k]||0),0),circ=2*Math.PI*46;let offset=0;
  svg.setAttribute('aria-label','Current control: '+labels.map(([k,t])=>`${t} ${data.control[k]||0}`).join(', '));
  for(const [key,label,color] of labels){const value=data.control[key]||0;if(!value||!total)continue;

@@ -48,6 +48,8 @@ def propose(context, config, key):
             'supplied interaction context: clock, last_line_heard, own commitments and relationship band. '
             'Answer or acknowledge the last line before adding a new topic. If it asks for a fact you do not know, say so plainly. '
             'Do not invent work orders, unfinished pieces, deadlines, heat at a forge or a reason to leave. '
+            'Use interaction.own_current_activity for current activity. A guard or merchant role does not establish that you are on patrol, on duty, selling or working now. '
+            'Standby means awaiting a decision; never claim to be doing rounds or resuming work from standby without a supplied commitment. '
             'Do not invite sitting or propose physical activities outside interaction.physical_capabilities. '
             'A simple farewell is enough; no excuse is needed. Use the observed time of day for greetings, never lore assumptions. '
             'If interaction.already_spoken is true, do not greet or introduce yourself again. Use '

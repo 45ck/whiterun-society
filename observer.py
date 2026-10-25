@@ -43,6 +43,7 @@ def observer_state(bridge,society):
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
             'race':actor.get('race') if actor else None,
             'native_activity':actor.get('activity') if actor else None,
+            'resident_control':next((a for a in (obs.get('resident_control') or {}).get('activities',[]) if a.get('actor')==int(key)),None),
             'activity_blocker':activity_blocker(actor) if actor else 'not_loaded',
             'inventory':stock.get(key),'person':person,'household':resident.get('household')})
     businesses = []
@@ -60,6 +61,7 @@ def observer_state(bridge,society):
     return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
         'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
+        'resident_control':obs.get('resident_control'),
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
         'metrics':metrics,'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':town_dashboard(society,obs),
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,

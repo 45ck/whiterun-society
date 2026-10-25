@@ -70,3 +70,13 @@ test('audio check cannot overlap a running society even between spoken turns',as
  const {dom,w,audio}=testVoice();try{await new Promise(r=>setImmediate(r));w.whiterunRender({residents:[],trades:[],director:{running:true,status:'running'}});await w.whiterunTestVoice('check');assert.equal(audio.length,0);assert.match(w.document.getElementById('voice-output-status').textContent,/Pause society/);
  }finally{dom.window.close();}
 });
+
+
+test('native inspector distinguishes owned standby from activity and stale ownership',()=>{
+ const {dom,w}=native();try{
+ const data={residents:[{id:7,name:'Resident',activity:{package_id:9000}}],trades:[],society:{people:{},town:{residents:{}}},resident_control:{activities:[{actor:7,ownedPackage:true,expectedPackage:9000,phase:'holding'}]}};
+ w.whiterunRender(data);assert.match(w.residentActivity(7),/Awaiting a decision/);
+ data.residents[0].activity.package_id=42;w.whiterunRender(data);assert.equal(w.residentActivity(7),'Native routine');
+ data.residents[0].activity.scene_id=888;w.whiterunRender(data);assert.equal(w.residentActivity(7),'Native scene');
+ }finally{dom.window.close();}
+});

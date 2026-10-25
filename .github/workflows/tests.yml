@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - run: node --test tests/ui-dashboard.test.cjs tests/scene-handoffs.test.cjs tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs tests/rest.test.cjs tests/observer-camera.test.cjs tests/places.test.cjs tests/parallel-routines.test.cjs tests/rts-camera.test.cjs tests/conversation-attendance.test.cjs
+      - run: node --test tests/ui-dashboard.test.cjs tests/scene-handoffs.test.cjs tests/bridge.test.cjs tests/inventory-transfers.test.cjs tests/movement.test.cjs tests/agent-routines.test.cjs tests/papyrus-router.test.cjs tests/endowments.test.cjs tests/production.test.cjs tests/speech.test.cjs tests/rest.test.cjs tests/observer-camera.test.cjs tests/places.test.cjs tests/parallel-routines.test.cjs tests/rts-camera.test.cjs tests/conversation-attendance.test.cjs tests/resident-control.test.cjs
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
@@ -27,6 +27,7 @@ jobs:
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunRouter.esp
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunRest.esp
       - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunLanes.esp
+      - run: dotnet run --no-restore --project tools/AgentPluginBuilder/AgentPluginBuilder.csproj -- work/WhiterunCitizens.esp
       - name: Compile original Papyrus router on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -36,3 +37,4 @@ jobs:
           if ((Get-FileHash work/caprica/compiler.7z -Algorithm SHA256).Hash -ne '0037E54CF3A1021E976278D9A637E8AE541AAF9EBEB8D274B6C2CFE32F4EE559') { throw 'Compiler archive hash mismatch' }
           tar -xf work/caprica/compiler.7z -C work/caprica
           python tools/build_router_script.py --compiler work/caprica/Caprica.exe --output work/papyrus-stage
+          python tools/build_router_script.py --compiler work/caprica/Caprica.exe --output work/resident-stage --resident-control

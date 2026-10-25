@@ -1,0 +1,3112 @@
+{
+  "scope": "Native package ownership and generated speech telemetry; not a listening, visual-control, psychological-realism or complete economy acceptance test",
+  "capacity": 128,
+  "enrolled": 29,
+  "initial_control_samples": [
+    {
+      "at": 1792897982.1183488,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": []
+    },
+    {
+      "at": 1792897984.1570563,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774289,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108169,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "resetting",
+          "owned": false,
+          "engine": null,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897986.1955647,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 595194,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 837715,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 837714,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 182542,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 864600,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 864589,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 864600,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 864589,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "mailbox",
+          "owned": false,
+          "engine": 362465,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897988.2221456,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "binding",
+          "owned": false,
+          "engine": 595194,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "binding",
+          "owned": false,
+          "engine": 837715,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "binding",
+          "owned": false,
+          "engine": 837714,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "binding",
+          "owned": false,
+          "engine": 182542,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "binding",
+          "owned": false,
+          "engine": 864600,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "binding",
+          "owned": false,
+          "engine": 864589,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "binding",
+          "owned": false,
+          "engine": 864600,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "binding",
+          "owned": false,
+          "engine": 864589,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "binding",
+          "owned": false,
+          "engine": 362465,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897990.2614343,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897992.3018463,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897994.3217301,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897996.3389134,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792897998.3748496,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898000.3995342,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898002.4406285,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898004.460152,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898006.5069175,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898008.5277915,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898010.5754035,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898012.593443,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 181175,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898014.6388419,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898016.675916,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898018.7048585,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898020.7107937,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898022.7536273,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898024.791132,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1792898026.8265693,
+      "checkpoint": 1481,
+      "error": null,
+      "transition": null,
+      "control_error": null,
+      "rows": [
+        {
+          "actor": 108138,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774209,
+          "expected": 167774209,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108156,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774257,
+          "expected": 167774257,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 108162,
+          "phase": "blocked",
+          "owned": false,
+          "engine": 237916,
+          "expected": 167774289,
+          "error": null,
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108169,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774369,
+          "expected": 167774369,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 182543,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774497,
+          "expected": 167774497,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225366,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774513,
+          "expected": 167774513,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225368,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774529,
+          "expected": 167774529,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225390,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774561,
+          "expected": 167774561,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 225392,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774577,
+          "expected": 167774577,
+          "error": null,
+          "reason": null
+        },
+        {
+          "actor": 1048823,
+          "phase": "holding",
+          "owned": true,
+          "engine": 167774641,
+          "expected": 167774641,
+          "error": null,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "encounters": [
+    {
+      "id": "continuity-social-20261025-c",
+      "outcome": "social_exchange_completed",
+      "seconds": 54.935,
+      "calls": {
+        "propose": 4,
+        "select": 4,
+        "social": 4
+      },
+      "speakers": [
+        225368,
+        225392
+      ],
+      "turns": [
+        {
+          "speaker": 225368,
+          "line": "Morning! I'm a guard here. What brings you to Whiterun?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "76e911b12c2954a35376c7fc351cceb7129f5aa0f46c2807ed451f71190d0523.wav",
+            "seconds": 3.718,
+            "sha256": "76e911b12c2954a35376c7fc351cceb7129f5aa0f46c2807ed451f71190d0523",
+            "voice": "bm_lewis",
+            "public_file": null
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.914,
+            "facing": [
+              {
+                "actor": 225368,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225392,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-5c8b4a1a96c6fb8f4413365a",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 177.39893898756532,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 408,
+              "sum_error_degrees": 707.3175784974778
+            },
+            "playedSeconds": 3.718,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": null,
+          "language_seconds": 1.5,
+          "selection_seconds": 0.547,
+          "ended_at": 1792898056.9751422
+        },
+        {
+          "speaker": 225392,
+          "line": "Just doing my round to keep the peace. What brings you here?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "362f3557ba53dcf0e7dbf959504d36aebe5e9956d9721d80f54e1916e2b496e9.wav",
+            "seconds": 3.6147,
+            "sha256": "362f3557ba53dcf0e7dbf959504d36aebe5e9956d9721d80f54e1916e2b496e9",
+            "voice": "bm_lewis",
+            "public_file": null
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.785,
+            "facing": [
+              {
+                "actor": 225392,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225368,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-06613a0e30a4e2d27f189ab8",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 1.30159146364565,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 392,
+              "sum_error_degrees": 8.782126488122913
+            },
+            "playedSeconds": 3.614667,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": null,
+          "language_seconds": 1.672,
+          "selection_seconds": 0.516,
+          "ended_at": 1792898068.1765702
+        },
+        {
+          "speaker": 225368,
+          "line": "Just checking out the market. You?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "a573b73fa42c9ec1522a21c33190a30ca1d059623c15cd05e7712a8a74eaf4de.wav",
+            "seconds": 2.2707,
+            "sha256": "a573b73fa42c9ec1522a21c33190a30ca1d059623c15cd05e7712a8a74eaf4de",
+            "voice": "bm_lewis",
+            "public_file": null
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 2.415,
+            "facing": [
+              {
+                "actor": 225368,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225392,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-156ada3f76c1625aea50df67",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 0.024459431909349405,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 256,
+              "sum_error_degrees": 0.05090583399078241
+            },
+            "playedSeconds": 2.270667,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": null,
+          "language_seconds": 1.891,
+          "selection_seconds": 0.5,
+          "ended_at": 1792898077.3220375
+        },
+        {
+          "speaker": 225392,
+          "line": "Just keeping the peace. Safe travels to you.",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "a76057325a21a9a68ccc4fdb5ea03b8aa477eb923601cbe3d6aad9e5b1a2e914.wav",
+            "seconds": 2.932,
+            "sha256": "a76057325a21a9a68ccc4fdb5ea03b8aa477eb923601cbe3d6aad9e5b1a2e914",
+            "voice": "bm_lewis",
+            "public_file": null
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.077,
+            "facing": [
+              {
+                "actor": 225392,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225368,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-c70f314d6c4f4efc5cbb72ff",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 7.766930593788857e-06,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 322,
+              "sum_error_degrees": 0.00024794764703983674
+            },
+            "playedSeconds": 2.932,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": null,
+          "language_seconds": 3.219,
+          "selection_seconds": 0.594,
+          "ended_at": 1792898088.7962685
+        }
+      ],
+      "attendance": {
+        "attendance": {
+          "id": "attend-continuity-social-20261025-c",
+          "participants": [
+            {
+              "actor": 225368,
+              "expectedPackage": 150997089,
+              "loaded": true,
+              "ownedPackage": true,
+              "released": false,
+              "slot": 6
+            },
+            {
+              "actor": 225392,
+              "expectedPackage": 150997105,
+              "loaded": true,
+              "ownedPackage": true,
+              "released": false,
+              "slot": 7
+            }
+          ],
+          "phase": "attending"
+        },
+        "id": "attend-continuity-social-20261025-c",
+        "status": "applied"
+      },
+      "release": {
+        "attendance": {
+          "id": "attend-continuity-social-20261025-c",
+          "participants": [
+            {
+              "actor": 225368,
+              "expectedPackage": 150997089,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 6
+            },
+            {
+              "actor": 225392,
+              "expectedPackage": 150997105,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 7
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-continuity-social-20261025-c",
+        "released": true,
+        "status": "applied"
+      },
+      "language_and_line_selection_cost_usd": 0.0008816879999999999
+    },
+    {
+      "id": "continuity-social-20261025-d",
+      "outcome": "social_exchange_completed",
+      "seconds": 56.68,
+      "calls": {
+        "propose": 4,
+        "select": 4,
+        "social": 4
+      },
+      "speakers": [
+        225408,
+        225409
+      ],
+      "turns": [
+        {
+          "speaker": 225408,
+          "line": "Good morning. I'm a Whiterun Guard. What do they call you?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "089453764b294c1f9dab008ed1fc6833f47167d22aca5e7f755979c98fb55a6d.wav",
+            "seconds": 3.7387,
+            "sha256": "089453764b294c1f9dab008ed1fc6833f47167d22aca5e7f755979c98fb55a6d",
+            "voice": "bm_lewis",
+            "public_file": "audio/continuity-d-1.wav"
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.87,
+            "facing": [
+              {
+                "actor": 225408,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225409,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-d47b7356b2f02cb4627cfc01",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 169.13509842583017,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 408,
+              "sum_error_degrees": 178.288894772812
+            },
+            "playedSeconds": 3.738667,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": {
+            "kind": "interaction_in_progress",
+            "source": "Society interaction temporarily supersedes standby; no other duty is established"
+          },
+          "language_seconds": 1.047,
+          "selection_seconds": 0.5,
+          "ended_at": 1792898202.079007
+        },
+        {
+          "speaker": 225409,
+          "line": "I'm a Whiterun Guard. What brings you to the city gates today?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "1e224c12f3f7636fbbda0c5fa9b8ddfbbebeb6f780c0cf42d2ba175e58800efd.wav",
+            "seconds": 3.9987,
+            "sha256": "1e224c12f3f7636fbbda0c5fa9b8ddfbbebeb6f780c0cf42d2ba175e58800efd",
+            "voice": "bm_george",
+            "public_file": "audio/continuity-d-2.wav"
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 4.139,
+            "facing": [
+              {
+                "actor": 225409,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225408,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-ccf455308e963f580f3d8a70",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 3.429812716149172e-05,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 438,
+              "sum_error_degrees": 0.011587926577931285
+            },
+            "playedSeconds": 3.998667,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": {
+            "kind": "interaction_in_progress",
+            "source": "Society interaction temporarily supersedes standby; no other duty is established"
+          },
+          "language_seconds": 1.25,
+          "selection_seconds": 0.594,
+          "ended_at": 1792898212.9590845
+        },
+        {
+          "speaker": 225408,
+          "line": "You just asked me the same thing. What brings you here?",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "143b700a9b6562c0644a486ffbc4f5ec161f8dbe2f09d3be933e358cd64627a3.wav",
+            "seconds": 3.2733,
+            "sha256": "143b700a9b6562c0644a486ffbc4f5ec161f8dbe2f09d3be933e358cd64627a3",
+            "voice": "bm_lewis",
+            "public_file": "audio/continuity-d-3.wav"
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 3.422,
+            "facing": [
+              {
+                "actor": 225408,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225409,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-5fdada6e2efb07d158979f50",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 3.763493054975697e-05,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 364,
+              "sum_error_degrees": 0.010230605478682264
+            },
+            "playedSeconds": 3.273333,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": {
+            "kind": "interaction_in_progress",
+            "source": "Society interaction temporarily supersedes standby; no other duty is established"
+          },
+          "language_seconds": 1.484,
+          "selection_seconds": 0.531,
+          "ended_at": 1792898222.9402118
+        },
+        {
+          "speaker": 225409,
+          "line": "Sorry to make you repeat yourself. I'll leave you be now. Safe travels.",
+          "delivered": true,
+          "audio": {
+            "engine": "kokoro-onnx-0.6.1",
+            "file": "b6379d19af282decf7ecb3290ad08e769a6cfdd2f8fec70b9c0ce0d61ac11d2a.wav",
+            "seconds": 4.8067,
+            "sha256": "b6379d19af282decf7ecb3290ad08e769a6cfdd2f8fec70b9c0ce0d61ac11d2a",
+            "voice": "bm_george",
+            "public_file": "audio/continuity-d-4.wav"
+          },
+          "playback": {
+            "channel": "CEF overlay audio",
+            "elapsedSeconds": 4.996,
+            "facing": [
+              {
+                "actor": 225409,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              },
+              {
+                "actor": 225408,
+                "bodyTurnRequested": true,
+                "headLookRequested": true
+              }
+            ],
+            "id": "speech-89d49e6cbe3c559cd22e37f8",
+            "muted": false,
+            "nearbyThroughout": true,
+            "orientation": {
+              "max_error_degrees": 4.097191026630753e-05,
+              "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+              "samples": 524,
+              "sum_error_degrees": 0.015681673493645576
+            },
+            "playedSeconds": 4.806667,
+            "status": "ended",
+            "volume": 1
+          },
+          "own_activity": {
+            "kind": "interaction_in_progress",
+            "source": "Society interaction temporarily supersedes standby; no other duty is established"
+          },
+          "language_seconds": 1.562,
+          "selection_seconds": 0.61,
+          "ended_at": 1792898235.9035354
+        }
+      ],
+      "attendance": {
+        "attendance": {
+          "id": "attend-continuity-social-20261025-d",
+          "participants": [
+            {
+              "actor": 225408,
+              "expectedPackage": 150997089,
+              "loaded": true,
+              "ownedPackage": true,
+              "released": false,
+              "slot": 6
+            },
+            {
+              "actor": 225409,
+              "expectedPackage": 150997105,
+              "loaded": true,
+              "ownedPackage": true,
+              "released": false,
+              "slot": 7
+            }
+          ],
+          "phase": "attending"
+        },
+        "id": "attend-continuity-social-20261025-d",
+        "status": "applied"
+      },
+      "release": {
+        "attendance": {
+          "id": "attend-continuity-social-20261025-d",
+          "participants": [
+            {
+              "actor": 225408,
+              "expectedPackage": 150997089,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 6
+            },
+            {
+              "actor": 225409,
+              "expectedPackage": 150997105,
+              "loaded": true,
+              "ownedPackage": false,
+              "released": true,
+              "slot": 7
+            }
+          ],
+          "phase": "released"
+        },
+        "id": "release-chat-continuity-social-20261025-d",
+        "released": true,
+        "status": "applied"
+      },
+      "language_and_line_selection_cost_usd": 0.000785056
+    }
+  ],
+  "after_restore": {
+    "checkpoint": 1553,
+    "control": {
+      "available": true,
+      "enabled": true,
+      "capacity": 128,
+      "error": null,
+      "activities": [
+        {
+          "actor": 108138,
+          "slot": 0,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774209,
+          "ownedPackage": true,
+          "began": 1792898278082,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774209,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319814
+        },
+        {
+          "actor": 108140,
+          "slot": 1,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774225,
+          "ownedPackage": true,
+          "began": 1792898278082,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774225,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319815
+        },
+        {
+          "actor": 108149,
+          "slot": 2,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774241,
+          "ownedPackage": true,
+          "began": 1792898278083,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774241,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319816
+        },
+        {
+          "actor": 108156,
+          "slot": 3,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774257,
+          "ownedPackage": true,
+          "began": 1792898278083,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774257,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319816
+        },
+        {
+          "actor": 108160,
+          "slot": 4,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774273,
+          "ownedPackage": true,
+          "began": 1792898278084,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774273,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319817
+        },
+        {
+          "actor": 108162,
+          "slot": 5,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "blocked",
+          "expectedPackage": 167774289,
+          "ownedPackage": false,
+          "began": 1792898271869,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 237916,
+          "blocker": "native_scene",
+          "reason": "native_scene"
+        },
+        {
+          "actor": 108164,
+          "slot": 6,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774305,
+          "ownedPackage": true,
+          "began": 1792898278085,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774305,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319817
+        },
+        {
+          "actor": 108165,
+          "slot": 7,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774321,
+          "ownedPackage": true,
+          "began": 1792898278086,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774321,
+          "reason": null,
+          "serial": 2,
+          "last_owned_at": 1792898319818
+        },
+        {
+          "actor": 108169,
+          "slot": 10,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774369,
+          "ownedPackage": true,
+          "began": 1792898278087,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774369,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319819
+        },
+        {
+          "actor": 108185,
+          "slot": 13,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774417,
+          "ownedPackage": true,
+          "began": 1792898278088,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774417,
+          "reason": null,
+          "serial": 2,
+          "last_owned_at": 1792898319820
+        },
+        {
+          "actor": 108186,
+          "slot": 14,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774433,
+          "ownedPackage": true,
+          "began": 1792898278088,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774433,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319821
+        },
+        {
+          "actor": 108196,
+          "slot": 15,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774449,
+          "ownedPackage": true,
+          "began": 1792898278089,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774449,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319821
+        },
+        {
+          "actor": 108197,
+          "slot": 16,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774465,
+          "ownedPackage": true,
+          "began": 1792898278090,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774465,
+          "reason": null,
+          "serial": 2,
+          "last_owned_at": 1792898319822
+        },
+        {
+          "actor": 182543,
+          "slot": 18,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774497,
+          "ownedPackage": true,
+          "began": 1792898278090,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774497,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319822
+        },
+        {
+          "actor": 225366,
+          "slot": 19,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774513,
+          "ownedPackage": true,
+          "began": 1792898278091,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774513,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319823
+        },
+        {
+          "actor": 225368,
+          "slot": 20,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774529,
+          "ownedPackage": true,
+          "began": 1792898278092,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774529,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319823
+        },
+        {
+          "actor": 225386,
+          "slot": 21,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774545,
+          "ownedPackage": true,
+          "began": 1792898278092,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774545,
+          "reason": null,
+          "serial": 2,
+          "last_owned_at": 1792898319824
+        },
+        {
+          "actor": 225390,
+          "slot": 22,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774561,
+          "ownedPackage": true,
+          "began": 1792898278093,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774561,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319825
+        },
+        {
+          "actor": 225392,
+          "slot": 23,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774577,
+          "ownedPackage": true,
+          "began": 1792898278094,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774577,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319825
+        },
+        {
+          "actor": 225408,
+          "slot": 24,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774593,
+          "ownedPackage": true,
+          "began": 1792898278094,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774593,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319826
+        },
+        {
+          "actor": 225409,
+          "slot": 25,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774609,
+          "ownedPackage": true,
+          "began": 1792898278095,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774609,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319826
+        },
+        {
+          "actor": 843123,
+          "slot": 26,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774625,
+          "ownedPackage": true,
+          "began": 1792898278096,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774625,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319827
+        },
+        {
+          "actor": 1048823,
+          "slot": 27,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774641,
+          "ownedPackage": true,
+          "began": 1792898278096,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774641,
+          "reason": null,
+          "serial": 3,
+          "last_owned_at": 1792898319827
+        },
+        {
+          "actor": 1106614,
+          "slot": 28,
+          "mode": "await_decision",
+          "loaded": true,
+          "phase": "holding",
+          "expectedPackage": 167774657,
+          "ownedPackage": true,
+          "began": 1792898278097,
+          "source": "deterministic continuity while awaiting a resident decision",
+          "enginePackage": 167774657,
+          "reason": null,
+          "serial": 2,
+          "last_owned_at": 1792898319828
+        }
+      ]
+    },
+    "audio_output": {
+      "label": "Default - Speakers (Yeti Stereo Microphone) (046d:0ab7)",
+      "error": null,
+      "supported": true,
+      "status": "ready",
+      "test": null
+    },
+    "observed_at": 1792898319.8456779
+  },
+  "audio_signal": {
+    "endpoints": {
+      "Speakers (Yeti Stereo Microphone)": 0.4932587742805481,
+      "Speakers (Realtek(R) Audio)": 0.0
+    },
+    "game_sessions": {
+      "Speakers (Yeti Stereo Microphone)": 0.24370315670967102
+    },
+    "scope": "Endpoint and game-process peaks only. No recording or physical audibility claim."
+  },
+  "save": {
+    "name": "WS-Continuity-20261025-BC",
+    "checkpoint": 1553,
+    "matched_fields": 17
+  },
+  "startup": {
+    "first_candidate": "180 second timeout before bridge connection",
+    "previous_plugin_set": "124.7 seconds including restoration",
+    "current_candidate": "38.9 seconds including restoration",
+    "root_cause": "unresolved; candidate editor IDs were made unique before final launch"
+  },
+  "limitations": [
+    "Standby is not work, rest, patrol or a model-authored routine",
+    "Native scene remains separately blocked until explicit handoff",
+    "First encounter invented patrol/market activity; second included repetitive, awkward questions",
+    "No eye-gaze, raycast, lip-sync, naturalness or native mouse acceptance claim"
+  ]
+}

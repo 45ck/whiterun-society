@@ -142,5 +142,33 @@
     "sha256": "6d68fad426aed8b2f54f646abb87d8be874a3761b479b68f9ad142189acd98f5",
     "encounter": "RTS society session: a voiced night-time refusal",
     "source": "Synthesized stock voice used by a native encounter; not a recording of speaker output"
+  },
+  {
+    "file": "continuity-d-1.wav",
+    "speaker": "Whiterun Guard 225408",
+    "line": "Good morning. I'm a Whiterun Guard. What do they call you?",
+    "encounter": "Standing control to conversation and back",
+    "source": "Generated Kokoro utterance used in a completed native encounter; not a game recording. Repetition and dialogue grounding remain imperfect."
+  },
+  {
+    "file": "continuity-d-2.wav",
+    "speaker": "Whiterun Guard 225409",
+    "line": "I'm a Whiterun Guard. What brings you to the city gates today?",
+    "encounter": "Standing control to conversation and back",
+    "source": "Generated Kokoro utterance used in a completed native encounter; not a game recording. Repetition and dialogue grounding remain imperfect."
+  },
+  {
+    "file": "continuity-d-3.wav",
+    "speaker": "Whiterun Guard 225408",
+    "line": "You just asked me the same thing. What brings you here?",
+    "encounter": "Standing control to conversation and back",
+    "source": "Generated Kokoro utterance used in a completed native encounter; not a game recording. Repetition and dialogue grounding remain imperfect."
+  },
+  {
+    "file": "continuity-d-4.wav",
+    "speaker": "Whiterun Guard 225409",
+    "line": "Sorry to make you repeat yourself. I'll leave you be now. Safe travels.",
+    "encounter": "Standing control to conversation and back",
+    "source": "Generated Kokoro utterance used in a completed native encounter; not a game recording. Repetition and dialogue grounding remain imperfect."
   }
 ]

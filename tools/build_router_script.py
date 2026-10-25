@@ -10,16 +10,18 @@ import tempfile
 parser=argparse.ArgumentParser()
 parser.add_argument('--compiler',type=Path,required=True)
 parser.add_argument('--output',type=Path,required=True)
+parser.add_argument('--resident-control',action='store_true')
 args=parser.parse_args()
 repo=Path(__file__).resolve().parents[1]
 compiler=args.compiler.resolve();output=args.output.resolve()
 interfaces=repo/'tools/papyrus-interfaces'
+script='WSSocietyResident' if args.resident_control else 'WSSocietyRouter'
 output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='router-build-',dir=output) as temporary:
     subprocess.run([str(compiler),'--game','skyrim','--allow-unknown-events','1',
         '--flags',str(interfaces/'Flags.flg'),'--import',str(interfaces),
-        '--output',temporary,'WSSocietyRouter.psc'],cwd=repo/'papyrus',check=True)
-    built=Path(temporary)/'WSSocietyRouter.pex'
+        '--output',temporary,script+'.psc'],cwd=repo/'papyrus',check=True)
+    built=Path(temporary)/(script+'.pex')
     data=built.read_bytes()
     if len(data)<100 or not any(int.from_bytes(data[:4],order)==0xfa57c0de for order in ('big','little')):
         raise ValueError('Compiler did not produce a PEX artifact')

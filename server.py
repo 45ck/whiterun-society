@@ -182,6 +182,11 @@ def main():
                     except (OSError,ValueError,KeyError,TypeError):
                         pass
                     self.reply(200,{'command':world.pending(session) or bridge['command'],'presentation':presentation,'observer_camera':bridge.get('observer_camera'),'director_control_receipt':bridge.get('director_control_receipt')})
+                elif self.path=='/town/resident-control':
+                    if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if director.status()['running']:raise ValueError('Pause the director before changing resident control')
+                    result=world.configure_resident_control(data.get('id'),data.get('enabled'),bridge['observation'])
+                    self.reply(202,result)
                 elif self.path=='/world/bootstrap':
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')

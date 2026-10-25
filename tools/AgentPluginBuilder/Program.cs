@@ -4,7 +4,7 @@ using Mutagen.Bethesda.Skyrim;
 
 if(args.Length!=1)throw new ArgumentException("Supply a staging output path for WhiterunAgents.esp");
 var output=Path.GetFullPath(args[0]);
-if(Path.GetFileName(output) is "WhiterunRouter.esp" or "WhiterunRest.esp" or "WhiterunLanes.esp"){RouterBuilder.Build(output);return;}
+if(Path.GetFileName(output) is "WhiterunRouter.esp" or "WhiterunRest.esp" or "WhiterunLanes.esp" or "WhiterunCitizens.esp"){RouterBuilder.Build(output);return;}
 if(Path.GetFileName(output)!="WhiterunAgents.esp")throw new ArgumentException("Unexpected plugin filename");
 var key=ModKey.FromNameAndExtension("WhiterunAgents.esp");
 var master=ModKey.FromNameAndExtension("Skyrim.esm");
