@@ -59,6 +59,18 @@ function renderTownCharts(root,data){
  const ratio=value=>value?.n?`${shown(value.percent)}% · ${value.success}/${value.n}`:'Unmeasured';
  const detail=title=>{const e=add(root,'details',undefined,'town-detail');e.dataset.panel=title;e.open=opened.has(title);add(e,'summary',title);return e;};
  const metricTiles=(parent,entries)=>{const grid=add(parent,'div',undefined,'town-flow');for(const [value,label] of entries){const tile=add(grid,'div');add(tile,'strong',value);add(tile,'span',label);}return grid;};
+ if(data.inventory_catalog){const catalog=data.inventory_catalog,verified=catalog.fresh===true&&catalog.verified===true&&catalog.status==='verified';
+  const panel=section(verified?'Game items verified':'Inventory actions waiting for verified game items');
+  panel.dataset.catalogStatus=catalog.fresh===false?'stale':catalog.status||'missing';
+  add(panel,'p',catalog.fresh===false?'The latest game observation is stale; current item verification is unknown.':catalog.reason,'town-chart-note');
+  add(panel,'p',`${shown(catalog.configured_item_count)} configured items · ${shown(catalog.configured_recipe_count)} configured recipes · ${verified?shown(catalog.verified_native_item_count):'—'} items verified in the current game observation.`,'town-chart-note');
+  add(panel,'p',catalog.scope||'Configuration counts are not inventory quantities or completed production.','town-chart-note');
+  const diagnostics=detail('Game-item verification details');
+  add(diagnostics,'p',`${catalog.configured_version||'Unknown version'} · ${catalog.status||'missing'}`,'town-chart-note');
+  add(diagnostics,'p','Configured identity: '+(catalog.configured_hash||'Unknown'),'town-chart-note');
+  add(diagnostics,'p','Reported identity: '+(catalog.reported_hash||'Not reported'),'town-chart-note');
+  for(const error of catalog.diagnostics||[])add(diagnostics,'p',`${error.item}: ${error.reason}`,'town-chart-note');
+ }
  const control=section('Who controls the residents?'),row=add(control,'div',undefined,'town-control');
  const svg=doc.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 120 120');svg.setAttribute('role','img');row.append(svg);
  const labels=[['agent','Agent task','#9dc9ac'],['standby','Agent standby','#6ab5b6'],['scene','Native scene','#d5967f'],['native','Other native routine','#a39ac3'],['unknown','Unknown','#8296a0'],['unloaded','Not loaded','#45565f']];

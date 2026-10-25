@@ -12,13 +12,14 @@ from unittest.mock import Mock, patch
 from catalog_fixture import native_catalog
 
 from tools.qualify_owner_work import (Qualification, authored_dialogue, authored_owner_choice, exact_identity,
-    main, native_working, overlap_metrics, preflight, qualification_summary, read_plan_proofs, verify_result)
+    main, native_working, overlap_metrics, preflight, qualification_summary, read_plan_proofs, social_opportunities, social_start_request, verify_result)
 
 
 def world(actors=(17, 29)):
     society = {'people': {}, 'town': {'businesses': {}, 'residents': {}, 'daily': {'queue': []}}}
     obs = {'ready': True, 'session': 'native-session', 'gameDays': 5., 'residents': [],
            'economy_catalog': native_catalog(),
+           'routing': {'adapter': 'papyrus-mailbox-v1', 'available': True},
            'resident_control': {'activities': []}, 'owner_work_jobs': {'available': True, 'capacity': 4, 'jobs': [], 'receipts': []}}
     for slot, actor in enumerate(actors):
         society['people'][str(actor)] = {'needs': {}, 'agency': {}, 'memories': []}
@@ -30,6 +31,14 @@ def world(actors=(17, 29)):
             'inventory': {'gold': 9, 'bread': 0, 'grain': 2},
             'activity': {'package_id': 9000 + slot, 'scene_id': 0, 'in_combat': False, 'sleep_state': 0}})
         obs['resident_control']['activities'].append({'actor': actor, 'slot': slot, 'expectedPackage': 9000 + slot, 'ownedPackage': True})
+    speakers = [max(actors) + 1000, max(actors) + 1001]
+    for actor in speakers:
+        society['people'][str(actor)] = {'needs': {}, 'agency': {}, 'memories': []}
+        society['town']['residents'][str(actor)] = {'id': actor}
+        obs['residents'].append({'id': actor, 'baseId': actor + 1000, 'isPerson': True, 'x': actor, 'y': 0, 'z': 0,
+            'inventory': {'gold': 9, 'bread': 0, 'grain': 0},
+            'activity': {'package_id': 42, 'scene_id': 0, 'in_combat': False, 'sleep_state': 0}})
+    society['town']['daily']['queue'].append({'id': 'pending-social-review', 'actor': speakers[0], 'kind': 'social_review', 'status': 'pending'})
     return {'society': society, 'bridge': {'session': 'native-session', 'last_seen': time.time(), 'observation': obs}}
 
 
@@ -247,6 +256,42 @@ class OwnerWorkQualificationTests(unittest.TestCase):
         with self.assertRaises(ValueError):authored_owner_choice(context, selected)
         context['owner_work_actions'] = []
         with self.assertRaises(ValueError):authored_owner_choice(context, selected)
+
+    def test_social_preflight_requires_existing_pending_disjoint_review_and_rechecks_exact_event(self):
+        state = world();report = preflight(state);opportunity = report['social_opportunity'];owners = {p['actor'] for p in report['selected_owners']}
+        self.assertTrue(report['ready']);self.assertFalse(owners.intersection(report['social_pair']))
+        self.assertEqual(social_start_request(state, opportunity, owners)['id'], 'pending-social-review')
+        for change in ('missing', 'complete', 'wrong_actor', 'wrong_kind', 'departed', 'already_used'):
+            with self.subTest(change=change):
+                altered = copy.deepcopy(state);queue = altered['society']['town']['daily']['queue'];event = queue[-1]
+                if change == 'missing':queue.pop()
+                if change == 'complete':event['status'] = 'complete'
+                if change == 'wrong_actor':event['actor'] = next(iter(owners))
+                if change == 'wrong_kind':event['kind'] = 'need_review'
+                if change == 'departed':altered['bridge']['observation']['residents'] = [r for r in altered['bridge']['observation']['residents'] if r['id'] != opportunity['partner']]
+                if change == 'already_used':altered['society']['conversation'] = {'id': event['id'], 'phase': 'complete'}
+                before = copy.deepcopy(altered)
+                self.assertFalse(preflight(altered)['ready'])
+                with self.assertRaises(ValueError):social_start_request(altered, opportunity, owners)
+                self.assertEqual(altered, before)
+
+    def test_selected_social_request_starts_real_conversation_against_existing_offline_review(self):
+        from test_social import SocialTests
+        fixture = SocialTests();fixture.setUp()
+        try:
+            fixture.review()
+            state = {'society': fixture.world.status(), 'bridge': {'observation': fixture.obs}}
+            opportunity = next(social_opportunities(state, set()))
+            request = social_start_request(state, opportunity, set())
+            before_ids = [e['id'] for e in fixture.world.active['town']['daily']['queue']]
+            result = fixture.world.start_conversation(request['id'], fixture.obs, request['actor'], request['max_turns'], reply_policy=request['reply_policy'])
+            self.assertNotIn('duplicate', result);fixture.sync()
+            conversation = fixture.world.conversation_status()
+            self.assertEqual(conversation['id'], opportunity['event_id']);self.assertEqual(conversation['initiator'], opportunity['actor'])
+            self.assertEqual(conversation['phase'], 'choose_partner');self.assertEqual(conversation['max_turns'], 4)
+            self.assertEqual([e['id'] for e in fixture.world.active['town']['daily']['queue']], before_ids)
+            self.assertEqual(next(e for e in fixture.world.active['town']['daily']['queue'] if e['id'] == opportunity['event_id'])['status'], 'started')
+        finally:fixture.tearDown()
 
 
 if __name__ == '__main__':unittest.main()

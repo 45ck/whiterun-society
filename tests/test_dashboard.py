@@ -1,8 +1,36 @@
 import unittest
 import copy
+import time
 from dashboard import town_dashboard
+from catalog_fixture import native_catalog
+from observer import observer_state
 
 class DashboardTests(unittest.TestCase):
+    def test_catalog_status_separates_configured_counts_from_native_verification(self):
+        result=town_dashboard({}, {})['inventory_catalog']
+        self.assertEqual(result['status'],'missing');self.assertFalse(result['verified'])
+        self.assertEqual((result['configured_item_count'],result['configured_recipe_count']),(3,1))
+        self.assertIsNone(result['verified_native_item_count'])
+        result=town_dashboard({}, {'economy_catalog':native_catalog()})['inventory_catalog']
+        self.assertEqual(result['status'],'verified');self.assertTrue(result['verified'])
+        self.assertEqual(result['verified_native_item_count'],3)
+
+    def test_catalog_unavailable_identity_mismatch_and_stale_are_never_ready(self):
+        cases=[({'available':False,'errors':{'grain':'Wrong native item type'}},'unavailable'),
+               ({'type_verified':False},'unavailable'),({'catalog_hash':'other'},'mismatch'),
+               ({'recipe_hashes':{}},'mismatch'),({'item_ids':['gold']},'mismatch')]
+        for change,status in cases:
+            with self.subTest(change=change):
+                result=town_dashboard({}, {'economy_catalog':{**native_catalog(),**change}})['inventory_catalog']
+                self.assertEqual(result['status'],status);self.assertFalse(result['verified'])
+                self.assertIsNone(result['verified_native_item_count'])
+        observation={'economy_catalog':native_catalog()}
+        result=town_dashboard({}, observation, fresh=False)['inventory_catalog']
+        self.assertEqual(result['status'],'stale');self.assertFalse(result['verified'])
+        self.assertIsNone(result['verified_native_item_count'])
+        self.assertEqual(observer_state({'last_seen':time.time(),'observation':observation},{})['dashboard']['inventory_catalog']['status'],'verified')
+        self.assertEqual(observer_state({'last_seen':0,'observation':observation},{})['dashboard']['inventory_catalog']['status'],'stale')
+
     def test_background_activity_control_requires_matching_job_rest_and_current_owned_package(self):
         job={'id':'rest-1','actor':1,'target':8,'slot':0,'session':'s','epoch':'e','phase':'running'}
         society={'town':{'residents':{'1':{}}},'activity_jobs':{'epoch':'e','jobs':[job],'history':[]}}

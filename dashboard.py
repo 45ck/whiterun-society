@@ -2,9 +2,38 @@
 import math
 from activity_metrics import activity_metrics
 from owner_work_metrics import owner_work_metrics
+from economy_catalog import ECONOMY_CATALOG, catalog_hash, commodity_ids, recipe_ids, native_catalog_matches
 
 
-def town_dashboard(society, observation, spatial=None):
+def inventory_catalog_status(observation, fresh=True):
+    native=observation.get('economy_catalog')
+    report=native if isinstance(native,dict) else {}
+    expected=catalog_hash();verified=fresh is True and native_catalog_matches(observation)
+    if fresh is not True:
+        status,reason='stale','The latest game observation is stale; current item verification is unknown.'
+    elif not report:
+        status,reason='missing','No game-item verification report has arrived.'
+    elif report.get('available') is not True:
+        status,reason='unavailable','The game could not resolve or validate all configured items.'
+    elif report.get('catalog_hash')!=expected:
+        status,reason='mismatch','Game item definitions differ from the configured definitions.'
+    elif report.get('type_verified') is not True or report.get('errors')!={}:
+        status,reason='unavailable','Game item types have not all been verified.'
+    elif not verified:
+        status,reason='mismatch','Game item or recipe identities differ from the configured definitions.'
+    else:
+        status,reason='verified','Game items match the configured definitions. Each inventory action still needs its own verified receipt.'
+    errors=report.get('errors')
+    diagnostics=[{'item':str(key),'reason':str(value)[:300]} for key,value in errors.items()] if isinstance(errors,dict) else []
+    return {'status':status,'fresh':fresh is True,'verified':verified,'reason':reason,
+        'configured_item_count':len(commodity_ids()),'configured_recipe_count':len(recipe_ids()),
+        'verified_native_item_count':len(commodity_ids()) if verified else None,
+        'configured_version':ECONOMY_CATALOG['version'],'configured_hash':expected,
+        'reported_hash':report.get('catalog_hash') if isinstance(report.get('catalog_hash'),str) else None,
+        'diagnostics':diagnostics,'scope':'Configuration and game-item verification only; counts are not stock, executed recipes or completed production.'}
+
+
+def town_dashboard(society, observation, spatial=None, fresh=True):
     people=society.get('people',{});managed=(society.get('town') or {}).get('residents',{})
     loaded={str(r['id']):r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     activities=activity_metrics(society,observation)
@@ -59,6 +88,7 @@ def town_dashboard(society, observation, spatial=None):
         'scope':'Current loaded managed residents. Claims are pending requests, not constant inference. Arrival is not economic output.'}
     metrics=society.get('metrics') or {}
     return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,'autonomy':autonomy,
+        'inventory_catalog':inventory_catalog_status(observation,fresh=fresh),
         'spatial':spatial,'agency':metrics.get('agency'),'economic_network':metrics.get('economic_network'),
         'activity_jobs':activities,
         'owner_work':owner_work_metrics(society,observation),

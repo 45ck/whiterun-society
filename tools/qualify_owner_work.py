@@ -1,4 +1,4 @@
-"""Offline-first qualification of two real owner jobs and optional local speech.
+"""Offline-first qualification of two real owner jobs and four-turn local speech.
 
 Default usage requires --state-file and performs no HTTP or native actions.
 --inspect-live only reads loopback metadata. --execute-authorized-trial is for
@@ -11,6 +11,7 @@ from contextlib import closing
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 import sqlite3
 import sys
@@ -54,13 +55,26 @@ def resident(observation, actor):
     return next((r for r in observation.get('residents', []) if r.get('id') == actor and r.get('isPerson') is True), None)
 
 
-def disjoint_pair(state, excluded):
+def social_opportunities(state, excluded):
+    """Only existing pending invitations can authorize an explicit initiator."""
     society, obs = state['society'], state['bridge']['observation']
-    for actor in sorted(int(k) for k in society.get('people', {})):
-        if actor in excluded:continue
+    queue = society.get('town', {}).get('daily', {}).get('queue', [])
+    used = {c.get('id') for c in [*society.get('conversation_history', []), society.get('conversation') or {}]}
+    for event in queue:
+        actor, identifier = event.get('actor'), event.get('id')
+        if (event.get('kind') != 'social_review' or event.get('status') != 'pending' or type(actor) is not int
+            or str(actor) not in society.get('people', {})
+            or actor in excluded or not isinstance(identifier, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', identifier)
+            or identifier in used or sum(e.get('id') == identifier for e in queue) != 1):continue
         for other in social_candidates(society, obs, actor):
-            if other['id'] not in excluded:return [actor, other['id']]
-    return None
+            if other['id'] not in excluded:
+                yield {'event_id': identifier, 'actor': actor, 'partner': other['id']}
+
+
+def social_start_request(state, opportunity, excluded):
+    if not isinstance(opportunity, dict) or opportunity not in social_opportunities(state, excluded):
+        raise ValueError('Prepared pending social review or disjoint participants changed; no invented invitation')
+    return {'id': opportunity['event_id'], 'actor': opportunity['actor'], 'max_turns': 4, 'reply_policy': 'separate_choice'}
 
 
 def preflight(state, director_running=False, now=None):
@@ -103,13 +117,18 @@ def preflight(state, director_running=False, now=None):
             if event:candidates.append({**entry, 'source_plan': event['id']})
     pairs = [(a, b) for i, a in enumerate(candidates) for b in candidates[i + 1:]
              if a['actor'] != b['actor'] and a['slot'] != b['slot'] and a['business_id'] != b['business_id']]
-    selected = list(min(pairs, key=lambda pair:(-min(p['policy']['work_minutes'] for p in pair), pair[0]['actor'], pair[1]['actor']))) if pairs else []
+    pairs.sort(key=lambda pair:(-min(p['policy']['work_minutes'] for p in pair), pair[0]['actor'], pair[1]['actor']))
+    selected = list(pairs[0]) if pairs else [];social = None
+    for pair in pairs:
+        candidate = next(social_opportunities(state, {p['actor'] for p in pair}), None)
+        if candidate: selected = list(pair);social = candidate;break
     if not selected:gaps.append(f'Two disjoint eligible owners with pending need reviews required; found {len({p["actor"] for p in eligible})} eligible owners and {len({p["actor"] for p in candidates})} pending eligible owners. No stock or charters will be created.')
-    pair = disjoint_pair(state, {p['actor'] for p in selected}) if selected else None
+    if not social:gaps.append('An existing pending social_review with two currently eligible participants disjoint from both owners is required; no invitation or review will be created.')
+    pair = [social['actor'], social['partner']] if social else None
     charters = [{'business_id': key, 'owner': b.get('owner'), 'custodian': b.get('custodian'), 'capabilities': b.get('capabilities', [])}
                 for key, b in sorted(society.get('town', {}).get('businesses', {}).items()) if b.get('active', True)]
     return {'ready': not gaps, 'gaps': gaps, 'selected_owners': selected, 'eligible_owners': eligible,
-            'observed_charters': charters, 'social_pair': pair, 'cloud_model_calls': 0,
+            'observed_charters': charters, 'social_pair': pair, 'social_opportunity': social, 'cloud_model_calls': 0,
             'checkpoint': society.get('checkpoint'), 'native_received_at': state['bridge'].get('last_seen'),
             'owner_work_capability': {k:capability.get(k) for k in ('available', 'capacity')},
             'freshness_checked': now is not None,
@@ -250,7 +269,7 @@ class Qualification:
         self.client, self.root, self.output, self.voice_factory = client, Path(root), Path(output), voice_factory
         self.began = time.monotonic();self.deadline = self.began + seconds;self.session = None;self.last_sample = -math.inf;self.last_state = None
         self.evidence = {'schema': 'owner-work-qualification-v1', 'id': 'owner-qualification-' + uuid.uuid4().hex[:16], 'status': 'preflight',
-                         'authored_test_fixture': True, 'cloud_model_calls': 0, 'scope': 'Authored owner choices and optional four-line local speech. Native protocol qualification only; not autonomous choice, productive animation, natural conversation, lip sync or physical audibility.',
+                         'authored_test_fixture': True, 'cloud_model_calls': 0, 'scope': 'Authored owner choices and four-line local speech using an existing pending social review. Native protocol qualification only; not autonomous choice, productive animation, natural conversation, lip sync or physical audibility.',
                          'limit_seconds': seconds, 'minimum_overlap_seconds': minimum_overlap_seconds, 'admissions': [], 'samples': [], 'qualified': False}
         self.verified = set();self.conversation_id = None;self.voice = None;self.clips = [];self.dialogue_calls = 0
 
@@ -374,11 +393,15 @@ class Qualification:
                 time.sleep(.15)
             else:raise TimeoutError('No two simultaneously qualified owner jobs')
             self.evidence['both_working_before_dialogue'] = True
-            if pair and pair[1] in {p['id'] for p in social_candidates(state['society'], state['bridge']['observation'], pair[0])}:
-                self.conversation_id = self.evidence['id'] + '-dialogue';self.evidence['conversation_id'] = self.conversation_id
-                response = self.mutate('/conversation/start', {'id': self.conversation_id, 'actor': pair[0], 'max_turns': 4, 'reply_policy': 'separate_choice'})
+            try:
+                request = social_start_request(state, selection['social_opportunity'], {j['actor'] for j in self.evidence['admissions']})
+            except ValueError as error:
+                request = None;self.evidence['dialogue_unavailable'] = str(error)
+            if request:
+                self.conversation_id = request['id'];self.evidence['conversation_id'] = self.conversation_id
+                self.evidence['social_review'] = selection['social_opportunity']
+                response = self.mutate('/conversation/start', request)
                 if response.get('duplicate'):raise ValueError('Existing conversation refused; no replay')
-            else:self.evidence['dialogue_unavailable'] = 'No currently qualified disjoint prepared social pair; work result measured separately.'
             self.evidence['status'] = 'observing'
             while time.monotonic() < self.deadline:
                 state = self.observe()

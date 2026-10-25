@@ -3,6 +3,24 @@ const {JSDOM}=require('jsdom'),vm=require('node:vm');
 const read=name=>fs.readFileSync(path.join(__dirname,'../ui',name),'utf8');
 const dashboard=()=>({control:{agent:1,scene:2,native:3,unknown:1,unloaded:2},stock:Object.fromEntries(['gold','bread','grain'].map(k=>[k,{total:k==='gold'?7:null,accounts:k==='gold'?2:0,population:9}])),needs:Object.fromEntries(['hunger','fatigue','social_contact'].map(k=>[k,{high:1,known:4}])),economy:{committed_sales:2},control_scope:'Observed packages',needs_scope:'Gameplay needs',economy_scope:'Verified events'});
 
+test('catalog readiness is plain English and stale proof cannot claim game items verified',()=>{
+ const {dom,w}=native();try{const data=dashboard(),root=w.document.getElementById('town-charts');
+  data.inventory_catalog={status:'missing',fresh:true,verified:false,reason:'No game-item verification report has arrived.',configured_item_count:3,configured_recipe_count:1,verified_native_item_count:null,configured_hash:'private-long-hash',reported_hash:null,diagnostics:[{item:'grain',reason:'<img src=x>'}]};
+  w.renderTownCharts(root,data);
+  let panel=root.querySelector('[data-catalog-status]');
+  assert.match(panel.textContent,/Inventory actions waiting for verified game items/);
+  assert.match(panel.textContent,/3 configured items · 1 configured recipes · — items verified/);
+  assert.doesNotMatch(panel.textContent,/private-long-hash|0 resources|0 items verified/);
+  const detail=[...root.querySelectorAll('details')].find(e=>e.textContent.includes('Game-item verification details'));
+  assert.equal(detail.open,false);assert.match(detail.textContent,/private-long-hash/);assert.equal(root.querySelector('img'),null);
+  Object.assign(data.inventory_catalog,{status:'verified',fresh:true,verified:true,verified_native_item_count:3});w.renderTownCharts(root,data);
+  panel=root.querySelector('[data-catalog-status]');assert.match(panel.textContent,/Game items verified/);
+  data.inventory_catalog.fresh=false;w.renderTownCharts(root,data);
+  panel=root.querySelector('[data-catalog-status]');assert.equal(panel.dataset.catalogStatus,'stale');assert.match(panel.textContent,/observation is stale/);
+  assert.doesNotMatch(panel.textContent,/Game items verified|3 items verified/);
+ }finally{dom.window.close();}
+});
+
 test('owner work labels keep attendance, settlement and cleanup separate',()=>{
  const {ownerWorkLabel}=require('../ui/society-dashboard.js');
  assert.equal(ownerWorkLabel({attendance_state:'prepared'}),'Work intention saved · admission pending');
