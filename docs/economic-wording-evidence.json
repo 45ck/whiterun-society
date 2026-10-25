@@ -1,0 +1,1032 @@
+{
+  "natural": {
+    "selection": "Operator selected nearest currently feasible pending food review; not a forced sale",
+    "name": "Olfina Gray-Mane",
+    "phase": "complete",
+    "outcome": "seller_declined",
+    "decisions": [
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_bread",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to Carlotta Valentia, a publicly registered food seller, and choose an affordable bid on arrival. Stock is unknown and they may refuse."
+        },
+        "elapsed_seconds": 6.453,
+        "usage": {
+          "cost": 0.000193452,
+          "input_tokens": 4606,
+          "output_tokens": 129
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "bid_price_5",
+          "emotion": "unspecified",
+          "reason": "Selected action: Offer 5 septims for one loaf; pay only if accepted."
+        },
+        "elapsed_seconds": 6.313,
+        "usage": {
+          "cost": 0.000196098,
+          "input_tokens": 4669,
+          "output_tokens": 196
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "elapsed_seconds": 5.531,
+        "usage": {
+          "cost": 0.000207984,
+          "input_tokens": 4952,
+          "output_tokens": 176
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "bid_price_6",
+          "emotion": "unspecified",
+          "reason": "Selected action: Make a final offer of 6 septims for one loaf; pay only if accepted."
+        },
+        "elapsed_seconds": 1.312,
+        "usage": {
+          "cost": 0.000203238,
+          "input_tokens": 4839,
+          "output_tokens": 221
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "elapsed_seconds": 11.547,
+        "usage": {
+          "cost": 0.000179634,
+          "input_tokens": 4277,
+          "output_tokens": 36
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      }
+    ],
+    "turns": [
+      {
+        "act": "offer",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "Would you sell me one loaf for 5 gold?",
+        "canonical_line": "Would you sell me one loaf for 5 gold?",
+        "source": "Deterministic economic terms after rejected or unavailable generated wording",
+        "wording_results": [
+          {
+            "accepted": false,
+            "claim_id": "wording-d43253d0153dddffad92a40c",
+            "elapsed_seconds": 5.578,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 204,
+              "completion_tokens_details": {
+                "reasoning_tokens": 65
+              },
+              "cost": 7.02e-05,
+              "prompt_tokens": 990,
+              "total_tokens": 1194
+            },
+            "validation_failure": "terms_marker"
+          }
+        ],
+        "wording_fallback": "terms_marker",
+        "prepared_at": 1792910519.1016061,
+        "ended_at": 1792910522.9616625,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.89,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-e89411b4a090957b26e2ebc3",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 160.76097993083204,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 300,
+            "sum_error_degrees": 197.44317351229165
+          },
+          "playedSeconds": 2.728,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-1.wav",
+        "sha256": "892de7030cb3583c16d9da6cc30231b7cb590e04ed5c36ec009cc48f19f4ecb4",
+        "seconds": 2.728,
+        "delivered": true
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "With these uncertain times, No, I will not sell a loaf on those terms.",
+        "canonical_line": "No, I will not sell a loaf on those terms.",
+        "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+        "wording_results": [
+          {
+            "accepted": true,
+            "claim_id": "wording-64db9c1b3ee8247ded751366",
+            "elapsed_seconds": 5.313,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 230,
+              "completion_tokens_details": {
+                "reasoning_tokens": 100
+              },
+              "cost": 7.362e-05,
+              "prompt_tokens": 978,
+              "total_tokens": 1208
+            },
+            "validation_failure": null
+          },
+          {
+            "accepted": true,
+            "claim_id": "wording-adce711466efcebd967be3ff",
+            "elapsed_seconds": 0.625,
+            "model": "typesafe/jev-1.14-20261014",
+            "stage": "select",
+            "usage": {
+              "cost": 5.2668e-05
+            },
+            "validation_failure": null
+          }
+        ],
+        "wording_fallback": null,
+        "prepared_at": 1792910548.020375,
+        "ended_at": 1792910553.3960898,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.397,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-373277afb76c4ad391585fd8",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 5.2173660151311196e-05,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 450,
+            "sum_error_degrees": 0.01854494986400823
+          },
+          "playedSeconds": 4.307333,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-2.wav",
+        "sha256": "5e8ee98108d839647dbd48356cb07217308521b70fbf01813d1cea403c792dfb",
+        "seconds": 4.3073,
+        "delivered": true
+      },
+      {
+        "act": "counteroffer",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "I understand. Would 6 gold change your mind? That is my final offer for one loaf.",
+        "canonical_line": "Would 6 gold change your mind? That is my final offer for one loaf.",
+        "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+        "wording_results": [
+          {
+            "accepted": true,
+            "claim_id": "wording-719b7e50caa65565ee7190b0",
+            "elapsed_seconds": 3.156,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 320,
+              "completion_tokens_details": {
+                "reasoning_tokens": 192
+              },
+              "cost": 8.756e-05,
+              "prompt_tokens": 989,
+              "total_tokens": 1309
+            },
+            "validation_failure": null
+          },
+          {
+            "accepted": true,
+            "claim_id": "wording-9d2d8c0fbb1ef56ad42d541f",
+            "elapsed_seconds": 0.532,
+            "model": "typesafe/jev-1.14-20261014",
+            "stage": "select",
+            "usage": {
+              "cost": 5.4474e-05
+            },
+            "validation_failure": null
+          }
+        ],
+        "wording_fallback": null,
+        "prepared_at": 1792910565.6795025,
+        "ended_at": 1792910573.2246537,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 5.884,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-f7822bb63f2d246889fa1230",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0016423075967395562,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 616,
+            "sum_error_degrees": 0.9987773346838367
+          },
+          "playedSeconds": 5.790667,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-3.wav",
+        "sha256": "f9dcf1f1a68d2a3fa1d17195e26c30895419c3ff7d07664dc60ad5e3b0914dea",
+        "seconds": 5.7907,
+        "delivered": true
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "No, I will not sell a loaf on those terms.",
+        "canonical_line": "No, I will not sell a loaf on those terms.",
+        "source": "Deterministic economic terms after rejected or unavailable generated wording",
+        "wording_results": [
+          {
+            "accepted": false,
+            "claim_id": "wording-78c1f3be5f15fa7b2e45dcd0",
+            "elapsed_seconds": 5.14,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 218,
+              "completion_tokens_details": {
+                "reasoning_tokens": 69
+              },
+              "cost": 7.138e-05,
+              "prompt_tokens": 967,
+              "total_tokens": 1185
+            },
+            "validation_failure": "terms_marker"
+          }
+        ],
+        "wording_fallback": "terms_marker",
+        "prepared_at": 1792910599.6260655,
+        "ended_at": 1792910603.5732272,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.947,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-538575d6a596442d254d19ca",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0016423075967395562,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 306,
+            "sum_error_degrees": 0.4942516345081458
+          },
+          "playedSeconds": 2.839333,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-4.wav",
+        "sha256": "6f4e5becd3ec0e69bd83f830b0823490aee108c6ac6491c677b6007b0bd28a66",
+        "seconds": 2.8393,
+        "delivered": true
+      }
+    ],
+    "balances_before": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "wording_calls": 6,
+    "economic_decision_calls": 5,
+    "generated_turns": 2,
+    "fallback_turns": 2,
+    "reported_model_cost_usd": 0.001390308,
+    "sampled_worker_seconds": 115.3,
+    "reply_dispatch_gaps_seconds": [
+      25.059,
+      12.283,
+      26.401
+    ],
+    "human_realism_score": null
+  },
+  "natural-second": {
+    "selection": "Operator selected nearest currently feasible pending food review; not a forced sale",
+    "name": "Olfina Gray-Mane",
+    "phase": "complete",
+    "outcome": "seller_declined",
+    "decisions": [
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_bread",
+          "emotion": "unspecified",
+          "reason": "Selected action: Walk to Carlotta Valentia, a publicly registered food seller, and choose an affordable bid on arrival. Stock is unknown and they may refuse."
+        },
+        "elapsed_seconds": 7.313,
+        "usage": {
+          "cost": 0.0001911,
+          "input_tokens": 4550,
+          "output_tokens": 114
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "bid_price_3",
+          "emotion": "unspecified",
+          "reason": "Selected action: Offer 3 septims for one loaf; pay only if accepted."
+        },
+        "elapsed_seconds": 3.078,
+        "usage": {
+          "cost": 0.000196098,
+          "input_tokens": 4669,
+          "output_tokens": 196
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "elapsed_seconds": 0.828,
+        "usage": {
+          "cost": 0.000212562,
+          "input_tokens": 5061,
+          "output_tokens": 196
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "bid_price_4",
+          "emotion": "unspecified",
+          "reason": "Selected action: Make a final offer of 4 septims for one loaf; pay only if accepted."
+        },
+        "elapsed_seconds": 0.578,
+        "usage": {
+          "cost": 0.00021798,
+          "input_tokens": 5190,
+          "output_tokens": 316
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "decline",
+          "emotion": "unspecified",
+          "reason": "Selected action: Decline the request; keep your goods."
+        },
+        "elapsed_seconds": 1.61,
+        "usage": {
+          "cost": 0.000179802,
+          "input_tokens": 4281,
+          "output_tokens": 36
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      }
+    ],
+    "turns": [
+      {
+        "act": "offer",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "Good afternoon, Carlotta. Would you sell me one loaf for 3 gold? Thanks.",
+        "canonical_line": "Would you sell me one loaf for 3 gold?",
+        "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+        "wording_results": [
+          {
+            "accepted": true,
+            "claim_id": "wording-f294bde27052c376e46a5d46",
+            "elapsed_seconds": 3.532,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 169,
+              "completion_tokens_details": {
+                "reasoning_tokens": 41
+              },
+              "cost": 6.587e-05,
+              "prompt_tokens": 1013,
+              "total_tokens": 1182
+            },
+            "validation_failure": null
+          },
+          {
+            "accepted": true,
+            "claim_id": "wording-ac54ab1b98fdc95ace3be492",
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "stage": "select",
+            "usage": {
+              "cost": 5.3046e-05
+            },
+            "validation_failure": null
+          }
+        ],
+        "wording_fallback": null,
+        "prepared_at": 1792910768.0900133,
+        "ended_at": 1792910774.0620162,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.92,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-dea6592f3c27490bded899c5",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 176.2034256144251,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 512,
+            "sum_error_degrees": 224.80300085689794
+          },
+          "playedSeconds": 4.817958,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-second-1.wav",
+        "sha256": "dd1e3b62c53508b58dcc31356b43e71c658739db3fea5ff544e57e5e4cea5d14",
+        "seconds": 4.818,
+        "delivered": true
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "No, I will not sell a loaf on those terms.",
+        "canonical_line": "No, I will not sell a loaf on those terms.",
+        "source": "Deterministic economic terms after rejected or unavailable generated wording",
+        "wording_results": [
+          {
+            "accepted": false,
+            "claim_id": "wording-63d0edd94ec242ecf1d66a13",
+            "elapsed_seconds": 2.281,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 275,
+              "completion_tokens_details": {
+                "reasoning_tokens": 110
+              },
+              "cost": 8.257e-05,
+              "prompt_tokens": 1033,
+              "total_tokens": 1308
+            },
+            "validation_failure": "extra_terms"
+          }
+        ],
+        "wording_fallback": "extra_terms",
+        "prepared_at": 1792910781.5909927,
+        "ended_at": 1792910785.599675,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.971,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-85a79e21a9d6cc380632b0e5",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0872766160334777,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 308,
+            "sum_error_degrees": 0.19904126327890026
+          },
+          "playedSeconds": 2.839333,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-second-2.wav",
+        "sha256": "41b6576a67577ba35b57dcc33fdd37ec16c2fb545b46713f6ad30dbd838ef137",
+        "seconds": 2.8393,
+        "delivered": true
+      },
+      {
+        "act": "counteroffer",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "Would 4 gold change your mind? That is my final offer for one loaf.",
+        "canonical_line": "Would 4 gold change your mind? That is my final offer for one loaf.",
+        "source": "Deterministic economic terms after rejected or unavailable generated wording",
+        "wording_results": [
+          {
+            "accepted": false,
+            "claim_id": "wording-733ffd16a3c4cf3614295e6f",
+            "elapsed_seconds": 2.453,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 246,
+              "completion_tokens_details": {
+                "reasoning_tokens": 103
+              },
+              "cost": 7.826e-05,
+              "prompt_tokens": 1034,
+              "total_tokens": 1280
+            },
+            "validation_failure": "extra_terms"
+          }
+        ],
+        "wording_fallback": "extra_terms",
+        "prepared_at": 1792910793.6704168,
+        "ended_at": 1792910799.7252834,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 4.723,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-e3d01a536864689c92926257",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0007195617090474116,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 496,
+            "sum_error_degrees": 0.35216750427184706
+          },
+          "playedSeconds": 4.622,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-second-3.wav",
+        "sha256": "1cef924e4bf08adf7cb293f630880596f939a55a9fe3de19b60150b23585cd7d",
+        "seconds": 4.622,
+        "delivered": true
+      },
+      {
+        "act": "refuse",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "No, I will not sell a loaf on those terms.",
+        "canonical_line": "No, I will not sell a loaf on those terms.",
+        "source": "Deterministic economic terms after rejected or unavailable generated wording",
+        "wording_results": [
+          {
+            "accepted": false,
+            "claim_id": "wording-aa96807c117488c0e6a17952",
+            "elapsed_seconds": 1.797,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 234,
+              "completion_tokens_details": {
+                "reasoning_tokens": 73
+              },
+              "cost": 7.614e-05,
+              "prompt_tokens": 1026,
+              "total_tokens": 1260
+            },
+            "validation_failure": "extra_terms"
+          }
+        ],
+        "wording_fallback": "extra_terms",
+        "prepared_at": 1792910807.7046432,
+        "ended_at": 1792910811.9878604,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.954,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-f2ee815a3920a571f7353e5e",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.0007195617090474116,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 306,
+            "sum_error_degrees": 0.01870681465288726
+          },
+          "playedSeconds": 2.839333,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-second-4.wav",
+        "sha256": "548656b7402f0401c02ab5f646d1a48c807e5d5e4c2b57e5f24fb1f3ddd920cc",
+        "seconds": 2.8393,
+        "delivered": true
+      }
+    ],
+    "balances_before": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "wording_calls": 5,
+    "economic_decision_calls": 5,
+    "generated_turns": 1,
+    "fallback_turns": 3,
+    "reported_model_cost_usd": 0.001353428,
+    "sampled_worker_seconds": 103.572,
+    "reply_dispatch_gaps_seconds": [
+      7.529,
+      8.071,
+      7.979
+    ],
+    "human_realism_score": null
+  },
+  "natural-final": {
+    "selection": "Operator selected nearest currently feasible pending food review; not a forced sale",
+    "name": "Olfina Gray-Mane",
+    "phase": "complete",
+    "outcome": "employer_declined",
+    "decisions": [
+      {
+        "actor_id": 108165,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "seek_work",
+          "emotion": "unspecified",
+          "reason": "Selected action: Ask Carlotta Valentia about an advertised 10-game-minute bread-making shift paying 4 gold. The employer must offer and you must accept. No wage is guaranteed."
+        },
+        "elapsed_seconds": 4.281,
+        "usage": {
+          "cost": 0.000193452,
+          "input_tokens": 4606,
+          "output_tokens": 128
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      },
+      {
+        "actor_id": 108149,
+        "model": "typesafe/jev-1.14-20261014",
+        "decision": {
+          "action_id": "defer",
+          "emotion": "unspecified",
+          "reason": "Selected action: Do not offer this job; keep your resources."
+        },
+        "elapsed_seconds": 5.047,
+        "usage": {
+          "cost": 0.000178626,
+          "input_tokens": 4253,
+          "output_tokens": 34
+        },
+        "rationale_kind": "authored_action_label_not_dialogue"
+      }
+    ],
+    "turns": [
+      {
+        "act": "work_request",
+        "actor": 108165,
+        "listener": 108149,
+        "line": "I hope you're doing well. Are you hiring for that 10-minute bread-making shift? Thank you for listening.",
+        "canonical_line": "Are you hiring for that 10-minute bread-making shift?",
+        "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+        "wording_results": [
+          {
+            "accepted": true,
+            "candidate_rejections": {},
+            "claim_id": "wording-3e89920c02f685bf1e27f968",
+            "elapsed_seconds": 1.187,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 193,
+              "completion_tokens_details": {
+                "reasoning_tokens": 48
+              },
+              "cost": 7.131e-05,
+              "prompt_tokens": 1059,
+              "total_tokens": 1252
+            },
+            "validation_failure": null
+          },
+          {
+            "accepted": true,
+            "claim_id": "wording-06d692e7844e2bf40f12d43f",
+            "elapsed_seconds": 0.5,
+            "model": "typesafe/jev-1.14-20261014",
+            "selected_id": "option_1",
+            "stage": "select",
+            "usage": {
+              "cost": 5.3886e-05
+            },
+            "validation_failure": null
+          }
+        ],
+        "wording_fallback": null,
+        "prepared_at": 1792911039.7212355,
+        "ended_at": 1792911046.4447782,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 6.054,
+          "facing": [
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-404d15b0e963db0c21f7b7ec",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 2.203601044517427,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 632,
+            "sum_error_degrees": 31.382232458341605
+          },
+          "playedSeconds": 5.958667,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-final-1.wav",
+        "sha256": "a17d80ae35dfa326e2217a4da4873eaedd18c7cebda6dcd0bf34b6e52e581cdf",
+        "seconds": 5.9587,
+        "delivered": true
+      },
+      {
+        "act": "work_unavailable",
+        "actor": 108149,
+        "listener": 108165,
+        "line": "I hear your question clearly. I am not offering you a shift right now. Thank you for understanding.",
+        "canonical_line": "I am not offering you a shift right now.",
+        "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified",
+        "wording_results": [
+          {
+            "accepted": true,
+            "candidate_rejections": {},
+            "claim_id": "wording-5929af22bfd42a1fecce7fa3",
+            "elapsed_seconds": 5.906,
+            "model": "inception/mercury-2.5",
+            "stage": "propose",
+            "usage": {
+              "completion_tokens": 218,
+              "completion_tokens_details": {
+                "reasoning_tokens": 67
+              },
+              "cost": 7.546e-05,
+              "prompt_tokens": 1069,
+              "total_tokens": 1287
+            },
+            "validation_failure": null
+          },
+          {
+            "accepted": true,
+            "claim_id": "wording-f94864eec139b9e4cfc3b9d6",
+            "elapsed_seconds": 3.141,
+            "model": "typesafe/jev-1.14-20261014",
+            "selected_id": "option_2",
+            "stage": "select",
+            "usage": {
+              "cost": 5.3676e-05
+            },
+            "validation_failure": null
+          }
+        ],
+        "wording_fallback": null,
+        "prepared_at": 1792911066.9639642,
+        "ended_at": 1792911073.6981099,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 6.068,
+          "facing": [
+            {
+              "actor": 108149,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108165,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-c4dfdbf90b43857661805154",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.04885131405501397,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 632,
+            "sum_error_degrees": 28.19580214001155
+          },
+          "playedSeconds": 5.987917,
+          "status": "ended",
+          "volume": 1
+        },
+        "audio_file": "economic-wording-natural-final-2.wav",
+        "sha256": "8daa8bbd3b1bf889f484953048e26f2a45f2fd86978bd799242399b3f1409b94",
+        "seconds": 5.9879,
+        "delivered": true
+      }
+    ],
+    "balances_before": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "balances_after": {
+      "108149": {
+        "gold": 102,
+        "bread": 4,
+        "grain": 20
+      },
+      "108165": {
+        "gold": 33,
+        "bread": 0,
+        "grain": 0
+      }
+    },
+    "wording_calls": 4,
+    "economic_decision_calls": 2,
+    "generated_turns": 2,
+    "fallback_turns": 0,
+    "reported_model_cost_usd": 0.00062641,
+    "sampled_worker_seconds": 73.53,
+    "reply_dispatch_gaps_seconds": [
+      20.519
+    ],
+    "human_realism_score": null
+  },
+  "initial-restore": {
+    "save": "WS-Wording-20261025-BO",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "second-restore": {
+    "save": "WS-Wording-20261025-BO",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "final-restore": {
+    "save": "WS-Wording-20261025-BO",
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "limits": [
+    "Three operator-selected queued reviews; choices were real model decisions, not forced outcomes.",
+    "Final trial has two generated turns only. Formal customer-service phrasing remains a quality gap.",
+    "Exact economic clause retention is not semantic verification of surrounding claims or human realism.",
+    "Native playback and body yaw were measured; physical listening, eye gaze, raycast and lip sync were not qualified.",
+    "No sale or employment acceptance occurred. Inventories remained unchanged. Trial state was restored.",
+    "Provider-reported costs are not an audited invoice. Superseded trials preserve failures, not current quality claims."
+  ]
+}

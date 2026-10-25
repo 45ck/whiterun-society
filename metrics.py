@@ -72,6 +72,12 @@ def simulation_metrics(state):
     followup_plans=[p for p in plans if p.get('id') in followup_ids]
     followup_queue=[e for e in (state.get('town') or {}).get('daily',{}).get('queue',[]) if e['id'] in followup_ids]
     economic_turns=[t for p in plans for t in p.get('economic_turns',[]) if t.get('delivered')]
+    wording_turns=[t for p in plans for t in p.get('economic_turns',[])+([p['economic_speech']] if p.get('economic_speech') else [])]
+    wording_results=[r for t in wording_turns for r in t.get('wording_results',[])]
+    economic_gaps=[current['prepared_at']-previous['ended_at'] for p in plans
+        for previous,current in zip(p.get('economic_turns',[]),
+            (p.get('economic_turns',[])+([p['economic_speech']] if p.get('economic_speech') else []))[1:])
+        if number(previous.get('ended_at')) and number(current.get('prepared_at'))]
     trade_turns=[t for t in economic_turns if not t['act'].startswith('work_')]
     work_turns=[t for t in economic_turns if t['act'].startswith('work_')]
     employment_plans=[p for p in plans if p.get('employment_dialogue')]
@@ -174,6 +180,16 @@ def simulation_metrics(state):
             'results_with_cost':sum(number(v) for v in model_cost),
             'cost_coverage':'Retained accepted results and claim-bound language rejection receipts. Older rejections and other failed calls may exist only in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
+            'wording':{'recorded_calls':len(wording_results),
+                'delivered_generated_turns':sum(bool(t.get('selected')) and not t.get('wording_fallback') and t.get('delivered') is True for t in wording_turns),
+                'rejected_candidates':sum(len(r.get('candidate_rejections',{})) for r in wording_results),
+                'fallback_turns':sum(bool(t.get('wording_fallback')) for t in wording_turns),
+                'fallback_reasons':dict(Counter(t['wording_fallback'] for t in wording_turns if t.get('wording_fallback'))),
+                'latency_seconds':distribution(r.get('elapsed_seconds') for r in wording_results),
+                'reply_dispatch_gap_seconds':distribution(economic_gaps),
+                'known_cost_usd':round(sum(r.get('usage',{}).get('cost',0) for r in wording_results),8),
+                'results_with_cost':sum('cost' in r.get('usage',{}) for r in wording_results),
+                'scope':'Economic wording calls, including rejected responses and fixtures. Exact terms are preserved; surrounding claims and human realism are not independently verified.'},
             'bargaining':{**by_commodity['bread'],'plans':len(bargaining_plans),'by_commodity':by_commodity,
                 'accepted_counteroffers':sum(p.get('counter_quote_accepted') is True for p in bargaining_plans),
                 'scope':'Retained resident bargaining plans, including fixtures. Offers and accepted terms are not payments; paid prices require committed native inventory receipts.'},

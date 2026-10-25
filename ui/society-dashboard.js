@@ -35,6 +35,12 @@ function renderTownCharts(root,data){
  const flow=section('Economy in this save'),tiles=add(flow,'div',undefined,'town-flow');
  for(const [key,label] of [['committed_sales','Completed sales'],['committed_production','Production shifts'],['committed_meals','Meals eaten'],['active_enterprises','Open businesses'],['resident_enterprise_changes','Resident business decisions'],['operator_enterprise_changes','Operator charter edits']]){const tile=add(tiles,'div');add(tile,'strong',data.economy[key]??'—');add(tile,'span',label);}
  add(flow,'p',data.economy_scope,'town-chart-note');
+ const wording=data.economy.wording;
+ if(wording){
+  const speech=section('Economic voices'),counts=add(speech,'div',undefined,'town-flow');
+  for(const [key,label] of [['delivered_generated_turns','Contextual lines heard'],['fallback_turns','Original wording fallbacks']]){const tile=add(counts,'div');add(tile,'strong',wording[key]??'—');add(tile,'span',label);}
+  add(speech,'p',`${wording.recorded_calls||0} recorded wording calls · exact terms retained. Dialogue realism remains unscored.`,'town-chart-note');
+ }
  const negotiation=data.economy.negotiations;
  if(negotiation){
   const trade=section('What happened to trade offers?');

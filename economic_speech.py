@@ -6,6 +6,8 @@ import time
 from agency import distance
 from enterprises import plan_work_policy, current_work_terms
 from employment import remember_unavailable, accept_contract
+from economic_language import economic_context, validate_wording, qualify_wording, wording_receipt, TERMS
+from decisions import validate_decision
 
 
 def attendance_id(plan):
@@ -41,10 +43,10 @@ class EconomicSpeech:
             generation=plan.get('economic_attendance_generation',0)+1
             plan['economic_attendance_generation']=generation
             plan['economic_attendance_id']='economic-attend-'+plan['id']+('-'+str(generation) if generation>1 else '')
-        plan['economic_speech']={'actor':actor,'listener':listener,'act':act,'line':line,
+        plan['economic_speech']={'actor':actor,'listener':listener,'act':act,'line':line,'canonical_line':line,
             'source':'Deterministic wording of accepted economic terms; not generated dialogue',
             'origin_session':self.session,'resume_phase':plan['phase']}
-        plan['phase']='economic_synthesize' if plan.get('economic_attendance') else 'economic_attending'
+        plan['phase']=('economic_propose' if plan.get('natural_trade') else 'economic_synthesize') if plan.get('economic_attendance') else 'economic_attending'
         plan['release_required']=True
 
     @staticmethod
@@ -67,6 +69,66 @@ class EconomicSpeech:
         updated['economic_speech'].update(audio=audio,delivery_id='speech-'+secrets.token_hex(12),prepared_at=time.time())
         updated['phase']='economic_speaking'
         return {'checkpoint':self._write(state,'economic speech persisted before delivery')}
+
+    def claim_economic_wording(self,event_id,observation):
+        self._agency_guard(observation)
+        plan=self.agency_plan()
+        if not plan or plan['id']!=event_id or plan['phase'] not in ('economic_propose','economic_select'):
+            raise ValueError('No economic wording decision available')
+        if not self.economic_present(plan,observation) or distance(observation,*plan['economic_pair'])>300:
+            raise ValueError('Economic speakers must be attending nearby')
+        stage=plan['phase'].removeprefix('economic_');context=economic_context(self.active,plan,observation)
+        if stage=='select':
+            context['options']=[{'id':c['id'],'effect':c['line'].replace(TERMS,context['event']['canonical_terms']),
+                                 'intention':c['intention'],'tone':c['tone']} for c in plan['economic_speech']['candidates']]
+        claim={'id':'wording-'+secrets.token_hex(12),'stage':stage,'session':self.session,'context':context}
+        state=copy.deepcopy(self.active);updated=state['plans'][-1]
+        updated['economic_speech']['claim']=claim;updated['phase']='economic_thinking_'+stage
+        return {'checkpoint':self._write(state,'economic wording claim persisted before inference'),'claim':claim}
+
+    def finish_economic_wording(self,event_id,claim_id,result,observation):
+        self._agency_guard(observation)
+        plan=self.agency_plan();turn=(plan or {}).get('economic_speech') or {};claim=turn.get('claim')
+        if (not plan or plan['id']!=event_id or not claim or claim['id']!=claim_id
+                or claim['session']!=self.session or plan['phase']!='economic_thinking_'+claim['stage']):
+            raise ValueError('Economic wording claim does not match current session and phase')
+        if not self.economic_present(plan,observation) or distance(observation,*plan['economic_pair'])>300:
+            raise ValueError('Economic speakers left during inference')
+        if not isinstance(result,dict):raise ValueError('Expected economic wording result')
+        state=copy.deepcopy(self.active);updated=state['plans'][-1];speech=updated['economic_speech']
+        receipt=wording_receipt(result);receipt.update(stage=claim['stage'],claim_id=claim_id)
+        context=economic_context(self.active,plan,observation)
+        rejected=None
+        try:
+            if result.get('failure'):
+                if result['failure'] not in ('provider_error','transport_error','invalid_output'):raise ValueError('invalid_failure_category')
+                raise ValueError(result['failure'])
+            if claim['stage']=='propose':
+                candidates,rejections=qualify_wording(result.get('proposal'),context)
+                receipt['candidate_rejections']=rejections
+                if len(rejections)==2:raise ValueError('no_qualified_options')
+                speech.update(candidates=candidates,direct_wording_ids=list(rejections))
+                updated['phase']='economic_select'
+            else:
+                validate_wording({'candidates':turn['candidates']},context,turn.get('direct_wording_ids',[]))
+                decision=validate_decision(result.get('decision'),claim['context'])
+                candidate=next(c for c in turn['candidates'] if c['id']==decision['action_id'])
+                speech.update(selected=copy.deepcopy(candidate),line=candidate['line'].replace(TERMS,speech['canonical_line']),
+                    source='Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified')
+                receipt['selected_id']=candidate['id']
+                if candidate['id'] in turn.get('direct_wording_ids',[]):
+                    speech.update(wording_fallback='selected_direct_terms',source='Jev selected deterministic terms instead of the qualified generated alternative')
+                updated['phase']='economic_synthesize'
+        except ValueError as error:
+            known={'terms_marker','extra_terms','incomplete_sentence','no_qualified_options','repeated_greeting','unsupported_weather','provider_error','transport_error','invalid_output'}
+            rejected=str(error) if str(error) in known else 'candidate_validation'
+            speech.update(line=speech['canonical_line'],wording_fallback=rejected,
+                          source='Deterministic economic terms after rejected or unavailable generated wording')
+            updated['phase']='economic_synthesize'
+        receipt.update(accepted=rejected is None,validation_failure=rejected)
+        speech.setdefault('wording_results',[]).append(receipt);speech.pop('claim',None)
+        return {'checkpoint':self._write(state,'economic wording resolved without changing the economic act'),
+                'fallback':rejected}
 
     def observe_trade_speech(self,observation):
         plan=self.agency_plan()
@@ -91,10 +153,10 @@ class EconomicSpeech:
                 if ack.get('status')!='applied' or not self.economic_present(plan,observation) or distance(observation,*plan['economic_pair'])>300:
                     self.hold_plan(plan['id'],'Economic attendance was not established',observation)
                 else:
-                    state=copy.deepcopy(self.active);state['plans'][-1].update(phase='economic_synthesize',economic_attendance=copy.deepcopy(ack))
+                    state=copy.deepcopy(self.active);state['plans'][-1].update(phase='economic_propose' if plan.get('natural_trade') else 'economic_synthesize',economic_attendance=copy.deepcopy(ack))
                     self._write(state,'buyer and seller attended for voiced terms')
             return True
-        if plan['phase']=='economic_synthesize':return True
+        if plan['phase'] in ('economic_synthesize','economic_propose','economic_select','economic_thinking_propose','economic_thinking_select'):return True
         if plan['phase']!='economic_speaking':return False
         report=observation.get('speech') or {}
         if report.get('id')!=current['delivery_id']:return True
@@ -136,4 +198,4 @@ class EconomicSpeech:
         turn=plan['economic_speech']
         if turn['origin_session']!=session:return None
         return {'id':turn['delivery_id'],'kind':'speak','actor':turn['actor'],'target':turn['listener'],
-            'line':turn['line'],'tone':'calm','audio':turn['audio'],'session':session,'checkpoint':self.marker}
+            'line':turn['line'],'tone':turn.get('selected',{}).get('tone','calm'),'audio':turn['audio'],'session':session,'checkpoint':self.marker}

@@ -87,3 +87,9 @@ Next: qualify repeated unforced supply-chain choices, farming and replenishment,
 Residents now consider food/grain retail, verified bread-recipe registration, closure and reopening in their ordinary needs review. The shared validator checks ownership, revisions, stock and outstanding contracts; registration creates no native assets. Two unforced reviews preferred eating and paid work. A controlled new charter survived native reload and pre-trial rollback, with all 17 fields matching both times. [Implementation, screenshots, data model and evidence](entrepreneurship.md).
 
 Next acceptance: unforced enterprise formation and repeated supply-chain choices, productive locations and farming, natural business dialogue, fatigue/rest recovery, reliable native RTS controls, and recorded long-run observation. The current three executable service capabilities do not establish a full economy.
+
+## Contextual economic speech
+
+Economic decisions now pass through language proposal, independent candidate checks, Jev wording selection, local voice and native nearby playback. The final unforced work inquiry delivered two generated turns with exact terms preserved and no wording fallback. Earlier failures remain in the published evidence. Language remains formal and the final reply dispatch gap was 20.519 seconds; there is no human-realism acceptance yet. All three trial rollbacks matched 17 saved fields. [Infographic, audio, metrics and data model](economic-wording.md).
+
+Next: reduce pipeline reply latency and unnecessary courtesy, qualify relationship-sensitive and context-grounded dialogue, then sustained autonomous production/trade with meaningful destinations and reliable native RTS interaction. The full society and future continuous broadcast remain active ambitions, not completed claims.

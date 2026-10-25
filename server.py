@@ -242,12 +242,14 @@ def main():
                     elif self.path=='/routines/decisions':result=world.finish_routines(data['id'],data['claim_id'],data['results'],observation)
                     else:result=world.hold_routines(data['id'],data['reason'],observation)
                     self.reply(202,result)
-                elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold','/agency/audio'):
+                elif self.path in ('/agency/event','/agency/claim','/agency/decision','/agency/hold','/agency/audio','/agency/wording-claim','/agency/wording-result'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'),data.get('voiced_trade',False))
+                    if self.path=='/agency/event': result=world.begin_plan(data['id'],observation,data.get('actor',108186),data.get('kind','meal_time'),data.get('voiced_trade',False),data.get('natural_trade',False))
+                    elif self.path=='/agency/wording-claim':result=world.claim_economic_wording(data['id'],observation)
+                    elif self.path=='/agency/wording-result':result=world.finish_economic_wording(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/agency/audio':result=world.prepare_trade_speech(data['id'],self.checked_audio(data),observation)
                     elif self.path=='/agency/claim': result=world.claim_plan_decision(data['id'],observation)
                     elif self.path=='/agency/decision': result=world.finish_plan_decision(data['id'],data['claim_id'],data['result'],observation)

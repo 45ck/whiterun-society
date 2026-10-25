@@ -56,9 +56,10 @@ class Agency:
         if observation.get('session') != self.session or observation.get('checkpoint') != self.marker:
             raise ValueError('Observation belongs to another save checkpoint')
 
-    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time', voiced_trade=False):
+    def begin_plan(self, event_id, observation, actor=108186, kind='meal_time', voiced_trade=False, natural_trade=False):
         self._agency_guard(observation)
         if type(voiced_trade) is not bool:raise ValueError('Voiced trade must be boolean')
+        if type(natural_trade) is not bool or natural_trade and not voiced_trade:raise ValueError('Natural wording requires voiced trade')
         if self.conversation_busy():
             raise ValueError('A conversation owns the participants')
         if not isinstance(event_id, str) or not 1 <= len(event_id) <= 64:
@@ -67,7 +68,7 @@ class Agency:
             raise ValueError('Unsupported resident or event kind')
         for plan in self.active.get('plans', []):
             if plan['id'] == event_id:
-                if plan['actor'] != actor or plan['kind'] != kind or plan.get('voiced_trade',False)!=voiced_trade:
+                if plan['actor'] != actor or plan['kind'] != kind or plan.get('voiced_trade',False)!=voiced_trade or plan.get('natural_trade',False)!=natural_trade:
                     raise ValueError('Event ID reused for another resident or kind')
                 return {'duplicate': True, 'plan': plan}
         native=next((r for r in observation.get('residents',[]) if r['id']==actor),None)
@@ -104,6 +105,7 @@ class Agency:
             plan['scene_handoff']={'id':handoff['id'],'scene_id':handoff['scene_id']}
             handoff['resumed_by']=event_id
         if voiced_trade:plan['voiced_trade']=True
+        if natural_trade:plan['natural_trade']=True
         if scheduled:
             plan['scheduled']=True
             if event.get('conversation_followups'):plan['conversation_followups']=copy.deepcopy(event['conversation_followups'])

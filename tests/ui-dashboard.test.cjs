@@ -239,3 +239,18 @@ test('employment shows work progress between spoken terms and receipt',()=>{
  assert.equal(w.document.getElementById('conversation-card').hidden,false);
  }finally{dom.window.close();}
 });
+
+test('economic wording stages and fallback provenance are visible without exposing templates',()=>{
+ const {dom,w}=native();try{
+ const plan={id:'wording',kind:'meal_time',actor:1,target:2,voiced_trade:true,natural_trade:true,
+  phase:'economic_thinking_select',economic_pair:[1,2],decisions:[],economic_speech:{actor:1,
+  line:'Would you sell me a loaf?',candidates:[{line:'Please. [[TERMS]]'}],wording_results:[{accepted:true}]}};
+ w.whiterunRender({residents:[],director:{running:true},society:{people:{},town:{residents:{}},plan}});
+ assert.match(w.document.getElementById('conversation-stage').textContent,/Choosing a reply/);
+ assert.match(w.document.getElementById('encounter-pipeline').textContent,/language \+ Jev/);
+ assert.doesNotMatch(w.document.body.textContent,/\[\[TERMS\]\]/);
+ plan.phase='economic_synthesize';plan.economic_speech.wording_fallback='provider_error';
+ w.whiterunRender({residents:[],director:{running:true},society:{people:{},town:{residents:{}},plan}});
+ assert.match(w.document.getElementById('encounter-timing').textContent,/Original terms fallback/);
+ }finally{dom.window.close();}
+});

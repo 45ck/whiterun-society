@@ -21,7 +21,8 @@ window.drawConversation=()=>{
  }
  if(plan?.voiced_trade&&!['complete','held'].includes(plan.phase)&&(plan.economic_speech||plan.economic_turns?.length)){
   card.hidden=false;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
-  text('conversation-stage',(plan.employment_dialogue?'Employment':'Trade')+' · '+plan.phase.replaceAll('_',' '));
+  const stage={economic_propose:'Finding words',economic_thinking_propose:'Finding words',economic_select:'Choosing a reply',economic_thinking_select:'Choosing a reply',economic_synthesize:'Preparing voice',economic_speaking:'Speaking and listening',economic_attending:'Meeting nearby'}[plan.phase]||plan.phase.replaceAll('_',' ');
+  text('conversation-stage',(plan.employment_dialogue?'Employment':'Trade')+' · '+stage);
   text('notice',plan.employment_dialogue?(plan.outcome==='paid_work_completed'?'Bread and wage verified':'Employment terms · wages follow verified work'):plan.purchase_completed?'Inventory transfer verified':'Offers and agreement are not yet a completed sale');
   const transcript=document.getElementById('conversation-transcript');transcript.replaceChildren();
   for(const turn of plan.economic_turns||[]){const row=document.createElement('div');row.style.marginTop='12px';row.textContent=(names[turn.actor]||'Resident')+': '+turn.line;transcript.append(row);}

@@ -1,5 +1,10 @@
 [
   {
+    "file": "economic-speech-layers.png",
+    "title": "Economic speech layers",
+    "kind": "Generated system illustration \u2014 not gameplay"
+  },
+  {
     "file": "employment-encounter-loop.png",
     "title": "Employment encounter loop",
     "kind": "Generated system illustration \u2014 not gameplay"
@@ -77,6 +82,11 @@
   {
     "file": "conversation-closeup.jpg",
     "title": "Conversation closeup",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "economic-wording-initial-native.jpg",
+    "title": "Economic wording initial native",
     "kind": "Captured game or observer interface \u2014 historical prototype"
   },
   {

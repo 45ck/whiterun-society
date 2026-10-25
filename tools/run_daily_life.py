@@ -241,7 +241,7 @@ def main():
                 else:command=[sys.executable,str(Path(__file__).with_name('run_resident_event.py')),
                     '--runtime',str(runtime),'--event-id',event['id'],'--actor',str(event['actor']),
                     '--kind',event['kind'],'--model-config',str(args.model_config)]
-                if not social and args.language_config:command+=['--voice-trade']
+                if not social and args.language_config:command+=['--voice-trade','--language-config',str(args.language_config)]
                 result=subprocess.run(command,check=False)
                 current=fresh()
                 if current['bridge']['session']!=session:raise ValueError('Game session changed during resident decision')

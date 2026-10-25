@@ -40,5 +40,5 @@ def town_dashboard(society, observation):
     return {'population':len(managed),'loaded':sum(k in loaded for k in managed),'control':control,
         'control_scope':'Current observed package ownership, not long-term autonomy or quest compatibility.',
         'stock':stock,'needs':needs,'needs_scope':'Authored simulation needs, not measured human psychology.',
-        'economy':{k:economy.get(k) for k in ('committed_sales','committed_production','committed_meals','active_enterprises','resident_enterprise_changes','operator_enterprise_changes','household_release_sales','negotiations')},
+        'economy':{k:economy.get(k) for k in ('committed_sales','committed_production','committed_meals','active_enterprises','resident_enterprise_changes','operator_enterprise_changes','household_release_sales','negotiations','wording')},
         'economy_scope':'Cumulative verified events in this save, including qualification experiments.'}

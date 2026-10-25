@@ -2,6 +2,12 @@
 
 All finished project images are stored in `docs/images`. Generated illustrations explain design; captured interfaces show historical prototype states, not current acceptance of every visible feature. See the linked evidence documents for scope.
 
+## Economic speech layers
+
+Generated system illustration — not gameplay
+
+![Economic speech layers](images/economic-speech-layers.png)
+
 ## Employment encounter loop
 
 Generated system illustration — not gameplay
@@ -97,6 +103,12 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 Captured game or observer interface — historical prototype
 
 ![Conversation closeup](images/conversation-closeup.jpg)
+
+## Economic wording initial native
+
+Captured game or observer interface — historical prototype
+
+![Economic wording initial native](images/economic-wording-initial-native.jpg)
 
 ## Employment agreement fixture
 

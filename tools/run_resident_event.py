@@ -17,6 +17,8 @@ from decisions import infer
 from bargaining import MAX_ECONOMIC_CALLS
 from tools.voice_worker import VoiceWorker
 from tools.run_conversation import stock_voice
+from language import propose, LanguageOutputError
+from economic_language import MAX_ECONOMIC_LANGUAGE_CALLS
 
 
 def main():
@@ -24,13 +26,17 @@ def main():
     parser.add_argument('--runtime', type=Path, required=True)
     parser.add_argument('--event-id', required=True)
     parser.add_argument('--model-config', type=Path)
+    parser.add_argument('--language-config', type=Path,help='Generate and select contextual phrasing around exact economic terms')
     parser.add_argument('--actor', type=int, default=108186)
     parser.add_argument('--voice-trade',action='store_true',help='Speak grounded offers and outcomes before continuing the trade')
     parser.add_argument('--kind', choices=('meal_time','stock_review','work_shift','need_review'), default='meal_time')
     args = parser.parse_args()
+    if args.language_config and not args.voice_trade:raise ValueError('Economic language requires voiced trade')
     config = json.loads((args.runtime/'bridge-config.json').read_text())
     model = json.loads((args.model_config or args.runtime/'model-config.json').read_text())
     key = os.environ[model['key_env']] if model.get('key_env') else Path(model['key_file']).read_text().strip()
+    wording=json.loads(args.language_config.read_text()) if args.language_config else None
+    wording_key=(os.environ[wording['key_env']] if wording.get('key_env') else Path(wording['key_file']).read_text().strip()) if wording else None
 
     def request(route, data=None):
         req = urllib.request.Request(f"http://127.0.0.1:{config['port']}"+route,
@@ -45,7 +51,7 @@ def main():
             raise ValueError('Game observation is stale')
         return result
 
-    evidence = {'event_id': args.event_id, 'started_at': time.time(), 'model_calls': 0,
+    evidence = {'event_id': args.event_id, 'started_at': time.time(), 'model_calls': 0,'wording_calls':0,
                 'before': request('/state'), 'stages': [],
                 'polling':{'checkpoint_seconds':.1,'native_wait_seconds':.2,'sleep_after_mutation':False}}
     path = args.runtime/('resident-event-'+hashlib.sha256(args.event_id.encode()).hexdigest()[:12]+'.json')
@@ -54,7 +60,7 @@ def main():
         path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
         print(json.dumps({'phase': stage, 'model_calls': evidence['model_calls']}), flush=True)
 
-    started = request('/agency/event', {'id': args.event_id, 'actor':args.actor, 'kind':args.kind,'voiced_trade':args.voice_trade})
+    started = request('/agency/event', {'id': args.event_id, 'actor':args.actor, 'kind':args.kind,'voiced_trade':args.voice_trade,'natural_trade':bool(wording)})
     if started.get('duplicate'):
         print(json.dumps({'duplicate': True, 'model_calls': 0, 'phase': started['plan']['phase']}), flush=True)
         return
@@ -78,8 +84,8 @@ def main():
             if previous != phase:
                 record(phase, state)
                 previous = phase
-            if args.voice_trade and phase in ('travelling','economic_attending','economic_synthesize') and voice_worker is None:
-                voice_worker=VoiceWorker(args.runtime.parent,5,[model.get('key_env')])
+            if args.voice_trade and phase in ('travelling','economic_attending','economic_propose','economic_synthesize') and voice_worker is None:
+                voice_worker=VoiceWorker(args.runtime.parent,5,[model.get('key_env'),(wording or {}).get('key_env')])
             if phase in ('complete', 'held') and not plan.get('release_required') and plan.get('remembered'):
                 evidence['after'] = state
                 evidence['status'] = phase
@@ -87,6 +93,35 @@ def main():
                 path.write_text(json.dumps(evidence, indent=2), encoding='utf-8')
                 print(json.dumps({'status': phase, 'outcome': plan.get('outcome'), 'evidence': str(path)}), flush=True)
                 return
+            if phase in ('economic_propose','economic_select'):
+                if not wording:raise ValueError('This event requires its language configuration')
+                if evidence['wording_calls']>=MAX_ECONOMIC_LANGUAGE_CALLS:raise ValueError('Economic wording budget exhausted')
+                claim=request('/agency/wording-claim',{'id':args.event_id})['claim']
+                confirmed=request('/state')
+                while confirmed['society']['transition']:
+                    if time.monotonic()>deadline:raise TimeoutError('Wording checkpoint did not bind')
+                    time.sleep(.1);confirmed=request('/state')
+                current=confirmed['society'].get('plan') or {}
+                if (confirmed['bridge']['session']!=claim['session'] or current.get('id')!=args.event_id
+                        or (current.get('economic_speech',{}).get('claim') or {}).get('id')!=claim['id']):
+                    raise ValueError('Wording claim changed before inference')
+                evidence['wording_calls']+=1
+                path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+                start=time.monotonic();used=wording if claim['stage']=='propose' else model
+                try:
+                    result=propose(claim['context'],wording,wording_key) if claim['stage']=='propose' else infer(claim['context'],model,key)
+                except LanguageOutputError as error:
+                    result={**error.receipt,'failure':'invalid_output'}
+                except urllib.error.HTTPError:
+                    result={'model':used['model'],'elapsed_seconds':time.monotonic()-start,'failure':'provider_error'}
+                except (OSError,TimeoutError):
+                    result={'model':used['model'],'elapsed_seconds':time.monotonic()-start,'failure':'transport_error'}
+                except ValueError:
+                    result={'model':used['model'],'elapsed_seconds':time.monotonic()-start,'failure':'invalid_output'}
+                request('/agency/wording-result',{'id':args.event_id,'claim_id':claim['id'],'result':result})
+                continue
+            if phase.startswith('economic_thinking_'):
+                raise ValueError('Economic wording inference already claimed; refusing automatic repetition')
             if phase=='economic_synthesize':
                 turn=plan['economic_speech'];began=time.monotonic()
                 audio=voice_worker.synthesize(turn['line'],stock_voice(turn['actor'],state['bridge']['observation']))

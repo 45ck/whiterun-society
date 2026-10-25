@@ -14,6 +14,17 @@ class LanguageTests(unittest.TestCase):
         return io.BytesIO(json.dumps({'choices': [{'finish_reason': finish,
             'message': {'content': content}}], 'usage': usage or {}}).encode())
 
+    def test_economic_wording_uses_separate_sentences_and_bounded_timeout(self):
+        candidates={'candidates':[{'id':f'option_{i+1}','intention':'Polite','before':before,
+            'after':after,'tone':'calm'} for i,(before,after) in enumerate([('Please.',''),('','Thank you.')])]}
+        with patch('language.urllib.request.urlopen',return_value=self.response(json.dumps(candidates))) as http:
+            result=propose({'mode':'economic_wording_v1'},self.config,'test-placeholder')
+        payload=json.loads(http.call_args.args[0].data)
+        schema=payload['response_format']['json_schema']['schema']['properties']['candidates']['items']
+        self.assertEqual(set(schema['required']),{'id','intention','before','after','tone'})
+        self.assertEqual(result['proposal']['candidates'][0]['line'],'Please. [[TERMS]]')
+        self.assertEqual(http.call_args.kwargs['timeout'],30)
+
     def test_explicit_non_thinking_and_provider_reach_request(self):
         candidates = {'candidates': [
             {'id': 'option_1', 'intention': 'Greet', 'line': 'Good morning to you.', 'tone': 'calm'},

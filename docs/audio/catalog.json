@@ -394,5 +394,85 @@
     "sha256": "53e2b6a984dc6dc049798b42c339a839c8d969bd500b8075b4ad78bbb69dbe13",
     "source": "Model-selected employment choice; deterministic terms voiced by Kokoro. Synthesized clip used in game, not a recording of system output.",
     "encounter": "Livelihood choices \u2014 paid work rather than registration"
+  },
+  {
+    "file": "economic-wording-natural-1.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "Would you sell me one loaf for 5 gold?",
+    "sha256": "892de7030cb3583c16d9da6cc30231b7cb590e04ed5c36ec009cc48f19f4ecb4",
+    "source": "Deterministic economic terms after rejected or unavailable generated wording. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "With these uncertain times, No, I will not sell a loaf on those terms.",
+    "sha256": "5e8ee98108d839647dbd48356cb07217308521b70fbf01813d1cea403c792dfb",
+    "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-3.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "I understand. Would 6 gold change your mind? That is my final offer for one loaf.",
+    "sha256": "f9dcf1f1a68d2a3fa1d17195e26c30895419c3ff7d07664dc60ad5e3b0914dea",
+    "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-4.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "6f4e5becd3ec0e69bd83f830b0823490aee108c6ac6491c677b6007b0bd28a66",
+    "source": "Deterministic economic terms after rejected or unavailable generated wording. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-second-1.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "Good afternoon, Carlotta. Would you sell me one loaf for 3 gold? Thanks.",
+    "sha256": "dd1e3b62c53508b58dcc31356b43e71c658739db3fea5ff544e57e5e4cea5d14",
+    "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-second-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "41b6576a67577ba35b57dcc33fdd37ec16c2fb545b46713f6ad30dbd838ef137",
+    "source": "Deterministic economic terms after rejected or unavailable generated wording. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-second-3.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "Would 4 gold change your mind? That is my final offer for one loaf.",
+    "sha256": "1cef924e4bf08adf7cb293f630880596f939a55a9fe3de19b60150b23585cd7d",
+    "source": "Deterministic economic terms after rejected or unavailable generated wording. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-second-4.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "No, I will not sell a loaf on those terms.",
+    "sha256": "548656b7402f0401c02ab5f646d1a48c807e5d5e4c2b57e5f24fb1f3ddd920cc",
+    "source": "Deterministic economic terms after rejected or unavailable generated wording. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 superseded development trial"
+  },
+  {
+    "file": "economic-wording-natural-final-1.wav",
+    "speaker": "Olfina Gray-Mane",
+    "line": "I hope you're doing well. Are you hiring for that 10-minute bread-making shift? Thank you for listening.",
+    "sha256": "a17d80ae35dfa326e2217a4da4873eaedd18c7cebda6dcd0bf34b6e52e581cdf",
+    "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 final native trial; language remains formal"
+  },
+  {
+    "file": "economic-wording-natural-final-2.wav",
+    "speaker": "Carlotta Valentia",
+    "line": "I hear your question clearly. I am not offering you a shift right now. Thank you for understanding.",
+    "sha256": "8daa8bbd3b1bf889f484953048e26f2a45f2fd86978bd799242399b3f1409b94",
+    "source": "Language-generated phrasing with exact economic terms; Jev selected wording; surrounding claims are not independently verified. Synthesized clip used in game, not a recording of physical output.",
+    "encounter": "Economic wording \u2014 final native trial; language remains formal"
   }
 ]

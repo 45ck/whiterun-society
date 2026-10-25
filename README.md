@@ -24,9 +24,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Resident-owned enterprise decisions:** residents can now register and revise services from their own resources and recipe knowledge. Two unforced reviews chose food or employment; a controlled registration survived native reload with unchanged assets. [Flow diagram, screenshots, voices and evidence](docs/entrepreneurship.md).
 
+**Contextual economic voices:** Mercury proposes phrasing around code-preserved terms; Jev chooses the wording and local Kokoro speaks it. Three native trials are published, including fallback failures. The final two-line work inquiry completed with generated wording, but formal language and a 20.5-second reply gap remain quality defects. [Infographic, actual clips, state flow and measured results](docs/economic-wording.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 53 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 55 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -235,7 +237,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (53)</summary>
+<summary>Browse every finished project image (55)</summary>
+
+### Economic speech layers
+
+Generated system illustration — not gameplay
+
+![Economic speech layers](docs/images/economic-speech-layers.png)
 
 ### Employment encounter loop
 
@@ -332,6 +340,12 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 Captured game or observer interface — historical prototype
 
 ![Conversation closeup](docs/images/conversation-closeup.jpg)
+
+### Economic wording initial native
+
+Captured game or observer interface — historical prototype
+
+![Economic wording initial native](docs/images/economic-wording-initial-native.jpg)
 
 ### Employment agreement fixture
 
