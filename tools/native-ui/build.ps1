@@ -15,6 +15,7 @@ if (-not $root.StartsWith($runnerRoot, [StringComparison]::OrdinalIgnoreCase) -o
 New-Item -ItemType Directory -Path "$root/evidence/logs" -Force | Out-Null
 $logRoot = "$root/evidence/logs"
 $outcome = 'failed'
+$dependencyRepairs = @()
 
 function Invoke-Logged {
     param([string]$Name, [string]$Command, [string[]]$Arguments)
@@ -25,6 +26,7 @@ function Invoke-Logged {
 try {
     Invoke-Logged 'prepare' 'python' @("$PSScriptRoot/prepare.py", '--output', $root)
     $manifest = Get-Content "$PSScriptRoot/manifest.json" -Raw | ConvertFrom-Json
+    $dependencyRepairs = $manifest.dependency_helper_repairs
     $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
     if (-not (Test-Path -LiteralPath $vswhere)) { throw 'Hosted VS discovery tool is missing; do not install it' }
     $instances = @((& $vswhere -products '*' -version '[17.0,18.0)' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json | ConvertFrom-Json))
@@ -45,6 +47,7 @@ try {
         visual_studio = $vs; msvc_version = $msvc; compiler_sha256 = (Get-FileHash $compiler -Algorithm SHA256).Hash
         vcpkg_commit = $manifest.vcpkg.commit; vcpkg_tool_sha256 = $manifest.vcpkg.tool_sha256
         upstream_commit = $manifest.upstream.commit; variant = 'upstream-unchanged'
+        dependency_helper_repairs = $dependencyRepairs
         runtime_qualified = $false; byte_identical_rebuild_verified = $false
     }
     $identity | ConvertTo-Json -Depth 12 | Set-Content "$root/evidence/build-identity.json"
@@ -115,8 +118,8 @@ finally {
             Copy-Item -LiteralPath $_.FullName -Destination "$root/evidence/dependency-sbom/$triplet-$($_.Directory.Name).json"
         }
     }
-    [ordered]@{ status=$outcome; native_input_fixed=$false; runtime_qualified=$false; patches=@(); warning='Unchanged upstream lacks the lab save-compatibility flag. Do not deploy this baseline artifact.' } |
-        ConvertTo-Json | Set-Content "$root/evidence/result.json"
+    [ordered]@{ status=$outcome; native_input_fixed=$false; runtime_qualified=$false; application_patches=@(); dependency_helper_repairs=$dependencyRepairs; warning='Unchanged upstream lacks the lab save-compatibility flag. Do not deploy this baseline artifact.' } |
+        ConvertTo-Json -Depth 8 | Set-Content "$root/evidence/result.json"
     Get-ChildItem "$root/evidence" -File -Recurse | ForEach-Object {
         [ordered]@{ path=[IO.Path]::GetRelativePath("$root/evidence", $_.FullName); bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
     } | ConvertTo-Json -Depth 4 | Set-Content "$root/evidence/artifact-hashes.json"

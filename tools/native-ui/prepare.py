@@ -45,6 +45,45 @@ def validate_manifest(manifest):
         raise ValueError('Unresolved vcpkg executable checksum')
     if vcpkg['triplet'] != 'x64-windows-static':
         raise ValueError('Unreviewed triplet')
+    repairs = manifest.get('dependency_helper_repairs', [])
+    if len(repairs) != 1 or repairs[0].get('id') != 'pkgconfig-retired-msys2-archive':
+        raise ValueError('Exactly the reviewed pkg-config dependency repair is required')
+    repair = repairs[0]
+    if repair.get('path') != 'scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake' or repair.get('application_source_modified') is not False:
+        raise ValueError('Unreviewed dependency repair scope')
+    for key in ['original_sha256', 'result_sha256', 'source_helper_sha256']:
+        if not re.fullmatch('[0-9a-f]{64}', repair.get(key, '')):
+            raise ValueError('Dependency repair checksum missing')
+    if len(repair.get('replacements', [])) != 2:
+        raise ValueError('Dependency repair must replace only the package URL and hash')
+
+
+def repair_bytes(original, repair):
+    if hashlib.sha256(original).hexdigest() != repair['original_sha256']:
+        raise ValueError('Dependency helper original checksum mismatch')
+    result = original
+    for replacement in repair['replacements']:
+        old, new = replacement['old'].encode('utf-8'), replacement['new'].encode('utf-8')
+        if not old or result.count(old) != 1:
+            raise ValueError('Dependency repair expected exactly one matching literal')
+        result = result.replace(old, new, 1)
+    if hashlib.sha256(result).hexdigest() != repair['result_sha256']:
+        raise ValueError('Dependency helper result checksum mismatch')
+    return result
+
+
+def apply_dependency_repairs(root, repairs):
+    receipts = []
+    for repair in repairs:
+        # This is deliberately not a generic arbitrary-file patch interface.
+        if repair['path'] != 'scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake':
+            raise ValueError('Unreviewed dependency helper path')
+        target = Path(root) / repair['path']
+        target.write_bytes(repair_bytes(target.read_bytes(), repair))
+        receipts.append({'id': repair['id'], 'path': repair['path'], 'original_sha256': repair['original_sha256'],
+                         'result_sha256': sha256(target), 'source_commit': repair['source_commit'],
+                         'application_source_modified': False})
+    return receipts
 
 
 def download(url, destination, expected):
@@ -120,6 +159,7 @@ def prepare(output):
         receipts.append(download(spec['archive_url'], archive, spec['archive_sha256']))
         extract(archive, output / key, spec['archive_root'])
     rows = verify_source(output / 'upstream', proof)
+    repairs = apply_dependency_repairs(output / 'vcpkg', manifest['dependency_helper_repairs'])
     metadata = (output / 'vcpkg/scripts/vcpkg-tool-metadata.txt').read_text()
     if f"VCPKG_TOOL_RELEASE_TAG={manifest['vcpkg']['tool_release']}" not in metadata.splitlines():
         raise ValueError('Tool release differs from pinned vcpkg source')
@@ -128,7 +168,8 @@ def prepare(output):
     (output / 'vcpkg/.vcpkg-root').touch(exist_ok=True)
     shutil.copy2(HERE / 'manifest.json', evidence / 'input-manifest.json')
     shutil.copy2(HERE / 'upstream-files.json', evidence / 'upstream-files.json')
-    (evidence / 'prepared-inputs.json').write_text(json.dumps({'downloads': receipts, 'verified_source_files': rows}, indent=2) + '\n')
+    (evidence / 'prepared-inputs.json').write_text(json.dumps({'downloads': receipts, 'verified_source_files': rows,
+                                                            'dependency_helper_repairs': repairs}, indent=2) + '\n')
 
 
 if __name__ == '__main__':

@@ -93,6 +93,29 @@ class PreparationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 prepare.verify_source(root, proof)
 
+    def test_dependency_repair_original_single_matches_and_result_required(self):
+        original = b'url=old-url\nhash=old-hash\n'
+        result = b'url=new-url\nhash=new-hash\n'
+        repair = {'original_sha256': hashlib.sha256(original).hexdigest(),
+                  'result_sha256': hashlib.sha256(result).hexdigest(),
+                  'replacements': [{'old': 'old-url', 'new': 'new-url'}, {'old': 'old-hash', 'new': 'new-hash'}]}
+        self.assertEqual(prepare.repair_bytes(original, repair), result)
+        with self.assertRaises(ValueError):
+            prepare.repair_bytes(original + b'mutated', repair)
+        with self.assertRaises(ValueError):
+            prepare.repair_bytes(original, {**repair, 'result_sha256': '0' * 64})
+        for data in [b'old-url old-url old-hash', b'missing-url old-hash']:
+            with self.subTest(data=data), self.assertRaises(ValueError):
+                prepare.repair_bytes(data, {**repair, 'original_sha256': hashlib.sha256(data).hexdigest()})
+
+    def test_dependency_repair_is_not_an_arbitrary_file_patch(self):
+        manifest = self.manifest()
+        manifest['dependency_helper_repairs'][0]['path'] = '../../upstream/src/main.cpp'
+        with self.assertRaises(ValueError):
+            prepare.validate_manifest(manifest)
+        with tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
+            prepare.apply_dependency_repairs(Path(directory), manifest['dependency_helper_repairs'])
+
 
 if __name__ == '__main__':
     unittest.main()

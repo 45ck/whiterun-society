@@ -51,5 +51,29 @@
     "Hosted runner/compiler/SDK servicing is recorded, not immutable.",
     "Compiler and transitive dependency compatibility await first hosted build.",
     "No byte-identical build claim; no deployment or runtime qualification."
+  ],
+  "dependency_helper_repairs": [
+    {
+      "id": "pkgconfig-retired-msys2-archive",
+      "path": "scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake",
+      "original_sha256": "e6e05b67513c71a95cf0dcd6f9f8a014c97d90ba82a874c8ce31a2b5ffb952b0",
+      "result_sha256": "e681265810667f797903c0b0ff53b0efd69763f9fd90e55400dc45dd76087a35",
+      "replacements": [
+        {
+          "old": "https://mirror.msys2.org/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst",
+          "new": "https://mirror.msys2.org/mingw/mingw32/mingw-w64-i686-pkgconf-1~3.0.7-1-any.pkg.tar.zst"
+        },
+        {
+          "old": "e5217d9c55ede4c15706b4873761cc6e987eabc1308120a3e8406571ae2993907f3776f2b2bba18d7aaec80ef97227696058cedc1b67a773530dc1e6077b95e6",
+          "new": "a9a39bd4f4efd1d15f48ab9a1ea50b5eee7a56496bb187d792fb76e93181797e3803e6e78b8e8a1ec376020a8d2bdb6a4fb7db7dbccc88c8a1eea669cc39a1b4"
+        }
+      ],
+      "source_commit": "817892b0ecbc6af994dd6df999c73faf795adbf2",
+      "source_url": "https://raw.githubusercontent.com/microsoft/vcpkg/817892b0ecbc6af994dd6df999c73faf795adbf2/scripts/cmake/vcpkg_find_acquire_program(PKGCONFIG).cmake",
+      "source_helper_sha256": "f12d6376a3906997c80f20de0ead255a9932644569d61a8921e2c858987d903e",
+      "reason": "Hosted run 40185640549: pkgconf1.8.0 asset returned404 from all six mirrors. Preserve application/library sources and update only the pkg-config helper URL and checksum.",
+      "local_asset_verification": "Not downloaded: MSYS2 mirrors reported expired TLS certificates. Verification was not disabled. Package SHA512 comes from the exact Microsoft helper source above.",
+      "application_source_modified": false
+    }
   ]
 }

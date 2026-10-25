@@ -9,4 +9,3 @@ Create a polished landscape infographic-diagram for the Whiterun Society open-so
 ## Targeted correction
 
 Keep this infographic exactly unchanged except the explanatory paragraph beneath the heading 'Native release must be verified'. Replace that paragraph with this exact text, readable and neatly laid out: 'After a job ends, verify that its Skyrim AI package has stopped. Acknowledge the receipt before freeing the resident and resource reservation.' This is about releasing NPC AI control and reservations, not crafting animations. Preserve all other text, layout, characters, arrows, colors, dimensions and status labels.
-
