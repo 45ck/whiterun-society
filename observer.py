@@ -9,6 +9,7 @@ from dashboard import town_dashboard
 from activity_metrics import activity_metrics
 from owner_work_metrics import owner_work_metrics
 from paid_employment_metrics import paid_employment_metrics
+from employment_concurrency_metrics import snapshot_metrics
 import economy_catalog
 from market_policy import tradable_ids, goods_policy, advertised_goods, policy_hash
 from resident_identity import resident_identity_status
@@ -76,7 +77,7 @@ def camera_request(data, observation, society):
 def observer_state(bridge,society):
     obs=bridge.get('observation') or {}
     connected=bridge.get('last_seen') is not None and time.time()-bridge['last_seen']<10
-    current=connected and not society.get('transition') and obs.get('checkpoint')==society.get('checkpoint') and obs.get('ready') is True
+    current=connected and not society.get('transition') and not society.get('error') and obs.get('checkpoint')==society.get('checkpoint') and obs.get('ready') is True
     qualified_obs=obs if current else {}
     loaded={str(r['id']):r for r in obs.get('residents',[]) if r.get('isPerson') is True}
     stock={str(r['id']):r['inventory'] for r in obs.get('inventory_observations',[])}
@@ -85,6 +86,7 @@ def observer_state(bridge,society):
     activities=activity_metrics(society,obs,fresh=connected)
     owner_work=owner_work_metrics(society,obs,fresh=connected)
     paid_work=paid_employment_metrics(society,obs,fresh=current)
+    concurrency={**(bridge.get('employment_concurrency') or {}),**snapshot_metrics(society,obs,fresh=current)}
     residents=[]
     for key,resident in town.get('residents',{}).items():
         person=society.get('people',{}).get(key,{})
@@ -127,8 +129,9 @@ def observer_state(bridge,society):
         'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
         'resident_control':obs.get('resident_control'),'activity_jobs':activities,'owner_work':owner_work,
         'weather':obs.get('weather'),'camera':obs.get('camera'),'camera_request':bridge.get('observer_camera'),
-        'metrics':{**metrics,'activity_jobs':activities,'owner_work':owner_work,'paid_employment':paid_work},'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':{**town_dashboard({**society,'metrics':metrics},obs,spatial,fresh=connected),'activity_jobs':activities,'owner_work':owner_work,'paid_employment_metrics':paid_work},
+        'metrics':{**metrics,'activity_jobs':activities,'owner_work':owner_work,'paid_employment':paid_work,'employment_concurrency':concurrency},'scene_handoffs':society.get('scene_handoffs',[]),'dashboard':{**town_dashboard({**society,'metrics':metrics},obs,spatial,fresh=connected),'activity_jobs':activities,'owner_work':owner_work,'paid_employment_metrics':paid_work,'employment_concurrency_metrics':concurrency},
         'paid_employment_metrics':paid_work,
+        'employment_concurrency_metrics':concurrency,
         'residents':residents,'places':obs.get('places',[]),'businesses':businesses,
         'daily':town.get('daily'),'plan':society.get('plan'),'conversation':society.get('conversation'),
         'routine_batch':society.get('routine_batch'),'parallel_routines':obs.get('parallel_routines'),

@@ -277,6 +277,7 @@ def paid_employment_metrics(state, observation=None, *, fresh=False):
                   else 'recorded_model_choices' if models and all(isinstance(model, str) and model for model in models) else 'unknown')
         provenance[origin] += 1
         row = {'id': identifier, 'worker': job.get('worker'), 'employer': job.get('employer'),
+               'identity_digest': _digest(protocol.paid_identity(job)) if not conflict and protocol.paid_receipt_matches(protocol.paid_identity(job), job) else None,
                'worker_name': (people.get(str(job.get('worker'))) or {}).get('profile', {}).get('name'),
                'employer_name': (people.get(str(job.get('employer'))) or {}).get('profile', {}).get('name'),
                'recipe_id': job.get('recipe_id'), 'recipe': recipe, 'wage_gold': job.get('wage_gold'),

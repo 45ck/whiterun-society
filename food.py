@@ -2,7 +2,7 @@
 import copy
 import math
 from daily_life import HUNGER_PER_GAME_HOUR
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict, work_account_conflict
 from economy_catalog import commodity_ids, require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
 
 
@@ -39,8 +39,8 @@ class FoodEconomy:
         plan = self.agency_plan()
         if not plan or plan['id'] != agency_plan or plan['actor'] != actor or plan['phase'] != 'ready_to_eat':
             raise ValueError('Consumption needs a current resident decision')
-        if activity_conflict(self.active,actors=(actor,),observation=observation):
-            raise ValueError('An independent activity owns the consuming resident')
+        if activity_conflict(self.active,actors=(actor,),observation=observation) or work_account_conflict(self.active,actors=(actor,),observation=observation):
+            raise ValueError('An independent activity reserves the consuming resident or inventory account')
         bound_catalog=require_native_catalog(observation)
         if 'bread' not in commodity_ids():raise ValueError('Catalog has no supported bread consumption commodity')
         before = own_inventory(observation, actor)

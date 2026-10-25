@@ -6,6 +6,7 @@ from employment import recently_refused, work_terms_hash
 from economy_catalog import native_catalog_matches, commodity_ids, recipe_spec, recipe_ids, recipe_hash, catalog_hash, MAX_STOCK
 import economy_catalog
 from resident_identity import resident_identity_status
+from activity_leases import work_account_conflict
 
 
 def paid_employment_available(observation):
@@ -20,6 +21,7 @@ def paid_employment_available(observation):
 def work_opportunities(state, observation, worker):
     from entrepreneurship import knows_recipe
     if not paid_employment_available(observation) or not native_catalog_matches(observation):return []
+    if work_account_conflict(state,actors=(worker,),observation=observation):return []
     identity = resident_identity_status(state, observation, worker)
     if not identity['qualified']:return []
     actors = {a['id']: a for a in observation.get('residents', []) if isinstance(a,dict) and a.get('isPerson') is True}
@@ -36,6 +38,7 @@ def work_opportunities(state, observation, worker):
     opportunities=[]
     for business_id,business in sorted((state.get('town') or {}).get('businesses',{}).items()):
         employer=business.get('custodian')
+        if work_account_conflict(state,actors=(employer,),business_ids=(business_id,),observation=observation):continue
         if (business.get('active',True) is not True or employer==worker
                 or not route_available(observation,worker,employer,state)):continue
         employer_identity=resident_identity_status(state,observation,employer)

@@ -68,7 +68,41 @@ function paidEmploymentJobs(state){
  const metrics=state?.dashboard?.paid_employment_metrics||state?.paid_employment_metrics||state?.society?.paid_employment_metrics;
  return metrics?.measured===true&&Array.isArray(metrics.jobs)?metrics.jobs:[];
 }
-function renderPaidEmploymentJob(root,job,catalog){
+function employmentConcurrencyReport(state){
+ return state?.dashboard?.employment_concurrency_metrics||state?.employment_concurrency_metrics||state?.society?.employment_concurrency_metrics;
+}
+function employmentConcurrencyForJob(report,job){
+ if(report?.fresh!==true||job?.lineage_conflict||typeof job?.identity_digest!=='string'||!/^[a-f0-9]{64}$/.test(job.identity_digest))return null;
+ const matching=(report.jobs||[]).filter(row=>row.id===job.id&&row.identity_digest===job.identity_digest);
+ return matching.length===1?matching[0]:null;
+}
+function renderEmploymentReservations(root,concurrency){
+ const doc=root.ownerDocument,add=(parent,tag,text)=>{const e=doc.createElement(tag);e.textContent=text;parent.append(e);return e;};
+ const section=add(root,'section','');section.dataset.employmentReservations='true';
+ add(section,'h4','Inventory and activity reservations');const table=add(section,'table','');table.className='paid-reservation-table';
+ const header=add(table,'thead',''),labels=add(header,'tr','');for(const text of ['Participant','Inventory reserved','Activity reserved']){const cell=add(labels,'th',text);cell.scope='col';}
+ const body=add(table,'tbody','');for(const role of ['worker','employer']){const row=add(body,'tr',''),label=add(row,'th',role==='worker'?'Worker':'Employer');label.scope='row';for(const kind of ['inventory','activity']){const value=concurrency?.reservations?.[role+'_'+kind];const cell=add(row,'td',value===true?'Reserved':value===false?'Not currently reserved':'Unknown');cell.dataset.reservation=value===true?'reserved':value===false?'not_reserved':'unknown';}}
+ const eligible=concurrency?.employer_non_economic_eligible;
+ add(section,'p',eligible===true?'Employer non-inventory activity: current admission checks pass.':eligible===false?'Employer non-inventory activity: current admission checks do not pass.':'Employer non-inventory activity eligibility is unmeasured.').className='town-chart-note';
+ const activity=concurrency?.employer_activity,states={conversation_attending:'Observed conversation attendance',native_scene:'Observed native scene',combat:'Observed combat',sleep_transition:'Observed sleep transition',observed_loaded:'Observed loaded; current activity unclassified',unmeasured:'Unmeasured'};
+ add(section,'p','Employer activity: '+(states[activity?.state]||'Unmeasured')+(activity?.state==='conversation_attending'&&activity.conversation_id?' · encounter '+activity.conversation_id:'')).className='town-chart-note';
+ add(section,'p','Effective reservation checks include other jobs. A purse reservation does not reserve movement; other guards may still block activity. Eligibility and a single observation do not prove overlapping work or conversation.').className='town-chart-note';
+}
+function renderEmploymentConcurrency(root,report){
+ if(!root||!report)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const el=doc.createElement(tag);el.textContent=text;if(cls)el.className=cls;parent.append(el);return el;};
+ const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—',number=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0?value:'—';
+ add('h3','Employer activity during paid work');
+ const counts=report.counts||{},grid=add('div','',root,'town-flow');for(const [key,label] of [['paid_account_participants','Purses reserved by paid work'],['paid_activity_reserved_participants','Activities reserved by paid work'],['observed_attending_workers','Workers with observed attendance'],['employers_non_economic_eligible','Employers passing non-inventory checks']]){const tile=add('div','',grid);add('strong',report.fresh===true?String(count(counts[key])):'—',tile);add('span',label,tile);}
+ add('p',report.fresh===true?'Current reservation and eligibility snapshot. Permission to act is not evidence of a chosen action.':'Current reservation and activity evidence is stale or unavailable.',root,'town-chart-note');
+ const detail=add('details','',root,'town-detail');detail.dataset.panel='Employment overlap samples';add('summary','Measured overlap and coverage',detail);
+ if(report.fresh!==true)add('p','Retained window measurements below do not describe current activity.',detail,'town-chart-note');
+ for(const [key,label] of [['employer_movement','Employer displacement during worker attendance'],['employer_conversation','Employer conversation attendance during worker attendance']]){const value=report.overlap?.[key];add('h4',label,detail);if(!(Number.isSafeInteger(value?.n)&&value.n>0)){add('p','Unmeasured · no qualified paired intervals.',detail,'town-chart-note');continue;}add('p',count(value.positive_intervals)+' positive / '+count(value.n)+' assessed intervals · '+count(value.unknown_intervals)+' unknown',detail,'town-chart-note');add('p',number(value.sampled_overlap_seconds)+' sampled job-seconds · '+number(value.sampled_overlap_game_minutes)+' accrued game minutes in positive intervals',detail,'town-chart-note');}
+ if(report.coverage)add('p',count(report.coverage.qualified_attendance_intervals)+' qualified attendance / '+count(report.coverage.candidate_job_intervals)+' candidate job intervals · excluded: '+(Object.entries(report.coverage.excluded||{}).map(([key,n])=>key.replaceAll('_',' ')+': '+n).join(' · ')||'none recorded'),detail,'town-chart-note');
+ if(report.policy)add('p','Rolling window '+number(report.policy.window_seconds)+' seconds · '+count(report.samples)+' retained sample frames',detail,'town-chart-note');
+ add('p','Intervals are measured from compatible observations, not inferred from permission or a snapshot. Displacement does not mean continuous motion; conversation attendance does not prove continuous speech. Job-seconds can overlap across jobs.',detail,'town-chart-note');
+ if(report.overlap_scope)add('p',report.overlap_scope,detail,'town-chart-note');
+}
+function renderPaidEmploymentJob(root,job,catalog,concurrency=null){
  if(!root||!job)return;const doc=root.ownerDocument;
  const add=(tag,value,parent=root,cls)=>{const e=doc.createElement(tag);e.textContent=value;if(cls)e.className=cls;parent.append(e);return e;};
  const name=(label,id)=>typeof label==='string'&&label.trim()?label:Number.isSafeInteger(id)?'Resident '+id:'Unknown resident';
@@ -77,6 +111,7 @@ function renderPaidEmploymentJob(root,job,catalog){
  add('h3','Worker '+name(job.worker_name,job.worker)+' · employer '+name(job.employer_name,job.employer));
  add('p',paidEmploymentLabel(job),root,'town-chart-note');
  add('p','Recipe: '+(job.recipe_id||'Unrecorded')+' · '+(job.stages?.accepted===true?'Agreed':'Proposed')+' wage '+shown(job.wage_gold)+' septims · '+shown(job.work_minutes)+' game minutes',root,'town-chart-note');
+ renderEmploymentReservations(root,concurrency);
  if(job.recipe?.status==='verified')add('p',Object.entries(job.recipe.inputs||{}).map(([key,n])=>n+' '+commodityLabel(key,catalog)).join(' + ')+' → '+Object.entries(job.recipe.outputs||{}).map(([key,n])=>n+' '+commodityLabel(key,catalog)).join(' + '),root,'town-chart-note');
  const list=add('dl','',root,'paid-proof-grid');
  for(const [key,label] of paidEmploymentStages){add('dt',label,list);const value=job.stages?.[key],state=value===true?(key==='held'?'held':'verified'):value===false?'not_recorded':'unknown';const cell=add('dd',value===true?(key==='held'?'Yes':'Yes · recorded proof'):value===false?(key==='held'?'No recorded hold':'Not verified'):'Unknown',list);cell.dataset.evidence=state;}
@@ -84,7 +119,7 @@ function renderPaidEmploymentJob(root,job,catalog){
  if(job.phase)add('p','Saved phase: '+String(job.phase).replaceAll('_',' '),root,'town-chart-note');
  add('p','Attendance, output, both wage-transfer legs, contract completion and release need separate evidence. A matching balance is not payment proof.',root,'town-chart-note');
 }
-function renderPaidEmploymentMetrics(root,metrics,catalog){
+function renderPaidEmploymentMetrics(root,metrics,catalog,concurrencyReport){
  if(!root||!metrics)return;const doc=root.ownerDocument,add=(tag,text,parent=root,cls)=>{const e=doc.createElement(tag);e.textContent=text;if(cls)e.className=cls;parent.append(e);return e;};
  add('h3','Paid employment · evidence ledger');
  const capability=metrics.capability,current=capability?.fresh===true&&capability.protocol===2;
@@ -95,7 +130,7 @@ function renderPaidEmploymentMetrics(root,metrics,catalog){
  for(const [key,label] of paidEmploymentStages){const stage=metrics.stages?.[key],tile=add('div','',grid,'town-stock');const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—';add('strong',String(count(stage?.success)),tile);add('span',label,tile);add('small',count(stage?.n)+' assessed · '+count(stage?.unknown)+' unknown',tile);}
  add('p',(Number.isSafeInteger(metrics.retained_jobs)?metrics.retained_jobs:'—')+' retained jobs. Stage counts are independent evidence samples, not a completion score or a measure of economic output.',root,'town-chart-note');
  const detail=add('details','',root,'town-detail');detail.dataset.panel='Paid employment contracts';add('summary','Individual contracts and effect evidence',detail);
- for(const job of metrics.jobs||[])renderPaidEmploymentJob(add('section','',detail),job,catalog);
+ for(const job of metrics.jobs||[])renderPaidEmploymentJob(add('section','',detail),job,catalog,employmentConcurrencyForJob(concurrencyReport,job));
  const partial=metrics.partial_effects;if(partial){add('h4','Partial effects · not settled contracts',detail);const count=value=>Number.isSafeInteger(value)&&value>=0?value:'—';for(const [key,label] of [['output_verified_without_commit','Output witnessed without journal commit'],['wage_debit_without_verified_credit','Wage debited without verified worker credit'],['wages_verified_without_commit','Both wage legs witnessed without journal commit']])add('p',label+': '+count(partial[key]),detail,'town-chart-note');const goods=Object.entries(partial.observed_output_goods||{});if(goods.length)add('p','Unsettled witnessed output: '+goods.map(([id,n])=>n+' '+commodityLabel(id,catalog)).join(' · '),detail,'town-chart-note');}
  if(Number.isSafeInteger(metrics.legacy_rows_excluded))add('p',metrics.legacy_rows_excluded+' legacy records excluded from v2 proof counts.',detail,'town-chart-note');
  if(Number.isSafeInteger(metrics.conflicting_job_lineages)&&metrics.conflicting_job_lineages)add('p',metrics.conflicting_job_lineages+' conflicting job histories · evidence remains unknown.',detail,'town-chart-note');
@@ -130,7 +165,7 @@ function renderTownCharts(root,data){
   .town-swatch{width:7px;height:7px;border-radius:50%;flex:none}.town-stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.town-stock{padding:10px 7px;border:1px solid #ffffff15;border-radius:8px;background:#ffffff04}.town-stock strong{display:block;font-size:23px;font-weight:500;color:#e0bd72}.town-stock span{font-size:11px;color:#bac5c5}.town-stock small{display:block;font-size:9px;color:#8e9ea2;margin-top:4px}
   .town-need{margin:8px 0}.town-need-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}.town-need-track{height:7px;border-radius:4px;background:#ffffff0d;overflow:hidden}.town-need-fill{height:100%;border-radius:4px;background:#dfa56d}.town-flow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px}.town-flow strong{display:block;color:#9dc9ac;font-size:20px;font-weight:500}.town-tabs{display:flex;gap:5px;margin:5px 0}.town-tabs button{flex:1;background:#ffffff08;border:1px solid #ffffff18;border-radius:6px;padding:7px;color:inherit}
   .town-trend{display:block;width:100%;height:88px;margin:8px 0}.town-detail{border-top:1px solid #ffffff15;padding-top:10px}.town-detail>summary{font-size:12px;cursor:pointer;color:#e0bd72}.town-detail>summary:focus-visible{outline:2px solid #e0bd72;outline-offset:4px}
-  .paid-proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px;line-height:1.4}.paid-proof-grid dt,.paid-proof-grid dd{margin:0}.paid-proof-grid dd[data-evidence=verified]{color:#9dc9ac}.paid-proof-grid dd[data-evidence=unknown],.paid-proof-grid dd[data-evidence=held]{color:#dfa56d}[data-paid-employment-job]{border-top:1px solid #ffffff15;padding-top:8px;margin-top:10px;overflow-wrap:anywhere}
+  .paid-proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px;line-height:1.4}.paid-proof-grid dt,.paid-proof-grid dd{margin:0}.paid-proof-grid dd[data-evidence=verified]{color:#9dc9ac}.paid-proof-grid dd[data-evidence=unknown],.paid-proof-grid dd[data-evidence=held]{color:#dfa56d}[data-paid-employment-job]{border-top:1px solid #ffffff15;padding-top:8px;margin-top:10px;overflow-wrap:anywhere}.paid-reservation-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:11px;line-height:1.4}.paid-reservation-table th,.paid-reservation-table td{text-align:left;padding:5px;border-bottom:1px solid #ffffff15;overflow-wrap:anywhere}.paid-reservation-table td[data-reservation=unknown]{color:#dfa56d}
   `;doc.head.append(style);
  }
  const opened=new Set([...root.querySelectorAll('details[open]')].map(e=>e.dataset.panel));
@@ -190,7 +225,8 @@ function renderTownCharts(root,data){
   if(number(a.retained_orphans)>0)add(evidence,'p',`${a.retained_orphans} orphan records quarantined for release only; excluded from admissions and recovered rests.`,'town-chart-note');
   add(evidence,'p',a.scope,'town-chart-note');
  }
- if(data.paid_employment_metrics){const panel=add(root,'section');renderPaidEmploymentMetrics(panel,data.paid_employment_metrics,data.inventory_catalog);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
+ if(data.paid_employment_metrics){const panel=add(root,'section');renderPaidEmploymentMetrics(panel,data.paid_employment_metrics,data.inventory_catalog,data.employment_concurrency_metrics);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
+ if(data.employment_concurrency_metrics){const panel=add(root,'section');renderEmploymentConcurrency(panel,data.employment_concurrency_metrics);const detail=panel.querySelector('details');if(detail)detail.open=opened.has(detail.dataset.panel);}
  if(data.owner_work){const work=data.owner_work,panel=section('Independent owner work');
   metricTiles(panel,[[`${shown(work.leased_jobs)} / ${shown(work.configured_capacity)}`,'Reserved work slots'],[shown(work.observed_working),'Observed attendance'],[shown(work.awaiting_commit),'Awaiting inventory commit']]);
   add(panel,'p',`${shown(work.native_matched_jobs)} matched / ${shown(work.leased_jobs)} leases · ${shown(work.unmeasured_jobs)} unmeasured. Native capacity ${shown(work.native_capacity)}; this pool is separate from rest and citizen-control slots.`,'town-chart-note');
@@ -330,4 +366,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation,paidEmploymentLabel,paidEmploymentJobs,renderPaidEmploymentJob,renderPaidEmploymentMetrics};
+if(typeof module!=='undefined')module.exports={renderResourceImports,renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel,commodityLabel,tradePresentation,paidEmploymentLabel,paidEmploymentJobs,renderPaidEmploymentJob,renderPaidEmploymentMetrics,employmentConcurrencyReport,employmentConcurrencyForJob,renderEmploymentReservations,renderEmploymentConcurrency};

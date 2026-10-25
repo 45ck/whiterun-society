@@ -52,7 +52,7 @@ readline.createInterface({input:process.stdin,crlfDelay:Infinity}).on('line',lin
  if(request.desired)desired=structuredClone(request.desired);
  if(request.gameDays!==undefined)game=request.gameDays;
  if(request.op==='start'){
-  tick();result=manager.start(request.command,request.blockedActors||[]);
+  tick();result=manager.start(request.command,request.blockedActors||[],request.blockedAccounts||[]);
   if(result.ack?.accepted){const c=request.command,slot=slots[c.slot],actor=actors.get(c.worker);
    slot[0].running=true;slot[2].rows=[actor];slot[3].rows=[actor];slot[4].value=slot[5].value=slot[6].value=1;
    actor.pkg=9000+c.slot;

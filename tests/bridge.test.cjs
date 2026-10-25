@@ -66,6 +66,7 @@ test('held paid worker cannot restore a saved journey while both accounts stay r
   const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},
    tick(saved,_residents,_fresh,actors){ticks.push({saved:structuredClone(saved),actors:[...actors]});}});
   const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],
+   activityActors:()=>origin==='native'?[123,124]:[],activityReservation:()=>({activity_actors:[123,124],unknown_identity:false}),
    reservedActors:()=>origin==='native'?[123,124]:[],status:()=>({jobs:origin==='native'?[job]:[]})});
   const h=harness(false,null,control,null,null,paid);checkpointFixture(h);
   const assignments={'0':{actor:123,mode:'go_to',target:900},'1':{actor:124,mode:'await_decision'}};
@@ -82,7 +83,7 @@ test('held paid worker cannot restore a saved journey while both accounts stay r
 test('prepared paid admission retains the worker continuity slot before a native hold exists',async()=>{
  const ticks=[],yielded=[];
  const control=()=>({reset(){},yieldActors(ids){yielded.push([...ids]);},status:()=>({}),renew(){},tick(saved){ticks.push(structuredClone(saved));}});
- const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],reservedActors:()=>[],status:()=>({jobs:[]})});
+ const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],reservedActors:()=>[],activityActors:()=>[],activityReservation:()=>({activity_actors:[123,124],unknown_identity:false}),status:()=>({jobs:[]})});
  const h=harness(false,null,control,null,null,paid);checkpointFixture(h);
  h.setPresentation({society:{checkpoint:0,paid_employment:{jobs:[{worker:123,employer:124,phase:'prepared'}]},
   town:{resident_control:{assignments:{'0':{actor:123,slot:0,mode:'go_to',target:900}}}}}});
@@ -713,4 +714,34 @@ test('saved paid employment reserves both participants before native admission',
   assert.equal(h.requests.at(-1).ack.status,'failed');
   assert.match(h.requests.at(-1).ack.error,/Paid employment reserves/);
  }
+});
+
+test('qualified employer physical interaction proceeds while worker remains reserved',async()=>{
+ for(const selectedIsWorker of [false,true]){
+  const worker=selectedIsWorker?123:124,employer=selectedIsWorker?124:123;
+  const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],
+   reservedActors:()=>[worker,employer],activityActors:()=>[worker],
+   activityReservation:()=>({activity_actors:[worker],qualified:true,unknown_identity:false}),status:()=>({jobs:[]})});
+  const h=harness(false,null,null,null,null,paid);checkpointFixture(h);
+  h.setResponse(body=>({id:'physical-look',kind:'look_at_player',session:body.session}));
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  const receipt=h.requests.at(-1).ack;
+  assert.equal(receipt.status,selectedIsWorker?'failed':'applied');
+  assert.equal(h.looks.length,selectedIsWorker?0:1);
+  if(selectedIsWorker)assert.match(receipt.error,/participant activity/);
+ }
+});
+
+test('employer account reservation defeats a cached successful physical command ID',async()=>{
+ const paid=()=>({reset(){},tick(){},holds:()=>[],releasingActors:()=>[],
+  reservedActors:()=>[123,124],activityActors:()=>[124],
+  activityReservation:()=>({activity_actors:[124],qualified:true,unknown_identity:false}),status:()=>({jobs:[]})});
+ const h=harness(false,null,null,null,null,paid);checkpointFixture(h);let kind='look_at_player';
+ h.setResponse(body=>({id:'same-physical-economic-id',kind,actor:123,session:body.session,checkpoint:0}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(h.requests.at(-1).ack.status,'applied');
+ kind='inventory_consume';
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(h.requests.at(-1).ack.status,'failed');
+ assert.match(h.requests.at(-1).ack.error,/participant account/);
 });

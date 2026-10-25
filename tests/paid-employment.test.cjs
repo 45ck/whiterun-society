@@ -54,12 +54,72 @@ test('qualified paid worker earns attendance without inventory effects',()=>{
  assert.deepEqual(r.attendance.anchor,f.row.anchor);assert.equal(r.attendance.cell_id,77);
  assert.deepEqual(f.manager.reservedActors(),[501,502]);assert.equal(f.manager.holds()[0].intent,'paid_employment');
 });
+test('employer can walk and talk during stationary worker attendance while both purses stay reserved',()=>{
+ const f=fixture();assert.equal(f.start().ack.accepted,true);f.bind();f.tick(0);
+ const employer=f.actors.get(502);employer.scene={getFormID:()=>12345};employer.pkg=7654;
+ for(let i=0;i<12;i++){
+  employer.x+=250;f.tick();assert.deepEqual(f.manager.activityActors(),[501]);assert.deepEqual(f.manager.accountActors(),[501,502]);
+ }
+ assert.equal(f.receipt().phase,'attendance_verified');assert.ok(f.receipt().attendance.worked_minutes>=5);
+ assert.equal(f.actors.get(501).x,100);assert.equal(f.actors.get(501).pkg,9000);
+ const c=f.command();for(let i=0;i<4;i++)f.commit(c);assert.equal(f.commit(c).ack.status,'applied');
+ assert.deepEqual(f.manager.status().activity_reserved_actors,[501]);assert.deepEqual(f.manager.status().account_reserved_actors,[501,502]);
+ assert.equal(f.effects().length,4);
+});
+test('employer account mutations during attendance hold the job and restore conservative physical exclusion',()=>{
+ for(const item of ['gold','bread','grain']){
+  const f=fixture();f.start();f.bind();f.tick(0);f.actors.get(502).inventory[item]--;f.tick();
+  const r=f.receipt();assert.equal(r.phase,'held');assert.equal(r.effects_issued,false);assert.equal(r.output_verified,false);
+  assert.deepEqual(f.manager.activityActors(),[501,502]);assert.deepEqual(f.manager.accountActors(),[501,502]);assert.equal(f.effects().length,0);
+ }
+});
+test('worker movement still invalidates labour even while employer movement is allowed',()=>{
+ const f=fixture();f.start();f.bind();f.tick(0);f.actors.get(502).x+=1000;f.actors.get(501).x+=101;f.tick();
+ assert.equal(f.receipt().phase,'held');assert.match(f.receipt().error,/anchor/);assert.equal(f.effects().length,0);
+ assert.deepEqual(f.manager.activityActors(),[501,502]);
+});
+test('physical reservation narrowing never survives stale, replaced, reset or cold identities',()=>{
+ for(const disturb of [f=>{f.setFresh(false);f.tick(0);},f=>{f.actors.get(502).base++;},f=>{f.actors.get(502).loaded=false;},
+  f=>{f.row.cancel_requested=true;},f=>{f.setDesired({epoch:f.row.epoch,jobs:[]});f.tick(0);},f=>f.manager.reset()]){
+  const f=fixture();f.start();assert.deepEqual(f.manager.activityActors(),[501]);disturb(f);
+  assert.deepEqual(f.manager.activityActors(),[501,502]);assert.deepEqual(f.manager.accountActors(),[501,502]);
+ }
+ const f=fixture(),cold=createPaidEmploymentController(()=>f.sp,()=>1234,{catalog:f.catalog});
+ cold.tick({epoch:f.row.epoch,jobs:[{...f.row,phase:'working'}]},f.row.session,true,f.control);
+ assert.deepEqual(cold.activityActors(),[501,502]);assert.deepEqual(cold.accountActors(),[501,502]);
+});
+test('prepared saved assignment reserves only worker activity before native start exists',()=>{
+ const f=fixture();assert.equal(f.manager.status().jobs.length,0);assert.deepEqual(f.manager.activityActors(),[501]);
+ assert.deepEqual(f.manager.activityReservation(f.row),{activity_actors:[501],account_actors:[501,502],qualified:true,unknown_identity:false});
+});
+test('held orphan invalidated stale or contradictory saved projections never narrow activity',()=>{
+ for(const change of [r=>r.phase='held',r=>r.orphan=true,r=>r.invalidated=true,r=>r.reset_held=true,r=>r.effect_unreconciled=true,
+  r=>r.cancel_requested=true,r=>r.epoch='old-epoch',r=>r.session='old-session',r=>r.phase='unknown']){
+  const f=fixture();change(f.row);f.tick(0);assert.deepEqual(f.manager.activityActors(),[501,502]);assert.equal(f.manager.activityReservation(f.row).qualified,false);
+ }
+ const f=fixture(),other={...structuredClone(f.row),business_revision:99};f.setDesired({epoch:f.row.epoch,jobs:[f.row,other]});f.tick(0);
+ assert.deepEqual(f.manager.activityActors(),[501,502]);assert.equal(f.manager.activityReservation(f.row).qualified,false);
+});
+test('malformed saved identities expose known hints and request population fallback',()=>{
+ const f=fixture(),row={...f.row,worker_base_id:0,employer:null};f.setDesired({epoch:f.row.epoch,jobs:[row]});f.tick(0);
+ assert.deepEqual(f.manager.activityReservation(row),{activity_actors:[501],account_actors:[501],qualified:false,unknown_identity:true});
+ assert.deepEqual(f.manager.activityActors(),[501]);assert.equal(f.manager.activityReservation(null).unknown_identity,true);
+});
 test('valid blocked start echoes immutable contract for service hold without claiming no effects',()=>{
  const f=fixture(),c={...f.row,id:'start-paid',kind:'paid_work_start'},ack=f.manager.start(c,[501]).ack;
  assert.equal(ack.status,'held');assert.equal(ack.accepted,false);assert.equal(ack.job_id,c.job_id);assert.equal(ack.worker_base_id,c.worker_base_id);
  assert.equal(ack.employer_base_id,c.employer_base_id);assert.equal(ack.epoch,c.epoch);assert.equal(ack.terms_hash,c.terms_hash);
  assert.deepEqual(ack.before,c.before);assert.deepEqual(ack.after,c.after);assert.equal(ack.effects_issued,null);assert.equal(ack.no_effects_issued,false);
  assert.equal(f.manager.status().jobs.length,0);assert.equal(f.effects().length,0);
+});
+test('prepared admission permits employer physical activity but preserves worker and both account exclusions',()=>{
+ const f=fixture(),c={...f.row,id:'start-paid',kind:'paid_work_start'};
+ assert.equal(f.manager.start(c,[502],[]).ack.accepted,true);
+ for(const [physical,accounts] of [[[501],[]],[[],[501]],[[],[502]],[[502],[502]]]){
+  const g=fixture(),command={...g.row,id:'start-paid',kind:'paid_work_start'};
+  assert.equal(g.manager.start(command,physical,accounts).ack.accepted,false);
+  assert.equal(g.manager.status().jobs.length,0);assert.equal(g.effects().length,0);
+ }
 });
 test('malformed start keeps command id but never asserts an authoritative contract or no-effect proof',()=>{
  const f=fixture(),c={...f.row,id:'start-paid',kind:'paid_work_start',worker_base_id:0},ack=f.manager.start(c).ack;
@@ -78,8 +138,19 @@ test('all four issued and observed stages precede payment, then release and ackn
  assert.deepEqual(end.ack.legs[0].before,c.before);assert.deepEqual(end.ack.legs[3].after,c.after);assert.deepEqual(end.ack.inventory,c.after);
  assert.equal(f.effects().length,4);assert.equal(f.ack().ack.acknowledged,false);f.tick(0);
  assert.equal(f.receipt().phase,'complete');assert.equal(f.receipt().release_verified,true);assert.equal(f.ack().ack.acknowledged,true);assert.deepEqual(f.manager.reservedActors(),[]);
+ assert.deepEqual(f.manager.status().activity_reserved_actors,[]);assert.deepEqual(f.manager.activityReservation(f.row).account_actors,[]);
  assert.deepEqual(f.ack().ack.before,c.before);assert.equal(f.ack().ack.worker_base_id,c.worker_base_id);
  assert.equal(f.commit(c).ack.status,'held');assert.equal(f.effects().length,4);
+});
+test('acknowledged stale projection clears only exact identity; changed and conflicting copies remain excluded',()=>{
+ const f=fixture();f.earn();const c=f.command();for(let i=0;i<5;i++)f.commit(c);f.tick(0);assert.equal(f.ack().ack.acknowledged,true);
+ assert.deepEqual(f.manager.status().activity_reserved_actors,[]);assert.equal(f.manager.activityReservation(f.row).acknowledged,true);
+ const changed={...structuredClone(f.row),business_revision:f.row.business_revision+1};
+ f.setDesired({epoch:f.row.epoch,jobs:[changed]});f.tick(0);
+ assert.deepEqual(f.manager.activityActors(),[501,502]);assert.equal(f.manager.activityReservation(changed).qualified,false);
+ f.setDesired({epoch:f.row.epoch,jobs:[f.row,changed]});f.tick(0);
+ assert.deepEqual(f.manager.activityActors(),[501,502]);assert.equal(f.manager.activityReservation(f.row).qualified,false);
+ f.setDesired({epoch:f.row.epoch,jobs:[f.row]});f.tick(0);assert.deepEqual(f.manager.activityActors(),[]);
 });
 test('paused time and unacquired travelling packages cannot earn labour',()=>{
  const f=fixture();f.start();f.actors.get(501).pkg=9000;for(let i=0;i<12;i++)f.tick();assert.equal(f.receipt(),undefined);

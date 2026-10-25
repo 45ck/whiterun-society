@@ -17,6 +17,7 @@ from director_control import DirectorControl
 from doc_assets import documentation_asset
 from dashboard import town_dashboard
 from spatial_telemetry import SpatialTelemetry
+from employment_concurrency_metrics import EmploymentConcurrencyTelemetry
 from tools.checkpoint_http import checkpoint_rejection
 from routing import route_available
 from livelihood_backgrounds import preview_livelihood_background
@@ -153,6 +154,7 @@ def main():
     bridge={'last_seen':None,'observation':None,'session':None,'command':None,'last_ack':None}
     director=DirectorControl(args.runtime)
     spatial=SpatialTelemetry(args.runtime/'spatial-telemetry.jsonl')
+    employment_concurrency=EmploymentConcurrencyTelemetry()
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args): pass
@@ -188,7 +190,8 @@ def main():
                 self.end_headers();self.wfile.write(body);return
             if self.path=='/' or self.path.startswith('/observer'):
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}':return self.reply(403,{'error':'Loopback host required'})
-                if self.path=='/observer/state':return self.reply(200,{**observer_state({**bridge,'spatial':spatial.status(bridge['session'])},world.status()),'director':director.status()})
+                if self.path=='/observer/state':return self.reply(200,{**observer_state({**bridge,'spatial':spatial.status(bridge['session']),
+                    'employment_concurrency':employment_concurrency.status(bridge['session'])},world.status()),'director':director.status()})
                 if self.path not in ('/','/observer','/observer/'):return self.reply(404,{'error':'not found'})
                 page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token)
                 page=page.replace('<script>','<script>\n'+(Path(__file__).parent/'ui/resident-media-data.js').read_text(encoding='utf-8')+"\nwindow.RESIDENT_MEDIA_BASE='/docs/images/';\n"+(Path(__file__).parent/'ui/resident-media.js').read_text(encoding='utf-8')+'\n'+(Path(__file__).parent/'ui/society-dashboard.js').read_text(encoding='utf-8')+'\n',1).encode()
@@ -290,11 +293,13 @@ def main():
                     society_status=world.status()
                     spatial.observe(data,society_status)
                     bridge['spatial']=spatial.status(session)
+                    bridge['employment_concurrency']=employment_concurrency.observe(society_status,data)
                     presentation={'committedCount':sum(row['status']=='committed' for row in journal),
                         'trades':[{**json.loads(row['command']),'status':row['status']} for row in journal[-5:]],
                         'society':society_status,'director':director.status(),'director_control_receipt':bridge.get('director_control_receipt'),
                         'dashboard':{**town_dashboard(society_status,data,bridge['spatial']),
-                                     'paid_employment_metrics':society_status['paid_employment_metrics']}}
+                                     'paid_employment_metrics':society_status['paid_employment_metrics'],
+                                     'employment_concurrency_metrics':bridge['employment_concurrency']}}
                     try:
                         proposals=json.loads((args.runtime/'decision-proposals.json').read_text(encoding='utf-8'))
                         if proposals.get('session')==session and proposals.get('status') in ('running','complete'):

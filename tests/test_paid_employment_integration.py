@@ -334,7 +334,7 @@ class PaidEmploymentIntegrationTests(unittest.TestCase):
     def test_native_blocked_start_holds_service_instead_of_retrying_admission(self):
         command=self.agree()
         rejected=self.native.request('start',command=command,desired=self.world.paid_employment_status(),
-                                     gameDays=self.obs['gameDays'],blockedActors=[self.employer])
+                                     gameDays=self.obs['gameDays'],blockedAccounts=[self.employer])
         self.assertFalse(rejected['result']['ack']['accepted'])
         self.assertEqual(rejected['result']['ack']['status'],'held')
         self.assertEqual(rejected['calls'],[])

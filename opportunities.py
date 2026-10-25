@@ -2,11 +2,13 @@
 import math
 from knowledge import person_view
 from routing import route_available
+from activity_leases import work_account_conflict
 from market_policy import goods_policy, advertised_goods
 
 
 def commodity_sellers(state, observation, buyer, commodity):
     goods_policy(commodity)
+    if work_account_conflict(state,actors=(buyer,),observation=observation):return []
     town = state.get('town') or {}
     listings = [(key, b) for key, b in sorted(town.get('businesses', {}).items())
                 if commodity in advertised_goods(b)]
@@ -15,6 +17,7 @@ def commodity_sellers(state, observation, buyer, commodity):
     result = []
     for key, business in listings:
         seller = business.get('custodian')
+        if work_account_conflict(state,actors=(seller,),business_ids=(key,),observation=observation):continue
         if seller==buyer or str(seller) not in state.get('people', {}) or not route_available(observation, buyer, seller,state):
             continue
         if (str(seller) not in town.get('residents', {}) or

@@ -87,17 +87,36 @@ function createPaidEmploymentController(platform,now=Date.now,options={}){
   ['wage_debit','employer',c.currency,-c.wage_gold],['wage_credit','worker',c.currency,c.wage_gold]];
   let stage=copy(c.before);return definitions.map(([leg,role,item,delta])=>{const before=copy(stage);stage[role][item]+=delta;
    return {leg,role,item,amount:Math.abs(delta),issued:false,observed:false,before,after:copy(stage)};});}
+ function activityReservation(row){
+  const pair=[row?.worker,row?.employer].filter(uint),out={account_actors:[...new Set(pair)],activity_actors:[...new Set(pair)],qualified:false,unknown_identity:true};
+  try{
+   if(!valid(row))return out;out.unknown_identity=false;
+   const relatives=[...jobs.values(),...(Array.isArray(desired?.jobs)?desired.jobs:[])].filter(other=>other&&key(other)===key(row));
+   // An otherwise valid row cannot narrow a conflicting copy of its identity.
+   if(relatives.some(other=>!same(other,row)))return out;
+   const settled=acknowledged.get(key(row));
+   // The service projection can lag one frame behind our exact receipt ack.
+   // Suppress only the complete acknowledged identity, never merely its ID.
+   if(settled)return same(settled,row)?{account_actors:[],activity_actors:[],qualified:true,unknown_identity:false,acknowledged:true}:out;
+   const phases=['prepared','acquiring','working','attendance_verified','commit_prepared','committing_input','committing_output','committing_wage_debit','committing_wage_credit','effects_verified','complete'];
+   if(!phases.includes(row.phase)||row.orphan||row.invalidated||row.reset_held||row.cancel_requested||row.effect_unreconciled||!current(row)||!available())return out;
+   actors(row);return {...out,activity_actors:[row.worker],qualified:true};
+  }catch(_){return out;}
+ }
  return {
   reset(){for(const job of jobs.values()){hold(job,'Native reset invalidated live paid permits; reconcile existing effects');job.invalidated=true;
    if(job.effects_issued!==false)job.effects_issued=null;job.effects_verified=false;job.release_requested=true;}
    epoch=newEpoch();acknowledged.clear();desired=null;session=null;fresh=false;control=null;},
   reservedActors(){return [...new Set([...jobs.values()].flatMap(j=>[j.worker,j.employer]))];},
+  accountActors(){return this.reservedActors();},
+  activityReservation(row){return activityReservation(row);},
+  activityActors(){return [...new Set([...jobs.values(),...(Array.isArray(desired?.jobs)?desired.jobs:[])].flatMap(row=>activityReservation(row).activity_actors))];},
   ownsActor(actor){return this.reservedActors().includes(actor);},
   releasingActors(){return [...jobs.values()].filter(j=>j.release_requested).map(j=>j.worker);},
   holds(){return [...jobs.values()].filter(j=>!j.release_requested&&!j.release_verified&&!j.invalidated&&j.session===session&&j.phase!=='held').map(j=>({id:j.job_id,actor:j.worker,actor_base_id:j.worker_base_id,slot:j.slot,intent:'paid_employment',phase:'working'}));},
   permitsCommand(c){const job=jobs.get(key(c));return !!job&&same(job,c)&&c.session===session&&c.epoch===epoch&&['paid_work_start','paid_work_ack_receipt','inventory_paid_work_commit'].includes(c.kind)&&
    (c.kind!=='inventory_paid_work_commit'||c.attendance_token===job.attendance?.token&&(!job.commit_id||job.commit_id===c.id&&job.commit_signature===canonical([signature(c),c.id,c.attendance_token])));},
-  start(c,blockedActors=[]){
+  start(c,blockedActors=[],blockedAccounts=[]){
    // A valid rejected contract must remain attributable so the service can
    // quarantine it instead of repeatedly dispatching its prepared start.
    // Attribution is not evidence that an older process issued no effects.
@@ -107,7 +126,8 @@ function createPaidEmploymentController(platform,now=Date.now,options={}){
     if(c.kind!=='paid_work_start'||!text(c.id)||!valid(c)||!current(c)||assignment(c)?.phase==='held'||assignment(c)?.cancel_requested)return fail('Fresh exact paid assignment required');
     if(acknowledged.has(key(c)))return fail('Paid job already acknowledged; no replay');
     const old=jobs.get(key(c));if(old){actors(c);return same(old,c)&&!old.invalidated&&old.phase!=='held'?{done:true,ack:{id:c.id,...copy(identity(old)),status:'applied',accepted:true}}:fail('Paid job identity changed or is held');}
-    if(!available()||jobs.size>=capacity||[...jobs.values()].some(j=>[j.worker,j.employer].some(id=>[c.worker,c.employer].includes(id))||j.slot===c.slot||j.business_id===c.business_id)||blockedActors.some(id=>[c.worker,c.employer].includes(id)))return fail('Paid participants, business, slot or capacity reserved');
+    if(!available()||jobs.size>=capacity||[...jobs.values()].some(j=>[j.worker,j.employer].some(id=>[c.worker,c.employer].includes(id))||j.slot===c.slot||j.business_id===c.business_id)||
+       blockedActors.includes(c.worker)||blockedAccounts.some(id=>[c.worker,c.employer].includes(id)))return fail('Paid worker activity, participant account, business, slot or capacity reserved');
     const row=control?.activities?.find(row=>row.actor===c.worker&&row.slot===c.slot);
     if(row?.expectedPackage!==c.expected_package)throw Error('Existing worker Citizens slot required');
     inspect(c);if(canonical(accounts(c).inventory)!==canonical(c.before))throw Error('Paid start account balances changed');
@@ -177,6 +197,9 @@ function createPaidEmploymentController(platform,now=Date.now,options={}){
      if(!current(job)||assignment(job)?.cancel_requested||assignment(job)?.phase==='held'||!valid(job)||!available())throw Error('Paid assignment withdrawn or catalog unavailable');
      const elapsed=now()-job.accepted_at;if(!Number.isFinite(elapsed)||elapsed<0||elapsed>Math.max(300000,job.work_minutes*60000))throw Error('Paid lease elapsed or wall clock reversed');
      const s=inspect(job);
+     // A walking/talking employer is allowed; an independent inventory change
+     // is not. Read-only observation cannot reconstruct a settlement witness.
+     if(!job.commit_id&&canonical(accounts(job).inventory)!==canonical(job.before))throw Error('Reserved paid accounts changed during attendance');
      if(job.phase==='acquiring'){
       if(!s.owned){if(elapsed>30000)throw Error('Worker stationary lease acquisition timed out');continue;}
       job.attendance={token:null,slot:job.slot,serial:s.serial,expected_package:job.expected_package,anchor:copy(job.anchor),cell_id:job.cell_id,
@@ -195,6 +218,7 @@ function createPaidEmploymentController(platform,now=Date.now,options={}){
   },
   status(){return {available:available(),protocol:2,epoch,session,capacity,catalog_hash:catalog?.status().catalog_hash||null,
    jobs:[...jobs.values()].map(receipt),receipts:[...jobs.values()].filter(j=>j.phase!=='acquiring'&&j.phase!=='working').map(receipt),reserved_actors:this.reservedActors(),
+   account_reserved_actors:this.accountActors(),activity_reserved_actors:this.activityActors(),
    scope:'Stationary hired-worker attendance and witnessed account effects; working animation and workstation access unverified'};}
  };
 }

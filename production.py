@@ -3,7 +3,7 @@ import copy
 from entrepreneurship import learn_recipe
 from labour import settle_contract
 from enterprises import plan_work_policy, current_work_terms, paid_bread_recipe
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict, work_account_conflict
 from paid_work_policy import paid_work_capability, PAID_WORK_BLOCK_REASON
 
 from economy_catalog import commodity_ids, recipe_spec, recipe_hash, catalog_hash, apply_recipe, require_native_catalog, MAX_STOCK
@@ -34,8 +34,8 @@ class Production:
             raise ValueError('Finish the resident plan before scenario setup')
         if self.active.get('imports'):
             return {'duplicate': True, 'import': self.active['imports'][0]}
-        if activity_conflict(self.active,actors=(108186,108149),observation=observation):
-            raise ValueError('An independent activity owns a scenario supply participant')
+        if activity_conflict(self.active,actors=(108186,108149),observation=observation) or work_account_conflict(self.active,actors=(108186,108149),observation=observation):
+            raise ValueError('An independent activity reserves a scenario supply participant or account')
         require_native_catalog(observation)
         before = work_inventory(observation, 108186, 108149)
         if before['employer']['grain'] > MAX_STOCK-2:raise ValueError('Scenario grain import would overflow inventory')
@@ -54,8 +54,8 @@ class Production:
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase'] != 'ready_to_work':
             raise ValueError('Work requires a current agreed plan and arrival')
-        if activity_conflict(self.active,actors=(plan['actor'],plan['target']),observation=observation):
-            raise ValueError('An independent activity owns a production participant')
+        if activity_conflict(self.active,actors=(plan['actor'],plan['target']),observation=observation) or work_account_conflict(self.active,actors=(plan['actor'],plan['target']),observation=observation):
+            raise ValueError('An independent activity reserves a production participant or account')
         require_native_catalog(observation, 'bread_recipe')
         paid_bread_recipe()
         current_work_terms(self.active, plan)

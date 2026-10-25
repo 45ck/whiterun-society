@@ -6,7 +6,7 @@ matching inventory alone is never evidence that this delivery executed.
 import copy
 import hashlib
 import json
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict, work_account_conflict
 from economy_catalog import commodity_ids, require_native_catalog, catalog_hash, MAX_STOCK
 from resource_manifest import load_manifest, manifest_hash, select_grant, validate_manifest
 
@@ -172,6 +172,7 @@ class Endowments:
         self._agency_guard(observation)
         if self.agency_busy() or self.conversation_busy():raise ValueError('Finish the active resident activity first')
         if activity_conflict(self.active,actors=(actor,),observation=observation):raise ValueError('An independent activity owns the resource recipient')
+        if work_account_conflict(self.active,actors=(actor,),observation=observation):raise ValueError('The resource recipient inventory account is reserved')
         manifest=load_manifest();digest=manifest_hash(manifest)
         if scenario_id!=manifest['id'] or scenario_hash!=digest:raise ValueError('Explicit reviewed resource scenario ID and hash are required')
         if program and (program['manifest_hash']!=digest or not _same(program['manifest'],manifest)):

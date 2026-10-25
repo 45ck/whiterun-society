@@ -49,6 +49,27 @@ class ObserverTests(unittest.TestCase):
             self.assertFalse(result['paid_employment_metrics']['capability']['fresh'])
         self.assertEqual(result['residents'][1]['activity_blocker'],'not_loaded')
 
+    def test_concurrency_projection_keeps_sampled_history_but_clears_stale_reservations(self):
+        self.obs.update(ready=True,checkpoint=10,session='concurrency-observer',paid_employment={
+            'available':True,'protocol':2,'epoch':'paid-epoch','session':'concurrency-observer'})
+        overlap={'employer_movement':{'n':2,'sampled_overlap_seconds':5}}
+        bridge={'last_seen':time.time(),'observation':self.obs,
+                'employment_concurrency':{'fresh':True,'overlap':overlap,'coverage':{'qualified_attendance_intervals':2}}}
+        current=observer_state(bridge,self.society)['employment_concurrency_metrics']
+        self.assertTrue(current['fresh']);self.assertEqual(current['overlap'],overlap)
+        for stale in ({**bridge,'last_seen':0},{**bridge,'observation':{**self.obs,'checkpoint':11}}):
+            result=observer_state(stale,self.society)
+            metrics=result['employment_concurrency_metrics']
+            self.assertFalse(metrics['fresh'])
+            self.assertIsNone(metrics['counts']['paid_account_participants'])
+            self.assertEqual(metrics['overlap'],overlap)
+            self.assertEqual(metrics,result['dashboard']['employment_concurrency_metrics'])
+            self.assertEqual(metrics,result['metrics']['employment_concurrency'])
+        held=observer_state(bridge,{**self.society,'error':'Timeline execution held'})
+        self.assertFalse(held['employment_concurrency_metrics']['fresh'])
+        self.assertIsNone(held['employment_concurrency_metrics']['counts']['paid_account_participants'])
+        self.assertEqual(held['employment_concurrency_metrics']['overlap'],overlap)
+
     def test_configured_recipe_editor_is_generic_and_does_not_mutate_catalog(self):
         from test_catalog_enterprises import expanded_catalog
         catalog=expanded_catalog()

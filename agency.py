@@ -30,7 +30,7 @@ from entrepreneurship import enterprise_choices, apply_resident_enterprise, reci
 from context_window import (bounded_economic_context, purchase_attention_context, purchase_attention_policy,
     purchase_catalogue_hash, check_purchase_decision_budget, frozen_purchase_choices)
 from trade_memory import remember_refusal_decision
-from activity_leases import reserved_activity_actors, identity_quarantine_actors
+from activity_leases import reserved_activity_actors, identity_quarantine_actors, work_account_conflict
 from economy_catalog import recipe_spec, require_native_catalog, MAX_STOCK, commodity_ids, native_catalog_matches, catalog_hash
 
 TERMINAL = ('complete', 'held')
@@ -323,6 +323,20 @@ class Agency:
             if plan['kind']=='need_review' and rest_opportunities(self.active,observation,actor):
                 options.append({'id':'rest_at_bench','effect':'Take a 30-game-minute seated break at an available nearby bench. Walk there and recover some simulated fatigue only after verified sitting. This interrupts your ordinary routine; consider duties and other needs. It is a short break, not sleep.'})
             information = 'Consider your hunger, fatigue, carried food, money, priorities and past experiences. You may defer, eat, seek food or explore an available livelihood opportunity. This does not prove what food you have at home.'
+        account_reserved=work_account_conflict(self.active,actors=(actor,),observation=observation)
+        counterparty_reserved=(plan['phase'] in ('quote','consent','reconsider','job_offer','job_accept') and
+            work_account_conflict(self.active,actors=(plan.get('actor'),plan.get('target')),observation=observation))
+        if account_reserved or counterparty_reserved:
+            # Account exclusion is deliberately narrower than physical exclusion.
+            # Keep movement, rest and refusals, but never offer an economic promise
+            # that the reserved purse cannot execute. This also invalidates stale
+            # model choices when a lease appeared after the original claim.
+            safe={'defer','decline','decline_work','leave_without_food','leave_without_purchase',
+                  'keep_food','rest_at_bench','check_market','visit_adrianne'}
+            options=[row for row in options if row['id'] in safe or row['id'].startswith(('visit_person_','check_market_'))]
+            if not options:options=[{'id':'defer','effect':'Wait; the relevant economic account is reserved by an unfinished activity.'}]
+            price_options={};work_options={};owner_work_actions=[];business_options={};purchase_options={}
+            information+=' The relevant inventory account is reserved by an unfinished economic activity. Movement and social choices do not release that reservation.'
         own_followups=[f for f in plan.get('conversation_followups',[]) if f.get('actor')==actor]
         if own_followups:
             information+=' You chose this review after a conversation. Consider the recorded focus and heard words, but recheck current resources and duties. A heard claim is not a verified fact or binding promise. You may change your mind.'

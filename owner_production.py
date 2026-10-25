@@ -6,12 +6,12 @@ from enterprises import production_policy
 from routing import activity_blocker
 from entrepreneurship import learn_bread_recipe
 from production import production_receipt_matches
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict, work_account_conflict
 from economy_catalog import commodity_ids, recipe_ids, recipe_spec, recipe_hash, catalog_hash, native_catalog_matches, require_native_catalog, MAX_STOCK
 
 
 def owner_work_opportunities(state, observation, actor, *, require_owned=True):
-    if activity_conflict(state,actors=(actor,),observation=observation):return []
+    if activity_conflict(state,actors=(actor,),observation=observation) or work_account_conflict(state,actors=(actor,),observation=observation):return []
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
     if not resident or activity_blocker(resident):return []
     inventory=resident.get('inventory',{})
@@ -43,6 +43,8 @@ def owner_work_opportunities(state, observation, actor, *, require_owned=True):
 class OwnerProduction:
     def plan_owner_production(self, observation, plan):
         require_native_catalog(observation,plan.get('own_work_terms',{}).get('recipe_id','bread_recipe'))
+        if work_account_conflict(self.active,actors=(plan['actor'],),observation=observation):
+            raise ValueError('A reserved economic account cannot start owner production')
         if (observation.get('owner_work_jobs') or {}).get('available') is True:
             return self.delegate_owner_work(plan, observation)
         self._agency_guard(observation)

@@ -1,12 +1,18 @@
 # Current direction: RTS-only
 
+## Independent employer activity during paid attendance
+
+The current source separates financial reservations from physical attendance. A qualified employer can walk or socialise while the hired worker retains the exact attendance lease; both entire inventories and the contracted business remain protected until verified settlement and release. Prepared jobs, overlapping activity owners, cold/held records and changed identities keep conservative admission checks. The observer reports actual paired attendance/movement/conversation intervals separately from eligibility. [Contract and acceptance limits](employment-concurrency.md).
+
+Qualification must cover actual controller interoperability and failure cases before publication, followed by a controlled native trial when game access resumes. Paired job-seconds are not unique wall time or audible-speech duration. Global foreground settlement, whole-account exclusivity, finite slots and loaded-identity requirements remain. This is a concurrency milestone toward independent lives, not completion of the city simulation.
+
 ## Witnessed paid employment
 
 **Source qualification, 26 October 2026:** [hosted run 40208269941](https://github.com/45ck/whiterun-society/actions/runs/40208269941) passed at `d8361c4` on Windows and Ubuntu. Per platform: 1,236 Python tests (1,235 passed, one generated-file check initially skipped and subsequently passed), 488 JavaScript tests and six generated-plugin readback checks. Windows compiled both Papyrus scripts. [Machine-readable evidence](evidence/paid-employment-validation.json). Six interoperability tests cover actual controllers and service checkpoints, with fixture choices/native APIs; five additional Agency tests exercise real choice paths. No new native installation or live-game qualification occurred.
 
 The next source milestone connects generic business/recipe opportunities to separate employer and worker choices, heard agreement when voiced, release of the meeting, independent worker attendance and serialized witnessed production/payment. Output, wage debit, wage credit, contract completion and release remain separate evidence. A lost or partial effect holds the affected accounts without replay. Only the attending worker earns production learning. The inspector shows stage counts, denominators, unknown evidence and latency coverage; these are protocol measures, not human-realism scores. [Implementation contract and acceptance](paid-employment-v2.md).
 
-Native gameplay qualification remains outstanding. The default catalog is still small and every valid recipe has one input/output. Both participant accounts currently exclude other activities until acknowledged release; separating purse reservations from employer movement/social participation remains a concurrency requirement. Do not call this a completed city economy, natural conversation study or new in-game demo.
+Native gameplay qualification remains outstanding. The default catalog is still small and every valid recipe has one input/output. The earlier qualified revision excluded both participants from other activities until acknowledged release; the new employer-activity split above has its own evidence boundary. Do not call this a completed city economy, natural conversation study or new in-game demo.
 
 ## Fresh livelihood startup and identity qualification
 

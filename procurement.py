@@ -5,6 +5,7 @@ from enterprises import production_policy
 from entrepreneurship import knows_recipe
 from market_policy import goods_policy, policy_hash, tradable_ids, advertised_goods
 from opportunities import commodity_sellers
+from activity_leases import work_account_conflict
 
 PINS = ('supplier', 'business_id', 'business_revision', 'recipe_id', 'recipe_hash',
         'catalog_hash', 'market_policy_hash', 'commodity', 'quantity', 'purpose',
@@ -16,6 +17,7 @@ def _identity(choice):
 
 
 def input_procurement(state, observation, actor):
+    if work_account_conflict(state,actors=(actor,),observation=observation):return []
     person = state.get('people', {}).get(str(actor))
     rows = [r for r in observation.get('residents', []) if r.get('id') == actor]
     if not person or len(rows) != 1 or rows[0].get('isPerson') is not True:return []
@@ -27,6 +29,7 @@ def input_procurement(state, observation, actor):
     catalog_digest=catalog_hash();market_digest=policy_hash()
     enabled=set(tradable_ids());recipes=set(recipe_ids());suppliers={};markets={};recipe_digests={}
     for key, business in sorted((state.get('town') or {}).get('businesses', {}).items()):
+        if work_account_conflict(state,business_ids=(key,),observation=observation):continue
         if (business.get('active', True) is not True or business.get('owner') != actor
                 or business.get('custodian') != actor):continue
         for rid in sorted(set(business.get('capabilities', [])) & recipes):

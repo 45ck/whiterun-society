@@ -50,8 +50,9 @@ class SavedPaidWorld(PaidEmployment):
         self.delegate_paid_work(self.agency_plan(),self.obs);job=next(iter(self.active['paid_work_jobs'].values()))
         c=self.paid_work_pending_command();self.obs['ack']={**paid_identity(job),'id':c['id'],'status':'applied','accepted':True,'effects_issued':False}
         self.observe_paid_employment(self.obs);return self.active['paid_work_jobs'][job['id']]
-    def attend(self):
-        job=self.start();self.obs['gameDays']+=job['work_minutes']/1440+.00001;now=time.time()*1000
+    def attend(self,job=None):
+        job=self.start() if job is None else job
+        self.obs['gameDays']+=job['work_minutes']/1440+.00001;now=time.time()*1000
         receipt={**paid_identity(job),'phase':'attendance_verified','effects_issued':False,'attendance':{
             'token':'authored-unit-attendance','token_valid':True,'slot':job['slot'],'serial':2,'expected_package':job['expected_package'],
             'anchor':job['anchor'],'cell_id':job['cell_id'],'worked_minutes':job['work_minutes'],'samples':100,'ready_at':now-10,'expires_at':now+120000}}
@@ -74,6 +75,59 @@ class SavedPaidWorld(PaidEmployment):
 
 
 class PaidEmploymentTests(unittest.TestCase):
+    def test_moving_employer_social_activity_defers_commit_then_completes_original_job_only(self):
+        w=SavedPaidWorld();job=w.start();source_id=job['source_plan']
+        employer=w.obs['residents'][1]
+        employer.update(x=9000,y=2500,z=450,cell_id=88,loaded=True,
+            activity={'package_id':12345,'moving':True})
+        # Authored foreground fixture: the employer's newer social plan must not
+        # become the paid job's consent source or completion target.
+        social={'id':'employer-social','actor':29,'phase':'talking','decisions':[]}
+        w.active['plans'].append(social);w.conversation_busy=lambda:True
+        job=w.attend(job)
+        self.assertEqual(job['phase'],'attendance_verified')
+        before=copy.deepcopy(w.active);self.assertFalse(w.prepare_paid_work_commit(w.obs))
+        self.assertEqual(w.active,before);self.assertIsNone(w.active['pending'])
+        self.assertNotIn('known_recipes',w.active['people']['17'])
+        w.active['plans'][-1]['phase']='complete';social_before=copy.deepcopy(w.active['plans'][-1])
+        w.conversation_busy=lambda:False
+        self.assertTrue(w.prepare_paid_work_commit(w.obs));command=w.active['pending']['command']
+        self.assertEqual(command['anchor'],job['anchor']);self.assertEqual(command['cell_id'],77)
+        self.assertEqual(command['consent_hash'],job['consent_hash'])
+        self.assertEqual(w.paid_work_commit_command(w.session),command)
+        ack=w.effect(command);w.inventory(ack['inventory']);w.obs['ack']=ack
+        self.assertTrue(w.observe_paid_production(w.obs))
+        self.assertNotIn('known_recipes',w.active['people']['17'])
+        employer.update(x=10000,cell_id=99)
+        w.obs['paid_employment']['receipts']=[{**ack,'phase':'complete','release_verified':True}]
+        self.assertTrue(w.observe_paid_employment(w.obs))
+        self.assertEqual(next(p for p in w.active['plans'] if p['id']==source_id)['phase'],'complete')
+        self.assertEqual(w.active['plans'][-1],social_before)
+        self.assertIn('bread_recipe',w.active['people']['17']['known_recipes'])
+        self.assertEqual(len(w.active['production']),1)
+
+    def test_employer_social_ack_and_matching_balances_never_complete_paid_work(self):
+        w=SavedPaidWorld();job,command=w.prepare();w.obs['residents'][1].update(x=9000,cell_id=88)
+        w.inventory(command['after'])
+        w.obs['ack']={'id':'employer-social','status':'applied','released':True}
+        before=copy.deepcopy(w.active)
+        self.assertFalse(w.observe_paid_production(w.obs));self.assertFalse(w.observe_paid_employment(w.obs))
+        self.assertEqual(w.active,before);self.assertEqual(w.active['pending']['status'],'pending')
+        self.assertNotIn('production',w.active);self.assertNotIn('known_recipes',w.active['people']['17'])
+
+    def test_employer_freedom_does_not_relax_worker_attendance_or_reserved_account_proof(self):
+        changes=[lambda w:w.obs['paid_employment']['receipts'][0]['attendance'].update(anchor=[9000,0,0]),
+            lambda w:w.obs['paid_employment']['receipts'][0]['attendance'].update(cell_id=88),
+            lambda w:w.obs['paid_employment']['receipts'][0]['attendance'].update(expected_package=12345),
+            lambda w:w.obs['residents'][1]['inventory'].update(gold=19),
+            lambda w:w.obs['residents'][1].update(loaded=False)]
+        for index,change in enumerate(changes):
+            with self.subTest(invalid_evidence=index):
+                w=SavedPaidWorld();job=w.attend();w.obs['residents'][1].update(x=9000,cell_id=88)
+                change(w);self.assertTrue(w.prepare_paid_work_commit(w.obs))
+                self.assertIsNone(w.active['pending']);self.assertEqual(w.active['paid_work_jobs'][job['id']]['phase'],'held')
+                self.assertNotIn('production',w.active);self.assertNotIn('known_recipes',w.active['people']['17'])
+
     def test_success_keeps_learning_and_completion_separate_from_inventory_then_releases_once(self):
         w=SavedPaidWorld();job,c=w.prepare();ack=w.effect(c);w.inventory(ack['inventory']);w.obs['ack']=ack
         self.assertTrue(w.observe_paid_production(w.obs));job=w.active['paid_work_jobs'][job['id']]

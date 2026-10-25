@@ -6,7 +6,7 @@ from economy_catalog import commodity_ids, catalog_hash, require_native_catalog,
 from market_policy import goods_policy, policy_hash
 from world_economy import qualified_snapshot
 from endowments import StaleAccountingObservation
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict, work_account_conflict
 from trade_consent import accepted_trade_consent, consent_envelope
 from food import allocation
 
@@ -155,6 +155,8 @@ class TradeExecution:
         if self.conversation_busy():raise ValueError('A conversation owns the participants')
         if activity_conflict(self.active,actors=(buyer,seller),observation=observation):
             raise ValueError('A trade participant owns an independent activity lease')
+        if work_account_conflict(self.active,actors=(buyer,seller),observation=observation):
+            raise ValueError('A trade participant inventory account is reserved')
         epoch=native_epoch(observation);bases,before=qualified_snapshot(observation,buyer,seller)
         policy=goods_policy(commodity)
         if (buyer==seller or quantity>policy['max_quantity'] or not policy['price_min']<=unit_price<=policy['price_max']):

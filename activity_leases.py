@@ -53,15 +53,9 @@ def _account_actor(value):
     return int(suffix) if len(suffix)<=10 and suffix.isascii() and suffix.isdigit() and str(int(suffix))==suffix and int(suffix)>0 else None
 
 
-def paid_work_reservations(state,observation=None):
-    """Both purses and the charter stay exclusive through reconciled release.
-
-    The physical attendance hold belongs only to the worker. For this initial
-    protocol both participants are also excluded from new activity admission;
-    splitting social/physical/account leases is a separate concurrency feature.
-    """
+def _paid_records(state,observation):
+    """Keep record origin: a native-only journal is not an admitted saved job."""
     state=state or {};observation=observation or {};rows=[];unknown=False
-    valid=lambda value:type(value) is int and 0<value<=0xffffffff
     for field in ('paid_work_jobs','paid_work_orphans','paid_employment'):
         if field not in state:continue
         records=state[field]
@@ -69,23 +63,47 @@ def paid_work_reservations(state,observation=None):
             if 'jobs' in records:
                 for part in ('jobs','history'):
                     values=records.get(part,[])
-                    if isinstance(values,list):rows.extend(values)
+                    if isinstance(values,list):rows.extend((row,field=='paid_work_orphans',True) for row in values)
                     else:unknown=True
-            else:rows.extend(records.values())
-        elif isinstance(records,list):rows.extend(records)
+            else:rows.extend((row,field=='paid_work_orphans',True) for row in records.values())
+        elif isinstance(records,list):rows.extend((row,field=='paid_work_orphans',True) for row in records)
         else:unknown=True
     native=observation.get('paid_employment',{})
     if isinstance(native,dict):
         for field in ('jobs','receipts'):
             values=native.get(field,[])
-            if isinstance(values,list):rows.extend(values)
+            if isinstance(values,list):rows.extend((row,False,False) for row in values)
             else:unknown=True
     else:unknown=True;native={}
+    return rows,unknown,native
+
+
+def _paid_leased(row):
+    return not (row.get('receipt_acknowledged') is True and row.get('release_verified') is True
+                and row.get('effect_unreconciled') is False)
+
+
+def _paid_population(state,observation):
+    actors=set();valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    for people in (state.get('people'),(state.get('town') or {}).get('residents')):
+        if isinstance(people,dict):
+            actors.update(int(key) for key in people if isinstance(key,str) and key.isascii()
+                and key.isdigit() and len(key)<=10 and str(int(key))==key and valid(int(key)))
+    for field in ('residents','inventory_observations'):
+        actors.update(row['id'] for row in observation.get(field,[])
+            if isinstance(row,dict) and valid(row.get('id')))
+    return actors
+
+
+def paid_work_reservations(state,observation=None):
+    """Both purses and the charter stay exclusive through reconciled release."""
+    state=state or {};observation=observation or {}
+    rows,unknown,native=_paid_records(state,observation)
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
     actors=set();businesses=set()
-    for row in rows:
+    for row,_,_ in rows:
         if not isinstance(row,dict):unknown=True;continue
-        if (row.get('receipt_acknowledged') is True and row.get('release_verified') is True
-                and row.get('effect_unreconciled') is False):continue
+        if not _paid_leased(row):continue
         pair=(row.get('worker'),row.get('employer'))
         actors.update(actor for actor in pair if valid(actor))
         business=row.get('business_id')
@@ -98,19 +116,72 @@ def paid_work_reservations(state,observation=None):
         if not all(valid(actor) for actor in reserved):unknown=True
     else:unknown=True
     if unknown:
-        for people in (state.get('people'),(state.get('town') or {}).get('residents')):
-            if isinstance(people,dict):
-                actors.update(int(key) for key in people if isinstance(key,str) and key.isascii()
-                    and key.isdigit() and len(key)<=10 and str(int(key))==key and valid(int(key)))
-        for field in ('residents','inventory_observations'):
-            actors.update(row['id'] for row in observation.get(field,[])
-                if isinstance(row,dict) and valid(row.get('id')))
+        actors.update(_paid_population(state,observation))
         businesses.update(key for key in ((state.get('town') or {}).get('businesses') or {}) if isinstance(key,str))
     return actors,businesses
 
-def reserved_work_accounts(state,observation=None,*,include_identity=True):
+
+def paid_work_activity_actors(state,observation=None):
+    """Only a current, unambiguous saved worker lease narrows physical holds.
+
+    Missing observations and orphan/held journals retain both participants.
+    This never releases an account or subtracts another activity's reservation.
+    """
+    state=state or {};observation=observation or {}
+    accounts,_=paid_work_reservations(state,observation)
+    rows,unknown,native=_paid_records(state,observation)
+    valid=lambda value:type(value) is int and 0<value<=0xffffffff
+    native_reserved=native.get('reserved_actors',[])
+    if not isinstance(native_reserved,list) or any(not valid(actor) for actor in native_reserved):unknown=True
+    fields=('protocol','job_id','worker','worker_base_id','employer','employer_base_id','session','epoch','business_id')
+    def identity(row):
+        if (not isinstance(row,dict) or type(row.get('protocol')) is not int or row['protocol']!=2
+            or any(not valid(row.get(key)) for key in ('worker','worker_base_id','employer','employer_base_id'))
+            or row['worker']==row['employer']
+            or any(not isinstance(row.get(key),str) or not row[key] for key in ('job_id','session','epoch','business_id'))
+            or 'id' in row and row['id']!=row['job_id']):return None
+        return tuple(row[key] for key in fields)
+    signatures={};saved=set()
+    for row,orphan,is_saved in rows:
+        if not isinstance(row,dict) or not _paid_leased(row):continue
+        sig=identity(row)
+        if sig:
+            signatures.setdefault((row['session'],row['epoch'],row['job_id']),set()).add(sig)
+            if is_saved and not orphan and not row.get('orphan'):saved.add(sig)
+    actors=set();represented=set()
+    for row,orphan,_ in rows:
+        if not isinstance(row,dict):unknown=True;continue
+        if not _paid_leased(row):continue
+        pair={row[key] for key in ('worker','employer') if valid(row.get(key))}
+        represented.update(pair);sig=identity(row)
+        qualified=(sig is not None and sig in saved and not orphan and not row.get('orphan')
+            and row.get('phase') in ('prepared','acquiring','working','attendance_verified','commit_prepared',
+                'committing_input','committing_output','committing_wage_debit','committing_wage_credit','effects_verified','complete')
+            and not row.get('invalidated') and not row.get('reset_held') and not row.get('cancel_requested')
+            and row.get('effect_unreconciled') is not True
+            and len(signatures[(row['session'],row['epoch'],row['job_id'])])==1
+            and observation.get('ready') is True and row['session']==observation.get('session')
+            and native.get('available') is True and type(native.get('protocol')) is int and native['protocol']==2
+            and native.get('session')==row['session'] and native.get('epoch')==row['epoch'])
+        if qualified:
+            for role in ('worker','employer'):
+                matches=[actor for actor in observation.get('residents',[]) if isinstance(actor,dict) and actor.get('id')==row[role]]
+                if (len(matches)!=1 or matches[0].get('isPerson') is not True
+                        or type(matches[0].get('baseId')) is not int or matches[0]['baseId']!=row[role+'_base_id']):qualified=False;break
+        actors.update({row['worker']} if qualified else pair)
+        if sig is None:unknown=True
+    # An account-only native reservation has no trustworthy worker/employer role.
+    actors.update(accounts-represented)
+    native_activity=native.get('activity_reserved_actors',[])
+    if isinstance(native_activity,list):
+        actors.update(actor for actor in native_activity if valid(actor))
+        if not all(valid(actor) for actor in native_activity):unknown=True
+    else:unknown=True
+    return accounts|actors|_paid_population(state,observation) if unknown else actors
+
+
+def _nonpaid_work_account_actors(state,observation=None,*,include_identity=True):
     actors=resource_quarantine_actors(state,observation)|trade_quarantine_actors(state,observation)
-    actors.update(paid_work_reservations(state,observation)[0])
     if include_identity:actors.update(identity_quarantine_actors(state,observation))
     for row in _work_rows(state,observation):
         actors.update(row.get(field) for field in ('actor','custodian','account_actor')
@@ -119,6 +190,12 @@ def reserved_work_accounts(state,observation=None,*,include_identity=True):
         if account:actors.add(account)
     native=(observation or {}).get('owner_work_jobs') or {}
     actors.update(a for a in native.get('reserved_actors',[]) if type(a) is int and a>0)
+    return actors
+
+
+def reserved_work_accounts(state,observation=None,*,include_identity=True):
+    actors=_nonpaid_work_account_actors(state,observation,include_identity=include_identity)
+    actors.update(paid_work_reservations(state,observation)[0])
     return {'native-inventory:'+str(actor) for actor in actors}
 
 def reserved_work_businesses(state,observation=None):
@@ -243,7 +320,8 @@ def _reserved_activity(state,observation,field,include_identity=True):
     if field=='actor':
         # Cleanup may exclude identity admission checks, but must retain every
         # actual work/resource/trade reservation, including unresolved leases.
-        ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation,include_identity=include_identity))
+        ids.extend(_nonpaid_work_account_actors(state,observation,include_identity=include_identity))
+        ids.extend(paid_work_activity_actors(state,observation))
         ids.extend(conversation_quarantine_actors(state,observation))
         ids.extend(resource_quarantine_actors(state,observation))
     return {value for value in ids if type(value) is int and value>0}
