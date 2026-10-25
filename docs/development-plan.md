@@ -59,3 +59,10 @@ The additive priority-90 continuity layer is native-qualified below priority-95 
 ## Food allocation and visible negotiation outcomes
 
 A household reserve no longer removes the seller's agency at an actual offer. One-off consent can release one loaf at agreed terms while preserving the reserve on remaining stock. A native Jev trial still refused both authored offers; it produced four voiced lines and no sale, with all 17 saved fields restored. Charts now distinguish refusal from technical failure and inventory-backed sale. Realtek voice routing is selected and signal-tested at Calvin's request. Next work must qualify a consented native sale and address production and rest bottlenecks without forcing successful outcomes or inventing resources. [Protocol, evidence and limits](reserve-reconsideration.md)
+
+
+## Aerial observer and owned livelihoods
+
+Actual captured city-map imagery now carries live elevation-corrected native markers. Seven reference/base-bound portrait assets and septim medallions are displayed in the shared observer UI. Dynamic replacement keeps a fallback instead of a wrong face. A controlled single-owner recipe passed native inventory and save rollback qualification; the preceding real Jev review chose to eat. Source-independent owners are eligible without a wage balance, and production never relieves hunger before consumption. [Evidence and remaining input gap](aerial-observer.md).
+
+Next acceptance work: capture remaining identities; qualify physical in-game selection/zoom/pan; connect owner work to a productive location and animation; reduce the fatigue backlog with meaningful routines; demonstrate unforced work → stock allocation → voiced sale → consumption. The continuous-livestream idea is recorded: durable timeline, recovery, bounded model budgets, long-run audio and camera qualification before any public broadcast. No stream or 24/7 automation was started.

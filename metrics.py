@@ -61,7 +61,7 @@ def simulation_metrics(state):
     production=[r['command'] for r in state.get('production',[]) if r['status']=='committed']
     conserved=[]
     for c in trades+production:
-        parties=('buyer','seller') if 'buyer' in c.get('before',{}) else ('employer','worker')
+        parties=('owner',) if c.get('kind')=='inventory_self_produce' else ('buyer','seller') if 'buyer' in c.get('before',{}) else ('employer','worker')
         if all(number(c.get(phase,{}).get(p,{}).get('gold')) for phase in ('before','after') for p in parties):
             conserved.append(sum(c['before'][p]['gold'] for p in parties)==sum(c['after'][p]['gold'] for p in parties))
     relations=[r for p in state.get('people',{}).values() for r in p.get('relationships',{}).values()]
@@ -155,6 +155,7 @@ def simulation_metrics(state):
             'results_with_cost':sum(number(v) for v in model_cost),
             'cost_coverage':'Retained accepted results and claim-bound language rejection receipts. Older rejections and other failed calls may exist only in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
+            'owner_production_batches':sum(c.get('kind')=='inventory_self_produce' for c in production),
             'negotiations':{'n':len(negotiations),'outcomes':dict(trade_outcomes),
                 'scope':'Retained voiced trade plans, including staged experiments. Sales require committed inventory receipts; refusals are choices, not technical failures.'},
             'household_release_sales':sum(r.get('status')=='committed' and bool(r.get('reserve_release')) for r in state.get('trades',[])),

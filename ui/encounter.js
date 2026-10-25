@@ -41,22 +41,23 @@ window.drawEncounter=()=>{
  document.getElementById('focus-card').hidden=true;
  document.getElementById('conversation-card').hidden=true;document.getElementById('day-card').hidden=true;document.getElementById('work-card').hidden=true;
  const person=state?.society?.people?.[String(displayResident)];if(!person)return;
- panel.replaceChildren();inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
+ panel.replaceChildren();panel.append(window.residentMedia.portrait(state.residents?.find(r=>r.id===displayResident)||{id:displayResident,name:person.profile.name},84));inspectorText(panel,'INSPECT A RESIDENT','eyebrow');inspectorText(panel,person.profile.name,'section-title');
  const batch=state?.society?.routine_batch,member=batch?.members.find(m=>m.actor===displayResident);
  if(member){const native=state?.parallel_routines?.activities.find(a=>a.actor===displayResident);inspectorText(panel,'Independent journey · slot '+(member.slot+1),'label');inspectorText(panel,(member.outcome||native?.phase||native?.status||member.phase).replaceAll('_',' '));if(native)inspectorText(panel,Math.round(native.distance??native.movement?.distance??0)+' units from the public market');inspectorText(panel,(state.parallel_routines?.peak_owned||batch.concurrency?.peak_owned||0)+' peak simultaneous native journeys observed');if(member.result)inspectorText(panel,'Own choice · '+member.result.decision.action_id.replaceAll('_',' '));}
  const plan=state?.society?.plan;
- if(plan?.actor===displayResident&&(plan.kind==='work_shift'||plan.work_terms)){
-  const terms=plan.work_terms?.policy||{wage_gold:2,work_minutes:30};
-  inspectorText(panel,plan.decisions?.some(d=>d.rationale_kind==='test_fixture')?'Employment integration test':'Employment decisions','label');
+ if(plan?.actor===displayResident&&(plan.kind==='work_shift'||plan.work_terms||plan.own_work_terms)){
+  const owner=!!plan.own_work_terms,terms=plan.own_work_terms?.policy||plan.work_terms?.policy||{wage_gold:2,work_minutes:30};
+  inspectorText(panel,plan.decisions?.some(d=>d.rationale_kind==='test_fixture')?'Employment integration test':owner?'Owner production':'Employment decisions','label');
   inspectorText(panel,(plan.outcome||plan.phase).replaceAll('_',' '));
-  inspectorText(panel,terms.wage_gold+' gold for '+terms.work_minutes+' game minutes · 1 grain → 2 bread');
+  inspectorText(panel,(owner?'Own stock · no wage transfer · ':terms.wage_gold+' gold for ')+terms.work_minutes+' game minutes · 1 grain → 2 bread');
   if(plan.phase==='working'){
    const work=state.productionWork;
    inspectorText(panel,Number(work?.workedMinutes||0).toFixed(1)+' / '+terms.work_minutes+' nearby attendance minutes');
    if(work?.phase==='approaching_work')inspectorText(panel,'Catching up to employer · travel earns no work credit');
   }
-  if(plan.outcome==='work_interrupted')inspectorText(panel,'Interrupted before inventory effects · no wage or output');
+  if(['work_interrupted','owner_work_interrupted'].includes(plan.outcome))inspectorText(panel,'Interrupted before inventory effects · no wage or output');
   if(plan.outcome==='paid_work_completed')inspectorText(panel,'Native output and conserved wage verified');
+  if(plan.outcome==='owner_work_completed')inspectorText(panel,'Owned output verified · gold unchanged');
  }
  if(plan?.actor===displayResident&&plan.destination){
   text('notice',plan.phase==='travelling'?'Resident-chosen journey · '+plan.destination.name:'Market visit · '+(plan.outcome||plan.phase).replaceAll('_',' '));

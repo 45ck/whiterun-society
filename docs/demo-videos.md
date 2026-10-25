@@ -36,3 +36,8 @@ Carlotta's grain/bread account and Ysolda's wage change are visible after an aut
 ![Live browser observer during the seven-person journey cohort](images/seven-resident-observer.jpg)
 
 This is the connected browser control room, not the 3D game view. Its old label reports the cohort's peak of seven owned journeys; several residents had already arrived when this screenshot was taken. The current UI separates peak concurrency from currently travelling residents.
+
+
+## Aerial observer capture set
+
+[Map, portrait and owned-production captures](aerial-observer.md) are available for future edits. The recipe capture must retain its controlled-fixture label; the natural model choice was eating. Use captured portraits as identifiers, not evidence of lip sync. A future livestream needs a completed multihour soak and recovery evidence; no public stream is running.

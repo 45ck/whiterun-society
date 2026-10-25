@@ -1,5 +1,5 @@
 const rtsCamera=createRtsCamera();
-let rtsDrag=null,lastRtsSend=0,lastRtsInput='loaded';
+let rtsDrag=null,lastRtsSend=0,lastRtsInput='loaded',lastUiPointer=null,lastUiClick=null;
 window.whiterunRtsActive=()=>camera==='free';
 function rtsMove(action,dx=0,dy=0){
  const view=rtsCamera.step(action,dx,dy);if(!view)return;
@@ -24,6 +24,8 @@ document.addEventListener('wheel',event=>{
  if(!window.whiterunRtsActive()||event.target.closest?.('.sidebar,#resident-inspector'))return;
  event.preventDefault();rtsMove(event.deltaY<0?'in':'out');
 },{passive:false});
+document.addEventListener('click',event=>{lastUiClick={x:event.clientX,y:event.clientY,target:event.target.closest?.('button')?.dataset?.resident||event.target.closest?.('button')?.id||event.target.tagName};},true);
+document.addEventListener('pointerdown',event=>{lastUiPointer={x:event.clientX,y:event.clientY,target:event.target.tagName};},true);
 document.addEventListener('pointerdown',event=>{
  if(!window.whiterunRtsActive()||event.target.closest?.('button,.panel,.brand,.resident-marker'))return;
  if(event.button!==0&&event.button!==1)return;
@@ -37,4 +39,4 @@ document.addEventListener('pointermove',event=>{
 });
 for(const name of ['pointerup','pointercancel','blur'])window.addEventListener(name,()=>{rtsDrag=null;});
 setInterval(()=>{document.getElementById('rts-controls').hidden=!window.whiterunRtsActive()||state?.speech?.status==='playing';},250);
-setInterval(()=>send({type:'society-ui-health',rts:true,mode:camera,last_input:lastRtsInput}),2000);
+setInterval(()=>send({type:'society-ui-health',rts:true,mode:camera,last_input:lastRtsInput,pointer:lastUiPointer,click:lastUiClick}),2000);

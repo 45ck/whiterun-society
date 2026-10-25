@@ -10,10 +10,13 @@ from dashboard import town_dashboard
 
 def camera_request(data, observation, society):
     mode=data.get('mode')
-    if mode not in ('market','street','trade','focus','free','story'):
+    if mode not in ('market','street','trade','focus','free','story','atlas','portrait'):
         raise ValueError('Unknown observer view')
-    result={'mode':mode}
-    if mode=='focus':
+    capture=data.get('capture',False)
+    if type(capture) is not bool or capture and mode not in ('atlas','portrait'):
+        raise ValueError('Capture requires an atlas or portrait view')
+    result={'mode':mode,'capture':capture}
+    if mode in ('focus','portrait'):
         actor=data.get('id')
         loaded={r['id'] for r in (observation or {}).get('residents',[]) if r.get('isPerson') is True}
         managed=(society.get('town') or {}).get('residents',{})
@@ -40,6 +43,7 @@ def observer_state(bridge,society):
         person=society.get('people',{}).get(key,{})
         actor=loaded.get(key)
         residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),'is_guard':resident.get('is_guard',False),
+            'baseId':actor.get('baseId') if actor else None,'space':actor.get('space') if actor else None,
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
             'race':actor.get('race') if actor else None,
             'native_activity':actor.get('activity') if actor else None,

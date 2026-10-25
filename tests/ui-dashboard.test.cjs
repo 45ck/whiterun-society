@@ -104,3 +104,39 @@ test('native inspector distinguishes owned standby from activity and stale owner
  data.residents[0].activity.scene_id=888;w.whiterunRender(data);assert.equal(w.residentActivity(7),'Native scene');
  }finally{dom.window.close();}
 });
+const mediaFixture=()=>{
+ const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'../docs/images/resident-media.json'),'utf8'));
+ const dom=new JSDOM('<svg id="map"></svg>',{runScripts:'outside-only'});dom.window.RESIDENT_MEDIA=manifest;dom.window.eval(read('resident-media.js'));return {dom,w:dom.window,manifest,media:dom.window.residentMedia};
+};
+test('aerial markers respect native calibration, elevation and world boundaries',()=>{
+ const {dom,manifest:m,media}=mediaFixture();try{
+ const p=m.map.projection,space=m.map.space;
+ const center=media.point([p.camera[0],p.camera[1],p.world[0][2]],space);assert.ok(Math.abs(center[0]-641)<.001);assert.ok(Math.abs(center[1]-391)<.001);
+ const low=media.point([p.camera[0]+1000,p.camera[1],p.world[0][2]],space),high=media.point([p.camera[0]+1000,p.camera[1],p.world[0][2]+1000],space);assert.ok(high[0]>low[0]);
+ for(const [position,s] of [[[1,2,NaN],space],[[1,2,3],{...space,interior:true}],[[1,2,3],{...space,world:42}],[[1,2,3],null],[[1,2,p.camera[2]],space]])assert.equal(media.point(position,s),null);
+ }finally{dom.window.close();}
+});
+test('portraits require both reference and base identity and render names safely',()=>{
+ const {dom,manifest,media}=mediaFixture();try{
+ const [key,a]=Object.entries(manifest.portraits)[0],r={id:Number(key),baseId:a.baseId,name:'<img src=x onerror=alert(1)>'};
+ assert.equal(media.portrait(r).querySelector('image').getAttribute('href'),'media/'+a.file);
+ assert.equal(media.portrait({...r,baseId:a.baseId+1}).querySelector('image'),null);
+ assert.equal(media.portrait({...r,id:999999}).querySelector('image'),null);
+ assert.equal(media.portrait({...r,baseId:null}).querySelector('image'),null);
+ assert.equal(media.portrait(r).querySelector('img'),null);
+ const face=media.portrait(r);face.querySelector('image').dispatchEvent(new dom.window.Event('error'));assert.equal(face.querySelector('image'),null);
+ }finally{dom.window.close();}
+});
+test('map selection is keyboard accessible and stale markers cannot send commands',()=>{
+ const {dom,w,manifest:m,media}=mediaFixture();try{
+ const svg=w.document.querySelector('svg'),selected=[],r={id:99,name:'Resident',loaded:true,position:[23500,-3500,-3320],space:m.map.space};
+ media.renderMap(svg,[r,{...r,id:100,loaded:false}],99,id=>selected.push(id));assert.equal(svg.querySelectorAll('circle').length,1);
+ svg.querySelector('circle').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter'}));assert.deepEqual(selected,[99]);
+ media.renderMap(svg,[r],99,id=>selected.push(id),{connected:false});svg.querySelector('circle').dispatchEvent(new w.Event('click'));assert.deepEqual(selected,[99]);assert.match(svg.getAttribute('aria-label'),/last observed/);
+ }finally{dom.window.close();}
+});
+test('native roster presents actual faces and septims with captured map',()=>{
+ const {dom,w}=native();try{const m=w.RESIDENT_MEDIA,a=m.portraits['108149'];w.whiterunRender({residents:[{id:108149,name:a.name,baseId:a.baseId,isPerson:true,x:23500,y:-3500,z:-3320,space:m.map.space,inventory:{gold:12,bread:2,grain:1}}],trades:[],society:{people:{'108149':{profile:{name:a.name},needs:{hunger:.2}}},town:{residents:{'108149':{name:a.name}}}},director:{running:false},camera:{mode:'free',manual:true}});
+ assert.equal(w.document.querySelectorAll('#people .resident-face image').length,1);assert.match(w.document.querySelector('#people').textContent,/SEPTIMS/);assert.equal(w.document.querySelectorAll('#map image').length,1);assert.equal(w.document.querySelectorAll('#map circle').length,1);
+ }finally{dom.window.close();}
+});

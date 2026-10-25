@@ -44,6 +44,12 @@ Generated system illustration — not gameplay
 
 ![Whole simulation](images/whole-simulation.png)
 
+## Aerial portrait inspector
+
+Captured game or observer interface — historical prototype
+
+![Aerial portrait inspector](images/aerial-portrait-inspector.jpg)
+
 ## Agent task panel
 
 Captured game or observer interface — historical prototype
@@ -116,6 +122,12 @@ Captured game or observer interface — historical prototype
 
 ![Negotiation restored](images/negotiation-restored.jpg)
 
+## Owner production aerial ui
+
+Captured game or observer interface — historical prototype
+
+![Owner production aerial ui](images/owner-production-aerial-ui.jpg)
+
 ## Paid work complete
 
 Captured game or observer interface — historical prototype
@@ -139,6 +151,48 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Parallel observer](images/parallel-observer.jpg)
+
+## Portrait 108138
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108138](images/portrait-108138.jpg)
+
+## Portrait 108140
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108140](images/portrait-108140.jpg)
+
+## Portrait 108149
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108149](images/portrait-108149.jpg)
+
+## Portrait 108156
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108156](images/portrait-108156.jpg)
+
+## Portrait 108160
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108160](images/portrait-108160.jpg)
+
+## Portrait 108186
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108186](images/portrait-108186.jpg)
+
+## Portrait 182543
+
+Captured game or observer interface — historical prototype
+
+![Portrait 182543](images/portrait-182543.jpg)
 
 ## Resident follow live
 
@@ -181,3 +235,9 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Spectator ui](images/spectator-ui.jpg)
+
+## Whiterun aerial reference
+
+Captured game or observer interface — historical prototype
+
+![Whiterun aerial reference](images/whiterun-aerial-reference.jpg)

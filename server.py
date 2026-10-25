@@ -81,7 +81,7 @@ def main():
                 if self.path=='/observer/state':return self.reply(200,{**observer_state(bridge,world.status()),'director':director.status()})
                 if self.path not in ('/','/observer','/observer/'):return self.reply(404,{'error':'not found'})
                 page=(Path(__file__).parent/'ui'/'observer.html').read_text(encoding='utf-8').replace('__OBSERVER_TOKEN__',observer_token)
-                page=page.replace('<script>','<script>\n'+(Path(__file__).parent/'ui/society-dashboard.js').read_text(encoding='utf-8')+'\n',1).encode()
+                page=page.replace('<script>','<script>\n'+(Path(__file__).parent/'ui/resident-media-data.js').read_text(encoding='utf-8')+"\nwindow.RESIDENT_MEDIA_BASE='/docs/images/';\n"+(Path(__file__).parent/'ui/resident-media.js').read_text(encoding='utf-8')+'\n'+(Path(__file__).parent/'ui/society-dashboard.js').read_text(encoding='utf-8')+'\n',1).encode()
                 self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')
                 self.send_header('Cache-Control','no-store');self.send_header('X-Frame-Options','DENY')
                 self.send_header('Content-Length',str(len(page)));self.end_headers();self.wfile.write(page)

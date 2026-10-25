@@ -12,6 +12,7 @@ from social import social_candidates
 from places import market_opportunity
 from opportunities import food_sellers
 from resident_control import sync_resident_assignments
+from owner_production import owner_work_opportunities
 
 INTERVAL = 15 / 1440
 HUNGER_PER_GAME_HOUR = .055
@@ -113,7 +114,7 @@ class DailyLife:
                 can_eat = inventory['bread'] > 0
                 can_seek = (food_sellers(state,observation,int(key)) or market_opportunity(state,observation,int(key))) and inventory['gold'] >= 3
                 can_rest = person['needs']['fatigue']>=.8 and bool(rest_opportunities(state,observation,int(key)))
-                can_work = bool(work_opportunities(state,observation,int(key)))
+                can_work = bool(work_opportunities(state,observation,int(key)) or owner_work_opportunities(state,observation,int(key)))
                 if not any((can_eat,can_seek,can_rest,can_work)):
                     agency.update(state='unmet_food_need', reason='No carried bread or qualified affordable seller route')
                     continue
@@ -144,10 +145,10 @@ class DailyLife:
                     'observed_inventory':copy.deepcopy(inventory)}
                 daily['queue'].append(event);added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])
-            elif work_opportunities(state, observation, int(key)):
+            elif work_opportunities(state, observation, int(key)) or owner_work_opportunities(state,observation,int(key)):
                 event = {'id': f"daily-{daily['sequence']}-{key}", 'actor': int(key),
                     'kind':'need_review', 'status':'pending', 'created_day':day,
-                    'priority':.5, 'reason':'A funded local enterprise can replenish stock with paid labour',
+                    'priority':.5, 'reason':'An executable enterprise opportunity can replenish stock with paid or owner labour',
                     'observed_inventory':copy.deepcopy(inventory)}
                 daily['queue'].append(event);added.append(event['id'])
                 agency.update(state='decision_pending', reason=event['reason'], event_id=event['id'])

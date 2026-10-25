@@ -14,7 +14,7 @@ def town_dashboard(society, observation):
             for child in value.values():leases(child)
         elif isinstance(value,list):
             for child in value:leases(child)
-    for key in ('movement','parallel_routines','conversationAttendance','rest'):leases(observation.get(key))
+    for key in ('movement','parallel_routines','conversationAttendance','rest','productionWork'):leases(observation.get(key))
     standby=set()
     for a in (observation.get('resident_control') or {}).get('activities',[]):
         actor=str(a.get('actor'));row=loaded.get(actor);package=a.get('expectedPackage')

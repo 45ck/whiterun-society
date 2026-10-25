@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "source": "Actual isolated Skyrim Special Edition capture; daylight staging, captured reference not live aerial video",
+  "map": {
+    "file": "whiterun-aerial-reference.jpg",
+    "width": 1282,
+    "height": 752,
+    "viewport": [
+      1,
+      31,
+      1280,
+      720
+    ],
+    "viewBox": [
+      355,
+      31,
+      720,
+      720
+    ],
+    "projection": {
+      "world": [
+        [
+          17000,
+          -15000,
+          -3320
+        ],
+        [
+          30000,
+          -15000,
+          -3320
+        ],
+        [
+          17000,
+          1000,
+          -3320
+        ]
+      ],
+      "screen": [
+        [
+          0.2848222553730011,
+          -0.17679846286773682,
+          0.9992069005966187
+        ],
+        [
+          0.7151777744293213,
+          -0.17679846286773682,
+          0.9992069005966187
+        ],
+        [
+          0.2848222553730011,
+          0.7648340463638306,
+          0.9992070198059082
+        ]
+      ],
+      "camera": [
+        23500,
+        -3500,
+        14680
+      ]
+    },
+    "space": {
+      "cell": 107135,
+      "interior": false,
+      "world": 107119
+    }
+  },
+  "portraits": {
+    "108138": {
+      "baseId": 80810,
+      "name": "Amren",
+      "file": "portrait-108138.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "108140": {
+      "baseId": 80792,
+      "name": "Saffir",
+      "file": "portrait-108140.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "108149": {
+      "baseId": 80793,
+      "name": "Carlotta Valentia",
+      "file": "portrait-108149.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "108156": {
+      "baseId": 80825,
+      "name": "Adrianne Avenicci",
+      "file": "portrait-108156.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "108160": {
+      "baseId": 80791,
+      "name": "Anoriath",
+      "file": "portrait-108160.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "108186": {
+      "baseId": 80811,
+      "name": "Ysolda",
+      "file": "portrait-108186.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    },
+    "182543": {
+      "baseId": 80807,
+      "name": "Brenuin",
+      "file": "portrait-182543.jpg",
+      "width": 1282,
+      "height": 752,
+      "viewBox": [
+        535,
+        320,
+        210,
+        210
+      ],
+      "source": "Actual Skyrim capture; static portrait, not live facial animation"
+    }
+  }
+}

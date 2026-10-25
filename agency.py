@@ -18,6 +18,7 @@ from opportunities import food_sellers
 from knowledge import person_view
 from social import social_candidates
 from enterprises import plan_work_policy, current_work_terms
+from owner_production import owner_work_opportunities
 
 TERMINAL = ('complete', 'held')
 
@@ -190,6 +191,9 @@ class Agency:
             elif inventory['gold'] >= 3 and inventory['bread'] == 0 and market_opportunity(self.active,observation,actor):
                 options.append({'id':'check_market','effect':'Walk to the known public market to look for a food seller. Presence and stock are unknown. If a registered food seller is nearby on arrival, offer 3 gold for a loaf; otherwise remember the unsuccessful visit. No food or wage is guaranteed.'})
             if plan['kind']=='need_review':
+                for job in owner_work_opportunities(self.active,observation,actor):
+                    action='work_own_'+job['business_id'];work_options[action]=job
+                    options.append({'id':action,'effect':f'Spend {job["policy"]["work_minutes"]} game minutes working your own stock where you are. Use one owned grain to produce two loaves. No wage or gold is created or transferred. Output stays yours under your current household policy. Consider fatigue and other needs; the productive animation is not implemented.'})
                 for i, job in enumerate(work_opportunities(self.active, observation, actor)):
                     action = 'seek_work' if i == 0 else 'seek_work_' + job['business_id']
                     work_options[action] = job
@@ -276,6 +280,8 @@ class Agency:
         elif action == 'seek_work' or action.startswith('seek_work_'):
             job = current['work_options'][action]
             updated.update(phase='job_offer', target=job['employer'], work_terms=job)
+        elif action.startswith('work_own_'):
+            updated.update(phase='ready_to_self_work',intent='owner_production',own_work_terms=current['work_options'][action])
         elif action == 'offer_shift':
             updated['phase'] = 'job_accept'
         elif action == 'decline_work':
@@ -456,6 +462,9 @@ class Agency:
                 self.hold_plan(plan['id'], str(error), observation)
         elif plan['phase'] == 'ready_to_rest':
             try:self.plan_rest(observation,plan)
+            except ValueError as error:self.hold_plan(plan['id'],str(error),observation)
+        elif plan['phase'] == 'ready_to_self_work':
+            try:self.plan_owner_production(observation,plan)
             except ValueError as error:self.hold_plan(plan['id'],str(error),observation)
 
     def agency_command(self, session):

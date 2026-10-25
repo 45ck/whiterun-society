@@ -10,9 +10,11 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Trade choices and audio:** sellers can reconsider one reserved loaf for an actual offer without unlocking their remaining household stock. A live four-line negotiation ended in refusal with unchanged inventories; the charts distinguish refusal, technical failure and committed sale. NPC voice output is now set to Realtek, with software output signal verified. [Implementation, audio and limits](docs/reserve-reconsideration.md).
 
+**Aerial observer and owned production:** actual Whiterun map, seven identity-checked NPC portraits and septim symbols are now in the UI. A native recipe fixture converted owned grain into bread with conserved money; the real model review chose eating first. [Screenshots, evidence and remaining input limits](docs/aerial-observer.md).
+
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 30 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 40 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -221,7 +223,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (30)</summary>
+<summary>Browse every finished project image (40)</summary>
 
 ### Independent lives observed
 
@@ -264,6 +266,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Whole simulation](docs/images/whole-simulation.png)
+
+### Aerial portrait inspector
+
+Captured game or observer interface — historical prototype
+
+![Aerial portrait inspector](docs/images/aerial-portrait-inspector.jpg)
 
 ### Agent task panel
 
@@ -337,6 +345,12 @@ Captured game or observer interface — historical prototype
 
 ![Negotiation restored](docs/images/negotiation-restored.jpg)
 
+### Owner production aerial ui
+
+Captured game or observer interface — historical prototype
+
+![Owner production aerial ui](docs/images/owner-production-aerial-ui.jpg)
+
 ### Paid work complete
 
 Captured game or observer interface — historical prototype
@@ -360,6 +374,48 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Parallel observer](docs/images/parallel-observer.jpg)
+
+### Portrait 108138
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108138](docs/images/portrait-108138.jpg)
+
+### Portrait 108140
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108140](docs/images/portrait-108140.jpg)
+
+### Portrait 108149
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108149](docs/images/portrait-108149.jpg)
+
+### Portrait 108156
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108156](docs/images/portrait-108156.jpg)
+
+### Portrait 108160
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108160](docs/images/portrait-108160.jpg)
+
+### Portrait 108186
+
+Captured game or observer interface — historical prototype
+
+![Portrait 108186](docs/images/portrait-108186.jpg)
+
+### Portrait 182543
+
+Captured game or observer interface — historical prototype
+
+![Portrait 182543](docs/images/portrait-182543.jpg)
 
 ### Resident follow live
 
@@ -402,6 +458,12 @@ Captured game or observer interface — historical prototype
 Captured game or observer interface — historical prototype
 
 ![Spectator ui](docs/images/spectator-ui.jpg)
+
+### Whiterun aerial reference
+
+Captured game or observer interface — historical prototype
+
+![Whiterun aerial reference](docs/images/whiterun-aerial-reference.jpg)
 
 </details>
 <!-- IMAGE_GALLERY_END -->

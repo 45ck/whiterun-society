@@ -54,7 +54,7 @@ let hud = null;
 let cameraMode='free',cameraActor=0,cameraDirty=true,cursor=true;
 let directorControl=null,playerControlRequest=null,audioOutput=null;
 let presentation={trades:[],committedCount:0};
-let lastProjection=0,projectionSample=[];
+let lastProjection=0,projectionSample=[],mapProjection=null;
 let observerKey=null,uiHealth=null;
 const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
@@ -103,7 +103,7 @@ on('browserMessage',event=>{
     directorControl={id:'control-'+Date.now()+'-'+Math.random().toString(16).slice(2,10),action:message.action};return;
   }
   if(message?.type==='society-audio-output'){audioOutput={label:String(message.label||'Windows default').slice(0,160),error:message.error?String(message.error).slice(0,200):null,supported:message.supported===true,status:message.status||'ready',test:message.test||null,selection:message.selection||null};return;}
-  if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30)};return;}
+  if(message?.type==='society-ui-health'){uiHealth={rts:message.rts===true,mode:String(message.mode||'').slice(0,20),last_input:String(message.last_input||'').slice(0,30),pointer:message.pointer||null,click:message.click||null};return;}
   if(message?.type==='society-camera-release'){observerCamera.reset();cameraMode='free';cameraActor=0;cameraDirty=true;return;}
   if(message && message.type==='society-speech'){speech.message(message);return;}
   if (!message || message.type!=='society-camera') return;
@@ -143,8 +143,14 @@ function updateCamera(player) {
     const yaw=control.yaw*Math.PI/180;
     offset=[Math.sin(yaw)*control.distance,Math.cos(yaw)*control.distance,control.elevation];
   }
+  if(cameraMode==='atlas'){target=[control.panX,control.panY,-3320];offset=[0,0,18000];}
+  if(cameraMode==='portrait'){
+    const actor=sp.Actor.from(sp.Game.getFormEx(cameraActor));if(!actor||!actor.is3DLoaded())return;
+    target=[actor.getPositionX(),actor.getPositionY(),actor.getPositionZ()+125];
+    const heading=actor.getAngleZ()*Math.PI/180;offset=[Math.sin(heading)*140,Math.cos(heading)*140,10];
+  }
   const desired=target.map((v,i)=>v+offset[i]);
-  const rotation=[Math.atan2(offset[2],Math.hypot(offset[0],offset[1])),Math.atan2(-offset[0],-offset[1]),0];
+  const rotation=[Math.atan2(offset[2],Math.hypot(offset[0],offset[1])),cameraMode==='atlas'?0:Math.atan2(-offset[0],-offset[1]),0];
   if(cameraDirty||typeof sp.getFreeCameraPosition!=='function') {
     sp.setFreeCameraPosition(desired);sp.setFreeCameraRotation(rotation);cameraDirty=false;
   } else {
@@ -192,7 +198,7 @@ on('update', () => {
     announced = true;
   }
   if(remoteCamera){
-    if(observerCamera.accept(remoteCamera,residents,presentation.society?.town?.residents||{}))cameraDirty=true;
+    if(observerCamera.acceptRemote(remoteCamera,residents,presentation.society?.town?.residents||{}))cameraDirty=true;
     remoteCamera=null;
   }
   const view=observerCamera.status();
@@ -217,6 +223,10 @@ on('update', () => {
       }catch(_){}
     }
     sp.browser.executeJavaScript('window.whiterunProject && window.whiterunProject('+JSON.stringify(projectionSample)+');');
+    if(cameraMode==='atlas'){
+      const corners=[[17000,-15000,-3320],[30000,-15000,-3320],[17000,1000,-3320]];
+      try{mapProjection={world:corners,screen:sp.worldPointToScreenPoint(...corners),camera:sp.getFreeCameraPosition()};}catch(_){mapProjection=null;}
+    }else mapProjection=null;
   }
   speech.tick();
   if (pending) {
@@ -229,7 +239,7 @@ on('update', () => {
           if (!result.done) pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
-        else if (command.kind === 'inventory_produce' || command.kind === 'inventory_supply') {
+        else if (['inventory_produce','inventory_self_produce','inventory_supply'].includes(command.kind)) {
           if(checkpointValue()!==command.checkpoint)throw new Error('Production checkpoint mismatch');
           const result=production.step(command);
           if(!result.done)pending=command;
@@ -315,7 +325,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['scene_handoff','speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_self_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }
@@ -339,9 +349,9 @@ on('update', () => {
       if (typeof resident.getItemCount==='function') {
         for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
       }
-      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null,space=null;
+      let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null,space=null,baseId=null;
       try{if(typeof resident.getRace==='function'){const nativeRace=resident.getRace();if(nativeRace){const label=typeof nativeRace.getName==='function'?nativeRace.getName():null;race={id:nativeRace.getFormID(),name:typeof label==='string'&&label?label.slice(0,80):null,source:'native Skyrim race; descriptive game metadata only'};}}}catch(_){}
-      try{const raw=resident.getActorBase?.()||resident.getBaseObject?.();const base=raw&&sp.ActorBase?.from(raw);if(base&&typeof base.getSex==='function')voiceSex=base.getSex();}catch(_){}
+      try{const raw=resident.getActorBase?.()||resident.getBaseObject?.();const base=raw&&sp.ActorBase?.from(raw);baseId=raw?raw.getFormID():null;if(base&&typeof base.getSex==='function')voiceSex=base.getSex();}catch(_){}
       try{if(sp.Keyword&&typeof resident.hasKeyword==='function'){
         const keyword=sp.Keyword.from(sp.Game.getFormEx(0x13794));if(keyword)isPerson=resident.hasKeyword(keyword);
       }}catch(_){}
@@ -350,7 +360,7 @@ on('update', () => {
         const interior=ownCell.isInterior(),world=resident.getWorldSpace?.();outdoors=!interior;
         space={cell:ownCell.getFormID(),interior,world:world?world.getFormID():null};
       }}catch(_){}
-      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,space,
+      residents.push({id:resident.getFormID(),name:resident.getDisplayName(),inventory,isPerson,isGuard,outdoors,voiceSex,race,space,baseId,
         activity:observeNativeActivity(resident),
         classificationSource:isPerson===null?'unavailable':'native ActorTypeNPC keyword; child/dead filters applied',
         x:resident.getPositionX(),y:resident.getPositionY(),z:resident.getPositionZ()});
@@ -381,7 +391,7 @@ on('update', () => {
       const keyword=sp.Keyword?.from(sp.Game.getFormEx(0x13794));
       if(!keyword||!owner.hasKeyword(keyword))continue;
       const inventory={};for(const [item,form] of Object.entries(economyForms))inventory[item]=owner.getItemCount(sp.Game.getFormEx(form));
-      const base=typeof owner.getActorBase==='function'?owner.getActorBase():null;
+      const base=owner.getActorBase?.()||owner.getBaseObject?.();
       inventoryObservations.push({id,isPerson:true,loaded:owner.is3DLoaded(),baseId:base?base.getFormID():null,inventory});
     }catch(_){} // Missing references are not assigned fictitious empty purses.
   }
@@ -469,7 +479,7 @@ on('update', () => {
     session, checkpoint:checkpointValue(), movement:movementSource?movementSource.status():null, routing:routines.capabilities(),parallel_routines:parallelRoutines.status(),platform:sp.getPlatformVersion(),
     ready:observerReady,mode:'observer',residents,places:routines.places(residents),inventory_observations:inventoryObservations,inventory_checkpoint:presentation.society?.checkpoint??null,perception,gameDays,weather,rest:rest.sense(residents),productionWork:production.status(),speech:speech.status(),conversationAttendance:conversationAttendance.status(),projection:projectionSample,audioDiagnostic:config.audioDiagnostic===true,audioEnabled,
     player:{id:player.getFormID(),cell:cell.getName(),cellId:cell.getFormID(),x:player.getPositionX(),y:player.getPositionY(),z:player.getPositionZ()},
-    selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
+    map_projection:mapProjection,selected:actor ? {id:selected,name:actor.getDisplayName()} : null, ack
   };
   if (sp.browser) {
     sp.setTextsVisibility('off');

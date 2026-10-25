@@ -35,6 +35,11 @@
     "kind": "Generated system illustration \u2014 not gameplay"
   },
   {
+    "file": "aerial-portrait-inspector.jpg",
+    "title": "Aerial portrait inspector",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
     "file": "agent-task-panel.jpg",
     "title": "Agent task panel",
     "kind": "Captured game or observer interface \u2014 historical prototype"
@@ -95,6 +100,11 @@
     "kind": "Captured game or observer interface \u2014 historical prototype"
   },
   {
+    "file": "owner-production-aerial-ui.jpg",
+    "title": "Owner production aerial ui",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
     "file": "paid-work-complete.jpg",
     "title": "Paid work complete",
     "kind": "Captured game or observer interface \u2014 historical prototype"
@@ -112,6 +122,41 @@
   {
     "file": "parallel-observer.jpg",
     "title": "Parallel observer",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108138.jpg",
+    "title": "Portrait 108138",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108140.jpg",
+    "title": "Portrait 108140",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108149.jpg",
+    "title": "Portrait 108149",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108156.jpg",
+    "title": "Portrait 108156",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108160.jpg",
+    "title": "Portrait 108160",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-108186.jpg",
+    "title": "Portrait 108186",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "portrait-182543.jpg",
+    "title": "Portrait 182543",
     "kind": "Captured game or observer interface \u2014 historical prototype"
   },
   {
@@ -147,6 +192,11 @@
   {
     "file": "spectator-ui.jpg",
     "title": "Spectator ui",
+    "kind": "Captured game or observer interface \u2014 historical prototype"
+  },
+  {
+    "file": "whiterun-aerial-reference.jpg",
+    "title": "Whiterun aerial reference",
     "kind": "Captured game or observer interface \u2014 historical prototype"
   }
 ]

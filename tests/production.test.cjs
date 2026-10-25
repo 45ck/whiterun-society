@@ -1,5 +1,19 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createProductionController}=require('../bridge/production.js');
+function ownerSetup(){const h=setup();h.c={id:'owner',kind:'inventory_self_produce',actor:2,expected_package:99,work_minutes:10,anchor:[0,0,0],before:{owner:structuredClone(h.balances[2])},after:{owner:{gold:5,bread:4,grain:1}}};return h;}
+test('owner labour uses one account, no wages and two asynchronous recipe legs',()=>{
+ const h=ownerSetup(),other=structuredClone(h.balances[1]);h.engine.step(h.c);assert.equal(h.engine.status().ownedPackage,true);
+ for(let i=0;i<24;i++){h.next();h.engine.step(h.c);}
+ assert.equal(h.engine.step(h.c).ack.mechanism,'native_owner_recipe');assert.deepEqual(h.balances[2],h.c.after.owner);assert.deepEqual(h.balances[1],other);assert.equal(h.calls.length,2);assert.equal(h.engine.status().ownedPackage,false);
+ h.engine.reset();h.engine.step(h.c);assert.equal(h.calls.length,2);
+});
+test('owner input-only save resumes output once without a second input or any wage',()=>{
+ const h=ownerSetup();h.balances[2].grain--;h.engine.step(h.c);h.next();assert.equal(h.engine.step(h.c).ack.status,'applied');assert.equal(h.calls.length,1);assert.deepEqual(h.balances[2],h.c.after.owner);
+});
+test('owner cannot manufacture gold, change the recipe, or count distant attendance',()=>{
+ for(const [field,value] of [['gold',6],['bread',5],['grain',2]]){const h=ownerSetup();h.c.after.owner[field]=value;assert.equal(h.engine.step(h.c).ack.status,'held');assert.equal(h.calls.length,0);}
+ const h=ownerSetup();h.c.anchor=[500,0,0];h.engine.step(h.c);for(let i=0;i<30;i++){h.next();h.engine.step(h.c);}assert.equal(h.engine.status().workedMinutes,0);h.advanceWall(31000);assert.equal(h.engine.step(h.c).ack.no_effects_issued,true);assert.equal(h.calls.length,0);
+});
 function setup(){
  const balances={1:{gold:12,bread:0,grain:0},2:{gold:5,bread:2,grain:2}},calls=[],queue=[];
  let game=1,clock=0,owned=true,defer=false,frame=0,separation=0;

@@ -1,0 +1,105 @@
+{
+  "natural_review": {
+    "selection": "Operator-selected pending owner review; model chooses available action",
+    "event_id": "daily-58-108149",
+    "actor": 108149,
+    "options": [
+      "defer",
+      "eat_bread",
+      "visit_person_108160",
+      "visit_person_225390",
+      "visit_person_108138",
+      "visit_person_108165",
+      "visit_person_108162",
+      "work_own_business-108149",
+      "rest_at_bench"
+    ],
+    "choice": "eat_bread",
+    "model": "typesafe/jev-1.14-20261014",
+    "elapsed_seconds": 0.781,
+    "cost_usd": 0.00021063,
+    "outcome": "ate_bread"
+  },
+  "native_recipe_fixture": {
+    "scope": "Controlled native qualification fixture, NOT a model-selected action; restore BG after this branch",
+    "command": {
+      "actor": 108149,
+      "after": {
+        "owner": {
+          "bread": 7,
+          "gold": 102,
+          "grain": 19
+        }
+      },
+      "anchor": [
+        23851.423828125,
+        -4000.489990234375,
+        -3005.478759765625
+      ],
+      "before": {
+        "owner": {
+          "bread": 5,
+          "gold": 102,
+          "grain": 20
+        }
+      },
+      "expected_package": 167774241,
+      "id": "produce-daily-58-108149",
+      "kind": "inventory_self_produce",
+      "work_minutes": 10
+    },
+    "status": "committed",
+    "evidence": {
+      "ack": {
+        "animation_verified": false,
+        "id": "produce-daily-58-108149",
+        "inventory": {
+          "owner": {
+            "bread": 7,
+            "gold": 102,
+            "grain": 19
+          }
+        },
+        "mechanism": "native_owner_recipe",
+        "status": "applied",
+        "work": {
+          "actor": 108149,
+          "attendance": {
+            "distance": 0,
+            "package_owned": true
+          },
+          "expectedPackage": 167774241,
+          "id": "produce-daily-58-108149",
+          "ownedPackage": false,
+          "phase": "complete",
+          "requiredMinutes": 10,
+          "wageGold": 0,
+          "workedMinutes": 10
+        }
+      },
+      "actual": {
+        "owner": {
+          "bread": 7,
+          "gold": 102,
+          "grain": 19
+        }
+      },
+      "session": "1792901213358-0.6372176014724986"
+    },
+    "observed_seconds": 34.12,
+    "peak_work_minutes": 10
+  },
+  "restoration": {
+    "save": "WS-Owner-20261025-BG",
+    "checkpoint": 1904,
+    "compared_fields": 17,
+    "all_matched": true
+  },
+  "limits": [
+    "Recipe execution was an explicit controlled fixture; natural model review chose eating",
+    "No productive animation or oven use",
+    "One authored recipe; no autonomous supply chain or prices",
+    "7 captured portraits out of 29 enrolled residents; missing or changed identities show initials",
+    "Map is static captured scenery with live native markers; not live overhead video"
+  ]
+}
