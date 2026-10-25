@@ -5,6 +5,7 @@ from statistics import mean, median
 from relationship_metrics import relationship_metrics
 from dialogue_metrics import dialogue_metrics
 from quality_goals import quality_goals
+from dialogue_policy import recorded_model_results
 
 
 def number(value):
@@ -39,17 +40,15 @@ def simulation_metrics(state):
     history=state.get('conversation_history',[])+([state['conversation']] if state.get('conversation') else [])
     history=list({c['id']:c for c in history}.values())
     def fixture(c):
-        results=c.get('social_decisions',[])+[r for t in c.get('turns',[]) for r in (t.get('language',{}),t.get('decision',{}))]
+        results=recorded_model_results(c)
         return any(str(r.get('model','')).startswith(('test','deterministic-integration-fixture')) for r in results)
     scenes=[c for c in history if c.get('mode')=='autonomous_social' and not fixture(c)]
     terminal=[c for c in scenes if c['phase'] in ('complete','held')]
     chats=[c for c in terminal if c.get('response')=='chat']
     turns=[t for c in scenes for t in c.get('turns',[]) if t.get('delivered')]
     attempts=turns+[c['current'] for c in scenes if c.get('current',{}).get('delivery_id')]
-    results=[r for c in scenes for r in c.get('social_decisions',[])]
-    results += [r for t in turns for r in (t.get('language',{}),t.get('decision',{}))]
-    # A held current turn can contain a billed successful proposal/selection.
-    results += [r for c in scenes if c.get('current') for r in (c['current'].get('language',{}),c['current'].get('decision',{})) if r]
+    # Deliberately unspoken proposals and held current turns still incurred cost.
+    results=[r for c in scenes for r in recorded_model_results(c)]
     durations=[c['finished_at']-c['started_at'] for c in terminal if number(c.get('started_at')) and number(c.get('finished_at'))]
     gaps=[current['prepared_at']-previous['ended_at'] for c in scenes for previous,current in zip(c.get('turns',[]),c.get('turns',[])[1:]) if number(previous.get('ended_at')) and number(current.get('prepared_at'))]
     orientations=[t['playback']['orientation'] for t in turns if t.get('playback',{}).get('orientation',{}).get('samples',0)>0]
@@ -81,6 +80,15 @@ def simulation_metrics(state):
     noticed_scenes=[c for c in scenes if c.get('social_notice')]
     result={
         'scope':'Current save lineage and retained encounter history. Not lifetime telemetry or a representative population study.',
+        'dialogue_policies':{policy:{
+            'encounters':len(group),'recorded_model_results':sum(len(recorded_model_results(c)) for c in group),
+            'unspoken_proposals':sum(len(c.get('unspoken_turns',[])) for c in group),
+            'rejected_inferences':sum(len(c.get('rejected_inferences',[])) for c in group),
+            'language_validation_failures':dict(Counter(r['receipt']['validation_failure'] for c in group for r in c.get('rejected_inferences',[]))),
+            'delivered_turns':sum(len(c.get('turns',[])) for c in group),
+            'reply_dispatch_gap_seconds':distribution([n['prepared_at']-p['ended_at'] for c in group for p,n in zip(c.get('turns',[]),c.get('turns',[])[1:]) if number(p.get('ended_at')) and number(n.get('prepared_at'))])}
+            for policy in sorted({c.get('reply_policy','separate_choice') for c in scenes})
+            for group in [[c for c in scenes if c.get('reply_policy','separate_choice')==policy]]},
         'encounter_scheduling':{'background_cohorts':len(background),'notice_cohorts':len(notices),
             'cohorts_without_notice_telemetry':len(background)-len(notices),
             'captured_directed_pairs':sum(len(ids) for b in notices for ids in b['social_notice']['candidates_by_actor'].values()),
@@ -123,7 +131,7 @@ def simulation_metrics(state):
         'models':{'recorded_results':len(results),'latency_seconds':distribution([r.get('elapsed_seconds') for r in results]),
             'known_cost_usd':round(sum(v for v in model_cost if number(v)),8),
             'results_with_cost':sum(number(v) for v in model_cost),
-            'cost_coverage':'Accepted retained results only. Rejected provider calls remain in worker receipts; this is not a total bill.'},
+            'cost_coverage':'Retained accepted results and claim-bound language rejection receipts. Older rejections and other failed calls may exist only in worker receipts; this is not a total bill.'},
         'economy':{'committed_sales':len(trades),'committed_production':len(production),
             'voiced_trade_plans':sum(bool(p.get('voiced_trade') and p.get('economic_pair')) for p in plans),
             'delivered_trade_utterances':len(economic_turns),

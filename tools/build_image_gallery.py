@@ -5,7 +5,7 @@ import json
 import re
 
 ROOT=Path(__file__).resolve().parents[1]
-GENERATED={'npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png'}
+GENERATED={'npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png','independent-lives-observed.png','reply-is-a-choice.png'}
 
 def build():
     images=sorted((ROOT/'docs/images').iterdir(),key=lambda p:(p.name not in GENERATED,p.name))
@@ -20,7 +20,7 @@ def build():
     (ROOT/'docs/images/catalog.json').write_text(json.dumps(records,indent=2)+'\n',encoding='utf-8')
     (ROOT/'docs/gallery.md').write_text('\n\n'.join(markdown)+'\n',encoding='utf-8')
     html='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Whiterun Society — visual documentation</title>
-<style>body{background:#111c22;color:#eee5d5;font:16px system-ui;margin:0}header,main{max-width:1400px;margin:auto;padding:28px}h1{font:42px Georgia;margin-bottom:12px}p{line-height:1.6;color:#bdc9cb}a{color:#ecc77c}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:24px}article{background:#1d2c33;border:1px solid #40515a;border-radius:12px;padding:16px}img{width:100%;aspect-ratio:1.5;object-fit:contain;background:#10181d;border-radius:5px}h2{font-size:20px}article p{font-size:14px}</style>
+<style>body{background:#111c22;color:#eee5d5;font:16px system-ui;margin:0}header,main{max-width:1400px;margin:auto;padding:28px}h1{font:42px Georgia;margin-bottom:12px}p{line-height:1.6;color:#bdc9cb}a{color:#ecc77c}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:24px}article{background:#1d2c33;border:1px solid #40515a;border-radius:12px;padding:16px}img{width:100%;aspect-ratio:1.5;object-fit:contain;background:#10181d;border-radius:5px}h2{font-size:20px}article p{font-size:14px}audio{max-width:100%}</style>
 <header><p>WHITERUN SOCIETY · OPEN SOURCE</p><h1>Visual documentation</h1><p>System diagrams and captured game/observer views. Illustrations are labelled; screenshots preserve historical milestones and do not prove every current requirement is complete.</p><nav><a href="http://127.0.0.1:17854/">Local control room (requires lab)</a> · <a href="https://github.com/45ck/whiterun-society">README &amp; source</a> · <a href="https://github.com/45ck/whiterun-society/blob/main/docs/quality-metrics.md">Metrics and evidence limits</a></nav></header><main>'''+''.join(cards)+'</main></html>\n'
     audio_catalog=ROOT/'docs/audio/catalog.json'
     if audio_catalog.is_file():
@@ -28,8 +28,8 @@ def build():
         for clip in json.loads(audio_catalog.read_text(encoding='utf-8')):
             if not re.fullmatch(r'[A-Za-z0-9_-]+\.wav',clip['file']):raise ValueError('Invalid public audio asset name')
             if not (ROOT/'docs/audio'/clip['file']).is_file():raise ValueError('Missing public audio asset')
-            clips.append(f'<article><h2>{escape(clip["speaker"])}</h2><p>{escape(clip["line"])}</p><audio controls preload="none" src="audio/{escape(clip["file"])}">Audio playback is not supported.</audio><p>{escape(clip["source"])}</p></article>')
-        audio='<header id="voice-example"><h1>Hear the observed encounter</h1><p>Three synthesized utterances used by the live trial, in order. These are not a recording of game audio. The waking-time claim is unsupported by the supplied context; dialogue realism remains unscored.</p></header><main>'+''.join(clips)+'</main>'
+            clips.append(f'<article><p>{escape(clip.get("encounter","Observed encounter"))}</p><h2>{escape(clip["speaker"])}</h2><p>{escape(clip["line"])}</p><audio controls preload="none" src="audio/{escape(clip["file"])}">Audio playback is not supported.</audio><p>{escape(clip["source"])}</p></article>')
+        audio='<header id="voice-example"><h1>Hear the observed encounters</h1><p>Synthesized utterances used by observed encounters, grouped below. These are not recordings of game audio. Dialogue realism remains unscored; generated speech may contain unsupported claims.</p></header><main>'+''.join(clips)+'</main>'
         html=html.replace('</header><main>','</header>'+audio+'<main>',1)
     (ROOT/'docs/index.html').write_text(html,encoding='utf-8')
     readme=ROOT/'README.md';text=readme.read_text(encoding='utf-8')

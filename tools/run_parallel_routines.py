@@ -14,6 +14,7 @@ import urllib.request
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from decisions import infer
 from social import social_candidates,valid_social_notice
+from dialogue_policy import MAX_COMBINED_CALLS
 
 
 def settle_social_child(process, encounter_id, request, reason):
@@ -40,7 +41,7 @@ def main():
     parser.add_argument('--events',nargs='+',required=True)
     parser.add_argument('--model-config',type=Path,required=True)
     parser.add_argument('--background',action='store_true')
-    parser.add_argument('--social-during-travel',action='store_true',help='Offer one disjoint conversation during background travel; at most 21 extra model calls')
+    parser.add_argument('--social-during-travel',action='store_true',help=f'Offer one disjoint conversation during background travel; at most {MAX_COMBINED_CALLS} extra model calls')
     parser.add_argument('--language-config',type=Path)
     args=parser.parse_args()
     background=args.background or args.social_during_travel
@@ -95,7 +96,7 @@ def main():
                 if recent:command+=['--opportunity-batch',args.id]
                 social_process=subprocess.Popen(command,
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
-                evidence['social_event']={'id':social_id,'pid':social_process.pid,'status':'started','maximum_model_calls':21,
+                evidence['social_event']={'id':social_id,'pid':social_process.pid,'status':'started','maximum_model_calls':MAX_COMBINED_CALLS,
                     'recent_notice_used':recent,'notice_to_dispatch_seconds':round(time.time()-notice['captured_at'],3) if recent else None};record()
                 deadline=max(deadline,time.monotonic()+660)
             if social_process and social_process.poll() is not None and evidence['social_event']['status']=='started':

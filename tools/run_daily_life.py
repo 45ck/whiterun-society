@@ -1,7 +1,7 @@
 """Review game-clock needs and optionally run a finite number of queued decisions.
 
 No wall-clock simulation while the game is disconnected. Inference is delegated
-to persisted-claim workers: at most five calls per economic event, 21 per
+to persisted-claim workers: at most five calls per economic event, 16 per
 social encounter when an explicit language configuration is supplied.
 """
 import argparse
@@ -18,6 +18,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from social import social_candidates
 from parallel_routines import select_routine_events
 from routing import activity_blocker
+from dialogue_policy import recorded_model_results,MAX_COMBINED_CALLS
 
 
 def fair_pending(events, social_first=True):
@@ -84,13 +85,40 @@ def isolated_released_cohort(state, batch_id):
         for m in members)
 
 
+def isolated_released_conversation(state, event_id, session):
+    """An individual failed chat cannot freeze a town after verified cleanup."""
+    society=state['society'];c=society.get('conversation') or {}
+    if (state['bridge'].get('session')!=session or c.get('id')!=event_id
+            or c.get('phase')!='held' or c.get('social_settled') is not True
+            or c.get('mode')!='autonomous_social' or c.get('interruption')
+            or society.get('error') or society.get('transition') or society.get('unsettled_effect')
+            or state['bridge'].get('command')):return False
+    release=c.get('release_evidence') or {}
+    if (release.get('id')!='release-chat-'+event_id or release.get('released') is not True
+            or release.get('status')!='applied'):return False
+    if c.get('paired_attendance'):
+        attendance=release.get('attendance') or {};participants=attendance.get('participants') or []
+        if (attendance.get('id')!='attend-'+event_id or attendance.get('phase')!='released'
+                or sorted(p.get('actor',-1) for p in participants)!=sorted(c.get('speakers',[]))
+                or not participants or not all(p.get('released') is True and p.get('ownedPackage') is False for p in participants)):
+            return False
+    if c.get('current',{}).get('delivery_id') and release.get('speechStop',{}).get('acknowledged') is not True:
+        return False
+    batch=society.get('routine_batch') or {};plan=society.get('plan') or {}
+    if batch and (batch.get('phase') not in ('complete','held') or batch.get('settled') is not True
+                  or batch.get('release_verified') is not True):return False
+    if plan and (plan.get('phase') not in ('complete','held') or plan.get('release_required')):return False
+    queued=next((e for e in society['town']['daily']['queue'] if e['id']==event_id),None)
+    return queued is None or queued.get('status')=='held'
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--max-events',type=int,default=0)
     parser.add_argument('--watch-seconds',type=int,default=0)
     parser.add_argument('--model-config',type=Path)
-    parser.add_argument('--language-config',type=Path,help='Enables scheduled social encounters with at most 21 model calls each')
+    parser.add_argument('--language-config',type=Path,help=f'Enables scheduled social encounters with at most {MAX_COMBINED_CALLS} model calls each')
     parser.add_argument('--parallel-journeys',action='store_true',help='Group up to eight eligible food-search journeys within the event budget')
     parser.add_argument('--receipt',type=Path)
     parser.add_argument('--stop-file',type=Path,help='Stop between settled events; never interrupt a native effect')
@@ -117,7 +145,7 @@ def main():
         return state
     before=fresh();session=before['bridge']['session']
     evidence={'before':before,'started_at':time.time(),'reviews':[],'events':[],
-              'maximum_model_calls':(21 if args.language_config else 5)*args.max_events,'status':'running'}
+              'maximum_model_calls':(MAX_COMBINED_CALLS if args.language_config else 5)*args.max_events,'status':'running'}
     output=args.receipt or runtime/('daily-life-'+str(time.time_ns())+'.json')
     def stopping():return args.stop_file is not None and args.stop_file.exists()
     def record():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
@@ -218,10 +246,26 @@ def main():
                         evidence['events'][-1].update(status='held',outcome='interrupted_before_action',
                             model_calls=worker['model_calls'],continued_other_residents=True)
                         record();continue
+                if social and plan and plan.get('id')==event['id'] and plan.get('phase') in ('releasing','held'):
+                    release_until=time.monotonic()+30
+                    while not isolated_released_conversation(current,event['id'],session) and time.monotonic()<release_until:
+                        # A terminal failure without a releasable route cannot be certified here.
+                        if (current['society'].get('conversation') or {}).get('phase')=='held' and not current['society']['transition']:
+                            break
+                        time.sleep(.2);current=fresh()
+                        if current['bridge']['session']!=session:raise ValueError('Session changed while releasing failed encounter')
+                    if isolated_released_conversation(current,event['id'],session):
+                        worker_file=runtime/('conversation-'+hashlib.sha256(event['id'].encode()).hexdigest()[:12]+'.json')
+                        worker=json.loads(worker_file.read_text(encoding='utf-8'))
+                        if worker.get('id')!=event['id'] or worker.get('status')!='held':raise ValueError('Failed conversation receipt mismatch')
+                        plan=current['society']['conversation']
+                        evidence['events'][-1].update(actor=plan.get('initiator'),status='held',outcome='failed_encounter_released',
+                            error=plan.get('error'),model_calls=sum(worker['calls'].values()),continued_other_residents=True)
+                        record();continue
                 if result.returncode or not plan or plan['id']!=event['id']:
                     evidence['events'][-1].update(status='held',error=(plan or {}).get('error','Resident worker did not finish cleanly'))
                     record();raise ValueError(evidence['events'][-1]['error'])
-                calls=(len(plan.get('social_decisions',[]))+2*len(plan.get('turns',[]))) if social else len(plan['decisions'])
+                calls=len(recorded_model_results(plan)) if social else len(plan['decisions'])
                 if social:evidence['events'][-1]['actor']=plan.get('initiator')
                 evidence['events'][-1].update(status=plan['phase'],outcome=plan.get('outcome'),model_calls=calls)
                 record()

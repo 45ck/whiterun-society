@@ -39,14 +39,16 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual(error.exception.receipt['usage']['completion_tokens_details']['reasoning_tokens'], 499)
         self.assertNotIn('untrusted', error.exception.receipt['usage'])
         self.assertEqual(error.exception.receipt['finish_reason'], 'length')
+        self.assertEqual(error.exception.receipt['validation_failure'],'incomplete_output')
 
     def test_invalid_candidates_are_not_exposed_or_accepted(self):
-        for content in ('private raw invalid output', '{"candidates": []}'):
+        for content,category in (('private raw invalid output','invalid_json'), ('{"candidates": []}','candidate_count')):
             with self.subTest(content=content), patch('language.urllib.request.urlopen',
                     return_value=self.response(content, usage={'cost': .002})):
                 with self.assertRaises(LanguageOutputError) as error:
                     propose({}, self.config, 'test-placeholder')
             self.assertEqual(str(error.exception), 'Invalid language candidates')
+            self.assertEqual(error.exception.receipt['validation_failure'],category)
             self.assertEqual(error.exception.receipt['usage']['cost'], .002)
             self.assertNotIn(content, json.dumps(error.exception.receipt))
 

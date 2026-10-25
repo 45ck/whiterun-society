@@ -195,12 +195,12 @@ def main():
                         raise ValueError('game bridge unavailable')
                     if bridge['command']: raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'),data.get('opportunity_batch'))
+                    if self.path=='/conversation/start': result=world.start_conversation(data['id'],observation,data.get('actor'),data.get('max_turns'),data.get('opportunity_batch'),data.get('reply_policy','combined_choice'))
                     elif self.path=='/conversation/claim': result=world.claim_conversation(data['id'],observation)
                     elif self.path=='/conversation/result': result=world.finish_conversation_inference(data['id'],data['claim_id'],data['result'],observation)
                     elif self.path=='/conversation/audio':
                         result=world.prepare_speech(data['id'],self.checked_audio(data),observation)
-                    elif self.path=='/conversation/hold':result=world.hold_conversation(data['id'],data['reason'],observation)
+                    elif self.path=='/conversation/hold':result=world.hold_conversation(data['id'],data['reason'],observation,inference_failure=data.get('inference_failure'))
                     else:raise ValueError('Unknown conversation operation')
                     self.reply(202,result)
                 elif self.path in ('/market-day/start','/market-day/advance'):

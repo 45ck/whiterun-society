@@ -6,6 +6,7 @@ import subprocess
 import sys
 import time
 import uuid
+from dialogue_policy import MAX_COMBINED_CALLS
 
 
 class DirectorControl:
@@ -77,7 +78,7 @@ class DirectorControl:
             self.log.close(); self.log = None
             raise
         self.run = {'id': run_id, 'status': 'running', 'max_events': count,
-                    'maximum_model_calls': 21*count, 'started_at': time.time(),
+                    'maximum_model_calls': MAX_COMBINED_CALLS*count, 'started_at': time.time(),
                     'receipt': str(receipt), 'stop_file': str(stop_file)}
         return self.status()
 

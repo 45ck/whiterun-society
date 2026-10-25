@@ -4,20 +4,55 @@
     "speaker": "Adrianne Avenicci",
     "line": "Morning, Idolaf. Pleasant day to be up early.",
     "sha256": "a0cbc07d6a4edc5371b4422e7e02d3c9e8fca694f5d46695c97279717333ab17",
-    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio",
+    "encounter": "Travel and speech overlap"
   },
   {
     "file": "overlap-c-2.wav",
     "speaker": "Idolaf Battle-Born",
     "line": "It is a nice morning, Adrianne. I've been up since dawn.",
     "sha256": "44664a18eacf0e29ee8b78f3a811ee7fd6b966bd315a8c7ce85ed52912f38c40",
-    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio",
+    "encounter": "Travel and speech overlap"
   },
   {
     "file": "overlap-c-3.wav",
     "speaker": "Adrianne Avenicci",
     "line": "That's a solid start to the day. I'll leave you to it then.",
     "sha256": "98b5c852a7ab3c85d5e00c49fbdf3a953a0fe5c670f2394fe4e72883c06004b2",
-    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio"
+    "source": "Generated Kokoro utterance used by the observed encounter; not recorded game audio",
+    "encounter": "Travel and speech overlap"
+  },
+  {
+    "file": "combined-a-1.wav",
+    "speaker": "Amren",
+    "line": "Saffir. Long day for both of us, I'd say.",
+    "sha256": "c1622484799fd4a030ca7df51beba8e871bbc026c72c3309d8d104e73281ba31",
+    "encounter": "Amren and Saffir \u00b7 combined reply choice",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not a recording of game audio"
+  },
+  {
+    "file": "combined-a-2.wav",
+    "speaker": "Saffir",
+    "line": "Tell me about it. This weather's been tiring enough on its own.",
+    "sha256": "ce90986dfc55799014582ec5a3d7d3b9efdab9f2c800158245c0a11e7ec52cea",
+    "encounter": "Amren and Saffir \u00b7 combined reply choice",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not a recording of game audio"
+  },
+  {
+    "file": "combined-a-3.wav",
+    "speaker": "Amren",
+    "line": "It is. I'm ready to rest after today.",
+    "sha256": "7e5739ba7855b540e0f80abb4a6c02aaaa2efcb29c00369659ec3acba597ccd7",
+    "encounter": "Amren and Saffir \u00b7 combined reply choice",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not a recording of game audio"
+  },
+  {
+    "file": "combined-a-4.wav",
+    "speaker": "Saffir",
+    "line": "Rest well, Amren.",
+    "sha256": "a368e11f2d1f651fa33660a05ff3f20d4c483203ebde753c76f37cf154e47a68",
+    "encounter": "Amren and Saffir \u00b7 combined reply choice",
+    "source": "Generated Kokoro utterance used by confirmed overlay playback; not a recording of game audio"
   }
 ]

@@ -34,7 +34,7 @@ Residents now wait around observed Skyrim scenes, combat and sleep transitions. 
 
 ![Language alternatives, Jev choice, deterministic playback and heard memory](docs/images/reply-is-a-choice.png)
 
-*Generated architecture illustration, not gameplay. Language proposes alternatives; Jev chooses whether to reply, end politely or leave quietly; deterministic game logic handles validation, voice playback and confirmed speech memory.* [Image prompt and provenance](docs/images/reply-is-a-choice.prompt.md).
+*Generated architecture illustration, not gameplay. Language proposes alternatives; Jev chooses whether to reply, end politely or leave quietly; deterministic game logic handles validation, voice playback and confirmed speech memory.* [Image prompt and provenance](docs/images/reply-is-a-choice.prompt.md). [Implementation, live trials and known defects](docs/combined-dialogue.md).
 
 ### Independent lives around a conversation
 

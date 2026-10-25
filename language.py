@@ -1,10 +1,10 @@
 """Local language layer: generate alternatives, never choose or execute effects."""
 import json
-import math
 import re
 import time
 import urllib.request
 from conversation import validate_candidates
+from inference_receipts import CANDIDATE_FAILURES, usage_receipt
 
 
 class LanguageOutputError(ValueError):
@@ -12,22 +12,6 @@ class LanguageOutputError(ValueError):
     def __init__(self, reason, receipt):
         super().__init__(reason)
         self.receipt = receipt
-
-
-def _usage(raw):
-    result = {}
-    if not isinstance(raw, dict):
-        return result
-    for field in ('prompt_tokens', 'completion_tokens', 'total_tokens', 'cost'):
-        value = raw.get(field)
-        if type(value) in (int, float) and math.isfinite(value) and value >= 0:
-            result[field] = value
-    details = raw.get('completion_tokens_details')
-    if isinstance(details, dict):
-        value = details.get('reasoning_tokens')
-        if type(value) is int and value >= 0:
-            result['completion_tokens_details'] = {'reasoning_tokens': value}
-    return result
 
 
 def propose(context, config, key):
@@ -54,8 +38,11 @@ def propose(context, config, key):
         'chat_template_kwargs':{'enable_thinking':False},
         'messages':[{'role':'system','content':
             'You write plausible alternatives for one fictional Skyrim resident, not an omniscient narrator. '
-            'Propose exactly TWO different conversational intentions, option_1 then option_2. Each has an intention, '
-            'a natural spoken line of 1-30 words, and tone. Short acknowledgements such as Thanks or Take care are valid. '
+            'Propose exactly TWO different conversational intentions, option_1 then option_2. '
+            'If candidate_roles is supplied, obey each ID role exactly: reply answers or acknowledges the latest words; '
+            'close_politely briefly acknowledges them and says farewell without a new question or topic; opening starts the exchange; refusal courteously declines it. '
+            'The choice to keep talking or leave belongs to the decision model, so never give two continuing replies when one slot requires a closing. '
+            'Each alternative has an intention, a natural spoken line of 1-30 words, and a tone. Short acknowledgements such as Thanks or Take care are valid. '
             'Do not pad a greeting or farewell into a speech. Vary line length with purpose. '
             'Address the nearby listener directly. Use ONLY your '
             'supplied interaction context: clock, last_line_heard, own commitments and relationship band. '
@@ -104,17 +91,21 @@ def propose(context, config, key):
     start=time.monotonic()
     with urllib.request.urlopen(req,timeout=180) as response:raw=json.load(response)
     receipt={'model':config['model'], 'elapsed_seconds':round(time.monotonic()-start,3),
-             'usage':_usage(raw.get('usage')) if isinstance(raw,dict) else {}}
+             'usage':usage_receipt(raw.get('usage')) if isinstance(raw,dict) else {}}
     try:
         choice=raw['choices'][0]
         finish=choice.get('finish_reason')
         receipt['finish_reason']=finish if finish in ('stop','length','content_filter','tool_calls','error') else 'unknown'
-        if finish!='stop':raise LanguageOutputError('Incomplete language output',receipt)
+        if finish!='stop':
+            receipt['validation_failure']='incomplete_output'
+            raise LanguageOutputError('Incomplete language output',receipt)
         proposal=json.loads(choice['message']['content'])
         validate_candidates(proposal)
     except LanguageOutputError:
         raise
-    except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+    except (ValueError, KeyError, IndexError, TypeError, AttributeError) as error:
+        receipt['validation_failure']=('invalid_json' if isinstance(error,json.JSONDecodeError) else
+            CANDIDATE_FAILURES.get(str(error),'response_shape') if isinstance(error,ValueError) else 'response_shape')
         raise LanguageOutputError('Invalid language candidates',receipt) from None
     return {'proposal':proposal,'model':raw.get('model',config['model']),
         'elapsed_seconds':receipt['elapsed_seconds'],'usage':raw.get('usage',{}),

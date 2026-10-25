@@ -15,6 +15,8 @@ from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal,valid_social_notice
 from dialogue_context import dialogue_frame,validate_situated_candidates
 from activity_leases import background_social_ready,routine_actors
+from dialogue_policy import POLICIES,candidate_roles
+from inference_receipts import rejected_language_receipt
 
 
 def validate_candidates(value):
@@ -46,8 +48,9 @@ class Conversation:
         c = self.conversation_status()
         return bool(c and c['phase'] not in ('complete', 'held'))
 
-    def start_conversation(self, event_id, observation, actor=None, max_turns=None, opportunity_batch=None):
+    def start_conversation(self, event_id, observation, actor=None, max_turns=None, opportunity_batch=None, reply_policy='separate_choice'):
         self._agency_guard(observation,allow_routines=background_social_ready(self.active))
+        if reply_policy not in POLICIES:raise ValueError('Unknown reply policy')
         if max_turns is not None and (type(max_turns) is not int or not 2<=max_turns<=6):
             raise ValueError('Conversation turn limit must be an integer from 2 to 6')
         if not isinstance(event_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', event_id):
@@ -58,6 +61,7 @@ class Conversation:
             if item['id'] == event_id:
                 if actor is not None and item.get('initiator')!=actor:raise ValueError('Conversation ID reused for another resident')
                 if max_turns is not None and item.get('turn_limit',2)!=max_turns:raise ValueError('Conversation ID reused with another turn limit')
+                if item.get('reply_policy','separate_choice')!=reply_policy:raise ValueError('Conversation ID reused with another reply policy')
                 return {'duplicate': True, 'conversation': item}
         day = self.active.get('market_day')
         if self.agency_busy() or self.conversation_busy() or day and day['status'] != 'complete':
@@ -102,12 +106,12 @@ class Conversation:
                 'source':'operator opportunity, not a claimed autonomous need'})
         if old: state.setdefault('conversation_history', []).append(old)
         state['conversation'] = {'id': event_id, 'phase': 'meeting', 'turn': 0, 'started_at':time.time(),
-            'speakers': [108186,108149], 'turns': [], 'claim': None,
+            'speakers': [108186,108149], 'turns': [], 'claim': None,'reply_policy':reply_policy,
             'source': 'Authored two-person encounter; generated intentions and speech',
             'turn_limit':limit,'max_turns':limit,'max_llm_calls':limit,'max_jev_calls':limit}
         if actor is not None:
             state['conversation'].update(phase='choose_partner',initiator=actor,partner=None,mode='autonomous_social',
-                speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
+                speakers=[],social_decisions=[],max_jev_calls=limit+4+(limit-1 if limit>2 and reply_policy=='separate_choice' else 0),source='Scheduled social need; residents choose partner, consent, speech and appraisal')
             next(e for e in state['town']['daily']['queue'] if e['id']==event_id)['status']='started'
             if offered:state['conversation']['source']='Operator offered opportunity; current residents choose partner, consent, speech and appraisal'
             if notice:
@@ -148,6 +152,7 @@ class Conversation:
                     f"I hired {other} to make bread with my grain. I paid them {memory['gold']} gold. The produced bread belongs to me.")
             elif memory['kind']=='consumed_bread':facts.append('I ate one of my carried loaves.')
         return {'actor_id': actor, 'profile': person['profile'], 'needs': person['needs'],
+            'candidate_roles':candidate_roles(c),
             'interaction':dialogue_frame(c,observation,person,actor),
             'known_facts_in_first_person':facts,
             'own_inventory': own['inventory'], 'own_food_policy': person.get('food_policy'),
@@ -173,6 +178,13 @@ class Conversation:
         if phase == 'select':
             context['options'] = [{'id':v['id'], 'effect':v['intention']+' Say: '+v['line']+' Tone: '+v['tone']}
                                   for v in c['current']['candidates']]
+            if c.get('reply_policy')=='combined_choice':
+                roles=c['current']['candidate_roles']
+                for option in context['options']:
+                    option['effect']=('End politely after this line. ' if roles[option['id']]=='close_politely' else 'Speak this line. ')+option['effect']
+                if c['turn']>0:
+                    context['options'].append({'id':'leave_quietly','effect':'Leave without speaking either proposed line. No unheard farewell or hostility is inferred.'})
+                context['event']['information']='Choose the actual next utterance, a polite ending, or an available silent departure using your own needs, personality, memories, relationship and the latest heard words. A reply is optional. Do not prolong an exhausted topic. The listed effects determine whether this choice ends the encounter.'
         claim = {'id':secrets.token_hex(12), 'stage':phase, 'context':context, 'session':self.session}
         c.update(phase='thinking_'+phase, claim=claim)
         state = copy.deepcopy(self.active); state['conversation'] = c
@@ -223,13 +235,23 @@ class Conversation:
             candidates = validate_candidates(result['proposal'])
             frame=self._speech_context(c,observation)
             validate_situated_candidates(candidates,frame['interaction'],frame['event']['dialogue_stage'] in ('closing','refusal'))
+            roles=candidate_roles(c)
+            for candidate in candidates:
+                if roles.get(candidate['id'])=='close_politely':validate_situated_candidates([candidate],frame['interaction'],True)
             c['current'] = {'speaker':claim['context']['actor_id'], 'listener':claim['context']['listener']['id'],
-                'candidates':candidates, 'language':result, 'context':claim['context']}
+                'candidates':candidates, 'language':result, 'context':claim['context'],'candidate_roles':roles}
             c['phase']='select'
         else:
             choice = validate_decision(result['decision'], claim['context'])['action_id']
-            c['current'].update(selected=next(v for v in c['current']['candidates'] if v['id']==choice), decision=result)
-            c['phase']='synthesize'
+            c['current']['decision']=result
+            if choice=='leave_quietly' and c.get('reply_policy')=='combined_choice':
+                c.setdefault('unspoken_turns',[]).append({**c.pop('current'),'outcome':'left_quietly','delivered':False})
+                c.update(phase='releasing',final_phase='complete',end_reason='left_quietly')
+            else:
+                c['current']['selected']=next(v for v in c['current']['candidates'] if v['id']==choice)
+                if c['current'].get('candidate_roles',{}).get(choice)=='close_politely':
+                    c.update(end_after_turn=True,end_reason='polite_closure')
+                c['phase']='synthesize'
         c['claim']=None
         state=copy.deepcopy(self.active);state['conversation']=c
         return {'checkpoint':self._write(state,'conversation '+claim['stage']+' result accepted')}
@@ -339,7 +361,7 @@ class Conversation:
             p['memories']=p['memories'][-32:]
         c['turns'].append(t);c.pop('current');c['turn']+=1
         at_limit=c['turn']>=c.get('max_turns',len(c['speakers']))
-        c['phase']='releasing' if at_limit or c.get('end_after_turn') else 'continue_dialogue' if c.get('mode')=='autonomous_social' and c.get('turn_limit',2)>2 else 'propose'
+        c['phase']='releasing' if at_limit or c.get('end_after_turn') else 'continue_dialogue' if c.get('mode')=='autonomous_social' and c.get('turn_limit',2)>2 and c.get('reply_policy','separate_choice')=='separate_choice' else 'propose'
         if c['phase']=='releasing':
             c['final_phase']='complete';c.setdefault('end_reason','turn_limit' if at_limit else 'polite_closure')
         state['conversation']=c
@@ -348,8 +370,23 @@ class Conversation:
     def interrupt_conversation(self,event_id,observation):
         return self.hold_conversation(event_id,'Observer interrupted conversation',observation,interruption=True)
 
-    def hold_conversation(self,event_id,reason,observation,interruption=False):
+    def hold_conversation(self,event_id,reason,observation,interruption=False,inference_failure=None):
         c=self._conversation_guard(event_id,observation)
+        if inference_failure is not None:
+            if not isinstance(inference_failure,dict):raise ValueError('Invalid inference failure')
+            claim_id=inference_failure.get('claim_id')
+            prior=next((r for r in c.get('rejected_inferences',[]) if r['claim_id']==claim_id),None)
+            if prior:
+                if prior['receipt']!=rejected_language_receipt(inference_failure.get('receipt')):
+                    raise ValueError('Rejected inference receipt changed')
+                return {'duplicate':True}
+            claim=c.get('claim') or {}
+            if (c['phase']!='thinking_propose' or claim.get('stage')!='propose'
+                    or claim.get('id')!=claim_id or not claim_id or claim.get('session')!=self.session):
+                raise ValueError('Stale rejected inference claim')
+            receipt=rejected_language_receipt(inference_failure.get('receipt'))
+            c.setdefault('rejected_inferences',[]).append({'claim_id':claim_id,'stage':'propose','receipt':receipt})
+            c['claim']=None
         if c['phase'] in ('complete','held') or c.get('interruption'): return {'duplicate':True}
         no_route=c['phase'] in ('choose_partner','thinking_choose_partner','reflect_first','thinking_reflect_first','reflect_second','thinking_reflect_second')
         if interruption:

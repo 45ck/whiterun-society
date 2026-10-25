@@ -1,0 +1,667 @@
+{
+  "source": "Retained isolated Skyrim native director and worker receipts",
+  "runs": [
+    {
+      "id": "society-4c4538f9fed14280",
+      "status": "complete",
+      "maximum_model_calls": 48,
+      "polling": "legacy fixed pause",
+      "events": [
+        {
+          "id": "encounter-7416c4022b97409c9cac",
+          "actor": 843123,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1,
+          "calls": {
+            "propose": 0,
+            "select": 0,
+            "social": 1
+          },
+          "duration_seconds": 10.304,
+          "speakers": [],
+          "release_evidence": null,
+          "rejected_language": null,
+          "synthesis_timings": [],
+          "turns": [],
+          "reply_dispatch_gaps_seconds": [],
+          "name": "Sigurd"
+        },
+        {
+          "id": "daily-11-108183",
+          "actor": 108183,
+          "status": "complete",
+          "outcome": "ate_bread",
+          "model_calls": 1,
+          "choices": [
+            "eat_bread"
+          ],
+          "name": "Aela the Huntress"
+        },
+        {
+          "id": "encounter-409b39eb5b004d038c28",
+          "actor": 108138,
+          "status": "complete",
+          "outcome": "social_exchange_completed",
+          "model_calls": 12,
+          "calls": {
+            "propose": 4,
+            "select": 4,
+            "social": 4
+          },
+          "duration_seconds": 75.902,
+          "speakers": [
+            {
+              "actor": 108138,
+              "name": "Amren"
+            },
+            {
+              "actor": 108140,
+              "name": "Saffir"
+            }
+          ],
+          "release_evidence": {
+            "attendance": {
+              "id": "attend-encounter-409b39eb5b004d038c28",
+              "participants": [
+                {
+                  "actor": 108138,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 6
+                },
+                {
+                  "actor": 108140,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 7
+                }
+              ],
+              "phase": "released"
+            },
+            "id": "release-chat-encounter-409b39eb5b004d038c28",
+            "released": true,
+            "status": "applied"
+          },
+          "rejected_language": null,
+          "synthesis_timings": [
+            {
+              "turn": 0,
+              "seconds": 1.187,
+              "engine_seconds": 1.187
+            },
+            {
+              "turn": 1,
+              "seconds": 1.219,
+              "engine_seconds": 1.219
+            },
+            {
+              "turn": 2,
+              "seconds": 1.016,
+              "engine_seconds": 1.016
+            },
+            {
+              "turn": 3,
+              "seconds": 0.641,
+              "engine_seconds": 0.641
+            }
+          ],
+          "turns": [
+            {
+              "speaker": 108138,
+              "name": "Amren",
+              "line": "Saffir. Long day for both of us, I'd say.",
+              "delivered": true,
+              "audio_seconds": 2.8587
+            },
+            {
+              "speaker": 108140,
+              "name": "Saffir",
+              "line": "Tell me about it. This weather's been tiring enough on its own.",
+              "delivered": true,
+              "audio_seconds": 3.4499
+            },
+            {
+              "speaker": 108138,
+              "name": "Amren",
+              "line": "It is. I'm ready to rest after today.",
+              "delivered": true,
+              "audio_seconds": 2.8126
+            },
+            {
+              "speaker": 108140,
+              "name": "Saffir",
+              "line": "Rest well, Amren.",
+              "delivered": true,
+              "audio_seconds": 1.508
+            }
+          ],
+          "reply_dispatch_gaps_seconds": [
+            7.586,
+            7.21,
+            7.861
+          ],
+          "name": "Amren"
+        }
+      ],
+      "model_calls": 14,
+      "results_with_cost": 14,
+      "reported_cost_usd": 0.001427772,
+      "inventory_accounts_compared": 29,
+      "inventory_changes": [
+        {
+          "actor": 108183,
+          "name": "Aela the Huntress",
+          "before": {
+            "gold": 20,
+            "bread": 2,
+            "grain": 0
+          },
+          "after": {
+            "gold": 20,
+            "bread": 1,
+            "grain": 0
+          }
+        }
+      ],
+      "totals_before": {
+        "bread": 23,
+        "gold": 964,
+        "grain": 20
+      },
+      "totals_after": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      }
+    },
+    {
+      "id": "society-97f5519f15474762",
+      "status": "complete",
+      "maximum_model_calls": 48,
+      "polling": "checkpoint 100 ms, native wait 200 ms, no post-mutation pause",
+      "events": [
+        {
+          "id": "daily-32-108156",
+          "actor": 108156,
+          "status": "complete",
+          "outcome": "deferred",
+          "model_calls": 1,
+          "cohort": "daily-routes-a517a6f88579c367",
+          "native_receipt": null,
+          "choice": "defer",
+          "name": "Adrianne Avenicci"
+        },
+        {
+          "id": "daily-32-108169",
+          "actor": 108169,
+          "status": "complete",
+          "outcome": "market_seller_not_observed",
+          "model_calls": 1,
+          "cohort": "daily-routes-a517a6f88579c367",
+          "native_receipt": {
+            "finished_at": 1792891029203,
+            "id": "lane-daily-32-108169",
+            "movement": {
+              "acquisitionAt": 1792890978195,
+              "activity": {
+                "in_combat": false,
+                "package_id": 837714,
+                "scene_id": 0,
+                "sleep_state": 0
+              },
+              "actor": 108169,
+              "adapter": "papyrus-mailbox",
+              "aliasesConfirmed": true,
+              "at": 1792890977470,
+              "distance": 247.72743998311995,
+              "dynamic": true,
+              "enginePackage": 837714,
+              "expectedPackage": 150997009,
+              "hasOwnedPackage": true,
+              "id": "lane-daily-32-108169",
+              "mailboxAt": 1792890977482,
+              "method": "package",
+              "origin": "resident_decision",
+              "outcome": "applied",
+              "ownedPackage": false,
+              "phase": "applied",
+              "releaseAt": 1792891029186,
+              "serial": 13,
+              "startAt": 1792890977498,
+              "startComplete": true,
+              "startDistance": 4172.173392244492,
+              "startResult": true,
+              "target": 179739,
+              "target_kind": "place"
+            },
+            "release_verified": true,
+            "seller_nearby": false,
+            "slot": 1,
+            "status": "applied"
+          },
+          "choice": "check_market",
+          "name": "Idolaf Battle-Born"
+        },
+        {
+          "id": "encounter-1b29518fb7144186933b",
+          "actor": 108169,
+          "status": "complete",
+          "outcome": "continued_quietly",
+          "model_calls": 1,
+          "calls": {
+            "propose": 0,
+            "select": 0,
+            "social": 1
+          },
+          "duration_seconds": 5.907,
+          "speakers": [],
+          "release_evidence": null,
+          "rejected_language": null,
+          "synthesis_timings": [],
+          "turns": [],
+          "reply_dispatch_gaps_seconds": [],
+          "name": "Idolaf Battle-Born"
+        }
+      ],
+      "model_calls": 3,
+      "results_with_cost": 3,
+      "reported_cost_usd": 0.000430584,
+      "inventory_accounts_compared": 29,
+      "inventory_changes": [],
+      "totals_before": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      },
+      "totals_after": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      }
+    },
+    {
+      "id": "society-d092bec4d46c48d8",
+      "status": "held",
+      "maximum_model_calls": 16,
+      "polling": "checkpoint 100 ms, native wait 200 ms, no post-mutation pause",
+      "events": [
+        {
+          "id": "encounter-b7039ba2209b46a39816",
+          "actor": 108156,
+          "status": "held",
+          "error": "LanguageOutputError: Invalid language candidates",
+          "calls": {
+            "propose": 1,
+            "select": 0,
+            "social": 2
+          },
+          "duration_seconds": null,
+          "speakers": [
+            {
+              "actor": 108156,
+              "name": "Adrianne Avenicci"
+            },
+            {
+              "actor": 108169,
+              "name": "Idolaf Battle-Born"
+            }
+          ],
+          "release_evidence": {
+            "attendance": {
+              "id": "attend-encounter-b7039ba2209b46a39816",
+              "participants": [
+                {
+                  "actor": 108156,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 6
+                },
+                {
+                  "actor": 108169,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 7
+                }
+              ],
+              "phase": "released"
+            },
+            "id": "release-chat-encounter-b7039ba2209b46a39816",
+            "released": true,
+            "status": "applied"
+          },
+          "rejected_language": {
+            "model": "inception/mercury-2.5",
+            "elapsed_seconds": 4.469,
+            "usage": {
+              "prompt_tokens": 2531,
+              "completion_tokens": 277,
+              "total_tokens": 2808,
+              "cost": 0.00014279,
+              "completion_tokens_details": {
+                "reasoning_tokens": 146
+              }
+            },
+            "finish_reason": "stop"
+          },
+          "synthesis_timings": [],
+          "turns": [],
+          "reply_dispatch_gaps_seconds": [],
+          "name": "Adrianne Avenicci"
+        }
+      ],
+      "model_calls": 3,
+      "results_with_cost": 3,
+      "reported_cost_usd": 0.000327548,
+      "inventory_accounts_compared": 29,
+      "inventory_changes": [],
+      "totals_before": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      },
+      "totals_after": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      }
+    },
+    {
+      "id": "society-4717ececaa7b47ad",
+      "status": "complete",
+      "maximum_model_calls": 64,
+      "polling": "checkpoint 100 ms, native wait 200 ms, no post-mutation pause",
+      "events": [
+        {
+          "id": "encounter-a4533a25995e400bbdae",
+          "actor": 108186,
+          "status": "complete",
+          "outcome": "social_exchange_completed",
+          "model_calls": 12,
+          "calls": {
+            "propose": 4,
+            "select": 4,
+            "social": 4
+          },
+          "duration_seconds": 67.955,
+          "speakers": [
+            {
+              "actor": 108186,
+              "name": "Ysolda"
+            },
+            {
+              "actor": 843123,
+              "name": "Sigurd"
+            }
+          ],
+          "release_evidence": {
+            "attendance": {
+              "id": "attend-encounter-a4533a25995e400bbdae",
+              "participants": [
+                {
+                  "actor": 108186,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 6
+                },
+                {
+                  "actor": 843123,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 7
+                }
+              ],
+              "phase": "released"
+            },
+            "id": "release-chat-encounter-a4533a25995e400bbdae",
+            "released": true,
+            "status": "applied"
+          },
+          "rejected_language": null,
+          "synthesis_timings": [
+            {
+              "turn": 0,
+              "seconds": 1.39,
+              "engine_seconds": 1.39
+            },
+            {
+              "turn": 1,
+              "seconds": 1.625,
+              "engine_seconds": 1.625
+            },
+            {
+              "turn": 2,
+              "seconds": 1.672,
+              "engine_seconds": 1.672
+            },
+            {
+              "turn": 3,
+              "seconds": 1.437,
+              "engine_seconds": 1.437
+            }
+          ],
+          "turns": [
+            {
+              "speaker": 108186,
+              "name": "Ysolda",
+              "line": "Sigurd! How have you been? I was hoping to catch you out here.",
+              "delivered": true,
+              "audio_seconds": 3.4967
+            },
+            {
+              "speaker": 843123,
+              "name": "Sigurd",
+              "line": "Hanging in there. Just had my bread for the night. You out late as well?",
+              "delivered": true,
+              "audio_seconds": 4.606
+            },
+            {
+              "speaker": 108186,
+              "name": "Ysolda",
+              "line": "Aye, couldn't sleep. Just wrapping up some work. The weather's pleasant enough for a night stroll.",
+              "delivered": true,
+              "audio_seconds": 5.096
+            },
+            {
+              "speaker": 843123,
+              "name": "Sigurd",
+              "line": "Fair enough. I'll let you get back to your work. Take care, Ysolda.",
+              "delivered": true,
+              "audio_seconds": 4.5767
+            }
+          ],
+          "reply_dispatch_gaps_seconds": [
+            7.501,
+            7.563,
+            7.284
+          ],
+          "name": "Ysolda"
+        },
+        {
+          "id": "daily-17-843123",
+          "actor": 843123,
+          "status": "complete",
+          "outcome": "ate_bread",
+          "model_calls": 1,
+          "choices": [
+            "eat_bread"
+          ],
+          "name": "Sigurd"
+        },
+        {
+          "id": "encounter-50ab6ee068694727b43a",
+          "actor": 108156,
+          "status": "complete",
+          "outcome": "social_exchange_completed",
+          "model_calls": 8,
+          "calls": {
+            "propose": 2,
+            "select": 2,
+            "social": 4
+          },
+          "duration_seconds": 41.529,
+          "speakers": [
+            {
+              "actor": 108156,
+              "name": "Adrianne Avenicci"
+            },
+            {
+              "actor": 108169,
+              "name": "Idolaf Battle-Born"
+            }
+          ],
+          "release_evidence": {
+            "attendance": {
+              "id": "attend-encounter-50ab6ee068694727b43a",
+              "participants": [
+                {
+                  "actor": 108156,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 6
+                },
+                {
+                  "actor": 108169,
+                  "loaded": true,
+                  "ownedPackage": false,
+                  "released": true,
+                  "slot": 7
+                }
+              ],
+              "phase": "released"
+            },
+            "id": "release-chat-encounter-50ab6ee068694727b43a",
+            "released": true,
+            "status": "applied"
+          },
+          "rejected_language": null,
+          "synthesis_timings": [
+            {
+              "turn": 0,
+              "seconds": 1.422,
+              "engine_seconds": 1.422
+            },
+            {
+              "turn": 1,
+              "seconds": 0.781,
+              "engine_seconds": 0.781
+            }
+          ],
+          "turns": [
+            {
+              "speaker": 108156,
+              "name": "Adrianne Avenicci",
+              "line": "Good night, Idolaf. Pleasant weather for this hour.",
+              "delivered": true,
+              "audio_seconds": 2.9326
+            },
+            {
+              "speaker": 108169,
+              "name": "Idolaf Battle-Born",
+              "line": "It is. Good night, Adrianne.",
+              "delivered": true,
+              "audio_seconds": 2.3426
+            }
+          ],
+          "reply_dispatch_gaps_seconds": [
+            8.156
+          ],
+          "name": "Adrianne Avenicci"
+        },
+        {
+          "id": "daily-12-225390",
+          "actor": 225390,
+          "status": "complete",
+          "outcome": "ate_bread",
+          "model_calls": 1,
+          "choices": [
+            "eat_bread"
+          ],
+          "name": "Whiterun Guard"
+        }
+      ],
+      "model_calls": 22,
+      "results_with_cost": 22,
+      "reported_cost_usd": 0.002527982,
+      "inventory_accounts_compared": 29,
+      "inventory_changes": [
+        {
+          "actor": 225390,
+          "name": "Whiterun Guard",
+          "before": {
+            "gold": 20,
+            "bread": 2,
+            "grain": 0
+          },
+          "after": {
+            "gold": 20,
+            "bread": 1,
+            "grain": 0
+          }
+        },
+        {
+          "actor": 843123,
+          "name": "Sigurd",
+          "before": {
+            "gold": 30,
+            "bread": 1,
+            "grain": 0
+          },
+          "after": {
+            "gold": 30,
+            "bread": 0,
+            "grain": 0
+          }
+        }
+      ],
+      "totals_before": {
+        "bread": 22,
+        "gold": 964,
+        "grain": 20
+      },
+      "totals_after": {
+        "bread": 20,
+        "gold": 964,
+        "grain": 20
+      }
+    }
+  ],
+  "limits": [
+    "Small sequential samples with different residents, lines, provider timing and workstation load; not a controlled benchmark.",
+    "Dispatch gaps measure preparation after previous playback completion, not acoustic latency.",
+    "Overlay playback receipts do not prove physical audio output, spatial sound, eye gaze, lip sync or human realism.",
+    "Speech is remembered as a heard claim, not semantic truth. The Ysolda example still invents an unsupported work explanation.",
+    "The historical invalid-candidate failure has no retained raw text or finite validation category; its exact defect is unknown.",
+    "No new sale, production, employment or political action is established by these trials."
+  ],
+  "save_restore": {
+    "name": "WS-CombinedDialogue-20261025-AX",
+    "checkpoint": 1233,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  }
+}
