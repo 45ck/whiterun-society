@@ -55,7 +55,8 @@ class ActivityReservationUnitTests(unittest.TestCase):
         self.assertNotIn(1,occupied(state))
 
     def test_routes_reject_saved_or_native_resident_reservations(self):
-        obs={'residents':[{'id':108186},{'id':108149}]}
+        obs={'routing':{'adapter':'papyrus-mailbox-v1','available':True},
+             'residents':[{'id':108186,'isPerson':True},{'id':108149,'isPerson':True}]}
         self.assertTrue(route_available(obs,108186,108149))
         for actor in (108186,108149):
             state={'activity_jobs':{'j':lease(actor)}}

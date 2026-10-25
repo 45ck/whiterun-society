@@ -49,9 +49,11 @@ class DailyLifeTests(unittest.TestCase):
         self.assertEqual({o['id'] for o in context['options']},{'defer','eat_bread','offer_food_trade_resident-99'})
 
     def test_unsupported_hungry_resident_stays_unmet_without_model_request(self):
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':False}
         self.obs['residents'][2]['inventory']['bread']=0
         self.review(4)
         self.assertEqual(self.world.active['people']['99']['agency']['state'],'unmet_food_need')
+        self.assertIs(self.world.active['people']['99']['agency']['native_route_supported'],False)
         self.assertNotIn(99,[e['actor'] for e in self.world.active['town']['daily']['queue']])
 
     def test_router_allows_new_resident_to_seek_food_without_inventing_a_sale(self):
@@ -169,6 +171,7 @@ class DailyLifeTests(unittest.TestCase):
         self.assertEqual([e['status'] for e in self.world.active['town']['daily']['queue'] if e['actor']==99],['started'])
         event=next(e for e in self.world.active['town']['daily']['queue'] if e['id']=='old-social')
         event['status']='pending';self.obs['residents'][2]['inventory']['bread']=0
+        self.obs['routing']={'adapter':'papyrus-mailbox-v1','available':False}
         self.review(1)
         event=next(e for e in self.world.active['town']['daily']['queue'] if e['id']=='old-social')
         self.assertEqual(event['status'],'pending')

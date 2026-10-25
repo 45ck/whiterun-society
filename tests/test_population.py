@@ -22,7 +22,8 @@ class PopulationTests(unittest.TestCase):
         self.assertNotIn('100',self.world.active['people']);self.assertEqual(self.obs['residents'],before)
         person=self.world.active['people']['99'];self.assertEqual(len(person['profile']['big_five']),5)
         self.assertEqual(len(person['needs']),5);self.assertEqual(person['agency']['state'],'awaiting_first_daily_plan')
-        self.assertIsNone(person['agency']['native_route_supported'])
+        self.assertIs(person['agency']['native_route_supported'],True)
+        self.assertEqual(town['counts']['native_route_supported'],3)
         self.assertEqual(town['businesses'],{})  # Census does not assign named occupations.
 
     def test_existing_personality_memories_and_hunger_survive_expansion(self):
