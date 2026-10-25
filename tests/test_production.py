@@ -5,12 +5,28 @@ import test_food
 from production import work_inventory
 
 
+def register_authored_employer(case):
+    """Explicit test census/charter; registration creates no stock or consent."""
+    case.obs['gameDays']=3.5
+    for actor in case.obs['residents']:
+        actor.update(name='Fixture resident '+str(actor['id']),isPerson=True,isGuard=False)
+    before=copy.deepcopy(case.obs['residents'])
+    case.world.initialize_population('work-fixture-census','authored-work-fixture',case.obs);case.sync()
+    case.world.configure_enterprise('work-fixture-charter',{
+        'id':'fixture-employer','expected_revision':0,'name':'Authored fixture bakery',
+        'custodian':108149,'capabilities':['bread_recipe'],'active':True,
+        'production_policy':{'target_bread':8,'wage_gold':2,'work_minutes':30}},case.obs)
+    case.sync()
+    case.assertEqual(case.obs['residents'],before)
+
+
 class ProductionTests(unittest.TestCase):
     # Reuse fixtures, not inherited test cases.
     def setUp(self):
         test_food.FoodTests.setUp(self)
         for actor in self.obs['residents']:
             actor['inventory']['grain'] = 2 if actor['id']==108149 else 0
+        register_authored_employer(self)
 
     tearDown = test_food.FoodTests.tearDown
     sync = test_food.FoodTests.sync
@@ -37,10 +53,30 @@ class ProductionTests(unittest.TestCase):
         self.assertEqual(self.world.status()['production'],[])
 
     def test_input_and_wage_shortage_prevent_job_offer(self):
-        self.obs['residents'][1]['inventory']['grain']=0
+        stock=copy.deepcopy(self.obs['residents'][1]['inventory'])
+        for item,value in [('grain',0),('gold',1)]:
+            with self.subTest(shortage=item):
+                self.obs['residents'][1]['inventory']={**stock,item:value}
+                before=copy.deepcopy(self.world.active)
+                with self.assertRaisesRegex(ValueError,'No feasible paid-work'):
+                    self.world.begin_plan('job',self.obs,108186,kind='work_shift')
+                self.assertEqual(self.world.active,before)
+                self.assertIsNone(self.world.transition)
+                self.assertIsNone(self.world.active['pending'])
+
+    def test_stock_depleted_after_opportunity_cannot_gain_employer_consent(self):
         self.world.begin_plan('job',self.obs, 108186,kind='work_shift');self.sync()
+        self.obs['residents'][1]['inventory']['grain']=0
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual([o['id'] for o in context['options']],['defer'])
+
+    def test_observed_names_and_stock_without_charter_cannot_create_a_job(self):
+        self.world.active['town']['businesses']={}
+        before=copy.deepcopy(self.world.active)
+        with self.assertRaisesRegex(ValueError,'No feasible paid-work'):
+            self.world.begin_plan('job',self.obs,108186,kind='work_shift')
+        self.assertEqual(self.world.active,before)
+        self.assertIsNone(self.world.transition)
 
     def test_paid_work_is_committed_only_after_inventory_verification(self):
         self.start_work();c=self.world.pending(self.obs['session'])

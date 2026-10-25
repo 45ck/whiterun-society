@@ -1,12 +1,14 @@
 import copy
 import unittest
 import test_food
+from test_production import register_authored_employer
 
 
 class MarketDayTests(unittest.TestCase):
     def setUp(self):
         test_food.FoodTests.setUp(self)
         for actor in self.obs['residents']:actor['inventory']['grain']=2
+        register_authored_employer(self)
     tearDown=test_food.FoodTests.tearDown
     sync=test_food.FoodTests.sync
     decide=test_food.FoodTests.decide
