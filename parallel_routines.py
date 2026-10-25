@@ -39,19 +39,21 @@ class ParallelRoutines:
 
     def routines_busy(self):
         batch=self.routine_batch()
-        return bool(batch and batch['phase'] not in ('complete','held'))
+        return bool(batch and (batch['phase'] not in ('complete','held') or batch.get('unverified_release')))
 
-    def begin_routines(self, batch_id, event_ids, observation):
+    def begin_routines(self, batch_id, event_ids, observation, background=False):
         self._agency_guard(observation)
+        if type(background) is not bool:raise ValueError('Background mode must be boolean')
         if self.agency_busy() or self.conversation_busy():raise ValueError('Finish the existing resident activity')
         if not isinstance(batch_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}',batch_id):raise ValueError('Invalid cohort ID')
-        if not isinstance(event_ids,list) or not 1<=len(event_ids)<=8 or any(not isinstance(x,str) for x in event_ids) or len(set(event_ids))!=len(event_ids):
+        if not isinstance(event_ids,list) or not 1<=len(event_ids)<=(6 if background else 8) or any(not isinstance(x,str) for x in event_ids) or len(set(event_ids))!=len(event_ids):
             raise ValueError('Supply one to eight distinct daily opportunities')
         for batch in self.active.get('routine_batches',[]):
             if batch['id']==batch_id:
-                if [m['event_id'] for m in batch['members']]!=event_ids:raise ValueError('Cohort ID reused')
+                if [m['event_id'] for m in batch['members']]!=event_ids or batch.get('background',False)!=background:raise ValueError('Cohort ID reused')
                 return {'duplicate':True,'batch':batch}
         if (observation.get('parallel_routines') or {}).get('available') is not True:raise ValueError('Independent native routing slots unavailable')
+        if background and (observation.get('parallel_routines') or {}).get('background_capacity')!=6:raise ValueError('Concurrent background protocol unavailable')
         state=copy.deepcopy(self.active);queue=state.get('town',{}).get('daily',{}).get('queue',[])
         actors={r['id']:r for r in observation.get('residents',[])};members=[]
         for slot,event_id in enumerate(event_ids):
@@ -72,7 +74,7 @@ class ParallelRoutines:
                            {'id':'defer','effect':'Keep your ordinary routine; do not take this journey now. No resources or needs change.'}]}
             members.append({'event_id':event_id,'actor':actor,'slot':slot,'phase':'thinking','context':context})
             event['status']='started';person['agency'].update(state='deciding',reason='Independent food-search decision',event_id=event_id)
-        batch={'id':batch_id,'session':self.session,'phase':'thinking','claim_id':secrets.token_hex(12),'members':members}
+        batch={'id':batch_id,'session':self.session,'phase':'thinking','claim_id':secrets.token_hex(12),'members':members,'background':background}
         state.setdefault('routine_batches',[]).append(batch)
         return {'checkpoint':self._write(state,'independent resident decisions claimed before inference'),'batch':batch}
 
@@ -94,11 +96,13 @@ class ParallelRoutines:
             if not market_opportunity(state,observation,actor) or not native or native.get('inventory')!=member['context']['observed_inventory']:
                 member.update(phase='held',outcome='changed_before_departure');continue
             job={'id':'lane-'+member['event_id'],'actor':actor,'target':MARKET,'target_kind':'place',
-                 'slot':member['slot'],'origin':'resident_decision','retain':False,'dynamic':True}
+                 'slot':member['slot'],'origin':'resident_decision','retain':False,'dynamic':True,
+                 'public_seller_ids':sorted({b['custodian'] for b in state['town'].get('businesses',{}).values()
+                    if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor})}
             jobs.append(job);member.update(phase='travelling',command=job)
             state['people'][str(actor)]['agency'].update(state='travelling',reason='Chosen public-market journey in an independent native slot')
         updated['phase']='travelling' if jobs else 'complete'
-        if jobs:state['pending']={'id':batch_id,'status':'pending','command':{'id':batch_id,'kind':'parallel_routines','jobs':jobs,'origin_session':self.session}}
+        if jobs:state['pending']={'id':batch_id,'status':'pending','command':{'id':batch_id,'kind':'background_routines' if updated.get('background') else 'parallel_routines','jobs':jobs,'origin_session':self.session}}
         else:self._settle_routines(state,observation)
         return {'checkpoint':self._write(state,'independent choices accepted; concurrent journeys prepared')}
 
@@ -129,10 +133,22 @@ class ParallelRoutines:
         if batch['session']!=self.session:
             state=copy.deepcopy(self.active);updated=state['routine_batches'][-1];updated.update(phase='held',error='Session changed; do not replay claimed decisions or travel')
             for member in updated['members']:member.update(phase='held',outcome='journey_interrupted_by_load')
-            state['pending']=None;self._settle_routines(state,observation);self._write(state,'loaded unfinished cohort held; native leases released by bridge recovery');return True
+            if state.get('pending',{} ) and state['pending'].get('id')==batch['id']:state['pending']=None
+            self._settle_routines(state,observation);self._write(state,'loaded unfinished cohort held; native leases released by bridge recovery');return True
         if batch['phase']=='thinking':return True
         ack=observation.get('ack') or {}
-        if ack.get('id')!=batch['id']:return True
+        if batch.get('background'):
+            native=observation.get('parallel_routines') or {}
+            if not batch.get('launched'):
+                if ack.get('id')!=batch['id']:return True
+                if ack.get('status')=='started' and native.get('id')==batch['id'] and native.get('background') is True:
+                    state=copy.deepcopy(self.active);state['routine_batches'][-1]['launched']=True
+                    state['pending']=None;self._write(state,'background journey leases accepted; foreground channel released');return True
+                # A rejected launch settles through the failure receipt path.
+            else:
+                if native.get('id')!=batch['id'] or not native.get('result'):return False
+                ack=native['result']
+        if ack.get('id')!=batch['id']:return not batch.get('background',False)
         state=copy.deepcopy(self.active);updated=state['routine_batches'][-1];receipts=ack.get('routines',[])
         if not isinstance(receipts,list):receipts=[]
         release_ok=True
@@ -149,6 +165,11 @@ class ParallelRoutines:
             member.update(phase='complete' if valid else 'held',outcome=('market_seller_observed' if receipt.get('seller_nearby') is True else 'market_seller_not_observed') if valid else 'journey_held')
         updated['phase']='complete' if all(m['phase']=='complete' for m in updated['members']) else 'held'
         updated['release_verified']=release_ok;updated['concurrency']=copy.deepcopy(ack.get('concurrency',{}))
-        if release_ok:state['pending']=None
-        else:state['pending']['status']='held';state['pending']['evidence']=copy.deepcopy(ack)
+        if release_ok:
+            if state.get('pending') and state['pending'].get('id')==batch['id']:state['pending']=None
+        else:
+            # Retain uncertain leases without deleting another event's effects.
+            updated['unverified_release']=True
+            if not batch.get('background'):
+                state['pending']['status']='held';state['pending']['evidence']=copy.deepcopy(ack)
         self._settle_routines(state,observation);self._write(state,'independent journey receipts settled without inventory effects');return True

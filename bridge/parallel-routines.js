@@ -12,23 +12,49 @@ function createParallelRoutineController(platform,now=Date.now){
   return !!owned&&(!pkg||pkg.getFormID()!==owned.getFormID());
  }
  function sellerNearby(job){
-  const sp=platform(),actor=sp.Actor.from(sp.Game.getFormEx(job.actor)),seller=sp.Actor.from(sp.Game.getFormEx(108149)),place=sp.ObjectReference.from(sp.Game.getFormEx(job.target));
-  if(!actor?.is3DLoaded()||!seller?.is3DLoaded()||!places.validTarget(seller,place))return false;
-  return Math.hypot(actor.getPositionX()-seller.getPositionX(),actor.getPositionY()-seller.getPositionY(),actor.getPositionZ()-seller.getPositionZ())<=300;
+  const sp=platform(),actor=sp.Actor.from(sp.Game.getFormEx(job.actor)),place=sp.ObjectReference.from(sp.Game.getFormEx(job.target));
+  if(!actor?.is3DLoaded())return false;
+  return (job.public_seller_ids||[]).some(id=>{
+   const seller=sp.Actor.from(sp.Game.getFormEx(id));
+   return id!==job.actor&&seller?.is3DLoaded()&&places.validTarget(seller,place)&&
+    Math.hypot(actor.getPositionX()-seller.getPositionX(),actor.getPositionY()-seller.getPositionY(),actor.getPositionZ()-seller.getPositionZ())<=300;
+  });
  }
  return {
   available(){return lanes.every(lane=>lane.available());},
   release(){for(const lane of lanes)if(lane.available())lane.release();},
   reset(){active=null;for(const lane of lanes)lane.reset();},
-  status(){return {available:this.available(),capacity:8,id:active?.id,peak_owned:active?.peak||0,overlap_samples:active?.overlap||0,
+  ownsActor(actor){return !!active&&active.jobs.some(j=>j.actor===actor&&active.receipts[j.id]?.release_verified!==true);},
+  startBackground(command){
+   if(!Array.isArray(command.jobs)||command.jobs.length>6||command.jobs.some(j=>!j||j.slot>=6))
+    return {done:true,ack:{id:command.id,status:'held',error:'Background travel reserves slots zero through five',routines:[]}};
+   const result=this.step(command);
+   if(result.done)return result;
+   active.background=true;active.command=JSON.parse(JSON.stringify(command));
+   return {done:true,ack:{id:command.id,status:'started'}};
+  },
+  tickBackground(){if(active?.background&&!active.done)this.step(active.command);},
+  sampleSocialOverlap(attendance,playing){
+   if(!active?.background||active.done||attendance?.phase!=='attending'||!attendance.participants?.every(p=>p.ownedPackage===true))return;
+   const actors=attendance.participants.map(p=>p.actor);
+   if(actors.some(a=>this.ownsActor(a)))throw Error('Overlapping actor ownership');
+   if(active.jobs.some(j=>!active.receipts[j.id]&&lanes[j.slot].status()?.ownedPackage===true)){
+    active.socialOverlap=(active.socialOverlap||0)+1;
+    if(playing)active.speechOverlap=(active.speechOverlap||0)+1;
+   }
+  },
+  status(){return {available:this.available(),capacity:8,background_capacity:6,background:active?.background===true,result:active?.result||null,id:active?.id,peak_owned:active?.peak||0,overlap_samples:active?.overlap||0,
+   attendance_overlap_samples:active?.socialOverlap||0,speech_overlap_samples:active?.speechOverlap||0,
    activities:active?active.jobs.map(j=>({slot:j.slot,actor:j.actor,target:j.target,...(active.receipts[j.id]||lanes[j.slot].status())})):[]};},
   step(command){
    const jobs=command.jobs;
+   if(Array.isArray(jobs)&&jobs.some(j=>j&&j.public_seller_ids!==undefined&&(!Array.isArray(j.public_seller_ids)||j.public_seller_ids.length>128||j.public_seller_ids.some(id=>!Number.isInteger(id)||id<=0||id>0xffffffff))))
+    return {done:true,ack:{id:command.id,status:'held',error:'Invalid public seller roster',routines:[]}};
    if(!Array.isArray(jobs)||!jobs.length||jobs.length>8||jobs.some(j=>!j||!Number.isInteger(j.slot)||j.slot<0||j.slot>=8||!Number.isInteger(j.actor)||j.target!==0x2be1b||j.target_kind!=='place'||typeof j.id!=='string')||
        new Set(jobs.map(j=>j.slot)).size!==jobs.length||new Set(jobs.map(j=>j.actor)).size!==jobs.length||new Set(jobs.map(j=>j.id)).size!==jobs.length)
     return {done:true,ack:{id:command.id,status:'held',error:'Invalid independent routing allocation',routines:[]}};
    if(!active||active.id!==command.id){
-    if(active&&!active.done)throw new Error('Cannot replace an executing cohort');
+    if(active&&(!active.done||active.jobs.some(j=>active.receipts[j.id]?.release_verified!==true)))throw new Error('Cannot replace an executing or unreleased cohort');
     active={id:command.id,jobs:jobs.map(j=>({...j})),receipts:{},finishing:{},peak:0,overlap:0};
    }
    if(JSON.stringify(active.jobs)!==JSON.stringify(jobs))throw new Error('Cohort commands changed during execution');
@@ -48,8 +74,10 @@ function createParallelRoutineController(platform,now=Date.now){
    const owned=jobs.filter(j=>!active.receipts[j.id]&&lanes[j.slot].status()?.ownedPackage===true).length;
    active.peak=Math.max(active.peak,owned);if(owned>=2)active.overlap++;
    active.done=jobs.every(j=>active.receipts[j.id]);
-   return active.done?{done:true,ack:{id:command.id,status:Object.values(active.receipts).every(r=>r.status==='applied'&&r.release_verified)?'applied':'held',
-    routines:jobs.map(j=>active.receipts[j.id]),concurrency:{peak_owned:active.peak,overlap_samples:active.overlap}}}:{done:false};
+   if(active.done)active.result={id:command.id,status:Object.values(active.receipts).every(r=>r.status==='applied'&&r.release_verified)?'applied':'held',
+    routines:jobs.map(j=>active.receipts[j.id]),concurrency:{peak_owned:active.peak,overlap_samples:active.overlap,
+     attendance_overlap_samples:active.socialOverlap||0,speech_overlap_samples:active.speechOverlap||0}};
+   return active.done?{done:true,ack:active.result}:{done:false};
   }
  };
 }

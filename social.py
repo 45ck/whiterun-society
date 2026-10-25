@@ -7,6 +7,7 @@ import math
 from routing import route_available
 from knowledge import person_view
 from dialogue_context import time_context
+from activity_leases import routine_actors
 
 SOCIAL_STAGES=('choose_partner','respond','continue_dialogue','reflect_first','reflect_second')
 
@@ -15,10 +16,13 @@ def social_candidates(state,observation,actor):
     people=state.get('people',{});town=state.get('town') or {}
     rows={r['id']:r for r in observation.get('residents',[]) if r.get('isPerson') is True}
     own=rows.get(actor);person=people.get(str(actor),{})
+    reserved=routine_actors(state)
+    if actor in reserved:return []
     if not own or str(actor) not in town.get('residents',{}) or own.get('isGuard') is not False or person.get('commitments'):
         return []
     result=[]
     for other,row in rows.items():
+        if other in reserved:continue
         if str(other) not in town['residents'] or str(other) not in people or other==actor or row.get('isGuard') is not False or people[str(other)].get('commitments'):
             continue
         if not route_available(observation,actor,other):continue

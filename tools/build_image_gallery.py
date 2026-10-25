@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 
 ROOT=Path(__file__).resolve().parents[1]
-GENERATED={'npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png'}
+GENERATED={'npc-four-systems.png','whole-simulation.png','personal-knowledge-loop.png','voiced-trade-loop.png','independent-lives.png'}
 
 def build():
     images=sorted((ROOT/'docs/images').iterdir(),key=lambda p:(p.name not in GENERATED,p.name))

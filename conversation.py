@@ -14,6 +14,7 @@ from routing import dynamic_route
 from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal
 from dialogue_context import dialogue_frame,validate_situated_candidates
+from activity_leases import background_social_ready,routine_actors
 
 
 def validate_candidates(value):
@@ -46,7 +47,7 @@ class Conversation:
         return bool(c and c['phase'] not in ('complete', 'held'))
 
     def start_conversation(self, event_id, observation, actor=None, max_turns=None):
-        self._agency_guard(observation)
+        self._agency_guard(observation,allow_routines=background_social_ready(self.active))
         if max_turns is not None and (type(max_turns) is not int or not 2<=max_turns<=6):
             raise ValueError('Conversation turn limit must be an integer from 2 to 6')
         if not isinstance(event_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', event_id):
@@ -109,9 +110,10 @@ class Conversation:
         return day
 
     def _conversation_guard(self, event_id, observation):
-        self._agency_guard(observation)
+        self._agency_guard(observation,allow_routines=background_social_ready(self.active,existing=True))
         c = self.conversation_status()
         if not c or c['id'] != event_id: raise ValueError('Conversation changed')
+        if routine_actors(self.active).intersection(c.get('speakers',[])):raise ValueError('A journey owns a conversation participant')
         return c
 
     def _speech_context(self, c, observation):

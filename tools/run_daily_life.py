@@ -123,18 +123,28 @@ def main():
                              'source':'director nearby opportunity; not a claimed urgent need'}
                 if event_available(state,opportunity):pending.insert(0,opportunity)
             if args.parallel_journeys:
-                selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(8,args.max_events-len(evidence['events'])))
+                remaining=args.max_events-len(evidence['events'])
+                overlap=bool(args.language_config and remaining>=3)
+                selected=select_routine_events(state['society'],state['bridge']['observation'],pending,min(6 if overlap else 8,remaining-int(overlap)))
                 if len(selected)>=2:
                     ids=[e['id'] for e in selected];batch_id='daily-routes-'+hashlib.sha256('|'.join(ids).encode()).hexdigest()[:16]
-                    result=subprocess.run([sys.executable,str(Path(__file__).with_name('run_parallel_routines.py')),
-                        '--root',str(args.root),'--id',batch_id,'--events',*ids,'--model-config',str(args.model_config)],check=False)
+                    command=[sys.executable,str(Path(__file__).with_name('run_parallel_routines.py')),
+                        '--root',str(args.root),'--id',batch_id,'--events',*ids,'--model-config',str(args.model_config)]
+                    if overlap:command+=['--social-during-travel','--language-config',str(args.language_config)]
+                    result=subprocess.run(command,check=False)
                     current=fresh();batch=current['society'].get('routine_batch')
-                    if current['bridge']['session']!=session or result.returncode or not batch or batch['id']!=batch_id:
+                    if current['bridge']['session']!=session or not batch or batch['id']!=batch_id:
                         raise ValueError('Independent-journey cohort did not finish cleanly')
                     for member in batch['members']:
                         evidence['events'].append({'id':member['event_id'],'actor':member['actor'],'status':member['phase'],
                             'outcome':member.get('outcome'),'model_calls':int(bool(member.get('result'))),'cohort':batch_id})
+                    if overlap:
+                        receipt_path=runtime/('parallel-routines-'+hashlib.sha256(batch_id.encode()).hexdigest()[:12]+'.json')
+                        receipt=json.loads(receipt_path.read_text(encoding='utf-8'))
+                        if receipt.get('id')!=batch_id:raise ValueError('Concurrent worker receipt mismatch')
+                        if receipt.get('social_event'):evidence['events'].append({**receipt['social_event'],'cohort':batch_id})
                     record()
+                    if result.returncode:raise ValueError('Concurrent resident activity held; completed receipts retained')
                     if batch['phase']=='held':raise ValueError('Independent journey held; no automatic repeat')
             for event in pending:
                 if stopping() or len(evidence['events'])>=args.max_events:break

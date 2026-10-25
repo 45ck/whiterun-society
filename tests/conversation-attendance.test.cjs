@@ -4,9 +4,9 @@ function fixture(){
  let clock=0;const owned=[false,false],running=[false,false],loaded=[true,true],ready=[true,true],failed=[false,false];
  const actors=[7,8].map((id,slot)=>({is3DLoaded:()=>loaded[slot],getCurrentPackage:()=>({getFormID:()=>owned[slot]?100+slot:42})}));
  const sp={Actor:{from:a=>a},Quest:{from:q=>q},Game:{getFormEx:id=>actors[id-7],getFormFromFile:id=>{
-  const slot=Math.floor((id-0x800)/16);return (id-0x800)%16===1?{getFormID:()=>100+slot}:{isRunning:()=>running[slot]};}}};
+  const slot=Math.floor((id-0x800)/16)-6;assert.ok(slot===0||slot===1);return (id-0x800)%16===1?{getFormID:()=>100+slot}:{isRunning:()=>running[slot]};}}};
  const controller=createConversationAttendance(()=>sp,()=>clock,{routerFactory:(_sp,_now,opts)=>{
-  const slot=opts.offset/16;return {reset(){},release(){running[slot]=false;owned[slot]=false;},step(){
+  const slot=opts.offset/16-6;assert.ok(slot===0||slot===1);return {reset(){},release(){running[slot]=false;owned[slot]=false;},step(){
    if(failed[slot])return {done:true,ack:{status:'held',error:'binding rejected'}};
    if(!ready[slot])return {done:false};running[slot]=true;owned[slot]=true;return {done:true,ack:{status:'applied'}};
   }};

@@ -49,7 +49,9 @@ class DirectorControl:
             raise ValueError('Game bridge unavailable')
         if not society.get('town') or society.get('error') or society.get('transition') or bridge.get('command'):
             raise ValueError('An initialized, synchronized town is required')
-        for key in ('plan', 'conversation'):
+        if society.get('unsettled_effect') or (society.get('routine_batch') or {}).get('unverified_release'):
+            raise ValueError('Resolve the unverified native effect before starting society')
+        for key in ('plan', 'conversation', 'routine_batch'):
             item = society.get(key) or {}
             if item and item.get('phase') not in ('complete', 'held'):
                 raise ValueError('Finish the active resident event before starting society')
@@ -65,7 +67,7 @@ class DirectorControl:
         command = [sys.executable, str(Path(__file__).parent/'tools/run_daily_life.py'),
                    '--root', str(self.runtime.parent), '--max-events', str(count),
                    '--watch-seconds', '600', '--model-config', str(configs[0]),
-                   '--language-config', str(configs[1]), '--social-opportunities', '--receipt', str(receipt),
+                   '--language-config', str(configs[1]), '--social-opportunities', '--parallel-journeys', '--receipt', str(receipt),
                    '--stop-file', str(stop_file)]
         self.log = (self.runtime/(run_id+'.log')).open('w', encoding='utf-8')
         try:

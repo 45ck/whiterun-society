@@ -26,6 +26,7 @@ class DirectorControlTests(unittest.TestCase):
         self.assertNotIn('receipt',result);self.assertNotIn('stop_file',result)
         argv=popen.call_args.args[0];self.assertNotIn('test-placeholder',' '.join(argv))
         self.assertIn('--social-opportunities',argv)
+        self.assertIn('--parallel-journeys',argv)
         with self.assertRaises(ValueError):self.control.start({},self.bridge,self.society)
         self.control.stop();self.assertTrue(Path(self.control.run['stop_file']).exists())
         process.terminate.assert_not_called();process.kill.assert_not_called()
@@ -40,8 +41,10 @@ class DirectorControlTests(unittest.TestCase):
     def test_invalid_budget_or_active_native_event_never_starts_worker(self,popen):
         for budget in (True,0,13,'2'):
             with self.assertRaises(ValueError):self.control.start({'max_events':budget},self.bridge,self.society)
-        for key in ('plan','conversation'):
+        for key in ('plan','conversation','routine_batch'):
             with self.assertRaises(ValueError):self.control.start({},self.bridge,{**self.society,key:{'phase':'speaking'}})
+        for extra in ({'unsettled_effect':True},{'routine_batch':{'phase':'held','unverified_release':True}}):
+            with self.assertRaisesRegex(ValueError,'unverified'):self.control.start({},self.bridge,{**self.society,**extra})
         with self.assertRaises(ValueError):self.control.start({}, {'last_seen':0},self.society)
         popen.assert_not_called()
 

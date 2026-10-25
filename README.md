@@ -6,7 +6,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 27 finished images](docs/gallery.md) · [gallery website](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 28 finished images](docs/gallery.md) · [gallery website](https://45ck.github.io/whiterun-society/) · [26 measurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -27,6 +27,12 @@ Residents should work, trade with one another, consume goods, remember events an
 The language role can use a small, inexpensive model; it does not require frontier reasoning for every line. Cloud inference through OpenRouter is the selected direction. Mercury 2.5 is now the experimental lab default after a complete two-turn voiced encounter: 58.811 seconds including approach and playback, with US$0.000718912 reported across two language requests and six Jev decisions. Grounding failures from earlier probes remain documented; one successful scene is not broad qualification. [Model pricing, measured timings and routing direction](docs/model-routing.md)
 
 ## Examples from the running prototype
+
+### Independent lives around a conversation
+
+Background travel now has six native slots, leaving two for one disjoint conversation. Actor reservations prevent a traveller from also being selected as a speaker; arrival receipts preserve another encounter's pending speech. The observer reports travel/attendance and travel/speech overlap separately. Current businesses provide seller IDs dynamically.
+
+The first live trial completed Idolaf's market journey while Adrianne chose to defer. All 29 compared inventories stayed unchanged. No eligible conversation pair was available, so simultaneous native travel and speech are **not yet qualified**. [Architecture, infographic and honest evidence](docs/concurrent-society.md).
 
 ### Conversations in an established town
 
@@ -195,7 +201,13 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (27)</summary>
+<summary>Browse every finished project image (28)</summary>
+
+### Independent lives
+
+Generated system illustration — not gameplay
+
+![Independent lives](docs/images/independent-lives.png)
 
 ### Npc four systems
 

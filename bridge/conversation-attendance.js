@@ -1,10 +1,10 @@
-// Two existing lane aliases hold consenting participants near one another.
-// Global society serialization excludes concurrent lane cohorts.
+// Slots 6 and 7 hold consenting participants; background journeys use 0..5.
 function createConversationAttendance(platform,now=Date.now,options={}){
  const makeRouter=options.routerFactory||(typeof createPapyrusRouterController==='function'?createPapyrusRouterController:require('./papyrus-router.js').createPapyrusRouterController);
- const lanes=[0,1].map(slot=>makeRouter(platform,now,{file:'WhiterunLanes.esp',offset:slot*0x10}));
+ const lanes=[6,7].map(slot=>makeRouter(platform,now,{file:'WhiterunLanes.esp',offset:slot*0x10}));
  let active=null;
  function inspect(actor,slot){
+  slot+=6;
   const sp=platform(),a=sp.Actor.from(sp.Game.getFormEx(actor));
   const pkg=sp.Game.getFormFromFile(0x801+slot*0x10,'WhiterunLanes.esp'),quest=sp.Quest.from(sp.Game.getFormFromFile(0x800+slot*0x10,'WhiterunLanes.esp'));
   if(!a?.is3DLoaded()||!pkg||!quest)return {actor,slot,loaded:false,ownedPackage:null,released:false};

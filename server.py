@@ -214,7 +214,7 @@ def main():
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
                     observation=bridge['observation']
-                    if self.path=='/routines/start':result=world.begin_routines(data['id'],data['event_ids'],observation)
+                    if self.path=='/routines/start':result=world.begin_routines(data['id'],data['event_ids'],observation,data.get('background',False))
                     elif self.path=='/routines/decisions':result=world.finish_routines(data['id'],data['claim_id'],data['results'],observation)
                     else:result=world.hold_routines(data['id'],data['reason'],observation)
                     self.reply(202,result)

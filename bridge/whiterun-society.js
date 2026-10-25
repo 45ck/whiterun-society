@@ -168,6 +168,8 @@ on('update', () => {
     bindingsReady=true;
   }
   if(routineRecoveryNeeded){routines.release();rest.release();parallelRoutines.release();routineRecoveryNeeded=false;}
+  parallelRoutines.tickBackground();
+  parallelRoutines.sampleSocialOverlap(conversationAttendance.status(),speech.status()?.status==='playing');
   if (!announced) {
     if (sp.browser) {
       sp.browser.loadUrl('file:///Data/Platform/UI/index.html?rev='+Date.now());
@@ -233,6 +235,7 @@ on('update', () => {
         }
         else if(command.kind==='conversation_attend'){
           if(checkpointValue()!==command.checkpoint)throw new Error('Attendance checkpoint mismatch');
+          if(command.participants?.some(id=>parallelRoutines.ownsActor(id)))throw new Error('Background journey owns an attendance participant');
           const result=conversationAttendance.meet(command);
           if(!result.done)pending=command;else{ack=result.ack;completed.add(command.id);}
         }
@@ -242,12 +245,13 @@ on('update', () => {
           if(!result.done)pending=command;
           else {ack=result.ack;completed.add(command.id);}
         }
-        else if(command.kind==='parallel_routines'){
+        else if(command.kind==='parallel_routines'||command.kind==='background_routines'){
           if(checkpointValue()!==command.checkpoint||command.origin_session!==session)throw new Error('Independent routine checkpoint or session mismatch');
-          const result=parallelRoutines.step(command);
+          const result=command.kind==='background_routines'?parallelRoutines.startBackground(command):parallelRoutines.step(command);
           if(!result.done)pending=command;else{ack=result.ack;completed.add(command.id);}
         }
         else if (command.kind === 'walk_to') {
+          if(parallelRoutines.ownsActor(command.actor)||parallelRoutines.ownsActor(command.target))throw new Error('Background journey owns a meeting participant');
           if(command.checkpoint!==undefined&&checkpointValue()!==command.checkpoint)throw new Error('Travel checkpoint mismatch');
           if(!observerCamera.status().manual){cameraMode='focus';cameraActor=command.actor;cameraDirty=true;}
           movementSource=command.method==='package'?routines:movement;
@@ -291,7 +295,7 @@ on('update', () => {
           if (!actor || !actor.is3DLoaded()) throw new Error('Interact with a loaded NPC first');
           actor.setLookAt(player, false);
         } else throw new Error('Unknown command');
-        if (!['speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
+        if (!['speak','conversation_attend','inventory_trade','inventory_consume','inventory_produce','inventory_supply','inventory_endowment','rest_at_bench','parallel_routines','background_routines','walk_to','release_routine'].includes(command.kind)) {ack = {id:command.id,status:'applied',actor:selected};completed.add(command.id);}
       } catch (error) { ack = {id:command.id,status:'failed',error:String(error)};completed.add(command.id); }
     }
   }

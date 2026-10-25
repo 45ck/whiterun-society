@@ -58,7 +58,7 @@ Stop requests settle the current encounter or transaction before ending. They do
 
 Economic need reviews and social opportunities are interleaved. When no queued social event is available, a bounded nearby opportunity lets a resident choose a partner or defer. Such events are labelled director/operator opportunities, not invented urgent social needs. Speech and relationship appraisal remain separate from inventory-changing trade/work decisions: **business negotiation is not yet fully spoken end to end**.
 
-After mutual conversation acceptance, the bridge uses two existing `WhiterunLanes.esp` aliases for attendance. Both must show owned packages before speech preparation. Lost ownership holds the encounter, and both packages must be released. Global society serialization prevents these two slots from overlapping an independent travel cohort.
+After mutual conversation acceptance, the bridge uses two existing `WhiterunLanes.esp` aliases for attendance. Both must show owned packages before speech preparation. Lost ownership holds the encounter, and both packages must be released. At this historical milestone, society serialization prevented overlap with travel. The subsequent [background protocol](concurrent-society.md) assigns attendance to slots 6–7 and background travel to slots 0–5; native travel/speech overlap is still unqualified.
 
 ## Paired-attendance live qualification
 

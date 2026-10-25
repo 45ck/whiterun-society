@@ -67,6 +67,6 @@ def observer_state(bridge,society):
         'cancelled_production':society.get('cancelled_production',[])[-10:],
         'unsettled_effect':society.get('unsettled_effect'),
         'limits':[str(len(residents))+' initialized residents, not a claim of every Whiterun NPC.',
-            'Up to eight independent journeys per bounded cohort. Trades and conversations still execute serially.',
+            'Up to six background journeys can overlap one disjoint conversation; exclusive travel cohorts still support eight. Inventory transactions remain serialized.',
             'Traits, needs and relationship scores are gameplay models, not measured psychology.',
             'Family households, continuous town scheduling and broad production chains remain incomplete.']}
