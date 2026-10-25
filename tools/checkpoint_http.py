@@ -8,13 +8,15 @@ import urllib.request
 MUTATION_PREFIXES=('/agency/','/conversation/','/routines/','/town/','/goals/','/world/','/market-day/')
 
 
-def checkpoint_rejection(path,expected_session,current_session,transition):
+def checkpoint_rejection(path,expected_session,current_session,transition,native_effect=False):
     """Called synchronously before a mutation by the single-threaded server."""
     if not path.startswith(MUTATION_PREFIXES):return None
     if expected_session is not None and expected_session!=current_session:
         return {'code':'session_changed','error':'Game session changed; request was not applied','session':current_session}
     if transition:
         return {'code':'checkpoint_busy','error':'Checkpoint is binding; request was not applied','session':current_session}
+    if path=='/goals/result' and native_effect:
+        return {'code':'goal_effect_busy','error':'Native effect is pending; goal result was not applied','session':current_session}
     return None
 
 
@@ -42,7 +44,9 @@ class CheckpointHTTP:
                 if error.code!=409 or not mutation:raise
                 try:body=json.load(error)
                 except (ValueError,TypeError):raise ValueError('Unrecognized checkpoint conflict; no retry') from None
-                if not isinstance(body,dict) or body.get('code')!='checkpoint_busy':
+                recognized=isinstance(body,dict) and (body.get('code')=='checkpoint_busy'
+                    or route=='/goals/result' and body.get('code')=='goal_effect_busy')
+                if not recognized:
                     raise ValueError(body.get('error','Request conflict; no retry') if isinstance(body,dict) else 'Request conflict; no retry') from None
                 if body.get('session')!=self.session:raise ValueError('Game session changed; no retry') from None
                 if time.monotonic()>=deadline:raise TimeoutError('Checkpoint conflict did not settle; no mutation replay') from None

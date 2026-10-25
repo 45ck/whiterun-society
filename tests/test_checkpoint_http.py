@@ -73,5 +73,41 @@ class CheckpointHTTPTests(unittest.TestCase):
         self.assertIsNone(checkpoint_rejection('/heartbeat','old','new',True))
         self.assertIsNone(checkpoint_rejection('/command',None,'same',True))
 
+    def test_native_effect_conflict_is_certified_only_for_goal_result(self):
+        self.assertEqual(checkpoint_rejection('/goals/result','a','a',False,True)['code'],'goal_effect_busy')
+        self.assertEqual(checkpoint_rejection('/goals/result','old','a',False,True)['code'],'session_changed')
+        for route in ('/goals/claim','/agency/decision','/conversation/result','/heartbeat'):
+            self.assertIsNone(checkpoint_rejection(route,'a','a',False,True))
+
+    def test_goal_effect_retry_preserves_exact_results_and_session(self):
+        client=self.client();client.session='a'
+        replies=[conflict(code='goal_effect_busy'),response({'checkpoint':8})]
+        with patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=replies) as call,patch('tools.checkpoint_http.time.sleep'):
+            self.assertEqual(client('/goals/result',{'claim_id':'paid','results':[{'actor':7}]}),{'checkpoint':8})
+        self.assertEqual(call.call_count,2)
+        self.assertEqual(call.call_args_list[0].args[0].data,call.call_args_list[1].args[0].data)
+        self.assertEqual(call.call_args_list[1].args[0].get_header('X-society-session'),'a')
+
+    def test_goal_effect_code_cannot_retry_another_route_or_session(self):
+        for route,session in (('/goals/claim','a'),('/agency/decision','a'),('/goals/result','b')):
+            client=self.client();client.session='a'
+            with self.subTest(route=route,session=session),patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=conflict(code='goal_effect_busy',session=session)) as call:
+                with self.assertRaises(ValueError):client(route,{})
+                self.assertEqual(call.call_count,1)
+
+    def test_goal_result_never_retries_400_500_transport_or_expired_conflict(self):
+        for error in (conflict(code='goal_effect_busy',status=400),conflict(code='goal_effect_busy',status=500),TimeoutError(),OSError()):
+            client=self.client();client.session='a'
+            with self.subTest(error=type(error).__name__),patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=error) as call:
+                with self.assertRaises(type(error)):client('/goals/result',{})
+                self.assertEqual(call.call_count,1)
+        client=self.client();client.session='a';client.checkpoint_wait=.5;clock=[0.0]
+        with patch('tools.checkpoint_http.time.monotonic',side_effect=lambda:clock[0]),\
+             patch('tools.checkpoint_http.time.sleep',side_effect=lambda n:clock.__setitem__(0,clock[0]+n)),\
+             patch('tools.checkpoint_http.urllib.request.urlopen',side_effect=lambda *a,**k:(_ for _ in ()).throw(conflict(code='goal_effect_busy'))) as call:
+            with self.assertRaises(TimeoutError):client('/goals/result',{})
+        self.assertLessEqual(clock[0],.5)
+        self.assertLessEqual(call.call_count,6)
+
 
 if __name__=='__main__':unittest.main()

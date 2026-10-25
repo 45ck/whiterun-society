@@ -132,7 +132,8 @@ def main():
                 if not 0<length<=65536: raise ValueError('invalid body size')
                 data=json.loads(self.rfile.read(length))
                 if not isinstance(data,dict): raise ValueError('expected object')
-                rejected=checkpoint_rejection(self.path,self.headers.get('X-Society-Session'),bridge['session'],world.transition)
+                rejected=checkpoint_rejection(self.path,self.headers.get('X-Society-Session'),bridge['session'],world.transition,
+                    native_effect=bool(bridge['command'] or world.active and world.active.get('pending')))
                 if rejected:return self.reply(409,rejected)
                 if self.path=='/service/shutdown':
                     if director.status()['running'] or world.transition or bridge['command'] or world.agency_busy() or world.conversation_busy() or world.routines_busy() or (world.active and world.active.get('pending')):
