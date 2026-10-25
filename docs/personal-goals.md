@@ -68,7 +68,7 @@ The run used its configured **64 personal-decision calls**, spread across seven 
 
 Actual captured game interface in the paused/held state. The 64-call allowance and context error are diagnostic evidence, not proof of a successful watching session.
 
-The context-construction repair is being implemented and still needs a new integrated native qualification. The four completed events remain valid retained outcomes, including refusal and quiet passage; this run is not a completed six-event session. It is separate from the earlier 44-call, 41-arrival trial above and does not replace that trial's measurements or save proof.
+The context-construction repair is implemented and passed a new three-event native qualification below. The four completed events remain valid retained outcomes, including refusal and quiet passage; this run is not a completed six-event session. It is separate from the earlier 44-call, 41-arrival trial above and does not replace that trial's measurements or save proof.
 
 ## Quantitative acceptance
 
@@ -78,4 +78,25 @@ The current destination layer offers quiet or visiting a feasible place. In this
 
 [OKR definitions](society-okrs.md) · [Spatial sampling and exclusions](spatial-metrics.md) · [Ambitious acceptance roadmap](simulation-roadmap.md).
 
-Validation: 419 tests passed in the complete Python run; subsequent focused tests cover acknowledgement ordering, scheduling, context and metric refinements. The final JavaScript suite passed 195 tests. These checks supplement the native evidence above. Natural dialogue, productive routines, richer drama, broad supply chains, robust camera visibility and sustained-operation qualification remain active work.
+Validation: 419 tests passed in the complete Python run; subsequent focused tests cover acknowledgement ordering, scheduling, context and metric refinements. The final JavaScript suite passed 196 tests; the context repair passed 52 focused Python tests. These checks supplement the native evidence above. Natural dialogue, productive routines, richer drama, broad supply chains, robust camera visibility and sustained-operation qualification remain active work.
+
+
+## Context repair and fresh native qualification
+
+The rejected case's exact decision payload was reduced from **16,297 to 11,265 bytes** while retaining **all 18 candidates and all 19 ordered choices**. The actor's full 32-memory history stayed in the save; eight recent or relevant memories entered the decision. Repeated provenance is referenced once, execution telemetry is excluded from recollections, and appraisals have a bounded recent window. The 16 KB provider limit is unchanged. `config/context-window.json` controls attention limits. Larger crowds may receive an explicitly reported nearby-candidate attention window; omitted people still exist.
+
+Fresh run `society-48b1c8dd7d4f4df8` completed all three events: a five-line social conversation, a seller refusal and an employer refusal. Every selected social clip has an unmuted overlay-ended receipt with both participants nearby throughout. This run records no successful sale. Its 64 personal calls cost US$0.013716528 across reported personal receipts, excluding foreground calls. The 298-sample window lasted 364.10 seconds, reached 24 observed moving residents and reached 13 moving during playback. These measurements are a separate trial from the earlier 44-call baseline.
+
+![Conversation during the context-repair trial](images/context-window-live-conversation.jpg)
+
+Actual native screenshot during the five-line conversation. This capture precedes the follow-card spacing repair; that overlap is retained as historical UI evidence. The wording is still formal, and body orientation is not eye contact or line-of-sight proof. Physical audio output and lip sync remain unqualified.
+
+Save `WS-ContextWindow-20261025-BT` reloaded with all 17 checked fields matching. The original oversized claim remains held and was never replayed. [Compact context, native receipts, speech clips and save verification](context-window-evidence.json).
+
+![Completed trial after HUD spacing repair](images/context-window-completed-hud.jpg)
+
+Actual native screenshot after completion and deployment of the spacing fix. The camera-follow card now yields space to visible left-side panels; the native idle layout was checked, with active-phase transitions covered by UI tests. Long panels remain scrollable, but reliable native pointer input is still open.
+
+## Native RTS input remains a priority
+
+Observed CEF pointer events can land on the page outside the intended sidebar. Source inspection suggests NirnLab's cached Skyrim virtual-cursor coordinates rather than disabled CSS scrolling. Only inspected source fragments and the installed binary are currently available locally, without a complete native build toolchain and dependency set. No guessed coordinate multiplier or native binary patch has been deployed. Acquire a pinned, licensed complete build or implement a supported adapter, then qualify real selection, follow, wheel zoom, sidebar scroll and drag controls in Skyrim. DOM tests do not close this requirement.

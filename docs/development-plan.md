@@ -118,3 +118,8 @@ No aggregate human-realism score, forced friendship rate, movement quota or dram
 ## Independent goals and measured continuity implemented
 
 Personal goals, concurrent bounded inference, background due reviews, native destination ownership, data-defined venue/policy catalogues and sampled spatial telemetry are implemented. The repaired trial produced 44 personal decisions, 41 accepted journeys, 4 delivered spoken turns and movement during voice playback. It retained unavailable-resident and dialogue validation failures; 17 save fields matched reload/rollback. [Evidence, failure history and limitations](personal-goals.md). All-resident autonomy, economic depth, causal psychology, richer drama and sustained broadcast remain open in the [quantitative roadmap](simulation-roadmap.md).
+
+
+## Follow-up context and native input qualification
+
+Crowded social decisions now use a versioned recent/relevant memory view without deleting saved memories or raising the provider limit. All 18 candidates and 19 choices survived the reproduced failure's compaction; a new native run completed a five-line conversation and two refusals, with 17-field save/reload matching. The movie HUD follow-card overlap is repaired. Reliable native pointer mapping remains an immediate blocker to full RTS control; complete upstream build dependencies and real input qualification are required. [Current evidence](personal-goals.md#context-repair-and-fresh-native-qualification).

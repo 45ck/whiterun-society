@@ -104,6 +104,18 @@ Controlled native protocol fixture — authored choices, not autonomous behaviou
 
 ![Bargaining native fixture](images/bargaining-native-fixture.jpg)
 
+## Context window completed hud
+
+Captured game or observer interface — historical prototype
+
+![Context window completed hud](images/context-window-completed-hud.jpg)
+
+## Context window live conversation
+
+Captured game or observer interface — historical prototype
+
+![Context window live conversation](images/context-window-live-conversation.jpg)
+
 ## Conversation closeup
 
 Captured game or observer interface — historical prototype

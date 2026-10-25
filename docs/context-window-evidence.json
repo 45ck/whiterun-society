@@ -1,0 +1,321 @@
+{
+  "schema": 1,
+  "scope": "Bounded context-repair qualification; not full economy, native input or human-realism acceptance",
+  "offline_context_proof": {
+    "schema_version": 1,
+    "method": "Offline reconstruction with mocked HTTP; zero paid requests and no retained-claim replay",
+    "source_failed_run_id": "society-ba50565eb00140f1",
+    "source_encounter_id": "encounter-4eb28d60fade4d15af78",
+    "source_checkpoint": 2727,
+    "policy_version": "social-context-v1",
+    "original_context_bytes": 16149,
+    "original_payload_bytes": 16297,
+    "compacted_context_bytes": 11117,
+    "compacted_payload_bytes": 11265,
+    "provider_payload_limit_bytes": 16000,
+    "original_guard_reproduced": true,
+    "compacted_adapter_validation_passed": true,
+    "original_candidates": 18,
+    "compacted_candidates": 18,
+    "original_options": 19,
+    "compacted_options": 19,
+    "option_ids_and_order_preserved": true,
+    "source_owned_memories": 32,
+    "included_memories": 8,
+    "payload_sha256": {
+      "original": "ac0852a109c05731c715dad0ce6520e0121b07f33f02ba29798fa776ad69276d",
+      "compacted": "22fe56b42d3febf017d388cfde32e2678bf015e1bdefa2f6a03e70c791912f45"
+    },
+    "tests": {
+      "passed": 52,
+      "failed": 0,
+      "elapsed_seconds": 94.081,
+      "scope": "Context window, social, conversation, knowledge, combined dialogue, decision provider and conversation worker"
+    },
+    "limits": [
+      "Offline payload qualification is not a native dialogue or human-realism rating.",
+      "The failed held claim was retained unchanged; runtime qualification uses new encounter IDs."
+    ]
+  },
+  "native_run": {
+    "id": "society-48b1c8dd7d4f4df8",
+    "status": "complete",
+    "error": null,
+    "events": [
+      {
+        "id": "encounter-8d51bb78136640e785b2",
+        "actor": 1048823,
+        "status": "complete",
+        "outcome": "social_exchange_completed",
+        "model_calls": 14
+      },
+      {
+        "id": "daily-58-1048823",
+        "actor": 1048823,
+        "status": "complete",
+        "outcome": "seller_declined",
+        "model_calls": 5
+      },
+      {
+        "id": "daily-80-108162",
+        "actor": 108162,
+        "status": "complete",
+        "outcome": "employer_declined",
+        "model_calls": 2
+      }
+    ],
+    "goal_model_calls": 64,
+    "goal_scheduler": {
+      "budget": 64,
+      "budget_committed": 64,
+      "interval_seconds": 5,
+      "status": "budget_exhausted",
+      "scope": "Due personal decisions during foreground work; maximum four inferences within one wave. No constant model inference.",
+      "active_wave": null
+    },
+    "personal_reported_cost_usd": 0.013716528,
+    "personal_cost_reports": 64,
+    "personal_wave_count": 11
+  },
+  "conversation": {
+    "id": "encounter-8d51bb78136640e785b2",
+    "outcome": "social_exchange_completed",
+    "calls": {
+      "propose": 5,
+      "select": 5,
+      "social": 4
+    },
+    "elapsed_seconds": 144.248,
+    "turns": [
+      {
+        "file": "context-window-conversation-1.wav",
+        "speaker": "Whiterun Guard",
+        "line": "Good morning. It is a pleasant day.",
+        "sha256": "b60a1847e68bfbbdb67849d5b4b19b3b43872e211fdaf66c9d906dd16a1030bd",
+        "encounter": "Context repair native conversation",
+        "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored.",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.74,
+          "facing": [
+            {
+              "actor": 1048823,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-83c42f4267610be3c1e78753",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 114.62107914405783,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 278,
+            "sum_error_degrees": 188.54691324541807
+          },
+          "playedSeconds": 2.619292,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 2.6193
+      },
+      {
+        "file": "context-window-conversation-2.wav",
+        "speaker": "Heimskr",
+        "line": "Indeed it is. I'm fairly tired and hungry myself—have you had your breakfast yet?",
+        "sha256": "218da8e7c1ca6c4c7d4c0301c3c2be53a9d04bb36a52c5ba13c39334c9652144",
+        "encounter": "Context repair native conversation",
+        "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored.",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 5.669,
+          "facing": [
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 1048823,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-c24035c62c4de280c4f017ef",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 34.45912741535494,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 596,
+            "sum_error_degrees": 6944.984064762713
+          },
+          "playedSeconds": 5.556,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 5.556
+      },
+      {
+        "file": "context-window-conversation-3.wav",
+        "speaker": "Whiterun Guard",
+        "line": "No, I haven't eaten yet. Hope you get some food soon.",
+        "sha256": "736c7fcc10886309aa18906b01b13818a328bf3812d19b7ef7508065699910ab",
+        "encounter": "Context repair native conversation",
+        "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored.",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 3.823,
+          "facing": [
+            {
+              "actor": 1048823,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-b875fc97a320638d02a9c40d",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 6.384069292141476,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 384,
+            "sum_error_degrees": 14.422684248409041
+          },
+          "playedSeconds": 3.721333,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 3.7213
+      },
+      {
+        "file": "context-window-conversation-4.wav",
+        "speaker": "Heimskr",
+        "line": "I hope you find something soon too. This pleasant weather makes the day feel kinder despite our empty bellies.",
+        "sha256": "20bb5dd4dc0e86e1d439f88569cb26806ef404446b4b1c0104f9784274b40ab2",
+        "encounter": "Context repair native conversation",
+        "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored.",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 7.01,
+          "facing": [
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 1048823,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-bd36db98b57e35a30109d9b4",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 4.359370988077444,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 704,
+            "sum_error_degrees": 8.918983691443373
+          },
+          "playedSeconds": 6.9,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 6.9
+      },
+      {
+        "file": "context-window-conversation-5.wav",
+        "speaker": "Whiterun Guard",
+        "line": "Thanks. Take care out there.",
+        "sha256": "92b719986547ad7e5da64541adda9ad46f83a02a886f26dfe951cfa4fcf2faa4",
+        "encounter": "Context repair native conversation",
+        "source": "Selected Kokoro clip with native overlay ended receipt. Not a recording of physical speaker output; human realism remains unscored.",
+        "delivered": true,
+        "playback": {
+          "channel": "CEF overlay audio",
+          "elapsedSeconds": 2.327,
+          "facing": [
+            {
+              "actor": 1048823,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            },
+            {
+              "actor": 108162,
+              "bodyTurnRequested": true,
+              "headLookRequested": true
+            }
+          ],
+          "id": "speech-73d5580bcfc4cc08bf77aa8b",
+          "muted": false,
+          "nearbyThroughout": true,
+          "orientation": {
+            "max_error_degrees": 0.6530790096467172,
+            "measurement": "body yaw towards partner, not head/eye gaze or raycast",
+            "samples": 236,
+            "sum_error_degrees": 1.4773902498720872
+          },
+          "playedSeconds": 2.225958,
+          "status": "ended",
+          "volume": 1
+        },
+        "seconds": 2.226
+      }
+    ]
+  },
+  "native_sample_window": {
+    "count": 298,
+    "elapsed_seconds": 364.0996060371399,
+    "peak_observed_moving": 24,
+    "playback_samples": 44,
+    "peak_observed_moving_during_playback": 13,
+    "scope": "Sampled geometry and overlay state, not continuous tracking or physical audibility"
+  },
+  "save_reload": {
+    "name": "WS-ContextWindow-20261025-BT",
+    "scope": "Settled plan, people, inventory and journal; not long-term stability",
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "scene_handoffs": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  },
+  "tests": {
+    "focused_context_python": 52,
+    "final_javascript": 196
+  },
+  "native_input": {
+    "status": "unqualified",
+    "finding": "Observed pointer events may reach HTML outside the intended sidebar; source inspection suggests cached Skyrim virtual cursor routing. Full native build dependencies unavailable locally; no adapter patch deployed."
+  }
+}

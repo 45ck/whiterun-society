@@ -61,6 +61,22 @@ test('native UI defaults to movie view and retains explicit Play/Pause and RTS c
  w.document.getElementById('rts-mode').click();assert.equal(messages.at(-1).mode,'free');
  }finally{dom.window.close();}
 });
+
+test('movie camera-follow card cannot obscure the encounter during any dialogue phase',()=>{
+ const {dom,w}=native();try{
+  const data={residents:[{id:7,name:'Resident',isPerson:true,inventory:{gold:5,bread:1}}],trades:[],director:{running:true},camera:{manual:false,mode:'focus',id:7},society:{people:{},town:{residents:{'7':{name:'Resident'}}}}};
+  for(const phase of ['meeting','thinking_propose','thinking_select','synthesize','speaking','complete']){
+   data.society.conversation={id:'chat',phase,speakers:[7,8],initiator:7,current:{speaker:7},turns:[{speaker:7,selected:{line:'A long conversation remains available to read. '.repeat(30)}}]};
+   w.whiterunRender(data);
+   const encounter=w.document.getElementById('conversation-card'),follow=w.document.getElementById('focus-card');
+   assert.equal(encounter.hidden,false,phase);assert.equal(w.getComputedStyle(follow).display,'none',phase);
+   assert.match(encounter.textContent,/A long conversation remains available/);
+   assert.equal(w.getComputedStyle(encounter).overflowY,'auto');assert.equal(w.getComputedStyle(encounter).maxHeight,'calc(100vh - 275px)');
+  }
+  delete data.society.conversation;w.whiterunRender(data);
+  assert.equal(w.document.getElementById('focus-card').hidden,false);assert.notEqual(w.getComputedStyle(w.document.getElementById('focus-card')).display,'none');
+ }finally{dom.window.close();}
+});
 test('charts render accessible distinct units, unknowns and untrusted labels as text',()=>{
  const {dom,w}=native();try{const d=dashboard();d.control_scope='<img src=x onerror=alert(1)>';const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
  assert.equal(root.querySelectorAll('svg[role="img"]').length,1);assert.match(root.querySelector('svg').getAttribute('aria-label'),/Agent task 1/);

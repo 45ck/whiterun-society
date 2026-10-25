@@ -30,7 +30,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 60 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 62 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -247,7 +247,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (60)</summary>
+<summary>Browse every finished project image (62)</summary>
 
 ### Economic speech layers
 
@@ -350,6 +350,18 @@ Captured game or observer interface — historical prototype
 Controlled native protocol fixture — authored choices, not autonomous behaviour
 
 ![Bargaining native fixture](docs/images/bargaining-native-fixture.jpg)
+
+### Context window completed hud
+
+Captured game or observer interface — historical prototype
+
+![Context window completed hud](docs/images/context-window-completed-hud.jpg)
+
+### Context window live conversation
+
+Captured game or observer interface — historical prototype
+
+![Context window live conversation](docs/images/context-window-live-conversation.jpg)
 
 ### Conversation closeup
 
