@@ -56,6 +56,7 @@ let directorControl=null,playerControlRequest=null,audioOutput=null;
 let presentation={trades:[],committedCount:0};
 let lastProjection=0,projectionSample=[],mapProjection=null;
 let observerKey=null,uiHealth=null;
+let browserFocusReady=false;
 const observerPressed={};
 const oldHud=globalThis.whiterunSocietyHud;
 if (typeof oldHud==='number') { try { sp.destroyText(oldHud); } catch (_) {} }
@@ -69,6 +70,7 @@ sp.storage[registrationKey] = registrations;
 function on(event, callback) { registrations.push(sp.on(event, callback)); }
 
 function reset() {
+  browserFocusReady=false;uiHealth=null;
   directorControl=null;playerControlRequest=null;audioOutput=null;
   lastAckSent=null;
   sceneHandoffs.reset();residentControl.reset();lastPresentationAt=0;
@@ -196,6 +198,13 @@ on('update', () => {
     }
     // The overlay presents connection status without overlapping native notifications.
     announced = true;
+  }
+  // NirnLab can cache focus before page load, then skip applying it because
+  // its cached flag already equals the requested value. Wait for the actual
+  // page heartbeat and cross two update frames to open its native cursor.
+  if(uiHealth&&sp.browser&&browserFocusReady!==true){
+    if(browserFocusReady===false){sp.browser.setFocused(false);browserFocusReady='pending';}
+    else {sp.browser.setFocused(cursor);browserFocusReady=true;}
   }
   if(remoteCamera){
     if(observerCamera.acceptRemote(remoteCamera,residents,presentation.society?.town?.residents||{}))cameraDirty=true;

@@ -46,6 +46,12 @@ This screenshot is an explicit qualification fixture, **not a spontaneous model-
 
 Injected Windows clicks were still not reliably delivered to the embedded browser during visual qualification. API camera control and native rendering worked. Full mouse/keyboard RTS acceptance remains open; do not treat unit tests or screenshots as proof that every control works for a player. The portrait set is partial. Lip sync, gaze, natural dialogue scoring and all-day routines remain incomplete.
 
+### Cursor focus follow-up
+
+The bridge now reapplies browser focus across two update frames after the UI heartbeat arrives. This avoids NirnLab's cached pre-load focus flag skipping native cursor initialization. The native Skyrim cursor became visible after deployment. Automated selection still failed: a click aimed at Adrianne's roster row produced a pointer event at `(1280, 0)` and no recorded click. This is partial focus recovery, not completed RTS input acceptance. The 152 JavaScript tests pass, including page-load timing, save-load reset and preserving F8 focus release. The previous 319 Python result belongs to the preceding economy/media revision; Python code did not change in this follow-up.
+
+The bounded live session settled after six events, including Brenuin approaching Carlotta, delivering a voiced offer and receiving a refusal. It was paused before bridge deployment. Refusal is an outcome, not a completed sale.
+
 ## Toward a continuous broadcast
 
 A 24/7 economy-and-drama stream is a product direction, not a running service. Before broadcasting: durable event history across restarts, bounded inference spending, audio recovery and silence metrics, save/crash recovery, a multihour soak, and a scene director that frames real activity without fabricating it. Public stream setup and publication have not been started. Existing Play sessions remain bounded to 96 events or 60 minutes.

@@ -230,3 +230,25 @@ test('in-game play request is carried to service and discarded on game load',asy
  h.handlers.get('update')();await settle();assert.equal(h.requests[0].director_control.action,'play');
  h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();h.advance();h.handlers.get('update')();await settle();assert.equal(h.requests.at(-1).director_control,null);
 });
+
+test('browser focus is applied after page readiness across update frames, once per load',async()=>{
+  const h=harness(),focus=[];
+  h.sp.setTextsVisibility=()=>{};
+  h.sp.browser={loadUrl:()=>{},setVisible:()=>{},setFocused:value=>focus.push(value),executeJavaScript:()=>{}};
+  h.handlers.get('update')();await settle();assert.deepEqual(focus,[true]);
+  h.handlers.get('browserMessage')({arguments:[{type:'society-ui-health',rts:true}]});
+  assert.deepEqual(focus,[true]);
+  h.handlers.get('update')();assert.deepEqual(focus,[true,false]);
+  h.handlers.get('update')();assert.deepEqual(focus,[true,false,true]);
+  h.handlers.get('update')();assert.deepEqual(focus,[true,false,true]);
+  h.handlers.get('preLoadGame')();h.handlers.get('postLoadGame')();
+  h.handlers.get('update')();assert.deepEqual(focus,[true,false,true,true]);
+  h.handlers.get('browserMessage')({arguments:[{type:'society-ui-health',rts:true}]});
+  h.handlers.get('update')();h.handlers.get('update')();
+  assert.deepEqual(focus,[true,false,true,true,false,true]);
+  h.handlers.get('buttonEvent')({code:66,isDown:true});
+  h.handlers.get('browserMessage')({arguments:[{type:'society-ui-health',rts:true}]});
+  h.handlers.get('update')();h.handlers.get('update')();
+  assert.equal(focus.at(-1),false,'heartbeat must not steal focus after F8 releases it');
+  assert.equal(focus.length,7);
+});
