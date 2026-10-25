@@ -4,6 +4,7 @@ from entrepreneurship import learn_recipe
 from labour import settle_contract
 from enterprises import plan_work_policy, current_work_terms, paid_bread_recipe
 from activity_leases import activity_conflict
+from paid_work_policy import paid_work_capability, PAID_WORK_BLOCK_REASON
 
 from economy_catalog import commodity_ids, recipe_spec, recipe_hash, catalog_hash, apply_recipe, require_native_catalog, MAX_STOCK
 
@@ -48,6 +49,8 @@ class Production:
         return {'checkpoint': self._write(state, 'explicit finite scenario grain endowment')}
 
     def plan_production(self, observation, plan):
+        if not paid_work_capability()['available']:
+            raise ValueError(PAID_WORK_BLOCK_REASON + ': paid production is unavailable pending witnessed execution')
         self._agency_guard(observation)
         if plan is not self.agency_plan() or plan['phase'] != 'ready_to_work':
             raise ValueError('Work requires a current agreed plan and arrival')
@@ -77,6 +80,28 @@ class Production:
 
     def observe_production(self, observation):
         pending = self.active['pending']
+        command = pending['command']
+        # Inventory snapshots and cached legacy acknowledgements cannot establish
+        # whether this process issued attendance, output, or wage effects.
+        if command.get('kind') == 'inventory_produce':
+            if pending.get('hold_reason') == PAID_WORK_BLOCK_REASON and pending.get('status') == 'held':
+                return
+            state = copy.deepcopy(self.active)
+            state['pending'].update(status='held', hold_reason=PAID_WORK_BLOCK_REASON,
+                error='Legacy paid effects are unknown; reconciliation required. Do not replay.',
+                effects_issued=None, no_effects_issued=False)
+            for plan in state.get('plans', []):
+                if (command.get('id') == 'produce-' + str(plan.get('id'))
+                        and command.get('worker') == plan.get('actor')
+                        and command.get('employer') == plan.get('target')
+                        and plan.get('phase') != 'complete'):
+                    plan.update(phase='held', error=PAID_WORK_BLOCK_REASON)
+                    terms = plan.get('work_terms') or {}
+                    business = (state.get('town') or {}).get('businesses', {}).get(terms.get('business_id'))
+                    if isinstance(business, dict) and isinstance(business.get('contracts'), list):
+                        settle_contract(state, plan, 'reconciliation_required')
+            self._write(state, 'legacy paid production quarantined without inferring inventory effects')
+            return
         ack = observation.get('ack') or {}
         if ack.get('id') != pending['id']:
             return

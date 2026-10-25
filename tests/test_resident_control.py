@@ -22,7 +22,7 @@ class ResidentControlTests(unittest.TestCase):
         self.assertTrue(self.world.transition)
         self.assertEqual(self.world.active['people'],before['people'])
         self.assertEqual(self.obs,observation)
-        self.sync();control=self.world.population_status()['resident_control']
+        self.sync();control=self.world.population_status(self.obs)['resident_control']
         self.assertEqual(len(control['assignments']),3)
         self.assertTrue(all(a['mode']=='await_decision' for a in control['assignments'].values()))
         self.assertTrue(self.world.configure_resident_control('enable',True,self.obs)['duplicate'])
@@ -39,14 +39,16 @@ class ResidentControlTests(unittest.TestCase):
 
     def test_census_expands_control_without_reassigning_existing_slots(self):
         self.ready();self.world.configure_resident_control('enable',True,self.obs);self.sync()
-        old=copy.deepcopy(self.world.population_status()['resident_control']['assignments'])
-        self.obs['residents'].append({'id':101,'name':'Arrival','isPerson':True,'inventory':{'gold':2,'bread':0,'grain':0}})
-        self.initialize('later');new=self.world.population_status()['resident_control']['assignments']
+        old=copy.deepcopy(self.world.population_status(self.obs)['resident_control']['assignments'])
+        self.obs['residents'].append({'id':101,'baseId':1101,'name':'Arrival','isPerson':True,'inventory':{'gold':2,'bread':0,'grain':0}})
+        self.initialize('later');new=self.world.population_status(self.obs)['resident_control']['assignments']
         self.assertEqual({key:new[key] for key in old},old)
         self.assertIn('101',new);self.assertEqual(len({a['slot'] for a in new.values()}),4)
-        self.assertEqual(new,self.world.active['town']['resident_control']['assignments'])
+        self.assertTrue(all(type(row['actor_base_id']) is int for row in new.values()))
+        saved={key:{field:value for field,value in row.items() if field!='actor_base_id'} for key,row in new.items()}
+        self.assertEqual(saved,self.world.active['town']['resident_control']['assignments'])
         self.world.observe({**self.obs,'session':'restore-expanded-census'})
-        self.assertEqual(new,self.world.active['town']['resident_control']['assignments'])
+        self.assertEqual(saved,self.world.active['town']['resident_control']['assignments'])
 
     def test_departures_release_slots_and_capacity_never_partially_enrolls(self):
         town={'residents':{'7':{},'9':{}},'resident_control':{'assignments':{}}}

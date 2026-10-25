@@ -28,6 +28,13 @@ class DynamicEconomyTests(unittest.TestCase):
         town = self.world.active['town']
         town['residents'] = {str(r['id']): {'id': r['id'], 'name': r['name'], 'observed_game_day': day,
                                          'is_guard': False} for r in rows}
+        # This replacement is a fresh authored test population with its own
+        # identities; production never infers a binding for unbound history.
+        for row in rows:
+            row['baseId']=row['id']+100000
+            binding={'schema_version':1,'actor':row['id'],'base_id':row['baseId'],'event_id':'dynamic-cast-fixture'}
+            town['residents'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
+            self.world.active['people'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
         town['businesses'] = {'new-shop': {'custodian': 501, 'capabilities': ['retail_food']}}
         self.review()
         self.event = next(e for e in town.get('daily', {}).get('queue', []) if e['actor'] == 99) if town.get('daily') else next(

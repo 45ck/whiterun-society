@@ -7,13 +7,18 @@ import time
 import unittest
 from unittest.mock import patch
 from tools.goal_scheduler import GoalScheduler,due_residents
+from legacy_fixture import author_fixture_identities
 
 
 def snapshot(n=3):
-    return {'bridge':{'session':'a','last_seen':time.time(),'command':None,'observation':{'gameDays':1,
-                'resident_control':{'goal_destinations':True},'residents':[{'id':i,'isPerson':True} for i in range(1,n+1)]}},
+    state={'bridge':{'session':'a','last_seen':time.time(),'command':None,'observation':{'gameDays':1,
+                'ready':True,'session':'a','checkpoint':1,
+                'resident_control':{'goal_destinations':True},'residents':[{'id':i,'baseId':1000+i,'isPerson':True} for i in range(1,n+1)]}},
             'society':{'error':None,'transition':None,'unsettled_effect':None,'people':{str(i):{'standing_goal':{'phase':'arrived','next_review_day':.5}} for i in range(1,n+1)},
-                'town':{'goal_waves':[],'resident_control':{'enabled':True,'assignments':{str(i):{'actor':i} for i in range(1,n+1)}}}}}
+                'town':{'residents':{str(i):{'id':i} for i in range(1,n+1)},'goal_waves':[],
+                        'resident_control':{'enabled':True,'assignments':{str(i):{'actor':i} for i in range(1,n+1)}}}}}
+    author_fixture_identities(state['society'],state['bridge']['observation'],event_id='goal-scheduler-fixture')
+    return state
 
 
 class Process:

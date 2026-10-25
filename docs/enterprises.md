@@ -48,8 +48,10 @@ The browser sends a same-origin, token-checked request. Every change records a u
 The CLI supports the same explicit specification for reproducible experiments:
 
 ```powershell
-python tools/configure_enterprise.py --runtime D:\WhiterunLab\runtime --id unique-charter-event --spec enterprise.json
+python tools/configure_enterprise.py --runtime D:\WhiterunLab\runtime --id unique-charter-event --spec enterprise.json --apply
 ```
+
+Omit `--apply` for the current tool's read-only preview of the exact specification, custodian cohort and definition hash. Applying rechecks the current session/checkpoint and confirms the saved charter event. The command example does not qualify the new startup tool in-game or turn an operator-authored charter into a resident decision.
 
 An example specification, using a **fictional test actor ID** that must be replaced with a currently observed resident:
 

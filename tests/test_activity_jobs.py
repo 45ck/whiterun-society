@@ -2,6 +2,8 @@ import copy
 import unittest
 from activity_jobs import ActivityJobs, activity_leases, reserved_activity_actors, reserved_activity_targets
 from places import registered_venues
+from legacy_fixture import author_fixture_identities
+from resident_identity import resident_identity_status
 
 
 class SavedJobs(ActivityJobs):
@@ -22,9 +24,9 @@ class ActivityJobsTests(unittest.TestCase):
         self.seats = list(registered_venues('rest_bench'))[:3]
         people = {str(actor): {'needs': {'fatigue': .9}, 'needs_clock': 3., 'memories': [], 'agency': {}} for actor in (1, 2, 3)}
         self.world = SavedJobs({'people': people, 'plans': [], 'pending': None,
-                               'town': {'residents': {str(a): {'observed_game_day': 3.} for a in (1, 2, 3)},
+                               'town': {'residents': {str(a): {'id':a,'observed_game_day': 3.} for a in (1, 2, 3)},
                                         'daily': {'queue': []}}})
-        self.obs = {'session': self.world.session, 'gameDays': 3.,
+        self.obs = {'session': self.world.session, 'checkpoint':0,'ready':True,'gameDays': 3.,
                     'activity_jobs': {'available': True, 'capacity': 2, 'receipts': []},
                     'residents': [{'id': a, 'baseId': 100 + a, 'isPerson': True, 'x': 0, 'y': 0, 'z': 0,
                                    'inventory': {'gold': 2, 'bread': 1}} for a in (1, 2, 3)],
@@ -32,6 +34,7 @@ class ActivityJobsTests(unittest.TestCase):
                         {'id': seat, 'position': [100, 0, 0], 'loaded': True, 'occupancy_known': True, 'occupied': False}
                         for seat in self.seats], 'sensors': {str(a): {'sit_available': True, 'furniture_reference_available': True,
                          'sit_state': 0, 'furniture': 0} for a in (1, 2, 3)}}}
+        author_fixture_identities(self.world.active,self.obs)
 
     def intention(self, actor=1, seat=None):
         plan = {'id': 'plan-' + str(len(self.world.active['plans'])), 'actor': actor,
@@ -61,7 +64,8 @@ class ActivityJobsTests(unittest.TestCase):
     def test_two_saved_jobs_leave_events_nonterminal_and_lease_actor_seat_slot(self):
         before = copy.deepcopy(self.obs['residents']);first = self.delegate();second = self.delegate(2)
         self.assertEqual({first['slot'], second['slot']}, {0, 1})
-        self.assertEqual(reserved_activity_actors(self.world.active), {1, 2})
+        # Inspect saved execution leases; identity admission also needs a live observation.
+        self.assertEqual(reserved_activity_actors(self.world.active,include_identity=False), {1, 2})
         self.assertEqual(reserved_activity_targets(self.world.active), set(self.seats[:2]))
         self.assertTrue(all(p['phase'] == 'delegated' for p in self.world.active['plans']))
         self.assertTrue(all(e['status'] == 'started' for e in self.world.active['town']['daily']['queue']))
@@ -97,7 +101,7 @@ class ActivityJobsTests(unittest.TestCase):
         self.assertEqual(state['town']['daily']['queue'][0]['status'], 'complete')
         self.assertEqual(state['town']['daily']['queue'][0]['goal_followups'], [{'goal_id': 'goal-1'}])
         self.assertFalse(self.world.observe_activity_jobs(self.obs));self.assertEqual(len(state['rests']), 1)
-        self.assertEqual(len(person['memories']), 1);self.assertIn(1, reserved_activity_actors(state))
+        self.assertEqual(len(person['memories']), 1);self.assertIn(1, reserved_activity_actors(state,include_identity=False))
         command = self.world.activity_pending_command();self.assertEqual(command['kind'], 'activity_ack_receipt')
         self.obs['ack'] = {**self.identity(job), 'id': command['id'], 'status': 'applied', 'acknowledged': True}
         self.assertTrue(self.world.observe_activity_jobs(self.obs));self.world.bind()
@@ -179,7 +183,7 @@ class ActivityJobsTests(unittest.TestCase):
         self.assertIsNone(self.world.activity_pending_command())
         self.assertNotIn('activity_orphans', self.world.active)
         self.world.bind()
-        self.assertEqual(reserved_activity_actors(self.world.active), {1})
+        self.assertEqual(reserved_activity_actors(self.world.active,include_identity=False), {1})
         self.assertEqual(self.world.active['people'], older['people'])
         self.assertEqual(self.world.active['plans'], older['plans'])
         self.assertEqual(self.world.active['town'], older['town'])
@@ -192,7 +196,7 @@ class ActivityJobsTests(unittest.TestCase):
         self.assertFalse(self.world.observe_activity_jobs(self.obs))
         self.obs['ack']['slot'] = job['slot']
         self.assertTrue(self.world.observe_activity_jobs(self.obs))
-        self.assertEqual(reserved_activity_actors(self.world.active), {1})
+        self.assertEqual(reserved_activity_actors(self.world.active,include_identity=False), {1})
         self.world.bind()
         self.assertEqual(activity_leases(self.world.active), [])
         history = self.world.activity_status()['history']
@@ -215,11 +219,18 @@ class ActivityJobsTests(unittest.TestCase):
         self.assertEqual(self.world.active['people'], older['people'])
         self.assertEqual(self.world.active['plans'], [])
 
-    def test_unknown_base_identity_is_omitted_from_native_projection_and_command(self):
-        for row in self.obs['residents']:row.pop('baseId')
-        self.delegate()
-        self.assertNotIn('actor_base_id', self.world.activity_pending_command())
-        self.assertNotIn('actor_base_id', self.world.activity_status()['jobs'][0])
+    def test_missing_or_replaced_base_identity_cannot_admit_a_new_rest_job(self):
+        plan=self.intention();before=copy.deepcopy(self.world.active)
+        for base in (None,999):
+            with self.subTest(base=base):
+                if base is None:self.obs['residents'][0].pop('baseId',None)
+                else:self.obs['residents'][0]['baseId']=base
+                self.assertFalse(resident_identity_status(self.world.active,self.obs,1)['qualified'])
+                with self.assertRaises(ValueError):
+                    self.world.delegate_rest(plan,self.obs)
+                self.assertEqual(self.world.active,before)
+                self.assertIsNone(self.world.transition)
+                self.assertIsNone(self.world.activity_pending_command())
 
 
 class ActivityJobsLineageTests(unittest.TestCase):

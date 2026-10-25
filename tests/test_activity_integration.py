@@ -81,7 +81,7 @@ class ActivityIntegrationTests(unittest.TestCase):
         second = self.delegate(108186); self.accept(second)
         self.assertEqual({first['slot'], second['slot']}, {0, 1})
         self.assertFalse(self.world.agency_busy())
-        self.assertEqual(reserved_activity_actors(self.world.active), {99, 108186})
+        self.assertEqual(reserved_activity_actors(self.world.active,include_identity=False), {99, 108186})
         self.begin_other(108149)
         self.assertTrue(self.world.agency_busy())
         self.decide('eat_bread', 'foreground')
@@ -127,7 +127,7 @@ class ActivityIntegrationTests(unittest.TestCase):
         self.assertEqual(self.world.active['people']['99']['needs']['fatigue'], .9)
         self.assertEqual(self.world.active.get('rests', []), [])
         self.assertFalse(any(p['id'] == job['source_plan'] for p in self.world.active.get('plans', [])))
-        self.assertIn(99, reserved_activity_actors(self.world.active))
+        self.assertIn(99, reserved_activity_actors(self.world.active,include_identity=False))
         command = self.world.pending(self.obs['session'])
         self.assertEqual(command['kind'], 'activity_ack_receipt')
         self.assertEqual(command['session'], 'loaded-older-save')
@@ -135,7 +135,9 @@ class ActivityIntegrationTests(unittest.TestCase):
         self.obs['ack'] = {**self.identity(job), 'id': command['id'],
                            'status': 'applied', 'acknowledged': True}
         self.world.observe(self.obs); self.sync()
-        self.assertNotIn(99, reserved_activity_actors(self.world.active))
+        # Saved execution lease is cleared; stale native receipts and absent
+        # identity observations are separate admission exclusions.
+        self.assertNotIn(99, reserved_activity_actors(self.world.active,include_identity=False))
         self.assertEqual(self.world.active.get('rests', []), [])
         self.assertIsNone(self.world.pending(self.obs['session']))
 

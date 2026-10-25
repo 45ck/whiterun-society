@@ -7,9 +7,12 @@ from routing import route_available
 from knowledge import person_view
 from enterprises import production_policy, paid_bread_recipe
 from employment import recently_refused
+from paid_work_policy import paid_work_capability
 from economy_catalog import native_catalog_matches, commodity_ids, recipe_spec, recipe_hash, catalog_hash, MAX_STOCK
 
 def work_opportunities(state, observation, worker):
+    if not paid_work_capability()['available']:
+        return []
     if not native_catalog_matches(observation, 'bread_recipe'):return []
     try:recipe = paid_bread_recipe()
     except ValueError:return []

@@ -33,7 +33,9 @@ class ResourceDeliveryFaultTests(unittest.TestCase):
         return command,resource_ack(command)
 
     def accounting(self):
-        row=self.recipient();self.obs['residents'].remove(row)
+        # A new import requires a current visible identity. These lag cases keep
+        # that evidence while the separate accounting-channel marker catches up.
+        row=self.recipient()
         self.obs['inventory_observations']=[row];self.obs['inventory_checkpoint']=self.obs['checkpoint']
 
     def test_bind_reservation_waits_for_accounting_checkpoint_then_arms(self):
@@ -99,6 +101,12 @@ class ResourceDeliveryFaultTests(unittest.TestCase):
         self.accounting();self.obs['inventory_checkpoint']-=1
         with self.assertRaisesRegex(ValueError,'stale'):self.plan()
         self.assertNotIn('resource_program',self.world.active['town'])
+
+    def test_accounting_only_recipient_cannot_admit_without_current_identity(self):
+        self.accounting();self.obs['residents'].remove(self.recipient())
+        with self.assertRaisesRegex(ValueError,'independent activity'):self.plan()
+        self.assertNotIn('resource_program',self.world.active['town'])
+        self.assertIsNone(self.world.active['pending'])
 
     def test_conflicting_visible_accounting_inventory_cannot_admit(self):
         self.obs['inventory_observations']=[copy.deepcopy(self.recipient())]

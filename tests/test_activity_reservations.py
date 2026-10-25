@@ -15,6 +15,7 @@ from goal_opportunities import focus_opportunities
 from parallel_routines import select_routine_events
 from social import social_candidates
 from owner_production import owner_work_opportunities
+from paid_work_policy import PAID_WORK_BLOCK_REASON
 
 
 def lease(actor,target=700):
@@ -184,26 +185,31 @@ class ReservedDirectEffectTests(unittest.TestCase):
     sync=endowment_fixture.EndowmentTests.sync
     census=endowment_fixture.EndowmentTests.census
 
-    def test_direct_food_work_owner_and_grant_admissions_cannot_steal_actor(self):
-        for method,phase in [('food','ready_to_eat'),('work','ready_to_work'),('owner','ready_to_self_work'),('grant',None),('supply',None)]:
+    def test_direct_food_owner_and_grant_admissions_cannot_steal_actor(self):
+        for method,phase in [('food','ready_to_eat'),('owner','ready_to_self_work'),('grant',None),('supply',None)]:
             with self.subTest(method=method):
                 actor=108186 if method=='supply' else 99
                 self.world.active['plans']=[{'id':'effect','actor':actor,'target':108149,'phase':phase}] if phase else []
                 self.obs['activity_jobs']={'jobs':[lease(actor)]};before=copy.deepcopy(self.world.active)
                 with self.assertRaisesRegex(ValueError,'independent activity'):
                     if method=='food':self.world.plan_consumption('eat',self.obs,actor,'effect')
-                    elif method=='work':self.world.plan_production(self.obs,self.world.agency_plan())
                     elif method=='owner':self.world.plan_owner_production(self.obs,self.world.agency_plan())
                     elif method=='grant':self.world.plan_endowment(actor,self.obs,self.manifest['id'],self.manifest_hash)
                     else:self.world.setup_production(self.obs)
                 self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
 
-    def test_paid_work_also_reserves_employer_not_only_worker(self):
+    def test_unqualified_paid_execution_is_blocked_with_worker_or_employer_reserved(self):
+        # The disabled paid adapter rejects before checking leases. This proves
+        # no effects or state mutation, not executable paid-work lease handling.
         self.world.active['plans']=[{'id':'effect','actor':99,'target':108149,'phase':'ready_to_work'}]
-        self.obs['activity_jobs']={'receipts':[{'actor':108149,'target':700,'status':'held'}]};before=copy.deepcopy(self.world.active)
-        with self.assertRaisesRegex(ValueError,'independent activity'):
-            self.world.plan_production(self.obs,self.world.agency_plan())
-        self.assertEqual(self.world.active,before)
+        for actor in (99,108149):
+            with self.subTest(reserved_actor=actor):
+                self.obs['activity_jobs']={'receipts':[{'actor':actor,'target':700,'status':'held'}]}
+                before=copy.deepcopy(self.world.active)
+                with self.assertRaisesRegex(ValueError,PAID_WORK_BLOCK_REASON):
+                    self.world.plan_production(self.obs,self.world.agency_plan())
+                self.assertEqual(self.world.active,before)
+                self.assertIsNone(self.world.transition)
 
     def test_disjoint_resource_recipient_is_still_admitted(self):
         self.obs['activity_jobs']={'jobs':[lease(108149)]}

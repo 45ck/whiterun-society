@@ -19,6 +19,7 @@ function createProductionController(platform,now=Date.now,options={}){
   }catch(_){return false;}
  }
  return {
+  paidWorkCapability(){return {available:false,protocol:1,reason:'legacy_paid_execution_unqualified'};},
   reset(){active=null;ownerCommits.clear();},
   status(){return active?{id:active.id,actor:active.actor,expectedPackage:active.package,ownedPackage:!['complete','held'].includes(active.phase)&&active.attendance?.package_owned===true,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:active.minutes,wageGold:active.wage,attendance:active.attendance||null}:null;},
   commitOwnerRecipe(c,workJobs){
@@ -86,6 +87,9 @@ function createProductionController(platform,now=Date.now,options={}){
    return fail('Owner inventory drifted during serialized recipe; reconciliation required');
   },
   step(c){
+    if(c.kind==='inventory_produce')return {done:true,ack:{id:c.id,status:'held',reason:'legacy_paid_execution_unqualified',
+      error:'Legacy paid effects are unknown; reconciliation required. Do not replay.',
+      catalog_hash:c.catalog_hash,recipe_id:c.recipe_id,recipe_hash:c.recipe_hash,effects_issued:null,no_effects_issued:false}};
    const pins={catalog_hash:c.catalog_hash,...(c.kind!=='inventory_supply'?{recipe_id:c.recipe_id,recipe_hash:c.recipe_hash}:{})};
    if([...ownerCommits.values()].some(record=>record.phase!=='complete'))return {done:true,ack:{id:c.id,...pins,status:'held',no_effects_issued:true,error:'Independent owner recipe owns the inventory writer'}};
    const sp=platform(),fail=error=>{if(active?.id===c.id)active.phase='held';return {done:true,ack:{id:c.id,...pins,status:'held',error,work:this.status(),no_effects_issued:!!active&&active.id===c.id&&!active.sent}};};

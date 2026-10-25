@@ -19,6 +19,50 @@ from dashboard import town_dashboard
 from spatial_telemetry import SpatialTelemetry
 from tools.checkpoint_http import checkpoint_rejection
 from routing import route_available
+from livelihood_backgrounds import preview_livelihood_background
+from population import eligible_actors
+
+
+def validate_startup_checkpoint(world, observation, data, *, required=False, require_session=False):
+    """Pin a reviewed startup change before the single writer can mutate it."""
+    if required or 'expected_checkpoint' in data:
+        marker=data.get('expected_checkpoint')
+        if (type(marker) is not int or marker!=world.marker or world.transition
+                or not isinstance(observation,dict) or observation.get('checkpoint')!=marker):
+            raise ValueError('Startup checkpoint changed; preview again before applying')
+    if require_session or 'expected_session' in data:
+        session=data.get('expected_session')
+        if (not isinstance(session,str) or not session or session!=world.session
+                or not isinstance(observation,dict) or observation.get('session')!=session):
+            raise ValueError('Startup session changed; preview again before applying')
+
+
+def begin_livelihood_background(world, observation, data, *, preview=False, observer=False):
+    fields={'id','seed','scenario_id','scenario_hash','actor_ids','expected_checkpoint'}
+    if (not isinstance(data,dict) or not fields<=set(data)
+            or set(data)-fields-{'expected_session'}):
+        raise ValueError('Explicit livelihood scenario, cohort and checkpoint are required')
+    validate_startup_checkpoint(world,observation,data,required=True,require_session=observer)
+    world._agency_guard(observation)
+    args=(data['id'],data['seed'],data['scenario_id'],data['scenario_hash'],data['actor_ids'])
+    if preview:
+        return preview_livelihood_background(world.active,observation,*args)
+    return world.establish_livelihood_background(*args,observation)
+
+
+def validate_census_cohort(observation, data):
+    """Optional exact roster pin for previewed startup tools, checked atomically."""
+    if 'expected_cohort' not in data:return
+    cohort=data['expected_cohort']
+    if (not isinstance(cohort,list) or not 1<=len(cohort)<=128
+            or any(not isinstance(row,dict) or set(row)!={'actor','base_id'}
+                   or any(type(row[key]) is not int or not 0<row[key]<=0xffffffff
+                          for key in ('actor','base_id')) for row in cohort)
+            or len({row['actor'] for row in cohort})!=len(cohort)):
+        raise ValueError('An exact bounded actor/base census cohort is required')
+    actual=[{'actor':row['id'],'base_id':row.get('baseId')} for row in eligible_actors(observation)]
+    if sorted(cohort,key=lambda row:row['actor'])!=sorted(actual,key=lambda row:row['actor']):
+        raise ValueError('Census cohort changed; preview again before applying')
 
 
 def begin_agency_event(world, observation, data):
@@ -162,18 +206,23 @@ def main():
             else: self.reply(404,{'error':'not found'})
 
         def do_POST(self):
-            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director','/observer/conversation','/observer/scene-handoff'):
+            if self.path in ('/observer/camera', '/observer/enterprise', '/observer/director','/observer/conversation','/observer/scene-handoff','/observer/livelihood-background','/observer/livelihood-background/preview'):
                 origin=f'http://127.0.0.1:{args.port}'
                 if self.headers.get('Host')!=f'127.0.0.1:{args.port}' or self.headers.get('Origin')!=origin or self.headers.get('X-Observer-Token')!=observer_token:
                     return self.reply(403,{'error':'Same-origin observer control required'})
                 try:
                     length=int(self.headers.get('Content-Length','0'))
-                    if not 0<length<=2048:raise ValueError('Invalid observer request size')
+                    if not 0<length<=8192:raise ValueError('Invalid observer request size')
                     data=json.loads(self.rfile.read(length))
                     if not isinstance(data,dict):raise ValueError('Expected control object')
                     if self.path=='/observer/director':
                         return self.reply(202,director.control(data,bridge,world.status()))
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:raise ValueError('Game bridge unavailable')
+                    if self.path.startswith('/observer/livelihood-background'):
+                        preview=self.path.endswith('/preview')
+                        if not preview and director.status()['running']:raise ValueError('Pause the director before applying starting backgrounds')
+                        if bridge['command']:raise ValueError('Another command is pending')
+                        return self.reply(200 if preview else 202,begin_livelihood_background(world,bridge['observation'],data,preview=preview,observer=True))
                     if self.path=='/observer/scene-handoff':
                         if director.status()['running']:raise ValueError('Stop the society director before a manual scene handoff')
                         if bridge['command']:raise ValueError('Another command is pending')
@@ -183,6 +232,7 @@ def main():
                         return self.reply(202,world.interrupt_conversation(data['id'],bridge['observation']))
                     if self.path=='/observer/enterprise':
                         if bridge['command']:raise ValueError('Another command is pending')
+                        validate_startup_checkpoint(world,bridge['observation'],data)
                         return self.reply(202,world.configure_enterprise(data['id'],data['enterprise'],bridge['observation']))
                     request=camera_request(data,bridge['observation'],world.status())
                     request['request_id']=secrets.token_hex(8);bridge['observer_camera']=request
@@ -279,15 +329,23 @@ def main():
                     if bridge['command'] or world.agency_busy(): raise ValueError('another command or resident plan is pending')
                     result=begin_trade_event(world,bridge['observation'],data)
                     self.reply(202,result)
-                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background','/town/scene-handoff'):
+                elif self.path in ('/town/initialize','/town/review','/town/endow','/town/enterprise','/town/social-background','/town/scene-handoff','/town/livelihood-background','/town/livelihood-background/preview'):
                     if bridge['last_seen'] is None or time.time()-bridge['last_seen']>10:
                         raise ValueError('game bridge unavailable')
                     if bridge['command']:raise ValueError('another command is pending')
+                    if self.path.startswith('/town/livelihood-background'):
+                        preview=self.path.endswith('/preview')
+                        if not preview and director.status()['running']:raise ValueError('Pause the director before applying starting backgrounds')
+                        return self.reply(200 if preview else 202,begin_livelihood_background(world,bridge['observation'],data,preview=preview))
+                    if self.path in ('/town/initialize','/town/enterprise','/town/social-background'):
+                        validate_startup_checkpoint(world,bridge['observation'],data)
                     if self.path=='/town/scene-handoff':result=world.request_scene_handoff(data['id'],data['actor'],data['scene_id'],bridge['observation'])
                     elif self.path=='/town/endow':result=begin_endowment_event(world,bridge['observation'],data)
                     elif self.path=='/town/social-background':result=world.establish_social_background(data['id'],data['cohort'],bridge['observation'])
                     elif self.path=='/town/enterprise':result=world.configure_enterprise(data['id'],data['enterprise'],bridge['observation'])
-                    elif self.path=='/town/initialize':result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
+                    elif self.path=='/town/initialize':
+                        validate_census_cohort(bridge['observation'],data)
+                        result=world.initialize_population(data['id'],data['seed'],bridge['observation'])
                     else:result=world.review_population(bridge['observation'])
                     self.reply(202,result)
                 elif self.path.startswith('/conversation/'):

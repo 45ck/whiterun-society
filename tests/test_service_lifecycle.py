@@ -64,7 +64,7 @@ class ServiceLifecycleTests(unittest.TestCase):
                     with urllib.request.urlopen(urllib.request.Request(origin+route,data=json.dumps(data).encode(),headers=headers)) as response:
                         return json.load(response)
                 observation={'session':'test-session','ready':True,'checkpoint':0,'gameDays':1,
-                    'residents':[{'id':7,'name':'New founder','isPerson':True,'isGuard':False,'inventory':{'gold':12,'bread':0,'grain':2}}]}
+                    'residents':[{'id':7,'baseId':100007,'name':'New founder','isPerson':True,'isGuard':False,'inventory':{'gold':12,'bread':0,'grain':2}}]}
                 post('/heartbeat',observation)
                 observation['checkpoint']=post('/world/bootstrap',{})['checkpoint']
                 with self.assertRaises(urllib.error.HTTPError) as unsettled:

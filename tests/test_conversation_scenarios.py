@@ -45,7 +45,7 @@ class ConversationScenarioTests(unittest.TestCase):
         self.world=TimelineEconomy(Path(self.temp.name)/'timeline.sqlite')
         self.obs={'session':'scenario-test','checkpoint':0,'ready':True,'gameDays':10,
             'economy_catalog':native_catalog(),'routing':{'available':True,'adapter':'papyrus-mailbox-v1'},
-            'residents':[{'id':a,'name':'Fixture '+str(a),'isPerson':True,'x':i*100,'y':0,'z':0,
+            'residents':[{'id':a,'baseId':a+10000,'name':'Fixture '+str(a),'isPerson':True,'x':i*100,'y':0,'z':0,
                 'inventory':{'gold':10,'bread':2,'grain':1}} for i,a in enumerate((7001,8002))]}
         self.world.observe(self.obs);self.world.bootstrap(self.obs);self.sync()
 

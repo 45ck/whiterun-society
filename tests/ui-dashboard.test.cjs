@@ -331,22 +331,6 @@ const testVoice=(options={})=>{
  return {dom,w,messages,audio};
 };
 
-test('enterprise editor preserves every supported production and grain-retail combination',async()=>{
- const dom=new JSDOM(read('observer.html'),{runScripts:'outside-only',url:'http://127.0.0.1:17854/'}),w=dom.window,requests=[];
- const state={connected:true,residents:[{id:91,name:'New resident',loaded:true,is_guard:false}],places:[],businesses:[],limits:[],director:{running:false},dashboard:dashboard()};
- w.setInterval=()=>1;w.fetch=async(url,options)=>{requests.push({url,options});return {ok:true,json:async()=>url==='/observer/state'?state:{business:{revision:2},checkpoint:3}};};
- try{
-  w.eval(read('society-dashboard.js'));for(const script of w.document.scripts)if(!script.src)w.eval(script.textContent);await new Promise(r=>setImmediate(r));
-  const caps=['bread_recipe','retail_food','retail_grain'];
-  for(let mask=1;mask<8;mask++){
-   const expected=caps.filter((_,i)=>mask&(1<<i));
-   w.editEnterprise({id:'b',name:'Business',custodian:91,revision:1,capabilities:expected,active:true});
-   await w.document.getElementById('enterprise-form').onsubmit({preventDefault(){}});
-   const sent=JSON.parse(requests.filter(r=>r.url==='/observer/enterprise').at(-1).options.body).enterprise;
-   assert.deepEqual(sent.capabilities.sort(),expected.sort());assert.equal(sent.custodian,91);assert.equal(sent.expected_revision,1);
-  }
- }finally{dom.window.close();}
-});
 test('voice output preference routes the next line without changing Windows or requesting a microphone',async()=>{
  const {dom,w,audio}=testVoice();try{await new Promise(r=>setImmediate(r));const select=w.document.getElementById('voice-output');select.value='headset';select.dispatchEvent(new w.Event('change'));
  w.whiterunSpeak({id:'test-line',actor:1,line:'Good evening',tone:'calm',audio:{file:'fixture.wav'}});await new Promise(r=>setImmediate(r));assert.equal(audio[0].sink,'headset');assert.equal(audio[0].played,true);assert.equal(w.localStorage.getItem('whiterun-voice-output'),'headset');

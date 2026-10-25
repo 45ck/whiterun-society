@@ -23,7 +23,9 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
 
     def setUp(self):
         test_owner_production.OwnerProductionTests.setUp(self)
-        self.actor['baseId']=9099  # Explicit offline native identity fixture.
+        # Reuse the explicitly census-bound fixture identity; changing its base
+        # after census would represent a replacement actor, not an eligible owner.
+        self.assertEqual(self.actor['baseId'],self.world.active['people'][str(self.actor['id'])]['identity_binding']['base_id'])
         self.obs['owner_work_jobs']={'available':True,'capacity':4,'jobs':[],'receipts':[]}
 
     def delegate(self):
@@ -87,8 +89,9 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
         self.assertIn(job['actor'],reserved_activity_actors(self.world.active))
         ack=self.world.pending(self.obs['session']);self.assertEqual(ack['kind'],'owner_work_ack_receipt')
         self.obs['ack']={**_identity(job),'id':ack['id'],'status':'applied','acknowledged':True}
+        self.obs['owner_work_jobs']['receipts']=[]  # Exact native acknowledgement retires its receipt.
         self.world.observe(self.obs);self.sync()
-        self.assertNotIn(job['actor'],reserved_activity_actors(self.world.active))
+        self.assertNotIn(job['actor'],reserved_activity_actors(self.world.active,self.obs))
         snapshot=copy.deepcopy(self.world.active)
         self.world.observe(self.obs)
         self.assertIsNone(self.world.transition);self.assertEqual(self.world.active,snapshot)
@@ -176,8 +179,9 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
         self.world.observe(self.obs);self.sync()
         ack=self.world.pending(self.obs['session']);self.assertEqual(ack['kind'],'owner_work_ack_receipt')
         self.obs['ack']={**_identity(job),'id':ack['id'],'status':'applied','acknowledged':True}
+        self.obs['owner_work_jobs']['receipts']=[]  # No stale native lease remains after receipt acknowledgement.
         self.world.observe(self.obs);self.sync()
-        self.assertNotIn(job['actor'],reserved_activity_actors(self.world.active))
+        self.assertNotIn(job['actor'],reserved_activity_actors(self.world.active,self.obs))
         self.assertEqual(self.world.agency_plan()['phase'],'held')
         self.assertEqual(self.world.active.get('production',[]),[])
 

@@ -10,6 +10,7 @@ import time
 import unittest
 from unittest.mock import Mock, patch
 from catalog_fixture import native_catalog
+from legacy_fixture import author_fixture_identities
 
 from tools.qualify_owner_work import (Qualification, authored_dialogue, authored_owner_choice, exact_identity,
     main, native_working, overlap_metrics, preflight, qualification_summary, read_plan_proofs, social_opportunities, social_start_request, verify_result)
@@ -17,7 +18,7 @@ from tools.qualify_owner_work import (Qualification, authored_dialogue, authored
 
 def world(actors=(17, 29)):
     society = {'people': {}, 'town': {'businesses': {}, 'residents': {}, 'daily': {'queue': []}}}
-    obs = {'ready': True, 'session': 'native-session', 'gameDays': 5., 'residents': [],
+    obs = {'ready': True, 'session': 'native-session', 'checkpoint': 0, 'gameDays': 5., 'residents': [],
            'economy_catalog': native_catalog(),
            'routing': {'adapter': 'papyrus-mailbox-v1', 'available': True},
            'resident_control': {'activities': []}, 'owner_work_jobs': {'available': True, 'capacity': 4, 'jobs': [], 'receipts': []}}
@@ -39,6 +40,7 @@ def world(actors=(17, 29)):
             'inventory': {'gold': 9, 'bread': 0, 'grain': 0},
             'activity': {'package_id': 42, 'scene_id': 0, 'in_combat': False, 'sleep_state': 0}})
     society['town']['daily']['queue'].append({'id': 'pending-social-review', 'actor': speakers[0], 'kind': 'social_review', 'status': 'pending'})
+    author_fixture_identities(society,obs)
     return {'society': society, 'bridge': {'session': 'native-session', 'last_seen': time.time(), 'observation': obs}}
 
 

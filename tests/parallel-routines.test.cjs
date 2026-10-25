@@ -4,7 +4,8 @@ const {createConversationAttendance}=require('../bridge/conversation-attendance.
 function fixture(extra=0){
  let clock=0;const rows=[{x:2000,pkg:42,loaded:true},{x:3000,pkg:42,loaded:true},...Array.from({length:extra},(_,i)=>({x:100+i*100,pkg:42,loaded:true}))];
  const space={getParentCell:()=>({isInterior:()=>false}),getWorldSpace:()=>({getFormID:()=>1}),isDisabled:()=>false};
- const actors=rows.map((row,i)=>({...space,getFormID:()=>99+i,is3DLoaded:()=>row.loaded,isDead:()=>false,isChild:()=>false,
+ rows.forEach((row,i)=>row.base=199+i);
+ const actors=rows.map((row,i)=>({...space,getFormID:()=>99+i,getActorBase:()=>({getFormID:()=>row.base}),is3DLoaded:()=>row.loaded,isDead:()=>false,isChild:()=>false,
   getCurrentScene:()=>null,isInCombat:()=>false,getSleepState:()=>0,
   getPositionX:()=>row.x,getPositionY:()=>0,getPositionZ:()=>0,getCurrentPackage:()=>({getFormID:()=>row.pkg}),evaluatePackage:()=>{}}));
  const target={...space,getFormID:()=>0x2be1b,getPositionX:()=>0,getPositionY:()=>0,getPositionZ:()=>0};
@@ -15,7 +16,7 @@ function fixture(extra=0){
    stop:()=>{running=false;const actor=forms[2].getAt(0);if(actor)rows[actor.getFormID()-99].pkg=42;}};return forms;});
  const sp={Game:{getFormFromFile:id=>slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16],getFormEx:id=>id===0x2be1b?target:actors[id-99]},
   Actor:{from:x=>x},ObjectReference:{from:x=>x},Quest:{from:x=>x},FormList:{from:x=>x},GlobalVariable:{from:x=>x}};
- const c=createParallelRoutineController(()=>sp,()=>clock),command={id:'cohort',jobs:rows.slice(0,2).map((_,slot)=>({id:'job'+slot,slot,actor:99+slot,target:0x2be1b,target_kind:'place',retain:false}))};
+ const c=createParallelRoutineController(()=>sp,()=>clock),command={id:'cohort',jobs:rows.slice(0,2).map((_,slot)=>({id:'job'+slot,slot,actor:99+slot,actor_base_id:199+slot,target:0x2be1b,target_kind:'place',retain:false}))};
  return {c,rows,slots,command,sp,step:()=>c.step(command),time:n=>clock=n,start(){for(let i=0;i<5;i++)this.step();}};
 }
 test('two distinct native leases overlap and releasing one does not release the other',()=>{
@@ -69,4 +70,72 @@ test('arrival discovers current public sellers without a fixed named merchant',(
  f.rows[0].x=100;f.rows[1].x=100;f.step();const result=f.step();
  assert.equal(result.ack.routines[0].seller_nearby,true);
  assert.equal(result.ack.routines[1].seller_nearby,false);
+});
+
+test('missing or malformed actor base binding cannot start aliases, including cold replay',()=>{
+ for(const base of [undefined,null,0,-1,1.5,NaN,Infinity,'199',0x100000000]){
+  const f=fixture();f.command.jobs[0].actor_base_id=base;
+  assert.equal(f.step().ack.status,'held');
+  assert.ok(f.slots.every(s=>!s[0].isRunning()));
+  assert.ok(f.slots.every(s=>s[2].getSize()===0));
+ }
+});
+
+test('replacement before launch receives no mailbox or arrival credit',()=>{
+ const f=fixture();f.rows[0].base=299;f.start();f.time(10001);f.step();
+ assert.equal(f.slots[0][2].getSize(),0);assert.equal(f.slots[0][0].isRunning(),false);
+ f.rows[1].x=100;f.step();const end=f.step();
+ assert.equal(end.ack.status,'held');assert.equal(end.ack.routines[0].actor_base_id,199);
+ assert.equal(end.ack.routines[0].release_verified,false);assert.equal(end.ack.routines[1].status,'applied');
+});
+
+test('replacement during travel stops only the matching owned slot without claiming release',()=>{
+ const f=fixture();f.start();f.rows[0].base=299;f.rows[0].x=100;f.step();
+ assert.equal(f.slots[0][0].isRunning(),false);assert.equal(f.slots[1][0].isRunning(),true);
+ f.time(10001);f.rows[1].x=100;f.step();const end=f.step();
+ assert.equal(end.ack.routines[0].status,'held');assert.equal(end.ack.routines[0].release_verified,false);
+ assert.equal(end.ack.routines[0].seller_nearby,null);assert.equal(end.ack.routines[1].status,'applied');
+ assert.equal(f.c.ownsActor(99),true);
+});
+
+test('identity failure never stops another owner after a mailbox lease changes',()=>{
+ const f=fixture();f.start();f.slots[0][4].setValue(12345);f.rows[0].base=299;f.step();
+ assert.equal(f.slots[0][0].isRunning(),true);
+ f.time(10001);f.rows[1].x=100;f.step();const end=f.step();
+ assert.equal(end.ack.routines[0].status,'held');assert.equal(end.ack.routines[0].release_verified,false);
+});
+
+test('replacement during release cannot receive previously earned arrival credit',()=>{
+ const f=fixture();f.start();f.rows.forEach(r=>r.x=100);f.step();
+ f.rows[0].base=299;f.step();f.time(10001);const end=f.step();
+ assert.equal(end.ack.status,'held');assert.equal(end.ack.routines[0].status,'held');
+ assert.equal(end.ack.routines[0].release_verified,false);assert.equal(end.ack.routines[1].status,'applied');
+});
+
+test('completed success is revalidated on status and replay; changed identity never gets cached success',()=>{
+ const f=fixture();f.start();f.rows.forEach(r=>r.x=100);f.step();const end=f.step();
+ assert.equal(end.ack.status,'applied');assert.deepEqual(end.ack.routines.map(r=>r.actor_base_id),[199,200]);
+ f.rows[0].base=299;
+ assert.equal(f.c.status().result.status,'held');assert.equal(f.step().ack.routines[0].status,'held');
+ f.rows[0].base=199;assert.equal(f.step().ack.status,'held');
+});
+
+test('identity failure is sticky even if original base returns before final receipt',()=>{
+ const f=fixture();f.start();f.rows[0].base=299;f.step();f.rows[0].base=199;
+ f.rows[1].x=100;f.step();const end=f.step();
+ assert.equal(end.ack.routines[0].status,'held');assert.equal(end.ack.routines[0].release_verified,true);
+});
+
+test('cold controller cannot replay or adopt an existing running native lane',()=>{
+ const f=fixture();f.start();const cold=createParallelRoutineController(()=>f.sp,()=>20000);
+ const command={...f.command,jobs:[f.command.jobs[0]]};
+ assert.equal(cold.step(command).done,false);
+ assert.equal(f.slots[0][0].isRunning(),true);
+ assert.equal(f.slots[0][4].getValue(),1);
+ assert.equal(f.slots[1][0].isRunning(),true);
+});
+
+test('replacement between reset and alias binding never writes the actor mailbox',()=>{
+ const f=fixture();f.step();f.rows[0].base=299;f.step();
+ assert.equal(f.slots[0][2].getSize(),0);assert.equal(f.slots[0][0].isRunning(),false);
 });

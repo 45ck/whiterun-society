@@ -6,6 +6,7 @@ from social import social_candidates
 from activity_leases import routine_actors
 from places import MARKET
 from test_conversation import candidates_for,AUDIO
+from legacy_fixture import author_fixture_identities
 
 
 class BackgroundSocietyTests(unittest.TestCase):
@@ -27,11 +28,12 @@ class BackgroundSocietyTests(unittest.TestCase):
 
     def add_free_pair(self):
         self.obs['routing'].update(adapter='papyrus-mailbox-v1')
-        row={'id':501,'name':'Other resident','isPerson':True,'isGuard':False,'x':200,'y':0,'z':0,
+        row={'id':501,'baseId':9501,'name':'Other resident','isPerson':True,'isGuard':False,'x':200,'y':0,'z':0,
              'inventory':{'gold':9,'bread':1,'grain':0}}
         self.obs['residents'].append(row)
         self.world.active['people']['501']=person_seed(row,'test',self.obs['gameDays'])
         self.world.active['town']['residents']['501']={'id':501}
+        author_fixture_identities(self.world.active,self.obs,[501])
 
     def finish_background(self,verified=True):
         receipts=[{'id':j['id'],'slot':j['slot'],'status':'applied','release_verified':verified,'seller_nearby':False,

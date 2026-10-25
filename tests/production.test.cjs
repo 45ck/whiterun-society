@@ -39,10 +39,11 @@ function setup(configuration=manifest){
   separate:n=>{separation=n;},advanceWall:n=>{clock+=n;},defer:()=>{defer=true;},flush:()=>queue.splice(0).forEach(f=>f()),expire:()=>{clock+=6000;}};
 }
 function labour(h){h.engine.step(h.c);for(let i=0;i<62;i++){h.next();h.engine.step(h.c);}}
-test('work consumes finite inputs and conserves wage after game-time attendance',()=>{
- const h=setup();h.engine.step(h.c);assert.equal(h.calls.length,0);labour(h);h.next();
- assert.equal(h.engine.step(h.c).ack.status,'applied');assert.deepEqual(h.balances[1],h.c.after.worker);assert.deepEqual(h.balances[2],h.c.after.employer);
- assert.equal(h.calls.length,3);h.engine.step(h.c);assert.equal(h.calls.length,3);
+test('legacy paid work stays held before and after apparent game-time attendance',()=>{
+ const h=setup(),before=structuredClone(h.balances);labour(h);
+ const r=h.engine.step(h.c);assert.equal(r.ack.status,'held');assert.equal(r.ack.effects_issued,null);
+ assert.equal(r.ack.no_effects_issued,false);assert.equal(h.calls.length,0);assert.deepEqual(h.balances,before);
+ assert.equal(h.engine.status(),null);assert.equal(h.engine.paidWorkCapability().available,false);
 });
 test('paused clock produces nothing and interrupted attendance pays nothing',()=>{
  const h=setup();for(let i=0;i<100;i++){h.next(0);h.engine.step(h.c);}assert.equal(h.calls.length,0);
@@ -52,15 +53,17 @@ test('clock jump and absent game-clock binding cannot complete labour',()=>{
  const h=setup();h.engine.step(h.c);h.next(60);assert.equal(h.engine.step(h.c).ack.status,'held');
  h.engine.reset();delete h.sp.Utility;assert.equal(h.engine.step(h.c).ack.status,'held');assert.equal(h.calls.length,0);
 });
-test('each intermediate recipe stage resumes without duplicating inputs, output or wages',()=>{
- for(const stage of [1,2,3]){const h=setup();h.balances[2].grain--;
+test('every legacy partial and final inventory stage stays held after reset without replay',()=>{
+ for(const stage of [0,1,2,3]){const h=setup();if(stage>=1)h.balances[2].grain--;
   if(stage>=2)h.balances[2].bread+=2;if(stage===3){h.balances[2].gold-=2;h.balances[1].gold+=2;}
-  h.engine.reset();for(let i=0;i<3;i++){h.next();h.engine.step(h.c);}
-  assert.deepEqual(h.balances[1],h.c.after.worker);assert.deepEqual(h.balances[2],h.c.after.employer);assert.equal(h.calls.length,3-stage);
+  const prior=structuredClone(h.balances);h.engine.reset();
+  for(let i=0;i<3;i++){h.next();const r=h.engine.step(h.c);assert.equal(r.ack.status,'held');assert.equal(r.ack.effects_issued,null);assert.equal(r.ack.no_effects_issued,false);}
+  assert.deepEqual(h.balances,prior);assert.equal(h.calls.length,0);
  }
 });
-test('asynchronous effects are issued once and timeouts hold',()=>{
- const h=setup();h.defer();labour(h);assert.equal(h.calls.length,1);h.expire();assert.equal(h.engine.step(h.c).ack.status,'held');assert.equal(h.calls.length,1);
+test('legacy paid work cannot issue asynchronous mutations before or after timeout',()=>{
+ const h=setup();h.defer();labour(h);h.expire();assert.equal(h.engine.step(h.c).ack.status,'held');h.flush();
+ assert.equal(h.calls.length,0);assert.deepEqual(h.balances[2],h.c.before.employer);
 });
 test('malformed contracts and external drift cannot mint goods or wages',()=>{
  const h=setup();h.c.after.worker.gold=100;assert.equal(h.engine.step(h.c).ack.status,'held');
@@ -72,13 +75,11 @@ test('explicit supply imports exactly two grain and does not count as labour',()
  assert.equal(h.calls.length,1);assert.equal(h.balances[2].grain,4);assert.equal(h.balances[2].gold,5);
 });
 
-test('custom agreed wage and duration govern attendance, output and payment',()=>{
+test('custom agreed legacy wage and duration cannot bypass the qualification gate',()=>{
  const h=setup();h.c.wage_gold=4;h.c.work_minutes=5;h.c.after.worker.gold=16;h.c.after.employer.gold=1;
- h.engine.step(h.c);for(let i=0;i<8;i++){h.next();h.engine.step(h.c);}assert.equal(h.calls.length,0);
- assert.equal(h.engine.status().requiredMinutes,5);assert.equal(h.engine.status().wageGold,4);
- for(let i=0;i<8;i++){h.next();h.engine.step(h.c);}
- assert.equal(h.engine.step(h.c).ack.status,'applied');assert.equal(h.balances[1].gold,16);assert.equal(h.balances[2].gold,1);
- assert.equal(h.calls.length,3);h.engine.reset();h.engine.step(h.c);assert.equal(h.calls.length,3);
+ labour(h);h.engine.reset();const r=h.engine.step(h.c);
+ assert.equal(r.ack.status,'held');assert.equal(h.engine.status(),null);assert.equal(h.calls.length,0);
+ assert.deepEqual(h.balances[1],h.c.before.worker);assert.deepEqual(h.balances[2],h.c.before.employer);
 });
 
 test('invalid or unaffordable custom production terms cannot start effects',()=>{
@@ -87,28 +88,22 @@ test('invalid or unaffordable custom production terms cannot start effects',()=>
  }
 });
 
-test('custom wage resumes partial output without repeating production',()=>{
+test('custom wage with already observed output remains unknown and unpaid by this controller',()=>{
  const h=setup();h.c.wage_gold=3;h.c.work_minutes=15;h.c.after.worker.gold=15;h.c.after.employer.gold=2;
- h.balances[2].grain--;h.balances[2].bread+=2;
- h.engine.step(h.c);h.next();assert.equal(h.engine.step(h.c).ack.status,'applied');
- assert.equal(h.calls.length,1);assert.equal(h.balances[1].gold,15);
+ h.balances[2].grain--;h.balances[2].bread+=2;const before=structuredClone(h.balances);
+ assert.equal(h.engine.step(h.c).ack.status,'held');assert.deepEqual(h.balances,before);assert.equal(h.calls.length,0);
 });
 
-test('catching up to a moving employer earns no attendance credit',()=>{
- const h=setup();h.engine.step(h.c);h.next();h.engine.step(h.c);
- assert.equal(h.engine.status().workedMinutes,.5);
- h.separate(400);for(let i=0;i<20;i++){h.next();assert.equal(h.engine.step(h.c).done,false);}
- assert.equal(h.engine.status().phase,'approaching_work');assert.equal(h.engine.status().workedMinutes,.5);
- h.separate(200);h.next();h.engine.step(h.c);assert.equal(h.engine.status().workedMinutes,.5);
- h.next();h.engine.step(h.c);assert.equal(h.engine.status().workedMinutes,1);assert.equal(h.calls.length,0);
+test('moving employer and apparent owned package never earn legacy paid attendance credit',()=>{
+ const h=setup();for(const distance of [0,400,200]){h.separate(distance);h.next();assert.equal(h.engine.step(h.c).ack.status,'held');}
+ assert.equal(h.engine.status(),null);assert.equal(h.calls.length,0);
 });
 
-test('failed attendance can prove no effects but an issued mutation cannot',()=>{
- const h=setup();h.engine.step(h.c);h.separate(400);h.engine.step(h.c);h.advanceWall(30001);
- const result=h.engine.step(h.c);assert.equal(result.ack.status,'held');assert.equal(result.ack.no_effects_issued,true);assert.equal(h.calls.length,0);
+test('legacy rejection echoes recipe identity but never attests unknown historical effects absent',()=>{
+ const h=setup();h.separate(400);h.advanceWall(30001);const result=h.engine.step(h.c);
+ assert.equal(result.ack.status,'held');assert.equal(result.ack.no_effects_issued,false);assert.equal(result.ack.effects_issued,null);
  assert.equal(result.ack.catalog_hash,h.c.catalog_hash);assert.equal(result.ack.recipe_hash,h.c.recipe_hash);assert.equal(result.ack.recipe_id,h.c.recipe_id);
- const mutated=setup();mutated.defer();labour(mutated);mutated.expire();
- assert.equal(mutated.engine.step(mutated.c).ack.no_effects_issued,false);
+ assert.equal(h.calls.length,0);
 });
 
 
@@ -127,12 +122,11 @@ test('owner lease serial changes and quest release interrupt before inventory ef
  }
 });
 
-test('paid production derives approved input and output quantities from the catalog',()=>{
+test('valid changed catalog quantities do not authorize legacy paid execution',()=>{
  const custom=structuredClone(manifest);custom.recipes[0].inputs.grain=2;custom.recipes[0].outputs.bread=3;
- const h=setup(custom);h.c.after.employer.grain=0;h.c.after.employer.bread=5;labour(h);h.next();
- const result=h.engine.step(h.c);assert.equal(result.ack.status,'applied');assert.equal(result.ack.recipe_hash,h.c.recipe_hash);
- assert.deepEqual(h.calls.map(c=>c.slice(1,3)),[['grain',-2],['bread',3],['gold',-2]]);
- assert.equal(h.balances[1].gold+h.balances[2].gold,17);
+ const h=setup(custom);h.c.after.employer.grain=0;h.c.after.employer.bread=5;labour(h);
+ const result=h.engine.step(h.c);assert.equal(result.ack.status,'held');assert.equal(result.ack.recipe_hash,h.c.recipe_hash);
+ assert.equal(h.calls.length,0);assert.deepEqual(h.balances[2],h.c.before.employer);
 });
 
 test('paid, legacy owner and explicit supply cannot infer success or write without catalog identity',()=>{
@@ -143,5 +137,12 @@ test('paid, legacy owner and explicit supply cannot infer success or write witho
   if(kind==='inventory_self_produce')h.balances[2]=structuredClone(h.c.after.owner);
   else{h.balances[1]=structuredClone(h.c.after.worker);h.balances[2]=structuredClone(h.c.after.employer);}
   assert.equal(h.engine.step(h.c).ack.status,'held');assert.equal(h.calls.length,0);
+ }
+});
+
+test('legacy paid gate does not acquire any native handle even for matching final snapshots',()=>{
+ const controller=createProductionController(()=>{throw new Error('Native read forbidden');});
+ for(const c of [{id:'old',kind:'inventory_produce'}, {...setup().c}]){
+  assert.equal(controller.step(c).ack.reason,'legacy_paid_execution_unqualified');
  }
 });

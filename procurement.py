@@ -30,7 +30,7 @@ def input_procurement(state, observation, actor):
         if (business.get('active', True) is not True or business.get('owner') != actor
                 or business.get('custodian') != actor):continue
         for rid in sorted(set(business.get('capabilities', [])) & recipes):
-            if not knows_recipe(person, rid):continue
+            if not knows_recipe(person, rid,state=state,observation=observation,actor_id=actor):continue
             recipe = recipe_spec(rid)
             try:policy = production_policy(business, rid)
             except (ValueError, KeyError, TypeError):continue
@@ -71,7 +71,7 @@ def validate_procurement(state, observation, actor, selected):
     except (KeyError, TypeError, ValueError):return False
 
 
-def validate_procurement_terms(state, actor, selected):
+def validate_procurement_terms(state, actor, selected, observation=None):
     """Validate agreed purpose without consulting stock altered by this exchange.
 
     Admission separately checks current need, money and routing. A pending trade
@@ -88,7 +88,7 @@ def validate_procurement_terms(state, actor, selected):
             or str(supplier) not in town.get('residents',{}) or str(supplier) not in state.get('people',{})
             or own.get('active',True) is not True or own.get('owner')!=actor or own.get('custodian')!=actor
             or own.get('revision',0)!=selected['business_revision'] or rid not in own.get('capabilities',[])
-            or not knows_recipe(person,rid) or item not in recipe_spec(rid)['inputs']
+            or not knows_recipe(person,rid,state=state,observation=observation,actor_id=actor) or item not in recipe_spec(rid)['inputs']
             or selected['recipe_hash']!=recipe_hash(rid) or selected['catalog_hash']!=catalog_hash()
             or selected['market_policy_hash']!=policy_hash() or listing.get('custodian')!=supplier
             or listing.get('revision',0)!=selected['listing_revision'] or item not in advertised_goods(listing)

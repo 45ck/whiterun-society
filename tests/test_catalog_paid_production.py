@@ -5,7 +5,7 @@ import economy_catalog as catalog
 import market_policy
 from catalog_fixture import native_catalog, native_ack
 from test_catalog_enterprises import expanded_catalog
-from production import Production
+from production import Production, work_inventory
 from labour import work_opportunities
 from enterprises import current_work_terms
 
@@ -30,19 +30,38 @@ class CatalogPaidProductionTests(unittest.TestCase):
         market=patch.object(market_policy,'MARKET_POLICY',policy);market.start();self.addCleanup(market.stop)
         self.plan={'id':'shift','actor':7,'target':8,'phase':'ready_to_work','travel':{'movement':{'expectedPackage':99}}}
         self.world=Harness(self.plan)
-        self.obs={'session':'unit','economy_catalog':native_catalog(),'residents':[
+        self.obs={'session':'unit','ready':True,'checkpoint':0,'economy_catalog':native_catalog(),'residents':[
             {'id':7,'isPerson':True,'inventory':{'gold':4,'bread':3,'grain':0,'ore':7,'ingot':9}},
             {'id':8,'isPerson':True,'inventory':{'gold':20,'bread':0,'grain':5,'ore':6,'ingot':11}}]}
 
-    def test_paid_command_pins_recipe_and_preserves_unrelated_stock_and_gold_total(self):
-        self.world.plan_production(self.obs,self.plan)
-        command=self.world.active['pending']['command']
-        self.assertEqual(command['catalog_hash'],catalog.catalog_hash())
-        self.assertEqual(command['recipe_hash'],catalog.recipe_hash('bread_recipe'))
-        self.assertEqual(command['recipe_id'],'bread_recipe')
-        self.assertEqual(command['after']['employer'],{'gold':18,'bread':3,'grain':3,'ore':6,'ingot':11})
-        self.assertEqual(command['after']['worker'],{'gold':6,'bread':3,'grain':0,'ore':7,'ingot':9})
-        self.assertEqual(sum(row['gold'] for row in command['before'].values()),sum(row['gold'] for row in command['after'].values()))
+    def bind_authored_identity(self,state):
+        for actor in self.obs['residents']:
+            key=str(actor['id']);actor['baseId']=1000+actor['id']
+            if key not in state['town']['residents']:continue
+            binding={'schema_version':1,'actor':actor['id'],'base_id':actor['baseId'],'event_id':'catalog-test-history'}
+            state['town']['residents'][key].update(id=actor['id'],identity_binding=copy.deepcopy(binding))
+            state['people'][key]['identity_binding']=binding
+
+    def legacy_pending(self, world=None, obs=None):
+        """Authored archived intent, never obtained by bypassing new admission."""
+        world=world or self.world;obs=obs or self.obs
+        before=work_inventory(obs,7,8);after=copy.deepcopy(before)
+        after['employer']=catalog.apply_recipe(before['employer'],'bread_recipe')
+        after['worker']['gold']+=2;after['employer']['gold']-=2
+        command={'id':'produce-shift','kind':'inventory_produce','worker':7,'employer':8,
+            'catalog_hash':catalog.catalog_hash(),'recipe_id':'bread_recipe','recipe_hash':catalog.recipe_hash('bread_recipe'),
+            'work_minutes':30,'wage_gold':2,'before':before,'after':after}
+        world.active['pending']={'id':command['id'],'command':command,'status':'pending'}
+        return command
+
+    def test_catalog_transformation_is_pure_but_paid_execution_is_unavailable(self):
+        stock=copy.deepcopy(self.obs['residents'][1]['inventory'])
+        after=catalog.apply_recipe(stock,'bread_recipe')
+        self.assertEqual(after,{'gold':20,'bread':3,'grain':3,'ore':6,'ingot':11})
+        self.assertEqual(stock,self.obs['residents'][1]['inventory'])
+        with self.assertRaisesRegex(ValueError,'legacy_paid_execution_unqualified'):
+            self.world.plan_production(self.obs,self.plan)
+        self.assertIsNone(self.world.active['pending']);self.assertEqual(self.world.writes,[])
 
     def test_missing_or_mismatched_native_catalog_never_creates_pending_effect(self):
         for proof in (None,{}, {**native_catalog(),'type_verified':False}, {**native_catalog(),'catalog_hash':'wrong'}):
@@ -59,8 +78,7 @@ class CatalogPaidProductionTests(unittest.TestCase):
             self.assertEqual(self.world.writes,[])
 
     def test_existing_pending_without_catalog_proof_is_held_not_committed(self):
-        self.world.plan_production(self.obs,self.plan)
-        command=self.world.active['pending']['command'];command.pop('catalog_hash')
+        command=self.legacy_pending();command.pop('catalog_hash')
         for actor in self.obs['residents']:actor['inventory']=copy.deepcopy(command['after']['worker' if actor['id']==7 else 'employer'])
         self.obs['ack']={'id':command['id'],'status':'applied'}
         self.world.observe_production(self.obs)
@@ -72,8 +90,7 @@ class CatalogPaidProductionTests(unittest.TestCase):
         for key in ('catalog_hash','recipe_hash','recipe_id'):
             for missing in (True,False):
                 world=Harness(copy.deepcopy(self.plan));obs=copy.deepcopy(self.obs)
-                world.plan_production(obs,world.agency_plan())
-                command=world.active['pending']['command'];ack=native_ack(command)
+                command=self.legacy_pending(world,obs);ack=native_ack(command)
                 if missing:ack.pop(key)
                 else:ack[key]='mismatched'
                 obs['ack']=ack
@@ -104,8 +121,7 @@ class CatalogPaidProductionTests(unittest.TestCase):
                 self.assertNotIn('production',world.active)
 
     def test_unbound_no_effect_paid_receipt_cannot_cancel_reservation(self):
-        self.world.plan_production(self.obs,self.plan)
-        command=self.world.active['pending']['command']
+        command=self.legacy_pending()
         self.obs['ack']=native_ack(command,status='held',no_effects_issued=True)
         self.obs['ack'].pop('recipe_hash')
         self.world.observe_production(self.obs)
@@ -126,6 +142,7 @@ class CatalogPaidProductionTests(unittest.TestCase):
             'supplier':{'owner':8,'custodian':8,'capabilities':['retail_goods'],'sale_commodities':['grain']}}}}
         learn_recipe(state['people']['7'],'authored-earlier-production','bread_recipe')
         self.obs['routing']={'available':True,'adapter':'papyrus-mailbox-v1'}
+        self.bind_authored_identity(state)
         choices=grain_procurement(state,self.obs,7)
         # Target8 minus3 carried bread needs2 batches of3, each consuming2 grain.
         self.assertTrue(choices)
@@ -145,12 +162,13 @@ class CatalogPaidProductionTests(unittest.TestCase):
             'own':{'owner':7,'custodian':7,'capabilities':['bread_recipe'],'revision':1,
                 'recipe_policies':{'bread_recipe':{'target_output':20}}}}},
             'people':{'7':{'relationships':{},'memories':[]}}}
+        self.bind_authored_identity(state)
         self.assertEqual(work_opportunities(state,self.obs,7),[])
         choices=owner_work_opportunities(state,self.obs,7)
         self.assertEqual(len(choices),1)
         self.assertEqual(choices[0]['policy']['target_output'],20)
         self.assertNotIn('grain_per_shift',choices[0]['policy'])
-        with self.assertRaisesRegex(ValueError,'grain-to-bread'):self.world.plan_production(self.obs,self.plan)
+        with self.assertRaisesRegex(ValueError,'legacy_paid_execution_unqualified'):self.world.plan_production(self.obs,self.plan)
         person=state['people']['7'];learn_recipe(person,'generic-output','bread_recipe')
         self.assertTrue(recipe_knowledge(person)['recipes']['bread_recipe'])
         self.assertFalse(recipe_knowledge(person)['bread'])
@@ -162,9 +180,9 @@ class CatalogPaidProductionTests(unittest.TestCase):
         for a in self.obs['residents']:a.update(x=0,y=0,z=0)
         state['town']['businesses']['bakery']={'custodian':8,'capabilities':['bread_recipe'],'revision':1,'production_policy':{}}
         choices=work_opportunities(state,self.obs,7)
-        self.assertEqual(len(choices),1)
-        self.assertEqual(choices[0]['policy']['grain_per_shift'],2)
-        self.assertEqual(choices[0]['recipe_hash'],catalog.recipe_hash('bread_recipe'))
+        self.assertEqual(choices,[])
+        from enterprises import paid_bread_recipe
+        self.assertEqual(paid_bread_recipe()['inputs']['grain'],2)
         self.obs['residents'][1]['inventory']['grain']=1
         self.assertEqual(work_opportunities(state,self.obs,7),[])
         self.obs['residents'][1]['inventory']['grain']=5

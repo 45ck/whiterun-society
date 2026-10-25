@@ -79,8 +79,15 @@ class SocialFollowthroughTests(unittest.TestCase):
             self.world.active['people'][key]=copy.deepcopy(self.world.active['people']['99'])
             self.world.active['people'][key]['commitments']=[{'kind':'duty'}]
             self.world.active['town']['residents'][key]=copy.deepcopy(self.world.active['town']['residents']['99'])
-            self.obs['residents'].append({'id':actor,'isPerson':True,'isGuard':True,'name':'New guard',
+            # These are explicitly authored additional people, not aliases of
+            # the copied resident's identity or legacy population migration.
+            self.world.active['people'][key].pop('identity_binding',None)
+            self.world.active['town']['residents'][key].update(id=actor)
+            self.world.active['town']['residents'][key].pop('identity_binding',None)
+            self.obs['residents'].append({'id':actor,'baseId':actor+10000,'isPerson':True,'isGuard':True,'name':'New guard',
                 'x':210+i,'y':0,'z':0,'inventory':{'gold':3,'bread':1,'grain':0}})
+        from legacy_fixture import author_fixture_identities
+        author_fixture_identities(self.world.active,self.obs,list(range(1000,1008)))
         candidates=social_candidates(self.world.active,self.obs,99)
         self.assertTrue(set(range(1000,1008)).issubset({c['id'] for c in candidates}))
 

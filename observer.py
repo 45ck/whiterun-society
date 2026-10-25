@@ -8,6 +8,45 @@ from routing import activity_blocker
 from dashboard import town_dashboard
 from activity_metrics import activity_metrics
 from owner_work_metrics import owner_work_metrics
+import economy_catalog
+from market_policy import tradable_ids, goods_policy, advertised_goods, policy_hash
+from resident_identity import resident_identity_status
+from entrepreneurship import recipe_knowledge
+from livelihood_backgrounds import load_livelihood_manifest, livelihood_manifest_hash, authored_prior_status
+
+
+def enterprise_editor_metadata():
+    """Trusted configuration for editing opportunities, not native execution proof."""
+    recipes=[]
+    for rid in economy_catalog.recipe_ids():
+        recipe=economy_catalog.recipe_spec(rid)
+        defaults=production_policy({},rid)
+        target='target_bread' if 'target_bread' in defaults else 'target_output'
+        recipes.append({**recipe,'hash':economy_catalog.recipe_hash(rid),'fields':[
+            {'key':'wage_gold','label':'Wage per shift (septims)','min':1,'max':20,'default':defaults['wage_gold']},
+            {'key':'work_minutes','label':'Shift length (game minutes)','min':recipe['work_minutes']['minimum'],'max':recipe['work_minutes']['maximum'],'default':defaults['work_minutes']},
+            {'key':target,'label':'Replenishment target (output units)','min':2,'max':40,'default':defaults[target]}]})
+    return {'catalog_hash':economy_catalog.catalog_hash(),'market_policy_hash':policy_hash(),
+        'commodities':[{'id':r['id'],'label':r['label'],'currency':r['currency']} for r in economy_catalog.ECONOMY_CATALOG['commodities']],
+        'sale_goods':[{'id':rid,'legacy_capability':goods_policy(rid)['legacy_retail_capability']} for rid in tradable_ids()],
+        'recipes':recipes}
+
+
+def startup_projection(society,residents,current):
+    town=society.get('town') or {}
+    try:
+        manifest=load_livelihood_manifest()
+        scenario={'available':True,'id':manifest['id'],'hash':livelihood_manifest_hash(manifest),'provenance':manifest['provenance'],'rules':manifest['rules']}
+    except (ValueError,OSError,KeyError) as error:
+        scenario={'available':False,'reason':str(error)}
+    return {'current':current,'initialized_residents':len(residents),
+        'identity_qualified':sum(r['identity']['qualified'] for r in residents),
+        'identity_reasons':dict(Counter(r['identity']['reason'] for r in residents if not r['identity']['qualified'])),
+        'backgrounds':town.get('livelihood_backgrounds',[]),'scenario':scenario,
+        'charters':len(town.get('businesses',{})),
+        'paid_work_capability':society.get('paid_work_capability'),
+        'committed_production':sum(r.get('status')=='committed' for r in society.get('production',[])),
+        'committed_sales':sum(r.get('status')=='committed' for r in society.get('trades',[]))}
 
 
 def camera_request(data, observation, society):
@@ -36,6 +75,8 @@ def camera_request(data, observation, society):
 def observer_state(bridge,society):
     obs=bridge.get('observation') or {}
     connected=bridge.get('last_seen') is not None and time.time()-bridge['last_seen']<10
+    current=connected and not society.get('transition') and obs.get('checkpoint')==society.get('checkpoint') and obs.get('ready') is True
+    qualified_obs=obs if current else {}
     loaded={str(r['id']):r for r in obs.get('residents',[]) if r.get('isPerson') is True}
     stock={str(r['id']):r['inventory'] for r in obs.get('inventory_observations',[])}
     stock.update({key:r.get('inventory') for key,r in loaded.items()})
@@ -47,6 +88,9 @@ def observer_state(bridge,society):
         person=society.get('people',{}).get(key,{})
         actor=loaded.get(key)
         residents.append({'id':int(key),'name':resident['name'],'loaded':bool(actor),'is_guard':resident.get('is_guard',False),
+            'identity':resident_identity_status(society,qualified_obs,int(key)),
+            'recipe_knowledge':recipe_knowledge(person,state=society,observation=qualified_obs,actor_id=int(key)),
+            'authored_recipe_prior_status':{rid:authored_prior_status(society,qualified_obs,int(key),rid) for rid in person.get('authored_recipe_priors',{})},
             'baseId':actor.get('baseId') if actor else None,'space':actor.get('space') if actor else None,
             'position':[actor.get(k) for k in ('x','y','z')] if actor else None,
             'race':actor.get('race') if actor else None,
@@ -60,7 +104,9 @@ def observer_state(bridge,society):
     for key, business in town.get('businesses', {}).items():
         # Operator-wide accounts are intentionally separate from resident prompts.
         businesses.append({**business, 'id':key, 'revision':business.get('revision',0),
-            'active':business.get('active',True), 'production_policy':production_policy(business),
+            'active':business.get('active',True),
+            'resolved_recipe_policies':{rid:production_policy(business,rid) for rid in business.get('capabilities',[]) if rid in economy_catalog.recipe_ids()},
+            'advertised_goods':advertised_goods(business),
             'observed_inventory':stock.get(str(business['custodian'])),
             'account_scope':'Custodian inventory shared with household and any other charters; not a separate company wallet'})
     metrics=dict(society.get('metrics') or {})
@@ -73,7 +119,8 @@ def observer_state(bridge,society):
         'personality_trait_means':{trait:round(mean(p['profile']['big_five'][trait] for p in society.get('people',{}).values() if trait in p.get('profile',{}).get('big_five',{})),3)
             for trait in sorted({t for p in society.get('people',{}).values() for t in p.get('profile',{}).get('big_five',{})})},
         'scope':'Race is current native descriptive metadata; unloaded races remain unknown. Personality traits are seeded independently of race. No group causal or psychological claims.'}
-    return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),
+    return {'connected':connected,'observed_at':bridge.get('last_seen'),'checkpoint':society.get('checkpoint'),'session':obs.get('session'),
+        'enterprise_editor':enterprise_editor_metadata(),'startup':startup_projection(society,residents,current),
         'error':society.get('error'),'transition':society.get('transition'),'game_days':obs.get('gameDays'),
         'audio_output':obs.get('audio_output'),'speech':obs.get('speech'),'player_controls':obs.get('player_controls'),
         'resident_control':obs.get('resident_control'),'activity_jobs':activities,'owner_work':owner_work,

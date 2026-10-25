@@ -23,6 +23,12 @@ class ProcurementTests(unittest.TestCase):
     def setUp(self):
         fixtures.BargainingTests.setUp(self)
         qualify_trade_observation(self.obs)
+        # Explicit identity of this newly authored test cast; no production
+        # rebind path for an unknown legacy resident is exercised here.
+        for row in self.obs['residents']:
+            binding={'schema_version':1,'actor':row['id'],'base_id':row['baseId'],'event_id':'input-purchase-fixture'}
+            self.world.active['town']['residents'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
+            self.world.active['people'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
         self.obs['residents'][0]['inventory'].update(gold=20,bread=2,grain=0)
         self.obs['residents'][1]['inventory'].update(grain=3)
         self.world.active['town']['businesses']={

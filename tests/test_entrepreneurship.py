@@ -7,10 +7,19 @@ from metrics import simulation_metrics
 
 
 class EntrepreneurshipTests(unittest.TestCase):
-    setUp = fixtures.EnterpriseTests.setUp
     tearDown = fixtures.EnterpriseTests.tearDown
     sync = fixtures.EnterpriseTests.sync
     decide = fixtures.EnterpriseTests.decide
+
+    def setUp(self):
+        fixtures.EnterpriseTests.setUp(self)
+        # These newly authored actors have explicit fixture identity, not an
+        # automatic upgrade of unbound historical production residents.
+        for row in self.obs['residents']:
+            row['baseId']=row['id']+1000
+            binding={'schema_version':1,'actor':row['id'],'base_id':row['baseId'],'event_id':'entrepreneur-fixture'}
+            self.world.active['town']['residents'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
+            self.world.active['people'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
 
     def begin(self, actor=9, event='livelihood'):
         self.world.active['town']['daily'] = {'queue':[

@@ -1,6 +1,7 @@
 import copy
 import unittest
 import test_food
+from legacy_fixture import author_fixture_identities
 
 
 class PopulationTests(unittest.TestCase):
@@ -13,6 +14,10 @@ class PopulationTests(unittest.TestCase):
         for a in self.obs['residents']:a.update(isPerson=True,isGuard=False,name=str(a['id']));a['inventory']['grain']=0
         self.obs['residents'] += [{'id':99,'name':'New resident','isPerson':True,'inventory':{'gold':7,'bread':1,'grain':0}},
                                  {'id':100,'name':'Cow','isPerson':False,'inventory':{'gold':0,'bread':0,'grain':0}}]
+        # Explicit test history; production census never adopts unbound legacy people.
+        for actor in self.obs['residents']:
+            if actor.get('isPerson') is True:actor.setdefault('baseId',actor['id']+100000)
+        author_fixture_identities(self.world.active,self.obs)
     def initialize(self,id='census'):
         self.world.initialize_population(id,'demo-seed',self.obs);self.sync()
 

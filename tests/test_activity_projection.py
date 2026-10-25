@@ -11,6 +11,7 @@ from opportunities import food_sellers
 from goal_opportunities import focus_opportunities
 from tools.goal_scheduler import due_residents
 from tools.run_daily_life import event_available,routine_dispatch_prefix
+from legacy_fixture import author_fixture_identities
 
 
 def job(actor,target,**extra):
@@ -58,8 +59,11 @@ class ActivityProjectionTests(unittest.TestCase):
 
     def test_director_rejects_native_only_queued_actor_without_model_dispatch(self):
         event={'id':'need','actor':1,'kind':'need_review','status':'pending'}
-        society={'town':{'daily':{'queue':[event]}},'activity_jobs':{'epoch':'e','capacity':2,'jobs':[],'history':[]}}
-        observation={'residents':[{'id':1,'isPerson':True}], 'activity_jobs':{'jobs':[job(1,101)]}}
+        society={'people':{'1':{}},'town':{'residents':{'1':{'id':1}},'daily':{'queue':[event]}},
+                 'activity_jobs':{'epoch':'e','capacity':2,'jobs':[],'history':[]}}
+        observation={'session':'fixture','checkpoint':0,'ready':True,'residents':[{'id':1,'baseId':101,'isPerson':True}],
+                     'activity_jobs':{'jobs':[job(1,101)]}}
+        author_fixture_identities(society,observation)
         snapshot={'society':society,'bridge':{'observation':observation}}
         self.assertFalse(event_available(snapshot,event))
         self.assertEqual(routine_dispatch_prefix(society,observation,[event]),[])

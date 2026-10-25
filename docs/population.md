@@ -12,6 +12,22 @@ New ordinary conversations require that nonempty census. Explicit authored scena
 
 Focused verification reported **8 new fresh-timeline tests** and **34 existing base/fixture tests**, all passing. This tests source behavior and saved-state preservation; the new bootstrap/census/conversation migration has not been installed or qualified in Skyrim by this work.
 
+## Current identity and optional livelihood backgrounds
+
+The current source adds actor/base continuity to new census records. A newly created person with a valid observed base identity receives an `identity_binding` containing schema version, actor reference, base ID, census event, source checkpoint and observed session; the same binding is retained on the town resident. This is observed identity evidence, not a canonical biography. Census does not attach an unbound legacy history to whichever actor currently occupies that reference, nor repair a conflicting binding automatically. Existing profiles and history remain preserved. A new resident without usable base evidence remains unqualified.
+
+`population_status(observation)` recomputes each resident's `identity_status` from the supplied current observation. It reports qualified/unqualified counts, unbound histories and conflicts separately. Missing observations cannot return a qualified identity, and an old cached success is not authority. Changed bases, duplicate observations, stale row session/checkpoint fields, absent or unloaded actors, explicit children/dead actors and missing adult classification are rejected or shown unqualified according to the source contract. Census records skipped-classification reasons and requires complete bounded inventory for the current catalog. An actor replacement that preserves both native identifiers cannot be detected by this binding alone.
+
+This qualification is independent of the route-support flag: matching identity does not prove path reachability, ownership of a routine, available work slots or completed activity. For coverage, divide currently observed qualified managed adults by all currently eligible observed adults in the same sample; do not divide by historical roster size or report absent observations as success. Raw projection counts are not a validated end-to-end autonomy score.
+
+Ongoing resident control now projects only qualified assignments with an `actor_base_id` pin. Unknown or changed assignments move into `identity_holds`, retaining saved slots and history with `release_verified: false`; they are not counted as released or silently reassigned. Native continuity tick/renew and parallel journeys recheck their base identities. Old unpinned parallel jobs hold without replay, and a cold parallel controller cannot adopt an existing native lane. Conversation receipts are also blocked from granting social/identity knowledge to unqualified participants. Legacy unbound saves require explicit reconciliation instead of automatic census rebinding. These source checks do not establish native recovery or completed release.
+
+An **opt-in livelihood background** can separately assign authored recipe knowledge using an explicit frozen cohort, seed and reviewed definition. The default manifest chooses one ranked cohort member for the registered bread recipe, without naming a Skyrim character. Census itself still grants no recipe knowledge. The prior creates no inventory, charter, production receipt, work memory or friendship. A resident must later choose among feasible actions; business registration, input purchasing, attendance and production remain separate admissions and consequences. Authored prior knowledge stays distinguishable from knowledge learned through verified production. [Scenario contract, identity limits and measurement plan](livelihood-backgrounds.md).
+
+These source changes have not been installed or qualified in Skyrim. The historical census and save evidence below are retained as recorded and do not prove the new identity or background protocol.
+
+The identity implementation owner reported **48 focused tests passing**: 24 new identity/census tests and 24 existing population, fresh-population and route tests. They cover new bindings, preserved unbound legacy history, current-observation qualification, skipped classifications and conflict handling without rewriting history, charters or leases. This is source evidence; it is not a native acceptance count or the final integrated release suite.
+
 ## Historical 26-resident census
 
 The historical live census initialized **26 loaded adult NPCs** at checkpoint 174. Each had persistent authored needs, Big Five tendencies, social style, skills, goals and a household reference. Existing personalities, memories and hunger for previously managed characters were preserved. The engine classified the cow as non-person, so it received no human profile. These counts describe that recorded run, not the present loaded population.
@@ -49,9 +65,11 @@ Both restores used fresh native game sessions and verified ESS/cosave hashes. Co
 With the isolated game connected and no unsettled task:
 
 ```powershell
-python tools/initialize_population.py --root D:\WhiterunLab --id town-001 --seed whiterun-society-v1
+python tools/initialize_population.py --root D:\WhiterunLab --id town-001 --seed whiterun-society-v1 --apply
 python tools/render_population.py --input docs/evidence/population-live.json --output work/town-overview.html
 ```
+
+The census CLI now defaults to a read-only preview; omit `--apply` to inspect its current observed cohort and definition hash. Applying repeats the fresh session/checkpoint preflight and verifies the acknowledged saved state. An optional `--actors` list must match the entire observed adult cohort; it does not turn census into a partial named-character initializer. These are source usage examples, not evidence that the new tool has been run against Skyrim. Optional starting recipe knowledge has its own [preview/apply tool](livelihood-backgrounds.md#preview-and-apply-tool).
 
 The overview is a portable offline HTML snapshot with searchable resident cards, needs, traits, stocks, memories and route-support status. Its data is recorded, not live. The game bridge now observes the native game clock, current weather classification and interior/exterior status; these signals are not yet driving weather-sensitive decisions.
 

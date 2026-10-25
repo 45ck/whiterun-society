@@ -167,7 +167,7 @@ class TradeExecution:
                 from procurement import validate_procurement
                 if not validate_procurement(self.active,observation,buyer,plan.get('procurement')):
                     raise ValueError('Procurement opportunity changed before admission')
-            consent=accepted_trade_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before,commodity)
+            consent=accepted_trade_consent(self.active,event_id,buyer,seller,quantity,unit_price,agency_plan,before,commodity,observation=observation)
         else:
             if policy['reserve_mode']=='existing_food_policy':
                 stock=allocation(self.active['people'].get(str(seller),{}),before['seller'])
@@ -217,7 +217,7 @@ class TradeExecution:
             payload=record['consent']['payload']
             if payload['purpose']=='production_input':
                 from procurement import validate_procurement_terms
-                if not validate_procurement_terms(self.active,command['buyer'],payload.get('procurement')):
+                if not validate_procurement_terms(self.active,command['buyer'],payload.get('procurement'),observation=observation):
                     raise ValueError('Procurement enterprise or listing terms changed during trade')
             actual=None
             try:
@@ -228,7 +228,7 @@ class TradeExecution:
             if command['phase']=='arm' and record['consent']['payload']['source_kind']=='resident_decisions':
                 payload=record['consent']['payload']
                 current=accepted_trade_consent(self.active,command['trade_id'],command['buyer'],command['seller'],
-                    command['quantity'],command['unit_price'],payload['plan_id'],command['before'],command['commodity'])
+                    command['quantity'],command['unit_price'],payload['plan_id'],command['before'],command['commodity'],observation=observation)
                 if not same(current,record['consent']):raise ValueError('Resident trade consent changed before arm')
         except (KeyError,TypeError,ValueError) as error:
             self._hold_trade(error,observation,ack if ack.get('id')==command.get('id') else None);return

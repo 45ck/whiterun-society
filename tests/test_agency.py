@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
-from legacy_fixture import install_legacy_people
+from legacy_fixture import install_legacy_people,author_fixture_identities
 from catalog_fixture import native_catalog
 from trade_execution_fixture import qualify_trade_observation, arm_trade, trade_ack
 
@@ -31,6 +31,7 @@ class AgencyTests(unittest.TestCase):
                       'businesses':{'fixture-food-shop':{'custodian':108149,
                           'capabilities':['retail_goods'],'sale_commodities':['bread'],
                           'active':True,'revision':1}}}
+        author_fixture_identities(state,self.obs)
         self.world._write(state,'Explicit authored public food listing fixture')
         self.sync()
 

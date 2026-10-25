@@ -631,3 +631,29 @@ test('held trade blocks authored stock preparation without explicit command acto
  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
  assert.match(h.requests.at(-1).ack.error,/Unsettled trade reserves/);
 });
+
+test('legacy paid command cannot reuse an unrelated applied cache entry',async()=>{
+ const h=harness();let kind='notify';
+ h.setResponse(body=>({id:'same-id',kind,session:body.session,worker:123,employer:124}));
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ assert.equal(h.requests.at(-1).ack.status,'applied');
+ kind='inventory_produce';
+ for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+ const receipt=h.requests.at(-1).ack;
+ assert.equal(receipt.status,'held');assert.equal(receipt.reason,'legacy_paid_execution_unqualified');
+ assert.equal(receipt.effects_issued,null);assert.equal(receipt.no_effects_issued,false);
+ assert.equal(h.requests.at(-1).paid_employment.available,false);
+});
+
+test('journey identity checks cannot be bypassed with a cached applied ID',async()=>{
+ for(const journeyKind of ['parallel_routines','background_routines']){
+  const h=harness();checkpointFixture(h);let kind='notify';
+  h.setResponse(body=>({id:'cached-journey',kind,session:body.session,origin_session:body.session,checkpoint:0,
+   jobs:[{id:'unpinned',actor:123,target:456,slot:0}]}));
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.equal(h.requests.at(-1).ack.status,'applied');kind=journeyKind;
+  for(let i=0;i<3;i++){h.handlers.get('update')();await settle();h.advance();}
+  assert.equal(h.requests.at(-1).ack.status,'held');
+  assert.ok(h.requests.at(-1).ack.error);
+ }
+});

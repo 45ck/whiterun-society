@@ -15,12 +15,12 @@ class ReportingWorld(Population,DailyLife):
 
 
 def actor(actor_id):
-    return {'id':actor_id,'name':'Resident '+str(actor_id),'isPerson':True,
+    return {'id':actor_id,'baseId':actor_id+100000,'name':'Resident '+str(actor_id),'isPerson':True,
         'inventory':{'gold':0,'bread':0,'grain':0}}
 
 
 def observation(ids=(108149,108186,108156,99),routing=None):
-    obs={'session':'reporting','gameDays':1.,'residents':[actor(key) for key in ids]}
+    obs={'ready':True,'session':'reporting','checkpoint':1,'gameDays':1.,'residents':[actor(key) for key in ids]}
     if routing is not None:obs['routing']=routing
     return obs
 
@@ -99,12 +99,15 @@ class PopulationRouteSupportTests(unittest.TestCase):
         self.assertEqual(world.active['people']['99']['profile'],original)
 
     def test_stale_or_unloaded_person_cannot_receive_initial_supported_flag(self):
-        for extra in ({'loaded':False},{'session':'old'},{'activity':{}}):
+        for extra in ({'loaded':False},{'session':'old'}):
             obs=observation(ids=(99,),routing=executor());obs['residents'][0].update(extra)
-            world=self.initialize(obs)
-            with self.subTest(extra=extra):
-                self.assertIsNone(world.population_status()['residents']['99']['native_route_supported'])
-                self.assertIsNone(world.active['people']['99']['agency']['native_route_supported'])
+            with self.subTest(extra=extra),self.assertRaisesRegex(ValueError,'positively classified'):
+                self.initialize(obs)
+        # Unknown activity does not negate identity, but executor availability is unknown.
+        obs=observation(ids=(99,),routing=executor());obs['residents'][0]['activity']={}
+        world=self.initialize(obs)
+        self.assertIsNone(world.population_status()['residents']['99']['native_route_supported'])
+        self.assertIsNone(world.active['people']['99']['agency']['native_route_supported'])
 
     def test_daily_refresh_revokes_stale_support_without_inventing_actions(self):
         obs=observation(routing=executor());world=self.initialize(obs)

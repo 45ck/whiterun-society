@@ -2,7 +2,7 @@ import copy
 import unittest
 import test_labour
 from labour import work_opportunities
-from catalog_fixture import native_ack
+from employment import recently_refused
 
 
 class EmploymentSpeechTests(unittest.TestCase):
@@ -12,17 +12,14 @@ class EmploymentSpeechTests(unittest.TestCase):
     census = test_labour.LabourTests.census
     review = test_labour.LabourTests.review
     decide = test_labour.LabourTests.decide
+    archive_plan = test_labour.LabourTests.archive_plan
 
     def start(self, scheduled=False):
-        if scheduled:
-            self.review();self.event=next(e['id'] for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
-            self.world.begin_plan(self.event,self.obs,99,'need_review',voiced_trade=True);self.sync()
-            self.decide('seek_work',self.event)
-        else:
-            self.event='heard-employment'
-            self.world.begin_plan(self.event,self.obs,99,'work_shift',voiced_trade=True);self.sync()
+        # Archived dialogue remains testable; today's scheduler advertises no paid jobs.
+        self.event='heard-employment'
+        self.archive_plan(self.event,voiced=True,scheduled=scheduled)
         self.assertEqual(self.world.agency_plan()['phase'],'travelling')
-        self.assertEqual(self.world.agency_plan()['decisions'][-1]['actor_id'] if scheduled else len(self.world.agency_plan()['decisions']),99 if scheduled else 0)
+        self.assertEqual(self.world.agency_plan()['decisions'],[])
 
     def arrive(self):
         command=self.world.pending(self.obs['session']);self.assertEqual(command['kind'],'walk_to')
@@ -62,11 +59,13 @@ class EmploymentSpeechTests(unittest.TestCase):
         self.assertNotIn('reason',memory);self.assertEqual(memory['other'],108149)
         self.assertAlmostEqual(self.world.active['people']['99']['agency']['next_review_day'],self.obs['gameDays']+15/1440)
         self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
-        self.assertTrue(work_opportunities(self.world.active,self.obs,108186),'Another worker must not inherit this private refusal')
-        obs=copy.deepcopy(self.obs);obs['gameDays']+=61/1440
-        self.assertTrue(work_opportunities(self.world.active,obs,99))
-        self.world.active['town']['businesses']['business-108149']['revision']+=1
-        self.assertTrue(work_opportunities(self.world.active,self.obs,99),'New public terms allow reconsideration')
+        revision=self.world.active['town']['businesses']['business-108149']['revision']
+        refused=lambda worker,rev,day:recently_refused(self.world.active,worker,'business-108149',rev,day)
+        self.assertTrue(refused(99,revision,self.obs['gameDays']))
+        self.assertFalse(refused(108186,revision,self.obs['gameDays']),'Private refusal does not transfer to another worker')
+        self.assertFalse(refused(99,revision,self.obs['gameDays']+61/1440))
+        self.assertFalse(refused(99,revision+1,self.obs['gameDays']),'Changed terms invalidate the old refusal context')
+        self.assertEqual(work_opportunities(self.world.active,self.obs,108186),[],'Paid execution remains gated independently')
 
     def test_incomplete_refusal_audio_does_not_teach_worker_about_employer(self):
         self.start();self.arrive();self.attend();self.speak();self.decide('defer',self.event);self.speak(complete=False)
@@ -85,24 +84,22 @@ class EmploymentSpeechTests(unittest.TestCase):
         self.assertIn('eat_bread',options);self.assertFalse(any(a.startswith('seek_work') for a in options))
         self.assertTrue(any(m['kind']=='employment_unavailable' for m in claim['context']['memories']))
 
-    def test_heard_contract_then_real_production_then_separate_receipt_attendance(self):
-        self.start();self.arrive();first=self.attend();self.speak()
+    def test_heard_archived_contract_does_not_authorize_unqualified_production(self):
+        before=copy.deepcopy(self.obs['residents'])
+        self.start();self.arrive();self.attend();self.speak()
         self.decide('offer_shift',self.event);self.assertIn('2 gold',self.speak()['line'])
         self.decide('take_shift',self.event)
         contracts=lambda:self.world.active['town']['businesses']['business-108149']['contracts']
         self.assertEqual(contracts(),[],'Unheard acceptance must not create a contract')
         self.speak();self.assertEqual(contracts()[0]['status'],'accepted')
         self.release();self.arrive()
-        command=self.world.pending(self.obs['session']);self.assertEqual(command['kind'],'inventory_produce')
-        for a in self.obs['residents']:
-            if a['id'] in (99,108149):a['inventory']=copy.deepcopy(command['after']['worker' if a['id']==99 else 'employer'])
-        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
-        self.assertEqual(contracts()[0]['status'],'completed')
-        self.assertNotEqual(self.attend(),first,'A completed native attendance command cannot be replayed')
-        self.assertIn('received 2 gold',self.speak()['line']);self.release()
-        self.assertEqual(self.world.agency_plan()['outcome'],'paid_work_completed')
-        self.assertEqual(len(self.world.agency_plan()['economic_turns']),4)
-        self.assertEqual(len(self.world.active['production']),1)
+        self.assertEqual(self.world.agency_plan()['phase'],'held')
+        self.assertNotEqual((self.world.pending(self.obs['session']) or {}).get('kind'),'inventory_produce')
+        self.assertEqual(self.obs['residents'],before)
+        self.assertEqual(self.world.status()['production'],[])
+        self.assertNotEqual(contracts()[0]['status'],'completed')
+        self.assertEqual(len(self.world.agency_plan()['economic_turns']),3)
+        self.assertFalse(any(turn.get('speech_act')=='work_receipt' for turn in self.world.agency_plan()['economic_turns']))
 
     def test_changed_terms_before_hearing_acceptance_hold_without_contract(self):
         self.start();self.arrive();self.attend();self.speak();self.decide('offer_shift',self.event);self.speak()

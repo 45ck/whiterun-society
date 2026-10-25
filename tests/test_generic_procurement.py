@@ -30,6 +30,12 @@ class GenericProcurementTests(unittest.TestCase):
                 'forge':{'owner':7,'custodian':7,'revision':1,'capabilities':['metal_recipe'],
                     'recipe_policies':{'metal_recipe':{'target_output':5}}},
                 'supply':{'owner':8,'custodian':8,'revision':3,'capabilities':['retail_goods'],'sale_commodities':['ore']}}}}
+        self.obs.update(ready=True,session='generic-procurement-fixture',checkpoint=1)
+        for row in self.obs['residents']:
+            row['baseId']=row['id']+1000
+            binding={'schema_version':1,'actor':row['id'],'base_id':row['baseId'],'event_id':'procurement-fixture'}
+            self.state['town']['residents'][str(row['id'])].update(id=row['id'],identity_binding=copy.deepcopy(binding))
+            self.state['people'][str(row['id'])]['identity_binding']=copy.deepcopy(binding)
         learn_recipe(self.state['people']['7'],'fixture-prior-production','metal_recipe')
 
     def choices(self):return input_procurement(self.state,self.obs,7)
@@ -98,9 +104,9 @@ class GenericProcurementTests(unittest.TestCase):
         self.state['pending']={'status':'pending','command':{'kind':'inventory_trade','buyer':7,'seller':8}}
         self.obs['residents'][0]['inventory'].update(ore=10,gold=0)
         self.assertFalse(validate_procurement(self.state,self.obs,7,selected))
-        self.assertTrue(validate_procurement_terms(self.state,7,selected))
+        self.assertTrue(validate_procurement_terms(self.state,7,selected,observation=self.obs))
         self.state['town']['businesses']['forge']['revision']+=1
-        self.assertFalse(validate_procurement_terms(self.state,7,selected))
+        self.assertFalse(validate_procurement_terms(self.state,7,selected,observation=self.obs))
 
     def test_underscores_in_goods_and_business_names_do_not_collide(self):
         item=copy.deepcopy(next(row for row in catalog.ECONOMY_CATALOG['commodities'] if row['id']=='ore'))

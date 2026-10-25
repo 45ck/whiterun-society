@@ -58,8 +58,9 @@ class EconomicSpeech:
         plan['phase']=('economic_propose' if plan.get('natural_trade') else 'economic_synthesize') if plan.get('economic_attendance') else 'economic_attending'
         plan['release_required']=True
 
-    @staticmethod
-    def economic_present(plan, observation):
+    def economic_present(self, plan, observation):
+        from activity_leases import identity_quarantine_actors
+        if identity_quarantine_actors(self.active,observation).intersection(plan['economic_pair']):return False
         attendance=observation.get('conversationAttendance') or {}
         members=attendance.get('participants',[])
         return (attendance.get('id')==attendance_id(plan) and attendance.get('phase')=='attending'

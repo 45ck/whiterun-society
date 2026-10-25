@@ -52,6 +52,7 @@ class DailyLife:
         outstanding = {str(e['actor']) for e in daily['queue'] if e['status'] in ('pending', 'started')}
         added = []
         reserved=reserved_activity_actors(state,observation)
+        physical_reservations=reserved_activity_actors(state,observation,include_identity=False)
         for key, resident in town['residents'].items():
             person = state['people'][key]
             last_day = person.get('needs_clock', resident['observed_game_day'])
@@ -72,7 +73,13 @@ class DailyLife:
             agency['native_route_supported']=supported
             resident['native_route_support_basis']=ROUTE_SUPPORT_BASIS
             agency['native_route_support_basis']=ROUTE_SUPPORT_BASIS
-            if int(key) in reserved:continue  # Age needs; retain the accepted job and saved invitations.
+            if int(key) in reserved:
+                # Preserve accepted work and invitations, but do not present an
+                # unobserved or replaced person as ready for an ordinary review.
+                if int(key) not in physical_reservations:
+                    agency.update(state='unloaded' if not actor else 'identity_held',
+                        reason='Needs progressed abstractly; current resident identity is unqualified and no native action is admitted')
+                continue
             # An unaccepted invitation is not an obligation. Reassess it after
             # aging needs, so old low-priority work cannot starve a resident's
             # queue. Never interrupt a started event or manufacture acceptance.

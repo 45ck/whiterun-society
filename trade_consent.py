@@ -37,7 +37,7 @@ def reserved_sale_consent(state,event_id,buyer,seller,quantity,unit_price,agency
     return copy.deepcopy(consent) if consent==expected else None
 
 
-def accepted_trade_consent(state,event_id,buyer,seller,quantity,unit_price,agency_plan,inventory,commodity='bread'):
+def accepted_trade_consent(state,event_id,buyer,seller,quantity,unit_price,agency_plan,inventory,commodity='bread',observation=None):
     plans=state.get('plans') or []
     if not plans or plans[-1].get('id')!=agency_plan:raise ValueError('Trade has no matching resident plan')
     plan=plans[-1];accepted=plan.get('accepted_trade') or {}
@@ -105,7 +105,7 @@ def accepted_trade_consent(state,event_id,buyer,seller,quantity,unit_price,agenc
     if purpose=='production_input':
         from procurement import PINS, validate_procurement_terms
         selected=plan.get('procurement');claim_id=plan.get('procurement_claim_id')
-        if not validate_procurement_terms(state,buyer,selected):raise ValueError('Procurement enterprise or listing terms changed')
+        if not validate_procurement_terms(state,buyer,selected,observation=observation):raise ValueError('Procurement enterprise or listing terms changed')
         matches=[d for d in decisions if d.get('claim_id')==claim_id]
         if not isinstance(claim_id,str) or len(matches)!=1:raise ValueError('Procurement choice provenance is missing')
         choice=matches[0];action=choice.get('decision',{}).get('action_id');context=choice.get('context') or {}

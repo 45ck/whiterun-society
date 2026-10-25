@@ -150,12 +150,16 @@ class ResidentGoalTests(unittest.TestCase):
 
     def test_departure_and_changed_base_identity_cannot_receive_old_decision(self):
         self.start()
-        for r in self.obs['residents']:r['baseId']=r['id']+1000
+        # Claim against the census-bound identities, then change one observation.
         wave=self.claim();self.obs['residents']=[r for r in self.obs['residents'] if r['id']!=108186]
         next(r for r in self.obs['residents'] if r['id']==108149)['baseId']=9999
         receipt=self.world.finish_resident_goals('wave',wave['claim_id'],self.results(wave),self.obs);self.sync()
         failures={r['actor']:r['failure'] for r in receipt['results']}
-        self.assertEqual(failures[108186],'resident_unavailable');self.assertEqual(failures[108149],'resident_identity_changed')
+        # Central durable identity admission excludes the replacement before
+        # claim-local identity comparison can authorize any new decision.
+        self.assertEqual(failures[108186],'resident_unavailable');self.assertEqual(failures[108149],'resident_unavailable')
+        self.assertEqual(self.world.active['people']['108149']['standing_goal']['phase'],'held')
+        self.assertNotIn('action_id',self.world.active['people']['108149']['standing_goal'])
         self.assertIsNone(failures[99])
 
     def test_expired_claim_settles_without_game_clock_progress_and_cannot_replay(self):

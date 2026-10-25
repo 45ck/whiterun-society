@@ -1,10 +1,19 @@
 import unittest
 from unittest.mock import patch
 from tools.run_daily_life import event_available,isolated_before_action,fair_pending
+from legacy_fixture import author_fixture_identities
+
+
+def qualified_snapshot():
+    state={'society':{'people':{'7':{}},'town':{'residents':{'7':{'id':7}}}},
+           'bridge':{'session':'daily-director-fixture','observation':{'ready':True,'session':'daily-director-fixture',
+                     'checkpoint':1,'residents':[{'id':7,'baseId':1007,'isPerson':True}]}}}
+    author_fixture_identities(state['society'],state['bridge']['observation'])
+    return state
 
 class DirectorTests(unittest.TestCase):
     def test_nearby_opportunity_requires_a_current_qualified_partner(self):
-        state={'society':{'town':{'residents':{'7':{}}}},'bridge':{'observation':{}}}
+        state=qualified_snapshot()
         event={'kind':'social_opportunity','actor':None}
         with patch('tools.run_daily_life.social_candidates',return_value=[]):
             self.assertFalse(event_available(state,event))
@@ -34,7 +43,7 @@ class DirectorTests(unittest.TestCase):
         self.assertFalse(isolated_before_action(state,{**event,'kind':'social_review'}))
     def test_completed_partner_opportunity_and_unloaded_actor_are_skipped(self):
         event={'id':'social-1','kind':'social_review','actor':7,'status':'pending'}
-        state={'society':{'town':{'daily':{'queue':[{**event,'status':'complete'}]}}},'bridge':{'observation':{'residents':[{'id':7,'isPerson':True}]}}}
+        state=qualified_snapshot();state['society']['town']['daily']={'queue':[{**event,'status':'complete'}]}
         self.assertFalse(event_available(state,event))
         state['society']['town']['daily']['queue']=[event]
         state['bridge']['observation']['residents']=[]
@@ -42,7 +51,7 @@ class DirectorTests(unittest.TestCase):
 
     def test_pending_loaded_economic_event_is_available_without_social_partner(self):
         event={'id':'meal-1','kind':'need_review','actor':7,'status':'pending'}
-        state={'society':{'town':{'daily':{'queue':[event]}}},'bridge':{'observation':{'residents':[{'id':7,'isPerson':True}]}}}
+        state=qualified_snapshot();state['society']['town']['daily']={'queue':[event]}
         self.assertTrue(event_available(state,event))
 
     def test_resident_followthrough_precedes_demo_social_alternation(self):

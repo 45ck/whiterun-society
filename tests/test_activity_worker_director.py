@@ -11,16 +11,21 @@ from unittest.mock import patch
 
 from tools import run_daily_life as director
 from tools import run_resident_event as worker
+from legacy_fixture import author_fixture_identities
 
 
 def activity_state(phase='running'):
     job={'id':'rest-job','source_plan':'need-1','actor':7,'target':50,'slot':0,'session':'a','epoch':'epoch',
          'phase':phase,'rest_minutes':30,'receipt_acknowledged':False,'release_verified':False}
-    return {'bridge':{'session':'a','last_seen':1000,'command':None,'observation':{'residents':[{'id':7,'isPerson':True},{'id':8,'isPerson':True}]}},
+    state={'bridge':{'session':'a','last_seen':1000,'command':None,'observation':{'session':'a','checkpoint':0,'ready':True,
+                'residents':[{'id':7,'baseId':107,'isPerson':True},{'id':8,'baseId':108,'isPerson':True}]}},
             'society':{'error':None,'transition':None,'conversation':None,
+                       'people':{'7':{},'8':{}},
                        'plan':{'id':'need-1','actor':7,'phase':'delegated','activity_job':'rest-job','decisions':[{}]},
                        'activity_jobs':{'epoch':'epoch','capacity':2,'jobs':[job],'history':[]},
-                       'town':{'residents':{'7':{},'8':{}},'daily':{'queue':[]}}}}
+                       'town':{'residents':{'7':{'id':7},'8':{'id':8}},'daily':{'queue':[]}}}}
+    author_fixture_identities(state['society'],state['bridge']['observation'])
+    return state
 
 
 class ActivityWorkerDirectorTests(unittest.TestCase):

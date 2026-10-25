@@ -114,7 +114,7 @@ class DynamicJourneyCatalogTests(unittest.TestCase):
         self.choose(('check_market_800', 'check_market_800'))
         jobs = self.world.pending(self.obs['session'])['jobs']
         self.assertEqual({j['target'] for j in jobs}, {800})
-        receipts = [{'id': j['id'], 'slot': j['slot'], 'status': 'applied', 'release_verified': True, 'seller_nearby': False,
+        receipts = [{'id': j['id'], 'slot': j['slot'], 'actor_base_id':j['actor_base_id'], 'status': 'applied', 'release_verified': True, 'seller_nearby': False,
                      'movement': {'actor': j['actor'], 'target': 800, 'target_kind': 'place', 'distance': 200,
                                   'aliasesConfirmed': True, 'hasOwnedPackage': True, 'adapter': 'papyrus-mailbox'}} for j in jobs]
         self.obs['ack'] = {'id': 'cohort', 'status': 'applied', 'routines': receipts}

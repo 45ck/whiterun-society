@@ -30,7 +30,7 @@ from entrepreneurship import enterprise_choices, apply_resident_enterprise, reci
 from context_window import (bounded_economic_context, purchase_attention_context, purchase_attention_policy,
     purchase_catalogue_hash, check_purchase_decision_budget, frozen_purchase_choices)
 from trade_memory import remember_refusal_decision
-from activity_leases import reserved_activity_actors
+from activity_leases import reserved_activity_actors, identity_quarantine_actors
 from economy_catalog import recipe_spec, require_native_catalog, MAX_STOCK, commodity_ids, native_catalog_matches, catalog_hash
 
 TERMINAL = ('complete', 'held')
@@ -147,6 +147,10 @@ class Agency:
         return {'checkpoint': self._write(state, kind+' triggered resident planning'), 'plan': plan}
 
     def _plan_context(self, observation, plan):
+        participants={plan.get('actor')}
+        if plan.get('target_kind','resident')=='resident':participants.add(plan.get('target'))
+        if participants.intersection(identity_quarantine_actors(self.active,observation)):
+            raise ValueError('Resident identity changed or is unqualified; hold the plan before another decision')
         seller_turn = plan['phase'] == 'consent'
         reconsidering = plan['phase'] == 'reconsider'
         price = plan.get('unit_price', 3)
@@ -337,7 +341,7 @@ class Agency:
                 'memories': person['memories'][-8:], 'trust': person['trust'],
                 'my_relationships':person.get('relationships',{}), 'option_targets':targets,
                 'purchase_options':purchase_options,'work_options':work_options, 'owner_work_actions':owner_work_actions, 'enterprise_options':business_options, 'market_options':market_options,
-                'own_recipe_knowledge':recipe_knowledge(person),
+                'own_recipe_knowledge':recipe_knowledge(person,state=self.active,observation=observation,actor_id=actor),
                 'options': options}
         return purchase_attention_context(context,plan,{row['supplier']:person_view(self.active,actor,row['supplier'])['name']
             for row in purchase_options.values()})
@@ -563,6 +567,15 @@ class Agency:
                 if plan.get('voiced_trade'):state['plans'][-1]['economic_release']=copy.deepcopy(ack)
                 self._write(state, 'resident task release observed')
             return
+        if plan and plan['phase'] not in (*TERMINAL,'delegated'):
+            participants={plan.get('actor')}
+            if plan.get('target_kind','resident')=='resident':participants.add(plan.get('target'))
+            if participants.intersection(identity_quarantine_actors(self.active,observation)):
+                state=copy.deepcopy(self.active)
+                state['plans'][-1].update(phase='held',identity_held=True,
+                    error='Resident identity changed or is unqualified; no further decisions or activity credit')
+                self._write(state,'resident plan held on identity conflict; historical state preserved')
+                return
         if plan and plan['phase'] in TERMINAL and not plan.get('remembered'):
             state=copy.deepcopy(self.active)
             updated=state['plans'][-1]

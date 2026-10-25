@@ -1,39 +1,47 @@
-"""Initialize observed adult residents in the current save without minting stock."""
+"""Preview an observed adult census; --apply seeds state without minting stock."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
-import time
-import urllib.request
+import re
+import sys
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from tools.startup_checkpoint import client_for,fresh_state,observed_cohort,apply_checkpoint,definition_hash
 
 
-def main():
-    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True)
-    p.add_argument('--id',required=True);p.add_argument('--seed',required=True);args=p.parse_args()
-    runtime=args.root/'runtime';config=json.loads((runtime/'bridge-config.json').read_text())
-    def request(route,data=None):
-        req=urllib.request.Request(f"http://127.0.0.1:{config['port']}"+route,
-            data=None if data is None else json.dumps(data).encode(),headers={'Authorization':'Bearer '+config['token'],'Content-Type':'application/json'})
-        try:
-            with urllib.request.urlopen(req,timeout=10) as r:return json.load(r)
-        except urllib.error.HTTPError as e:raise ValueError(json.load(e).get('error','Rejected')) from None
-    before=request('/state')
-    if time.time()-(before['bridge']['last_seen'] or 0)>8:raise ValueError('Fresh game census required')
-    result=request('/town/initialize',{'id':args.id,'seed':args.seed})
-    deadline=time.monotonic()+30
-    while time.monotonic()<deadline:
-        after=request('/state')
-        if after['bridge']['session']!=before['bridge']['session']:raise ValueError('Session changed during census')
-        if after['society']['error']:raise ValueError(after['society']['error'])
-        if not after['society']['transition'] and after['society'].get('town'):
-            name='population-'+hashlib.sha256(args.id.encode()).hexdigest()[:12]+'.json'
-            path=runtime/name
-            # Duplicate calls must not replace the original before/after evidence.
-            if not result.get('duplicate'):
-                path.write_text(json.dumps({'result':result,'before':before,'after':after,'at':time.time()},indent=2),encoding='utf-8')
-            print(json.dumps({'result':result,'counts':after['society']['town']['counts'],'evidence':str(path)}));return
-        time.sleep(.4)
-    raise TimeoutError('Census checkpoint did not bind')
+def initialize(client,event_id,seed,runtime,apply=False,actor_ids=None,wait_seconds=30):
+    if any(not isinstance(value,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,48}',value) for value in (event_id,seed)):
+        raise ValueError('Explicit bounded census ID and seed required')
+    before=fresh_state(client);cohort=observed_cohort(before)
+    if actor_ids is not None and observed_cohort(before,actor_ids)!=cohort:
+        raise ValueError('Census initializes every observed adult; selected cohort must match the full preview')
+    body={'id':event_id,'seed':seed,'expected_cohort':cohort}
+    preview={'status':'preview','confirmed':False,'request_session':before['bridge']['session'],
+        'request_checkpoint':before['society']['checkpoint'],'definition':body,'definition_hash':definition_hash(body),
+        'cohort':cohort,'provenance':'Explicit seed over the current observed adult census; authored starting state, not witnessed history.',
+        'scope':'No stock minted, no occupation assigned, and no routine ownership proven by this census.'}
+    if not apply:return preview
+    def confirms(after,result):
+        town=after['society'].get('town') or {}
+        event=next((row for row in town.get('census_events',[]) if row.get('id')==event_id),None)
+        if (town.get('seed')==seed and event
+            and all(str(row['actor']) in town.get('residents',{}) for row in cohort)):
+            return {'census_event':event,'seed':seed,'managed_actor_ids':[row['actor'] for row in cohort]}
+    return {**preview,**apply_checkpoint(client,'/town/initialize',body,before,cohort,confirms,runtime,'population',wait_seconds)}
 
 
-if __name__=='__main__':main()
+def parser():
+    result=argparse.ArgumentParser(description=__doc__)
+    result.add_argument('--root',type=Path,required=True);result.add_argument('--id',required=True)
+    result.add_argument('--seed',required=True);result.add_argument('--actors',type=int,nargs='+')
+    result.add_argument('--apply',action='store_true',help='Apply this explicit census after a fresh session/checkpoint preflight')
+    return result
+
+
+def main(argv=None):
+    args=parser().parse_args(argv);runtime=args.root/'runtime'
+    result=initialize(client_for(runtime),args.id,args.seed,runtime,args.apply,args.actors)
+    print(json.dumps(result));return 0 if not args.apply or result['confirmed'] else 2
+
+
+if __name__=='__main__':raise SystemExit(main())

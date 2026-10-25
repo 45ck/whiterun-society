@@ -37,7 +37,7 @@ class ParallelRoutineTests(unittest.TestCase):
     def complete(self,change=None):
         jobs=self.world.pending(self.obs['session'])['jobs'];receipts=[]
         for job in jobs:
-            receipts.append({'id':job['id'],'slot':job['slot'],'status':'applied','release_verified':True,'seller_nearby':False,
+            receipts.append({'id':job['id'],'slot':job['slot'],'actor_base_id':job['actor_base_id'],'status':'applied','release_verified':True,'seller_nearby':False,
                 'movement':{'actor':job['actor'],'target':MARKET,'target_kind':'place','distance':200,'aliasesConfirmed':True,'hasOwnedPackage':True,'adapter':'papyrus-mailbox'}})
         if change:change(receipts)
         self.obs['ack']={'id':'cohort','status':'applied','routines':receipts,'concurrency':{'peak_owned':2,'overlap_samples':12}}
@@ -70,7 +70,8 @@ class ParallelRoutineTests(unittest.TestCase):
     def test_departed_resident_is_held_without_stopping_other_journey(self):
         self.start();self.obs['residents']=[r for r in self.obs['residents'] if r['id']!=108186];self.choose()
         self.assertEqual(len(self.world.pending(self.obs['session'])['jobs']),1);self.complete()
-        self.assertEqual(self.world.routine_batch()['members'][0]['outcome'],'changed_before_departure')
+        self.assertEqual(self.world.routine_batch()['members'][0]['outcome'],'journey_identity_conflict')
+        self.assertTrue(self.world.routine_batch()['members'][0]['identity_held'])
         self.assertEqual(self.world.routine_batch()['members'][1]['phase'],'complete')
 
     def test_wrong_slot_or_missing_ownership_cannot_be_an_arrival(self):

@@ -3,6 +3,7 @@ import unittest
 import test_population
 from catalog_fixture import native_ack
 from trade_execution_fixture import qualify_trade_observation
+from legacy_fixture import author_fixture_identities
 
 
 class DailyLifeTests(unittest.TestCase):
@@ -14,6 +15,9 @@ class DailyLifeTests(unittest.TestCase):
         test_population.PopulationTests.setUp(self)
         self.census()
         qualify_trade_observation(self.obs)
+        # Daily-life fixtures explicitly author identity for their starting
+        # people. Production census still leaves genuinely unknown history unbound.
+        author_fixture_identities(self.world.active,self.obs,event_id='daily-fixture-identity')
         self.world.initialize_population('census','daily-seed',self.obs);self.sync()
         self.world.configure_enterprise('fixture-bakery', {'id':'business-108149','expected_revision':0,
             'name':'Fixture food enterprise','custodian':108149,'capabilities':['bread_recipe','retail_food'],

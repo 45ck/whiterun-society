@@ -8,6 +8,7 @@ import time
 import unittest
 from unittest.mock import Mock,patch
 from tools.run_daily_life import main
+from legacy_fixture import author_fixture_identities
 
 
 class SceneDirectorTests(unittest.TestCase):
@@ -16,10 +17,12 @@ class SceneDirectorTests(unittest.TestCase):
             root=Path(folder);runtime=root/'runtime';runtime.mkdir()
             (runtime/'bridge-config.json').write_text(json.dumps({'port':12345,'token':'test'}))
             event={'id':'need-1','actor':7,'kind':'need_review','status':'pending','priority':1}
-            row={'id':7,'isPerson':True,'activity':{'scene_id':888,'in_combat':False,'sleep_state':0,'package_id':42}}
-            state={'bridge':{'session':'test','last_seen':time.time(),'command':None,'observation':{'residents':[row]}},
-                'society':{'error':None,'transition':None,'scene_handoffs':[],
-                    'town':{'residents':{'7':{}},'daily':{'queue':[event]}}}}
+            row={'id':7,'baseId':100007,'isPerson':True,'activity':{'scene_id':888,'in_combat':False,'sleep_state':0,'package_id':42}}
+            state={'bridge':{'session':'test','last_seen':time.time(),'command':None,
+                    'observation':{'ready':True,'session':'test','checkpoint':1,'residents':[row]}},
+                'society':{'checkpoint':1,'error':None,'transition':None,'scene_handoffs':[],'people':{'7':{}},
+                    'town':{'residents':{'7':{'id':7}},'daily':{'queue':[event]}}}}
+            author_fixture_identities(state['society'],state['bridge']['observation'],[7])
             order=[];reads=0;clock=[0.0]
             def request(req,**kwargs):
                 nonlocal reads
@@ -38,11 +41,13 @@ class SceneDirectorTests(unittest.TestCase):
                     if reads==1:state['society']['transition']={'next':2}
                     elif reads==2:
                         state['society']['scene_handoffs'][0]['status']='released';row['activity']['scene_id']=0
-                    else:state['society']['transition']=None
+                    else:
+                        state['society']['transition']=None;state['society']['checkpoint']=2
+                        state['bridge']['observation']['checkpoint']=2
                 return io.BytesIO(json.dumps(copy.deepcopy(state)).encode())
             def worker(*args,**kwargs):
                 self.assertGreaterEqual(reads,3);self.assertEqual(order,['requested','review']);order.append('worker')
-                state['society']['plan']={'id':event['id'],'phase':'complete','outcome':'deferred','decisions':[{'decision':{'action_id':'defer'}}]}
+                state['society']['plan']={'id':event['id'],'phase':'complete','outcome':'deferred','decisions':[{'claim_id':'fixture-decision','decision':{'action_id':'defer'}}]}
                 return Mock(returncode=0)
             output=runtime/'receipt.json'
             with patch('sys.argv',['director','--root',str(root),'--max-events','1','--watch-seconds','30','--model-config','fixture.json','--scene-handoffs','--receipt',str(output)]),\

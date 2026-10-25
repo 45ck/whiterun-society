@@ -1,5 +1,24 @@
 """Save-bound actor reservations for overlapping travel and social activity."""
 
+from resident_identity import resident_identity_status
+
+
+def identity_quarantine_actors(state, observation=None):
+    """Exclude unqualified census identities without altering historical records.
+
+    These are admission exclusions, not native leases or authority to release
+    an actor. Hand-authored pre-census fixtures retain their separate boundary.
+    """
+    state=state or {};residents=(state.get('town') or {}).get('residents') or {}
+    if not isinstance(residents,dict):return set()
+    actors=set()
+    for key in residents:
+        if (not isinstance(key,str) or not key.isascii() or not key.isdigit()
+                or len(key)>10 or str(int(key))!=key or not 0<int(key)<=0xffffffff):continue
+        actor=int(key)
+        if not resident_identity_status(state,observation or {},actor)['qualified']:actors.add(actor)
+    return actors
+
 def _saved_leases(state,fields):
     rows=[]
     for field in fields:
@@ -33,8 +52,9 @@ def _account_actor(value):
     suffix=value.removeprefix('native-inventory:')
     return int(suffix) if len(suffix)<=10 and suffix.isascii() and suffix.isdigit() and str(int(suffix))==suffix and int(suffix)>0 else None
 
-def reserved_work_accounts(state,observation=None):
+def reserved_work_accounts(state,observation=None,*,include_identity=True):
     actors=resource_quarantine_actors(state,observation)|trade_quarantine_actors(state,observation)
+    if include_identity:actors.update(identity_quarantine_actors(state,observation))
     for row in _work_rows(state,observation):
         actors.update(row.get(field) for field in ('actor','custodian','account_actor')
                       if type(row.get(field)) is int and row[field]>0)
@@ -156,7 +176,7 @@ def conversation_quarantine_actors(state,observation=None):
     return actors
 
 
-def _reserved_activity(state,observation,field):
+def _reserved_activity(state,observation,field,include_identity=True):
     native=(observation or {}).get('activity_jobs') or {}
     # Native identities can outlive their saved assignment after a rollback.
     # Never discard them merely because their session/epoch is now stale.
@@ -164,19 +184,21 @@ def _reserved_activity(state,observation,field):
     ids=[row.get(field) for row in rows]
     ids.extend(native.get('reserved_actors' if field=='actor' else 'reserved_targets',[]))
     if field=='actor':
-        ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation))
+        # Cleanup may exclude identity admission checks, but must retain every
+        # actual work/resource/trade reservation, including unresolved leases.
+        ids.extend(_account_actor(account) for account in reserved_work_accounts(state,observation,include_identity=include_identity))
         ids.extend(conversation_quarantine_actors(state,observation))
         ids.extend(resource_quarantine_actors(state,observation))
     return {value for value in ids if type(value) is int and value>0}
 
-def reserved_activity_actors(state,observation=None):
-    return _reserved_activity(state,observation,'actor')
+def reserved_activity_actors(state,observation=None,*,include_identity=True):
+    return _reserved_activity(state,observation,'actor',include_identity=include_identity)
 
 def reserved_activity_targets(state,observation=None):
     return _reserved_activity(state,observation,'target')
 
-def activity_conflict(state,actors=(),targets=(),observation=None):
-    return bool(set(actors)&reserved_activity_actors(state,observation)
+def activity_conflict(state,actors=(),targets=(),observation=None,*,include_identity=True):
+    return bool(set(actors)&reserved_activity_actors(state,observation,include_identity=include_identity)
                 or set(targets)&reserved_activity_targets(state,observation))
 
 def background_cohort(state):

@@ -370,34 +370,38 @@ on('update', () => {
     // Grants and trades validate complete identity on every arm/deliver replay.
     // The generic ID-only cache must never bypass that controller's checks.
     const resourceCommand=command.kind==='inventory_endowment',tradeCommand=command.kind==='inventory_trade';
-    const controllerReceipt=resourceCommand||tradeCommand;
+    const legacyPaidCommand=command.kind==='inventory_produce';
+    const journeyCommand=['parallel_routines','background_routines'].includes(command.kind);
+    const controllerReceipt=resourceCommand||tradeCommand||legacyPaidCommand||journeyCommand;
+    // Paid legacy IDs must not retrieve cached applied receipts or enter native effects.
+    if(legacyPaidCommand&&command.session===session)ack=production.step(command).ack;
     if(!controllerReceipt&&command.session===session&&completed.has(command.id)&&completed.get(command.id))ack=completed.get(command.id);
-    if (command.session === session && (controllerReceipt||!completed.has(command.id))) {
+    if (!legacyPaidCommand&&command.session === session && (controllerReceipt||!completed.has(command.id))) {
       try {
         if(tradeCommand){
           if(!Number.isInteger(command.checkpoint)||checkpointValue()!==command.checkpoint)throw new Error('Trade checkpoint mismatch');
           if(!tradeReservationAllows(command))throw new Error('Unsettled trade reserves the accounts; exact saved/native contract required');
         }else{
           const reserved=tradeReservedActors();
-          const actors=[command.kind==='look_at_player'?selected:undefined,command.kind==='prepare_market'?108149:undefined,command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target])];
+          const actors=[command.kind==='look_at_player'?selected:undefined,command.kind==='prepare_market'?108149:undefined,command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
           if(actors.some(id=>reserved.includes(id)))throw new Error('Unsettled trade reserves a command participant');
         }
         if(!resourceCommand){
           const reserved=resourceReservedActors();
-          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target])];
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).flatMap(m=>[m.actor,m.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
           if(actors.some(id=>reserved.includes(id)))throw new Error('Pending resource grant reserves a command participant');
         }
         if(!['activity_start_rest','activity_ack_receipt'].includes(command.kind)){
-          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor)];
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor),...(command.jobs||[]).map(j=>j.actor)];
           if(actors.some(id=>activityJobs.ownsActor(id))||activityJobs.ownsTarget(command.target))throw new Error('Background activity owns a command participant or furniture');
         }
         if(!['owner_work_start','owner_work_ack_receipt'].includes(command.kind)){
-          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor)];
+          const actors=[command.actor,command.target,command.worker,command.employer,command.buyer,command.seller,...(command.participants||[]),...(command.members||[]).map(m=>m.actor),...(command.jobs||[]).map(j=>j.actor)];
           if(actors.some(id=>ownerWorkJobs.ownsActor(id))&&!ownerWorkJobs.permitsCommand(command))throw new Error('Independent owner work reserves a command participant');
         }
         if(['walk_to','parallel_routines','background_routines','rest_at_bench','activity_start_rest','owner_work_start','conversation_attend','scene_handoff'].includes(command.kind)){
           const quarantined=conversationQuarantineActors(presentation.society,residents);
-          const actors=[command.actor,command.target,...(command.participants||[]),...(command.members||[]).flatMap(member=>[member.actor,member.target])];
+          const actors=[command.actor,command.target,...(command.participants||[]),...(command.members||[]).flatMap(member=>[member.actor,member.target]),...(command.jobs||[]).flatMap(j=>[j.actor,j.target])];
           if(actors.some(id=>quarantined.includes(id)))throw new Error('Unverified conversation cleanup reserves a command participant');
         }
         if(['activity_start_rest','activity_ack_receipt','owner_work_start','owner_work_ack_receipt'].includes(command.kind)){
@@ -659,6 +663,7 @@ on('update', () => {
   const observation = {
     economy_catalog:economyCatalog.status(),
     resource_import:endowments.status(),
+    paid_employment:production.paidWorkCapability(),
     trade_execution:transfers.status(),
     director_control:directorControl,
     player_controls:{request:playerControlRequest,

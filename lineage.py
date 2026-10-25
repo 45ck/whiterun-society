@@ -15,6 +15,8 @@ from production import Production
 from market_day import MarketDay
 from conversation import Conversation
 from population import Population
+from livelihood_backgrounds import LivelihoodBackgrounds
+from paid_work_policy import paid_work_capability
 from daily_life import DailyLife
 from endowments import Endowments
 from rest import Rest
@@ -29,13 +31,14 @@ from owner_production import OwnerProduction
 from resident_goals import ResidentGoals
 from activity_jobs import ActivityJobs
 from owner_work_jobs import OwnerWorkJobs
-from activity_leases import activity_conflict
+from activity_leases import activity_conflict,identity_quarantine_actors
+from resident_identity import valid_actor_id
 from economy_catalog import require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
 
 MAX_MARKER = 2**24 - 1
 
 
-class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
+class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay, Conversation, Population, LivelihoodBackgrounds, DailyLife, Endowments, Rest, ParallelRoutines, Enterprises, EconomicSpeech, SceneHandoffs, ResidentControl, OwnerProduction, ResidentGoals, ActivityJobs, OwnerWorkJobs):
     def __init__(self, path):
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -48,6 +51,7 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         self.active = None
         self.transition = None
         self.error = 'Waiting for game checkpoint'
+        self.latest_observation = None
 
     def _write(self, state, reason):
         encoded = json.dumps(state, sort_keys=True, separators=(',', ':'), allow_nan=False)
@@ -82,10 +86,12 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         return {'checkpoint': self._write(state, 'explicit new-world bootstrap')}
 
     def observe(self, observation):
+        self.latest_observation = None
         session, marker = observation.get('session'), observation.get('checkpoint')
         if not isinstance(session, str) or not session or type(marker) is not int or not 0 <= marker <= MAX_MARKER:
             self.error = 'Missing or invalid game checkpoint'
             return
+        self.latest_observation = copy.deepcopy(observation)
         changed = session != self.session or marker != self.marker
         if session != self.session:
             self.transition = None
@@ -115,6 +121,9 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         # A prepared recipe owns the writer until its exact receipt settles.
         # Do not hide its acknowledgement behind an unrelated conversation.
         effect = self.active.get('pending')
+        if effect and effect.get('command',{}).get('kind')=='inventory_produce':
+            self.observe_production(observation)
+            return
         if effect and effect.get('command',{}).get('kind')=='inventory_trade':
             self.observe_trade(observation)
             return
@@ -187,6 +196,17 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
             command=self.active['pending']['command']
+            if command.get('kind')=='inventory_produce':return None
+            if command.get('kind') in ('parallel_routines','background_routines'):
+                observation=self.latest_observation or {}
+                jobs=command.get('jobs')
+                if (command.get('origin_session')!=session or observation.get('session')!=session
+                        or observation.get('checkpoint')!=self.marker or not isinstance(jobs,list) or not jobs):return None
+                quarantined=identity_quarantine_actors(self.active,observation)
+                for job in jobs:
+                    if not isinstance(job,dict) or not valid_actor_id(job.get('actor_base_id')):return None
+                    matches=[row for row in observation.get('residents',[]) if row.get('id')==job.get('actor')]
+                    if len(matches)!=1 or matches[0].get('baseId')!=job['actor_base_id'] or job.get('actor') in quarantined:return None
             if command.get('kind')=='inventory_trade':return self.trade_pending_command(session)
             if command.get('kind')=='inventory_endowment':return self.endowment_pending_command(session)
             if command.get('kind','').startswith('inventory_') and command.get('catalog_hash')!=catalog_hash():return None
@@ -209,7 +229,11 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
         return [{**r, 'command': json.dumps(r['command'])} for r in records]
 
     def status(self):
+        observation=self.latest_observation
+        if observation and (observation.get('session')!=self.session or observation.get('checkpoint')!=self.marker):
+            observation=None
         return {'checkpoint': self.marker, 'transition': self.transition, 'error': self.error,
+                'paid_work_capability':paid_work_capability(),
                 'activity_jobs': self.activity_status(),
                 'owner_work_jobs': self.owner_work_status(),
                 'scene_handoffs':self.active.get('scene_handoffs',[]) if self.active else [],
@@ -225,4 +249,4 @@ class TimelineEconomy(TradeExecution, Agency, FoodEconomy, Production, MarketDay
                 'imports': self.active.get('imports', []) if self.active else [],
                 'resource_delivery': self.active['pending'] if self.active and self.active['pending'] and self.active['pending']['command']['kind']=='inventory_endowment' else None,
                 'market_day': self.scenario_status(), 'conversation': self.conversation_status(),
-                'town':self.population_status()}
+                'town':self.population_status(observation)}

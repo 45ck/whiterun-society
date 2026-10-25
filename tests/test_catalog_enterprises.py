@@ -31,7 +31,11 @@ class CatalogEnterpriseTests(unittest.TestCase):
         self.inventory={'gold':7,'bread':3,'grain':8,'ore':4,'ingot':2}
         self.state={'town':{'residents':{'7':{'id':7}},'businesses':{}},
             'people':{'7':{'profile':{'name':'An unknown artisan'},'memories':[]}}}
-        self.obs={'residents':[{'id':7,'isPerson':True,'inventory':self.inventory}]}
+        self.obs={'ready':True,'session':'catalog-enterprise-fixture','checkpoint':1,
+                  'residents':[{'id':7,'baseId':1007,'isPerson':True,'inventory':self.inventory}]}
+        binding={'schema_version':1,'actor':7,'base_id':1007,'event_id':'catalog-fixture'}
+        self.state['town']['residents']['7']['identity_binding']=copy.deepcopy(binding)
+        self.state['people']['7']['identity_binding']=copy.deepcopy(binding)
         self.spec={'id':'new-forge','expected_revision':0,'name':'Proposed forge','custodian':7,
             'capabilities':['metal_recipe'],'active':True,
             'recipe_policies':{'metal_recipe':{'target_output':9,'wage_gold':3,'work_minutes':18}}}

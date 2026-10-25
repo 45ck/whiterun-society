@@ -22,48 +22,81 @@ class LabourTests(unittest.TestCase):
         for p in self.world.active['people'].values():
             p['needs'].update(hunger=.3,fatigue=.2,social_contact=.2)
 
-    def test_capacity_requires_funds_inputs_stock_gap_and_loaded_route(self):
-        self.assertEqual(len(work_opportunities(self.world.active,self.obs,99)),1)
+    def archive_plan(self, event, voiced=False, actor=99, business_id="business-108149", scheduled=False):
+        """Explicit pre-gate dialogue fixture; never a newly available paid job."""
+        from economy_catalog import catalog_hash, recipe_hash
+        from market_policy import policy_hash
+        from enterprises import production_policy
+        from employment import approach_employer
+        state=copy.deepcopy(self.world.active)
+        business=state['town']['businesses'][business_id]
+        plan={'id':event,'kind':'work_shift','actor':actor,'target':business['custodian'],'phase':'job_offer',
+              'decisions':[],'claim':None,'travel':None,'trade_id':'meal-'+event,
+              'unit_price':3,'quantity':1,'commodity':'bread','purpose':'food',
+              'market_policy_hash':policy_hash(),'catalog_hash':catalog_hash(),
+              'refusals_recorded':0,'food_actions':True,
+              'fixture_provenance':'Authored archived employment dialogue; no completed work',
+              'work_terms':{'business_id':business['id'],'employer':business['custodian'],
+                  'revision':business['revision'],'policy':production_policy(business),
+                  'recipe_id':'bread_recipe','catalog_hash':catalog_hash(),
+                  'recipe_hash':recipe_hash('bread_recipe')}}
+        if scheduled:
+            plan['scheduled']=True
+            state['town'].setdefault('daily',{'last_day':self.obs['gameDays'],'sequence':0,'queue':[],'reviews':[]}).setdefault('queue',[]).append(
+                {'id':event,'actor':actor,'kind':'work_shift','status':'started'})
+        if voiced:
+            plan['voiced_trade']=True;approach_employer(plan)
+        state.setdefault('plans',[]).append(plan)
+        self.world._write(state,'Explicit archived employment dialogue test fixture');self.sync()
+
+    def test_paid_gate_stays_closed_with_or_without_capacity(self):
+        self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
         for key,value in [('gold',1),('grain',0),('bread',8)]:
             obs=copy.deepcopy(self.obs);obs['residents'][1]['inventory'][key]=value
             self.assertEqual(work_opportunities(self.world.active,obs,99),[])
         self.obs['residents']=[a for a in self.obs['residents'] if a['id']!=108149]
         self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
 
-    def test_guards_and_commitments_allow_job_choice_without_self_employment(self):
+    def test_guard_or_commitment_state_cannot_bypass_paid_gate(self):
         self.assertEqual(work_opportunities(self.world.active,self.obs,108149),[])
         self.world.active['town']['residents']['99']['is_guard']=True
-        self.assertEqual(len(work_opportunities(self.world.active,self.obs,99)),1)
+        self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
         self.world.active['town']['residents']['99']['is_guard']=False
         self.world.active['people']['99']['commitments']=[{'kind':'existing obligation'}]
-        self.assertEqual(len(work_opportunities(self.world.active,self.obs,99)),1)
+        self.assertEqual(work_opportunities(self.world.active,self.obs,99),[])
 
-    def test_scheduled_livelihood_requires_search_offer_and_acceptance(self):
+    def test_scheduled_livelihood_does_not_offer_unqualified_paid_execution(self):
         result=self.review()
         event=next(e for e in self.world.active['town']['daily']['queue'] if e['actor']==99)
         self.assertIn(event['id'],result['new_events'])
         self.world.begin_plan(event['id'],self.obs,99,'need_review');self.sync()
-        self.decide('seek_work',event['id']);self.decide('offer_shift',event['id'])
+        context=self.world._plan_context(self.obs,self.world.agency_plan())
+        self.assertFalse(any(o['id'].startswith('seek_work') for o in context['options']))
+        self.assertEqual(self.world.active['town']['businesses']['business-108149']['contracts'],[])
+        self.assertEqual(self.world.status()['production'],[])
+
+    def test_archived_offer_can_be_declined_without_stock_or_contract_effects(self):
+        before=copy.deepcopy(self.obs['residents']);self.archive_plan('archived-offer')
+        self.decide('offer_shift','archived-offer')
         context=self.world._plan_context(self.obs,self.world.agency_plan())
         self.assertEqual(context['actor_id'],99)
         self.assertEqual(context['observed_inventory']['gold'],7)
         self.assertNotIn('employer_inventory',context)
-        self.assertEqual(self.world.active['town']['businesses']['business-108149']['contracts'],[])
-        self.decide('decline_work',event['id'])
+        self.decide('decline_work','archived-offer')
         self.assertEqual(self.world.agency_plan()['outcome'],'work_declined')
-        self.assertEqual(self.world.active['town']['daily']['queue'][-1]['status'],'complete')
-        self.assertEqual(self.world.status()['production'],[])
+        self.assertEqual(before,self.obs['residents'])
+        self.assertEqual(self.world.active['town']['businesses']['business-108149']['contracts'],[])
 
     def test_employer_deferral_remembers_worker_not_self(self):
-        self.world.begin_plan('not-hiring',self.obs,99,'work_shift');self.sync()
+        self.archive_plan('not-hiring')
         self.decide('defer','not-hiring')
         memory=self.world.active['people']['108149']['memories'][-1]
         self.assertEqual(memory['other'],99)
         self.assertEqual(self.world.active['town']['businesses']['business-108149']['contracts'],[])
 
-    def test_nonlegacy_worker_executes_owned_work_and_contract_survives_only_its_save(self):
-        old=copy.deepcopy(self.obs)
-        self.world.begin_plan('new-worker',self.obs,99,'work_shift');self.sync()
+    def test_archived_accepted_contract_cannot_execute_and_rolls_back_with_its_save(self):
+        old=copy.deepcopy(self.obs);stock=copy.deepcopy(self.obs['residents'])
+        self.archive_plan('new-worker')
         self.decide('offer_shift','new-worker');self.decide('take_shift','new-worker')
         plan=self.world.agency_plan()
         contract=self.world.active['town']['businesses']['business-108149']['contracts'][0]
@@ -71,21 +104,17 @@ class LabourTests(unittest.TestCase):
         self.obs['ack']={'id':plan['travel_id'],'status':'applied','movement':{
             'hasOwnedPackage':True,'expectedPackage':99,'aliasesConfirmed':True,
             'adapter':'papyrus-mailbox','actor':99,'target':108149}}
-        self.world.observe(self.obs);self.sync();command=self.world.pending(self.obs['session'])
-        self.assertEqual(command['worker'],99)
-        for a in self.obs['residents']:
-            if a['id'] in (99,108149):a['inventory']=command['after']['worker' if a['id']==99 else 'employer'].copy()
-        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
-        business=self.world.active['town']['businesses']['business-108149']
-        self.assertEqual(business['contracts'][0]['status'],'completed');self.assertEqual(business['workers'],[99])
-        self.assertEqual(self.obs['residents'][2]['inventory']['gold'],9)
-        self.assertEqual(self.obs['residents'][1]['inventory'],{'gold':10,'bread':4,'grain':2})
+        self.assertEqual(self.world.agency_plan()['phase'],'held')
+        self.assertEqual(stock,self.obs['residents'])
+        self.assertEqual(self.world.status()['production'],[])
+        self.assertNotEqual((self.world.pending(self.obs['session']) or {}).get('kind'),'inventory_produce')
+        self.assertEqual(self.world.active['town']['businesses']['business-108149']['workers'],[])
         self.world.observe({**old,'session':'before-employment'})
         self.assertEqual(self.world.active['town']['businesses']['business-108149']['contracts'],[])
 
     def test_failed_travel_ends_contract_without_wages(self):
-        self.world.begin_plan('interrupted',self.obs,99,'work_shift');self.sync()
+        self.archive_plan('interrupted')
         self.decide('offer_shift','interrupted');self.decide('take_shift','interrupted')
         self.obs['ack']={'id':self.world.agency_plan()['travel_id'],'status':'held'}
         self.world.observe(self.obs);self.sync()
@@ -104,19 +133,32 @@ class LabourTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'No feasible'):
             self.world.begin_plan('empty-job',self.obs,99,'work_shift')
 
-    def test_unverified_production_holds_contract_without_completed_work_history(self):
-        self.world.begin_plan('drift',self.obs,99,'work_shift');self.sync()
-        self.decide('offer_shift','drift');self.decide('take_shift','drift')
-        self.obs['ack']={'id':self.world.agency_plan()['travel_id'],'status':'applied','movement':{
-            'hasOwnedPackage':True,'expectedPackage':99,'aliasesConfirmed':True,
-            'adapter':'papyrus-mailbox','actor':99,'target':108149}}
-        self.world.observe(self.obs);self.sync()
-        self.obs['ack']=native_ack(self.world.pending(self.obs['session']))
-        self.world.observe(self.obs);self.sync()
+    def test_legacy_after_shaped_production_receipt_holds_without_work_credit(self):
+        from production import work_inventory
+        from employment import accept_contract
+        self.archive_plan('drift');plan=self.world.agency_plan()
+        accept_contract(self.world.active,plan);plan['phase']='working'
+        before=work_inventory(self.obs,99,108149);after=copy.deepcopy(before)
+        after['employer']['grain']-=1;after['employer']['bread']+=2
+        after['employer']['gold']-=2;after['worker']['gold']+=2
+        terms=plan['work_terms']
+        command={'id':'produce-drift','kind':'inventory_produce','worker':99,'employer':108149,
+                 'recipe_id':terms['recipe_id'],'catalog_hash':terms['catalog_hash'],
+                 'recipe_hash':terms['recipe_hash'],'work_minutes':30,'wage_gold':2,
+                 'before':before,'after':after}
+        self.world.active['pending']={'id':command['id'],'command':command,'status':'pending'}
+        people=copy.deepcopy(self.world.active['people'])
+        for row in self.obs['residents']:
+            if row['id'] in (99,108149):row['inventory']=copy.deepcopy(after['worker' if row['id']==99 else 'employer'])
+        self.obs['ack']=native_ack(command)
+        self.world.observe_production(self.obs);self.sync()
         business=self.world.active['town']['businesses']['business-108149']
         self.assertEqual(business['contracts'][0]['status'],'held')
         self.assertEqual(business['workers'],[])
         self.assertEqual(self.world.status()['production'],[])
+        self.assertEqual(self.world.active['people'],people)
+        self.assertEqual(self.world.active['pending']['status'],'held')
+        self.assertIsNone(self.world.pending(self.obs['session']))
 
     def test_scheduled_business_review_reconsiders_reserve_without_minting_stock(self):
         self.world.active['people']['108149']['food_policy'].pop('reviewed_day')

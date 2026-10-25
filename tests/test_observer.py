@@ -1,7 +1,10 @@
 import copy
 import time
 import unittest
-from observer import camera_request,observer_state
+from observer import camera_request,observer_state,enterprise_editor_metadata
+from unittest.mock import patch
+import economy_catalog
+import market_policy
 
 
 class ObserverTests(unittest.TestCase):
@@ -32,3 +35,45 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(result['residents'][0]['native_activity']['scene_id'],888)
         self.assertIsNone(result['residents'][1]['native_activity'])
         self.assertEqual(result['residents'][1]['activity_blocker'],'not_loaded')
+
+    def test_configured_recipe_editor_is_generic_and_does_not_mutate_catalog(self):
+        from test_catalog_enterprises import expanded_catalog
+        catalog=expanded_catalog()
+        with patch.object(economy_catalog,'ECONOMY_CATALOG',catalog):
+            policy=copy.deepcopy(market_policy.MARKET_POLICY);policy['catalog_hash']=economy_catalog.catalog_hash()
+            policy['goods'].append({**policy['goods'][0],'commodity':'ore','legacy_retail_capability':None,'reserve_mode':'seller_choice'})
+            with patch.object(market_policy,'MARKET_POLICY',policy):
+                before=copy.deepcopy((catalog,policy));result=enterprise_editor_metadata()
+                recipe=next(r for r in result['recipes'] if r['id']=='metal_recipe')
+                self.assertEqual(recipe['inputs'],{'ore':2});self.assertEqual(recipe['outputs'],{'ingot':1})
+                fields={f['key']:f for f in recipe['fields']}
+                self.assertEqual((fields['work_minutes']['min'],fields['work_minutes']['max']),(12,24))
+                self.assertIn('target_output',fields);self.assertNotIn('target_bread',fields)
+                self.assertIn({'id':'ore','legacy_capability':None},result['sale_goods'])
+                self.assertEqual(before,(catalog,policy))
+
+    def test_startup_identity_requires_fresh_matching_checkpoint_and_outcomes_exclude_priors(self):
+        binding={'schema_version':1,'actor':99,'base_id':44,'event_id':'Census1'}
+        self.society['town']['residents']['99'].update(id=99,identity_binding=binding)
+        self.obs.update(ready=True,session='fixture',checkpoint=10)
+        self.obs['residents'][0]['baseId']=44
+        self.society['town']['livelihood_backgrounds']=[{'id':'prior','assignments':[{'actor':99}]}]
+        self.society['production']=[{'status':'prepared'},{'status':'held'},{'status':'committed'}]
+        self.society['trades']=[{'status':'committed'},{'status':'held'}]
+        self.society['paid_work_capability']={'available':False,'reason':'legacy_paid_execution_unqualified','detail':'Requires wage witnesses'}
+        fresh={'last_seen':time.time(),'observation':self.obs}
+        result=observer_state(fresh,self.society)
+        self.assertEqual(result['startup']['identity_qualified'],1)
+        self.assertEqual(result['startup']['committed_production'],1)
+        self.assertEqual(result['startup']['committed_sales'],1)
+        self.assertEqual(len(result['startup']['backgrounds']),1)
+        self.assertEqual(result['startup']['paid_work_capability'],self.society['paid_work_capability'])
+        for bridge in ({**fresh,'last_seen':0},{**fresh,'observation':{**self.obs,'checkpoint':11}}):
+            result=observer_state(bridge,self.society)
+            self.assertFalse(result['startup']['current']);self.assertEqual(result['startup']['identity_qualified'],0)
+
+    def test_unconfigured_background_manifest_is_reported_without_hiding_observer(self):
+        with patch('observer.load_livelihood_manifest',side_effect=ValueError('catalog changed')):
+            result=observer_state({'last_seen':time.time(),'observation':self.obs},self.society)
+            self.assertFalse(result['startup']['scenario']['available'])
+            self.assertEqual(result['startup']['scenario']['reason'],'catalog changed')

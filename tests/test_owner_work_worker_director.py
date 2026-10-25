@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 from tools import run_resident_event as worker
 from tools import run_daily_life as director
+from legacy_fixture import author_fixture_identities
 
 
 def work_state(phase='running'):
@@ -17,12 +18,16 @@ def work_state(phase='running'):
          'business_id':'bakery','business_revision':1,'phase':phase,'work_minutes':10,
          'receipt_acknowledged':False,'release_verified':False,
          'settlement':{'phase':'not_prepared','committed_inventory_verified':False}}
-    return {'bridge':{'session':'a','last_seen':1000,'command':None,'observation':{
-                'residents':[{'id':7,'isPerson':True},{'id':8,'isPerson':True}]}},
+    state={'bridge':{'session':'a','last_seen':1000,'command':None,'observation':{
+                'ready':True,'session':'a','checkpoint':0,
+                'residents':[{'id':7,'baseId':1007,'isPerson':True},{'id':8,'baseId':1008,'isPerson':True}]}},
             'society':{'error':None,'transition':None,'conversation':None,
+                'people':{'7':{},'8':{}},
                 'plan':{'id':'need-1','actor':7,'phase':'delegated','work_job':'owner-job','decisions':[{}]},
                 'owner_work_jobs':{'epoch':'epoch','capacity':4,'jobs':[job],'history':[]},
-                'town':{'residents':{'7':{},'8':{}},'daily':{'queue':[]}}}}
+                'town':{'residents':{'7':{'id':7},'8':{'id':8}},'daily':{'queue':[]}}}}
+    author_fixture_identities(state['society'],state['bridge']['observation'])
+    return state
 
 
 def completed(job):

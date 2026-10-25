@@ -12,8 +12,8 @@ from routing import activity_blocker
 from activity_leases import activity_conflict,work_account_conflict
 
 
-def knows_recipe(person, recipe_id):
-    """Knowledge is per recipe; catalog registration teaches nobody."""
+def _knows_verified_recipe(person, recipe_id):
+    """Historical verified participation; never an authored scenario assignment."""
     if recipe_id not in recipe_ids():
         return False
     known = person.get('known_recipes', {})
@@ -34,9 +34,20 @@ def knows_recipe(person, recipe_id):
                for m in person.get('memories', [])))
 
 
+def knows_recipe(person, recipe_id, *, state=None, observation=None, actor_id=None):
+    """Prior authority additionally needs current identity and its saved journal."""
+    if _knows_verified_recipe(person, recipe_id):return True
+    if not isinstance(state,dict) or not isinstance(observation,dict):return False
+    from livelihood_backgrounds import authored_prior_status
+    saved=state.get('people',{}).get(str(actor_id),{})
+    prior=person.get('authored_recipe_priors',{}).get(recipe_id)
+    if prior is None or prior!=saved.get('authored_recipe_priors',{}).get(recipe_id):return False
+    return authored_prior_status(state,observation,actor_id,recipe_id)['valid']
+
+
 def learn_recipe(person, event_id, recipe_id):
     recipe = recipe_spec(recipe_id)  # Reject unknown/planned mechanisms.
-    if knows_recipe(person, recipe_id):return
+    if _knows_verified_recipe(person, recipe_id):return
     person.setdefault('known_recipes', {})[recipe_id] = {
         'source': 'verified_native_production', 'event_id': event_id,
         'recipe_id': recipe_id,
@@ -46,16 +57,26 @@ def learn_recipe(person, event_id, recipe_id):
         person['known_recipes'].setdefault('bread', copy.deepcopy(person['known_recipes'][recipe_id]))
 
 
-def recipe_knowledge(person):
-    return {'bread': knows_bread_recipe(person),
-        'recipes': {rid: knows_recipe(person, rid) for rid in sorted(recipe_ids())},
-        'source': 'Own verified production participation; legacy bread records remain readable. Catalog availability does not grant knowledge.'}
+def recipe_knowledge(person, *, state=None, observation=None, actor_id=None):
+    from livelihood_backgrounds import authored_prior_status
+    context={'state':state,'observation':observation,'actor_id':actor_id}
+    known={rid:knows_recipe(person,rid,**context) for rid in sorted(recipe_ids())}
+    provenance={}
+    for rid in known:
+        if _knows_verified_recipe(person,rid):
+            provenance[rid]={'source':'verified_native_production','valid':True,
+                             'scope':'Own participation in verified production; historical aliases remain readable'}
+        elif rid in person.get('authored_recipe_priors',{}):
+            provenance[rid]=authored_prior_status(state,observation,actor_id,rid)
+        else:provenance[rid]={'source':'unknown','valid':False,'reason':'No personal recipe evidence'}
+    return {'bread':knows_bread_recipe(person,**context),'recipes':known,'provenance':provenance,
+        'source':'Verified own production and explicit authored priors are distinct. Priors require current bound identity. Catalog availability does not grant knowledge.'}
 
 
-def knows_bread_recipe(person):
+def knows_bread_recipe(person, **context):
     if 'bread_recipe' not in recipe_ids():return False
     recipe=recipe_spec('bread_recipe')
-    return set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'} and knows_recipe(person, 'bread_recipe')
+    return set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'} and knows_recipe(person, 'bread_recipe', **context)
 
 
 def learn_bread_recipe(person, event_id):
@@ -111,7 +132,7 @@ def enterprise_choices(state, observation, actor):
             recipe = recipe_spec(recipe_id)
             can_source_inputs = (all(type(stock.get(k)) is int and stock[k] >= amount
                                      for k, amount in recipe['inputs'].items()) or stock['gold'] >= 1)
-            if knows_recipe(person, recipe_id) and can_source_inputs and recipe_id not in existing:
+            if knows_recipe(person, recipe_id,state=state,observation=observation,actor_id=actor) and can_source_inputs and recipe_id not in existing:
                 outputs=set(recipe['outputs']) & set(tradable_ids())
                 caps = existing | {recipe_id} | {goods_policy(k)['legacy_retail_capability'] or 'retail_goods' for k in outputs}
                 action = 'register_bakery' if recipe_id == 'bread_recipe' and set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'} else 'register_recipe_' + recipe_id
@@ -126,8 +147,8 @@ def apply_resident_enterprise(state, plan, specification, observation):
     if old and (old.get('owner')!=plan['actor'] or old.get('custodian')!=plan['actor']):
         raise ValueError('Resident cannot revise another enterprise')
     added_recipes=(set(specification['capabilities']) - set((old or {}).get('capabilities', []))) & set(recipe_ids())
-    if any(not knows_recipe(state['people'][str(plan['actor'])], rid) for rid in added_recipes):
-        raise ValueError('Resident has not learned this recipe through verified own participation')
+    if any(not knows_recipe(state['people'][str(plan['actor'])], rid,state=state,observation=observation,actor_id=plan['actor']) for rid in added_recipes):
+        raise ValueError('Resident has not learned this recipe and has no identity-qualified authored prior')
     event_id='resident-enterprise-'+hashlib.sha256(plan['id'].encode()).hexdigest()[:24]
     business,event=apply_enterprise_change(state,event_id,specification,observation,
         'Resident-selected public charter; existing personal inventory only')

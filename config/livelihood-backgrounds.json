@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "id": "founding-livelihoods-v1",
+  "catalog_hash": "1f7f5d79e976a74ac5e8b2f9752734a759cbaf591b5941ae5cd82d33145ae554",
+  "selection": "ranked_initial_cohort_v1",
+  "rules": [
+    {"id":"bread-apprenticeship","recipe_id":"bread_recipe","recipe_hash":"dcbe70560fbaa3c3e0c966da1e883abfd323695b14736e04b18cc781fa6c76cd","recipient_count":1}
+  ],
+  "provenance": "Explicit experimental starting knowledge for one ranked cohort member. This is an authored prior, not witnessed production, measured skill, native inventory or canonical character history."
+}

@@ -4,6 +4,14 @@ An experimental, open-source society simulation for Skyrim Special Edition: an R
 
 Residents should work, trade with one another, consume goods, remember events and form different opinions. The current product is RTS-only: select, inspect, follow and watch residents in movie view. Player movement, fighting and activation are disabled in the lab; participating through voice is a later extension. Skyrim supplies the physical world; our simulation owns economic rules, decisions and evidence.
 
+**Fresh livelihoods, source implementation:** an explicit starting-background scenario gives recipe knowledge to a seeded, identity-bound cohort. It creates no businesses, money, stock or work history. Residents can then choose their own charter, procure inputs and work. Current actor/base identity is checked before decisions and speech; changed or unbound census identities are held without inheriting another resident's history. The inspector separates authored knowledge from verified production learning, and startup tools preview before applying a checkpoint-bound change. [Initialization loop and evidence limits](docs/livelihood-backgrounds.md).
+
+![Observe identities, assign explicit backgrounds, let residents choose, then verify production before learning](docs/images/livelihood-startup.png)
+
+*Generated system illustration, not gameplay. [Built-in image generation prompt](docs/images/livelihood-startup.prompt.md). New source is not installed in Skyrim.*
+
+**Paid employment is currently held:** an audit found that the legacy execution path could accept balances without sufficient attendance and payment witnesses. New paid admissions and native replay are disabled; historical records remain readable. Independent owner production uses its separate witnessed protocol. [Required replacement protocol and acceptance tests](docs/paid-employment-protocol.md).
+
 **Configured input markets, source implementation:** a resident derives demand from their own stock and learned recipes, discovers explicit public seller listings, and chooses a supplier and quantity. Negotiation binds the commodity, quantity, unit price and total to the exact agreement. The exchange saves a native permit before moving goods and payment, witnesses both sides of each transfer, and holds uncertain accounts instead of replaying them. The observer shows actual terms and separates verified sales from held exchanges. Default goods remain bread and grain; additional goods are test fixtures, not deployed industries. [Decision loop, data contracts and qualification limits](docs/generic-procurement.md).
 
 ![Resident need, public opportunities, agent choice, heard agreement, verified exchange and consequences](docs/images/generic-market-cycle.png)
@@ -60,7 +68,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Movie camera:** conversations now use a stable pair shot instead of the wide RTS framing. A controlled native four-line negotiation kept both residents visible through a one-loaf, seven-septim sale. [Screenshots, telemetry and remaining collision limits](docs/movie-camera.md).
 
-**Voiced employment:** residents approach to ask for work, hear an offer or refusal, and remember the result. A live Jev search ended in a spoken refusal; a separate controlled shift completed four spoken turns, two loaves and a conserved four-septim wage. [Infographic, screenshots, audio and receipts](docs/employment-encounters.md).
+**Historical voiced employment:** a live Jev search ended in a spoken refusal; a separate controlled legacy shift recorded four spoken turns, two loaves and a four-septim wage. The current source holds that execution path pending stronger attendance and payment witnesses; these historical observations do not qualify safe replay. [Infographic, screenshots, audio and historical receipts](docs/employment-encounters.md).
 
 **Resident-owned enterprise decisions:** residents can now register and revise services from their own resources and recipe knowledge. Two unforced reviews chose food or employment; a controlled registration survived native reload with unchanged assets. [Flow diagram, screenshots, voices and evidence](docs/entrepreneurship.md).
 
@@ -70,7 +78,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 74 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 75 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -293,7 +301,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (74)</summary>
+<summary>Browse every finished project image (75)</summary>
 
 ### Concurrent resident lives
 
@@ -366,6 +374,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Intention to consequence](docs/images/intention-to-consequence.png)
+
+### Livelihood startup
+
+Generated system illustration — not gameplay
+
+![Livelihood startup](docs/images/livelihood-startup.png)
 
 ### Npc four systems
 

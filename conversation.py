@@ -14,7 +14,7 @@ from routing import route_available
 from knowledge import person_view, record_heard_identity
 from social import SOCIAL_STAGES, social_candidates, social_context, settle_social, record_appraisal,valid_social_notice
 from dialogue_context import dialogue_frame,validate_situated_candidates
-from activity_leases import background_social_ready,routine_actors,activity_conflict
+from activity_leases import background_social_ready,routine_actors,activity_conflict,identity_quarantine_actors
 from dialogue_policy import POLICIES,candidate_roles
 from inference_receipts import rejected_language_receipt
 from context_window import bounded_social_context
@@ -208,11 +208,11 @@ class Conversation:
         if type(day) not in (int,float) or not math.isfinite(day) or day<0:raise ValueError('Finite social event game clock required')
         return day
 
-    def _conversation_guard(self, event_id, observation):
+    def _conversation_guard(self, event_id, observation, *, allow_identity_cleanup=False):
         self._agency_guard(observation,allow_routines=background_social_ready(self.active,existing=True))
         c = self.conversation_status()
         if not c or c['id'] != event_id: raise ValueError('Conversation changed')
-        if activity_conflict(self.active,actors=[c.get('initiator'),c.get('partner'),*c.get('speakers',[])],observation=observation):
+        if activity_conflict(self.active,actors=[c.get('initiator'),c.get('partner'),*c.get('speakers',[])],observation=observation,include_identity=not allow_identity_cleanup):
             raise ValueError('An independent activity owns a conversation participant')
         if routine_actors(self.active).intersection(c.get('speakers',[])):raise ValueError('A journey owns a conversation participant')
         return c
@@ -401,6 +401,10 @@ class Conversation:
     def observe_conversation(self, observation):
         c=self.conversation_status()
         if not c:return
+        if c['phase'] not in ('releasing','complete','held'):
+            participants={c.get('initiator'),c.get('partner'),*c.get('speakers',[])}
+            if participants.intersection(identity_quarantine_actors(self.active,observation)):
+                return self.hold_conversation(c['id'],'Resident identity changed or is unqualified; no encounter or speech credit',observation)
         if c['phase']=='releasing' and cleanup_participants(c) is None:
             c.update(phase='held',cleanup_review_required=True,release_required=True,
                 error='Conversation cleanup identity is unknown or contradictory; manual review required')
@@ -476,7 +480,7 @@ class Conversation:
         return self.hold_conversation(event_id,'Observer interrupted conversation',observation,interruption=True)
 
     def hold_conversation(self,event_id,reason,observation,interruption=False,inference_failure=None):
-        c=self._conversation_guard(event_id,observation)
+        c=self._conversation_guard(event_id,observation,allow_identity_cleanup=True)
         if inference_failure is not None:
             if not isinstance(inference_failure,dict):raise ValueError('Invalid inference failure')
             claim_id=inference_failure.get('claim_id')

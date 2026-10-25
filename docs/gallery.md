@@ -74,6 +74,12 @@ Generated system illustration — not gameplay
 
 ![Intention to consequence](images/intention-to-consequence.png)
 
+## Livelihood startup
+
+Generated system illustration — not gameplay
+
+![Livelihood startup](images/livelihood-startup.png)
+
 ## Npc four systems
 
 Generated system illustration — not gameplay

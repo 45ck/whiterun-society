@@ -12,7 +12,8 @@ from places import market_opportunity, market_opportunities
 from routing import route_available
 from opportunities import food_sellers
 from social import capture_social_notice
-from activity_leases import reserved_activity_actors,reserved_activity_targets,activity_conflict
+from activity_leases import reserved_activity_actors,reserved_activity_targets,activity_conflict,identity_quarantine_actors
+from resident_identity import valid_actor_id
 
 
 def select_routine_events(state, observation, events, limit=8):
@@ -66,13 +67,14 @@ class ParallelRoutines:
             if not event or event['status']!='pending' or event['kind']!='need_review':raise ValueError('A pending daily need opportunity is required')
             actor=event['actor'];person=state['people'][str(actor)];native=actors.get(actor)
             if activity_conflict(state,actors=(actor,),observation=observation):raise ValueError('An independent activity owns this resident')
+            if not native or not valid_actor_id(native.get('baseId')):raise ValueError('Observed resident base identity required for a journey')
             sites=[s for s in market_opportunities(state,observation,actor) if s['id'] not in reserved_activity_targets(state,observation)]
             if actor in [m['actor'] for m in members] or not native or not sites:raise ValueError('Resident has no executable public-market journey')
             inventory=native.get('inventory',{})
             if inventory.get('bread')!=0 or type(inventory.get('gold')) is not int or inventory['gold']<3 or person['needs']['hunger']<.6:
                 raise ValueError('This cohort requires an unmet affordable food search')
             destinations={('check_market' if index==0 else 'check_market_'+str(site['id'])):site for index,site in enumerate(sites)}
-            context={'actor_id':actor,'session':self.session,'profile':copy.deepcopy(person['profile']),
+            context={'actor_id':actor,'actor_identity':{'id':actor,'base_id':native['baseId']},'session':self.session,'profile':copy.deepcopy(person['profile']),
                 'event':{'id':event_id,'kind':'food_search','information':'Consider visiting the known public market to seek food. This travel cohort can take you there, but buying food requires a later nearby seller consent decision. You may remain with your ordinary routine instead.'},
                 'observed_inventory':copy.deepcopy(inventory),'scenario_state':{'needs':copy.deepcopy(person['needs'])},
                 'memories':copy.deepcopy(person['memories'][-8:]),'my_relationships':copy.deepcopy(person.get('relationships',{})),
@@ -81,7 +83,7 @@ class ParallelRoutines:
                 'destinations':copy.deepcopy(destinations),
                 'options':[{'id':action,'effect':f"Walk to {site['name']} ({round(site['distance'],1)} game units) and look for a food seller. No purchase or hunger relief happens automatically."} for action,site in destinations.items()]+
                            [{'id':'defer','effect':'Keep your ordinary routine; do not take this journey now. No resources or needs change.'}]}
-            members.append({'event_id':event_id,'actor':actor,'slot':slot,'phase':'thinking','context':context})
+            members.append({'event_id':event_id,'actor':actor,'actor_base_id':native['baseId'],'slot':slot,'phase':'thinking','context':context})
             event['status']='started';person['agency'].update(state='deciding',reason='Independent food-search decision',event_id=event_id)
         batch={'id':batch_id,'session':self.session,'phase':'thinking','claim_id':secrets.token_hex(12),'members':members,'background':background}
         state.setdefault('routine_batches',[]).append(batch)
@@ -98,15 +100,19 @@ class ParallelRoutines:
         if len(by_id)!=len(results) or set(by_id)!={m['event_id'] for m in batch['members']}:raise ValueError('Duplicate or missing resident result')
         state=copy.deepcopy(self.active);updated=state['routine_batches'][-1];jobs=[]
         actors={r['id']:r for r in observation.get('residents',[])}
+        unqualified=identity_quarantine_actors(state,observation)
         for member in updated['members']:
             result=by_id[member['event_id']]['result'];decision=validate_decision(result['decision'],member['context'])
             member['result']=copy.deepcopy(result)
+            if (member['actor'] in unqualified or not valid_actor_id(member.get('actor_base_id'))
+                    or (actors.get(member['actor']) or {}).get('baseId')!=member['actor_base_id']):
+                member.update(phase='held',outcome='journey_identity_conflict',identity_held=True);continue
             if decision['action_id']=='defer':member.update(phase='complete',outcome='deferred');continue
             actor=member['actor'];native=actors.get(actor)
             chosen=member['context'].get('destinations',{}).get(decision['action_id'])
             if not chosen or activity_conflict(state,actors=(actor,),targets=(chosen['id'],),observation=observation) or not market_opportunity(state,observation,actor,chosen['id']) or not native or native.get('inventory')!=member['context']['observed_inventory']:
                 member.update(phase='held',outcome='changed_before_departure');continue
-            job={'id':'lane-'+member['event_id'],'actor':actor,'target':chosen['id'],'target_kind':'place',
+            job={'id':'lane-'+member['event_id'],'actor':actor,'actor_base_id':member['actor_base_id'],'target':chosen['id'],'target_kind':'place',
                  'slot':member['slot'],'origin':'resident_decision','retain':False,'dynamic':True,
                  'public_seller_ids':sorted({b['custodian'] for b in state['town'].get('businesses',{}).values()
                     if b.get('active',True) is True and 'retail_food' in b.get('capabilities',[]) and b['custodian']!=actor and b['custodian'] not in reserved_activity_actors(state,observation)})}
@@ -130,7 +136,13 @@ class ParallelRoutines:
 
     def _settle_routines(self,state,observation):
         batch=state['routine_batches'][-1];day=observation.get('gameDays');queue=state['town']['daily']['queue']
+        unqualified=identity_quarantine_actors(state,observation)
         for member in batch['members']:
+            if member.get('identity_held') or member['actor'] in unqualified:
+                member.update(phase='held',outcome='journey_identity_conflict',identity_held=True)
+                event=next(e for e in queue if e['id']==member['event_id'])
+                event.update(status='held',outcome=member['outcome'],settled_day=day)
+                continue  # Retain audit evidence without teaching the replacement a history.
             person=state['people'][str(member['actor'])];outcome=member.get('outcome','journey_held')
             memory={'event_id':member['event_id'],'kind':outcome,'place':(member.get('command') or {}).get('target'),'day':day,
                     'source':'Independent native journey receipt' if member.get('receipt') else 'Own decision or interrupted claim'}
@@ -142,20 +154,45 @@ class ParallelRoutines:
             if type(day) in (int,float) and math.isfinite(day):person['agency']['next_review_day']=day+(0 if outcome=='market_seller_observed' else 1/24)
             event=next(e for e in queue if e['id']==member['event_id']);event.update(status=member['phase'],outcome=outcome,settled_day=day)
         batch['settled']=True
+        if any(member.get('identity_held') for member in batch['members']):batch['phase']='held'
 
     def observe_routines(self,observation):
         batch=self.routine_batch()
-        if not batch or batch['phase'] in ('complete','held'):return False
+        if not batch or batch['phase']=='complete' or batch['phase']=='held' and not batch.get('unverified_release'):return False
         if batch['session']!=self.session:
             state=copy.deepcopy(self.active);updated=state['routine_batches'][-1];updated.update(phase='held',error='Session changed; do not replay claimed decisions or travel')
             for member in updated['members']:member.update(phase='held',outcome='journey_interrupted_by_load')
             if state.get('pending',{} ) and state['pending'].get('id')==batch['id']:state['pending']=None
             self._settle_routines(state,observation);self._write(state,'loaded unfinished cohort held; native leases released by bridge recovery');return True
         if batch['phase']=='thinking':return True
+        unqualified=identity_quarantine_actors(self.active,observation)
+        actors={row['id']:row for row in observation.get('residents',[])}
+        invalid=[member for member in batch['members'] if member.get('command') and not member.get('identity_held') and (
+            member['actor'] in unqualified or not valid_actor_id(member.get('actor_base_id'))
+            or member['command'].get('actor_base_id')!=member['actor_base_id']
+            or (actors.get(member['actor']) or {}).get('baseId')!=member['actor_base_id'])]
+        affected={member['actor'] for member in invalid}
+        current_ack=observation.get('ack') or {}
+        background_result=(observation.get('parallel_routines') or {}).get('result') or {}
+        terminal_ack=any(row.get('id')==batch['id'] and isinstance(row.get('routines'),list)
+                         for row in (current_ack,background_result))
+        if invalid and not terminal_ack:
+            state=copy.deepcopy(self.active);updated=state['routine_batches'][-1]
+            for member in updated['members']:
+                if member['actor'] in affected:member.update(phase='held',identity_held=True,outcome='journey_identity_conflict')
+            updated.update(phase='held',identity_held=True,error='Journey identity changed or lacks its original base pin; do not replay',
+                           unverified_release=True)
+            if state.get('pending') and state['pending'].get('id')==batch['id']:
+                state['pending'].update(status='held',error=updated['error'])
+            # Keep the observer live for the original native slot's eventual
+            # release receipt. This does not issue cancellation or prove release.
+            self._write(state,'journey identity quarantined pending original native release');return True
         ack=observation.get('ack') or {}
         if batch.get('background'):
             native=observation.get('parallel_routines') or {}
-            if not batch.get('launched'):
+            if native.get('id')==batch['id'] and isinstance(native.get('result'),dict):
+                ack=native['result']  # A retained terminal receipt can outlive launch binding.
+            elif not batch.get('launched'):
                 if ack.get('id')!=batch['id']:return True
                 if ack.get('status')=='started' and native.get('id')==batch['id'] and native.get('background') is True:
                     state=copy.deepcopy(self.active);state['routine_batches'][-1]['launched']=True
@@ -168,24 +205,45 @@ class ParallelRoutines:
         state=copy.deepcopy(self.active);updated=state['routine_batches'][-1];receipts=ack.get('routines',[])
         if not isinstance(receipts,list):receipts=[]
         release_ok=True
+        unqualified=identity_quarantine_actors(state,observation)
+        settled_before=bool(updated.get('settled'));cleanup_changed=False
         for member in updated['members']:
-            if member['phase']!='travelling':continue
+            if not member.get('command'):continue
             job=member['command'];matches=[r for r in receipts if isinstance(r,dict) and r.get('id')==job['id']]
             receipt=matches[0] if len(matches)==1 else {};movement=receipt.get('movement') or {};gap=movement.get('distance')
-            released=receipt.get('release_verified') is True;release_ok=release_ok and released
-            valid=(receipt.get('status')=='applied' and released and receipt.get('slot')==job['slot']
+            released=(receipt.get('release_verified') is True and receipt.get('slot')==job['slot']
+                and valid_actor_id(member.get('actor_base_id')) and job.get('actor_base_id')==member['actor_base_id']
+                and receipt.get('actor_base_id')==member['actor_base_id'])
+            if settled_before:
+                previous=member.get('receipt') or {}
+                if released and previous.get('release_verified') is not True:
+                    member.setdefault('initial_receipt',copy.deepcopy(previous))
+                    member['receipt']=copy.deepcopy(receipt);cleanup_changed=True
+                release_ok=release_ok and (released or previous.get('release_verified') is True)
+                continue  # Cleanup never upgrades an earlier outcome or repeats memories.
+            release_ok=release_ok and released
+            if member['actor'] in affected:member['identity_held']=True
+            valid=(not member.get('identity_held') and member['actor'] not in unqualified
+                and valid_actor_id(member.get('actor_base_id')) and receipt.get('actor_base_id')==member['actor_base_id']
+                and job.get('actor_base_id')==member['actor_base_id']
+                and receipt.get('status')=='applied' and released and receipt.get('slot')==job['slot']
                 and movement.get('actor')==job['actor'] and movement.get('target')==job['target'] and movement.get('target_kind')=='place'
                 and movement.get('aliasesConfirmed') is True and movement.get('hasOwnedPackage') is True
                 and movement.get('adapter')=='papyrus-mailbox' and type(gap) in (int,float) and math.isfinite(gap) and 0<=gap<=250)
             member['receipt']=copy.deepcopy(receipt)
             member.update(phase='complete' if valid else 'held',outcome=('market_seller_observed' if receipt.get('seller_nearby') is True else 'market_seller_not_observed') if valid else 'journey_held')
+            if member['actor'] in unqualified or member.get('identity_held'):
+                member.update(outcome='journey_identity_conflict',identity_held=True)
+        if settled_before and not cleanup_changed:return False
         updated['phase']='complete' if all(m['phase']=='complete' for m in updated['members']) else 'held'
         updated['release_verified']=release_ok;updated['concurrency']=copy.deepcopy(ack.get('concurrency',{}))
         if release_ok:
+            updated['unverified_release']=False
             if state.get('pending') and state['pending'].get('id')==batch['id']:state['pending']=None
         else:
             # Retain uncertain leases without deleting another event's effects.
             updated['unverified_release']=True
             if not batch.get('background'):
                 state['pending']['status']='held';state['pending']['evidence']=copy.deepcopy(ack)
-        self._settle_routines(state,observation);self._write(state,'independent journey receipts settled without inventory effects');return True
+        if not settled_before:self._settle_routines(state,observation)
+        self._write(state,'independent journey receipts settled without inventory effects');return True
