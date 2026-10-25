@@ -1,0 +1,104 @@
+{
+  "trial": "background-20261025-b",
+  "status": "complete",
+  "selection": "Operator-selected existing food-search opportunities; no seeded resources or positions",
+  "game_day": 5.122899055480957,
+  "decision_calls": 2,
+  "social_worker_started": false,
+  "native_concurrency": {
+    "attendance_overlap_samples": 0,
+    "overlap_samples": 0,
+    "peak_owned": 1,
+    "speech_overlap_samples": 0
+  },
+  "release_verified": true,
+  "compared_inventory_accounts": 29,
+  "inventory_unchanged": true,
+  "members": [
+    {
+      "actor": 108156,
+      "decision": "defer",
+      "phase": "complete",
+      "outcome": "deferred",
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "cost": 0.00017535,
+        "input_tokens": 4175,
+        "output_tokens": 34
+      },
+      "decision_seconds": 0.828,
+      "release_verified": null,
+      "slot": 0,
+      "seller_nearby": null,
+      "movement": null
+    },
+    {
+      "actor": 108169,
+      "decision": "check_market",
+      "phase": "complete",
+      "outcome": "market_seller_not_observed",
+      "model": "typesafe/jev-1.14-20261014",
+      "usage": {
+        "cost": 0.000177534,
+        "input_tokens": 4227,
+        "output_tokens": 34
+      },
+      "decision_seconds": 0.844,
+      "release_verified": true,
+      "slot": 1,
+      "seller_nearby": false,
+      "movement": {
+        "actor": 108169,
+        "target": 179739,
+        "target_kind": "place",
+        "startDistance": 4174.275175663566,
+        "distance": 249.2727087584513,
+        "hasOwnedPackage": true,
+        "aliasesConfirmed": true,
+        "adapter": "papyrus-mailbox"
+      }
+    }
+  ],
+  "limits": [
+    "One native journey and one deferral; no native travel/speech overlap qualified.",
+    "A free pair existed before launch but no eligible disjoint pair remained during travel; no speech worker or sale occurred.",
+    "Frame samples are correlated telemetry, not human realism scores."
+  ],
+  "eligible_disjoint_pairs_before_launch": {
+    "108138": [
+      108165,
+      108170
+    ],
+    "108165": [
+      108138,
+      108170
+    ],
+    "108170": [
+      108165,
+      108138
+    ]
+  },
+  "save_restore": {
+    "name": "WS-BackgroundSociety-20261025-AU",
+    "checkpoint": 962,
+    "fresh_session": true,
+    "matches": {
+      "checkpoint": true,
+      "plan": true,
+      "people": true,
+      "world": true,
+      "consumptions": true,
+      "production": true,
+      "cancelled_production": true,
+      "unsettled_effect": true,
+      "rests": true,
+      "imports": true,
+      "market_day": true,
+      "conversation": true,
+      "routine_batch": true,
+      "town": true,
+      "inventory": true,
+      "asset_inventory": true
+    }
+  }
+}

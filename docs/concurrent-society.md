@@ -37,6 +37,14 @@ The native save `WS-BackgroundSociety-20261025-AT`, checkpoint 957, restored all
 
 Local validation passed the full 244-test Python suite, three subsequently added worker-cleanup tests, and all 105 JavaScript tests. Six quality/document-route tests and three director-control tests also passed after the final changes. The observer script passed syntax checking, and the local documentation server returned the exact new image bytes. Hosted validation is tracked separately in GitHub Actions.
 
+[Hosted CI for implementation ecc2bb8](https://github.com/45ck/whiterun-society/actions/runs/40146182432) subsequently passed on Windows and Ubuntu: 247 Python tests and 105 JavaScript tests on each platform, plugin builds, and Windows Papyrus compilation.
+
+## Follow-up: an encounter opportunity can disappear
+
+A second trial, `background-20261025-b`, began only after observing three free initiators among Amren, Olfina and Jon, separate from the two proposed travellers. Adrianne again deferred and Idolaf chose the market. During travel, the free pair was no longer eligible; no conversation worker started. The approximately 63-second run used two decision calls, completed one verified journey and preserved all 29 compared inventories. Overlap counters remained zero. [Follow-up receipt](evidence/background-society-followup.json)
+
+This exposes a scheduling limitation: observing a nearby pair before claiming travel does not preserve that encounter while vanilla routines move people. A future encounter reservation must let each person accept, decline or leave, and must qualify physical attendance before speech. Enlarging counters or forcing a chat would not establish that behaviour. Save `WS-BackgroundSociety-20261025-AU`, checkpoint 962, restored all 16 compared fields after this follow-up.
+
 ## What remains
 
 Next qualification must observe owned travel packages and disjoint attendance packages while native audio reports playing, then verify both independent releases and save/load. Persistent resident plans, indoor destinations, multiple conversation channels, resumable work, household schedules and a continuously populated town are still unfinished. Released NPCs can resume vanilla routines. Broad autonomy needs those executable activities and scheduling mechanisms; removing bounds alone would not provide them.
