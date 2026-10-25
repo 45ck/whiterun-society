@@ -30,6 +30,10 @@ The language role can use a small, inexpensive model; it does not require fronti
 
 ### Independent lives around a conversation
 
+![Independent lives, shared world: resident knowledge and needs feed Jev and language models, deterministic rules allocate travel and conversation, and Skyrim executes the result](docs/images/independent-lives.png)
+
+*Generated architecture infographic. Live travel-and-speech overlap remains unverified.*
+
 Background travel now has six native slots, leaving two for one disjoint conversation. Actor reservations prevent a traveller from also being selected as a speaker; arrival receipts preserve another encounter's pending speech. The observer reports travel/attendance and travel/speech overlap separately. Current businesses provide seller IDs dynamically.
 
 The first live trial completed Idolaf's market journey while Adrianne chose to defer. All 29 compared inventories stayed unchanged. No eligible conversation pair was available, so simultaneous native travel and speech are **not yet qualified**. [Architecture, infographic and honest evidence](docs/concurrent-society.md).
