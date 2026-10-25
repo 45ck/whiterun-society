@@ -55,6 +55,7 @@ window.drawEncounter=()=>{
  const ownerJob=state.dashboard?.owner_work?.jobs?.find(job=>job.actor===displayResident);
  if(ownerJob){
   inspectorText(panel,'Independent owner work','label');inspectorText(panel,ownerWorkLabel(ownerJob));
+  inspectorText(panel,ownerRecipeLabel(ownerJob.recipe));
   inspectorText(panel,`Attendance: ${ownerJob.attendance_state} · settlement: ${ownerJob.settlement_state} · cleanup: ${ownerJob.cleanup_state}`.replaceAll('_',' '));
   if(Number.isFinite(ownerJob.worked_minutes))inspectorText(panel,`${ownerJob.worked_minutes} / ${ownerJob.work_minutes??'—'} game minutes attendance · ${ownerJob.attendance_samples??'—'} samples`);
   inspectorText(panel,'Goods require a linked committed inventory receipt. Productive animation is unverified.');
@@ -99,7 +100,8 @@ window.drawEncounter=()=>{
   const owner=!!plan.own_work_terms,terms=plan.own_work_terms?.policy||plan.work_terms?.policy||{wage_gold:2,work_minutes:30};
   inspectorText(panel,plan.decisions?.some(d=>d.rationale_kind==='test_fixture')?'Employment integration test':owner?'Owner production':'Employment decisions','label');
   inspectorText(panel,(plan.outcome||plan.phase).replaceAll('_',' '));
-  inspectorText(panel,(owner?'Own stock · no wage transfer · ':terms.wage_gold+' gold for ')+terms.work_minutes+' game minutes · 1 grain → 2 bread');
+  inspectorText(panel,(owner?'Own stock · no wage transfer · ':terms.wage_gold+' gold for ')+terms.work_minutes+' game minutes');
+  inspectorText(panel,owner?ownerRecipeLabel(ownerJob?.recipe):'Employment recipe terms · see recorded inventory evidence');
   if(plan.phase==='working'){
    const work=state.productionWork;
    inspectorText(panel,Number(work?.workedMinutes||0).toFixed(1)+' / '+terms.work_minutes+' nearby attendance minutes');
@@ -107,7 +109,7 @@ window.drawEncounter=()=>{
   }
   if(['work_interrupted','owner_work_interrupted'].includes(plan.outcome))inspectorText(panel,'Interrupted before inventory effects · no wage or output');
   if(plan.outcome==='paid_work_completed')inspectorText(panel,'Native output and conserved wage verified');
-  if(plan.outcome==='owner_work_completed')inspectorText(panel,'Owned output verified · gold unchanged');
+  if(plan.outcome==='owner_work_completed')inspectorText(panel,ownerJob?.settlement_state==='committed'&&ownerJob.recipe?.status==='verified'?'Catalog-authorized output verified · currency unchanged':'Recorded owner-work completion · current catalog verification unavailable');
  }
  if(plan?.actor===displayResident&&plan.destination){
   text('notice',plan.phase==='travelling'?'Resident-chosen journey · '+plan.destination.name:'Market visit · '+(plan.outcome||plan.phase).replaceAll('_',' '));

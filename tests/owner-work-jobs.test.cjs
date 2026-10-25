@@ -1,11 +1,15 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createOwnerWorkJobsController}=require('../bridge/owner-work-jobs.js');
 const {createProductionController}=require('../bridge/production.js');
+const {createEconomyCatalogController,validateEconomyCatalog}=require('../bridge/economy-catalog.js');
+const manifest=require('../config/economy-catalog.json');
 
-function fixture(count=2,capacity=4){
+function fixture(count=2,capacity=4,configuration=manifest){
  let wall=1000,game=1,fresh=true,session='native-owner-session',defer=false;
+ const verified=validateEconomyCatalog(configuration),recipe=configuration.recipes[0],forms=new Map(configuration.commodities.map(c=>[c.native.local_form_id,
+  {name:c.id,getFormID:()=>c.native.local_form_id,getType:()=>({MISC:32,ALCH:46,INGR:30}[c.native.record_type])}]));
  const rows=Array.from({length:count},(_,i)=>({job_id:'dynamic-owner-'+i,actor:500+i,actor_base_id:1500+i,slot:i,session,
-  epoch:'owner-epoch',business_id:'business-'+i,business_revision:3,recipe_id:'bread_recipe',policy_version:'owner-production-v1:test',work_minutes:5,phase:'prepared'}));
+  epoch:'owner-epoch',business_id:'business-'+i,business_revision:3,recipe_id:recipe.id,catalog_hash:verified.catalog_hash,recipe_hash:verified.recipe_hashes[recipe.id],policy_version:'owner-production-v1:test',work_minutes:5,phase:'prepared'}));
  const actors=new Map(),calls=[],pending=[];
  const value=initial=>({value:initial,getValue(){return this.value;},setValue(n){this.value=n;}});
  const list=()=>({rows:[],getSize(){return this.rows.length;},getAt(i){return this.rows[i];}});
@@ -14,21 +18,22 @@ function fixture(count=2,capacity=4){
   return [quest,{getFormID:()=>9000+i},list(),list(),value(0),value(0),value(0)];
  });
  for(const row of rows){
-  const a={id:row.actor,base:row.actor_base_id,pkg:42,x:row.actor*2,cell:77,loaded:true,combat:false,scene:null,sleep:0,inventory:{gold:12,bread:2,grain:3},
+  const a={id:row.actor,base:row.actor_base_id,pkg:42,x:row.actor*2,cell:77,loaded:true,combat:false,scene:null,sleep:0,inventory:Object.fromEntries(configuration.commodities.map(c=>[c.id,c.id==='gold'?12:c.id==='bread'?2:3])),
    getFormID(){return this.id;},getActorBase(){return {getFormID:()=>this.base};},getCurrentPackage(){return {getFormID:()=>this.pkg};},getParentCell(){return {getFormID:()=>this.cell};},
    is3DLoaded(){return this.loaded;},isDead:()=>false,isChild:()=>false,isInCombat(){return this.combat;},getCurrentScene(){return this.scene;},getSleepState(){return this.sleep;},
-   getPositionX(){return this.x;},getPositionY:()=>0,getPositionZ:()=>0,getItemCount(item){return this.inventory[item];},
-   removeItem(item,n){calls.push({actor:this.id,item,n:-n});const effect=()=>this.inventory[item]-=n;defer?pending.push(effect):effect();},
-   addItem(item,n){calls.push({actor:this.id,item,n});const effect=()=>this.inventory[item]+=n;defer?pending.push(effect):effect();}};
+   getPositionX(){return this.x;},getPositionY:()=>0,getPositionZ:()=>0,getItemCount(item){return this.inventory[item.name];},
+   removeItem(item,n){calls.push({actor:this.id,item:item.name,n:-n});const effect=()=>this.inventory[item.name]-=n;defer?pending.push(effect):effect();},
+   addItem(item,n){calls.push({actor:this.id,item:item.name,n});const effect=()=>this.inventory[item.name]+=n;defer?pending.push(effect):effect();}};
   actors.set(a.id,a);
  }
  const sp={Actor:{from:x=>x},Quest:{from:x=>x},FormList:{from:x=>x},GlobalVariable:{from:x=>x},Utility:{getCurrentGameTime:()=>game},
-  Game:{getFormEx:id=>id===15?'gold':id===0x65c97?'bread':id===0x4b0ba?'grain':actors.get(id),
-   getFormFromFile:(id,file)=>{assert.equal(file,'WhiterunCitizens.esp');return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];}}};
+  Game:{getFormEx:id=>forms.get(id)||actors.get(id),
+   getFormFromFile:(id,file)=>{if(file!=='WhiterunCitizens.esp')return configuration.commodities.some(c=>c.native.plugin===file&&c.native.local_form_id===id)?forms.get(id):null;
+    return slots[Math.floor((id-0x800)/16)]?.[(id-0x800)%16];}}};
  const control={activities:rows.map(row=>({actor:row.actor,slot:row.slot,expectedPackage:9000+row.slot,mode:'go_to',target:1234}))};
  let desired={epoch:'owner-epoch',capacity,jobs:rows};
- const manager=createOwnerWorkJobsController(()=>sp,()=>wall),production=createProductionController(()=>sp,()=>wall);
- const f={manager,production,rows,slots,actors,calls,control,sp,
+ const catalog=createEconomyCatalogController(()=>sp,configuration),manager=createOwnerWorkJobsController(()=>sp,()=>wall,{catalog}),production=createProductionController(()=>sp,()=>wall,{catalog});
+ const f={manager,production,rows,slots,actors,calls,control,sp,catalog,forms,
   tick(minutes=.5,ms=100){wall+=ms;game+=minutes/1440;manager.tick(desired,session,fresh,control);},
   start(row=rows[0],blocked=[]) {return manager.start({...row,id:'start-'+row.job_id},blocked).ack;},
   bind(row=rows[0]){const slot=slots[row.slot],a=actors.get(row.actor),r=control.activities.find(x=>x.actor===row.actor);
@@ -36,7 +41,8 @@ function fixture(count=2,capacity=4){
    Object.assign(r,{mode:'await_decision',target:row.actor,goal_id:'owner-work-'+row.job_id,work_hold_id:'owner-work-'+row.job_id});},
   earn(row=rows[0]){assert.equal(f.start(row).accepted,true);f.bind(row);f.tick(0);for(let i=0;i<15&&!f.receipt(row);i++)f.tick();assert.equal(f.receipt(row)?.phase,'attendance_verified');},
   receipt(row=rows[0]){return manager.status().receipts.find(r=>r.job_id===row.job_id);},
-  command(row=rows[0]){const before={owner:structuredClone(actors.get(row.actor).inventory)},after=structuredClone(before);after.owner.grain--;after.owner.bread+=2;
+  command(row=rows[0]){const before={owner:structuredClone(actors.get(row.actor).inventory)},after=structuredClone(before);
+   for(const [item,n] of Object.entries(recipe.inputs))after.owner[item]-=n;for(const [item,n] of Object.entries(recipe.outputs))after.owner[item]+=n;
    return {...row,id:'commit-'+row.job_id,kind:'inventory_self_produce_commit',attendance_token:f.receipt(row).attendance.token,before,after};},
   commit(c){return production.commitOwnerRecipe(c,manager);},
   ack(row=rows[0]){return manager.acknowledge({...row,id:'ack-'+row.job_id,session,job_session:row.session}).ack;},
@@ -176,4 +182,50 @@ test('reset after verified output cannot recertify the previous save inventory o
  const r=f.receipt();assert.equal(r.phase,'held');assert.equal(r.effects_issued,null);assert.equal(r.committed_inventory_verified,false);
  assert.equal(r.attendance.worked_minutes,0);assert.equal(r.release_verified,true);assert.equal(f.ack().acknowledged,false);
  assert.equal(f.commit(c).ack.status,'held');assert.equal(f.calls.length,2);
+});
+
+function syntheticRecipe(){
+ const result=structuredClone(manifest);
+ for(const [i,name] of ['raw_material','finished_material','keepsake'].entries())result.commodities.push({id:name,label:name,
+  native:{plugin:'TestFixture.esp',local_form_id:0x101+i,record_type:'MISC'},currency:false,provenance:'Synthetic test fixture; not an installed game material'});
+ result.recipes.unshift({id:'fixture_refine',version:1,inputs:{raw_material:2},outputs:{finished_material:3},
+  work_minutes:{minimum:5,default:5,maximum:120},provenance:'Synthetic bounded recipe fixture, not game crafting evidence'});
+ return result;
+}
+
+test('additional approved recipe uses exact configured quantities and preserves every unrelated balance',()=>{
+ const f=fixture(1,4,syntheticRecipe());f.earn();const c=f.command(),before=structuredClone(f.actors.get(500).inventory);
+ for(let i=0;i<3;i++)f.commit(c);
+ assert.deepEqual(f.calls,[{actor:500,item:'raw_material',n:-2},{actor:500,item:'finished_material',n:3}]);
+ const after=f.actors.get(500).inventory;assert.equal(after.raw_material,before.raw_material-2);assert.equal(after.finished_material,before.finished_material+3);
+ for(const item of ['gold','bread','grain','keepsake'])assert.equal(after[item],before[item]);
+ const receipt=f.commit(c).ack;assert.equal(receipt.status,'applied');assert.equal(receipt.catalog_hash,f.rows[0].catalog_hash);assert.equal(receipt.recipe_hash,f.rows[0].recipe_hash);
+});
+
+test('catalog and recipe hashes are attendance identity, not editable effect suggestions',()=>{
+ for(const field of ['catalog_hash','recipe_hash']){
+  const f=fixture();f.rows[0][field]='0'.repeat(64);assert.equal(f.start().accepted,false);assert.equal(f.calls.length,0);
+  const g=fixture();g.earn();const command=g.command();command[field]='f'.repeat(64);assert.equal(g.commit(command).ack.status,'held');assert.equal(g.calls.length,0);
+ }
+ const f=fixture();delete f.rows[0].catalog_hash;assert.equal(f.start().accepted,false);
+});
+
+test('missing or mistyped catalog forms reject admission and unknown balances never become zero',()=>{
+ const f=fixture();f.forms.delete(0x4b0ba);assert.equal(f.catalog.status().available,false);assert.equal(f.catalog.readInventory(f.actors.get(500)).grain,null);
+ assert.equal(f.start().accepted,false);assert.equal(f.calls.length,0);
+ const g=fixture();g.forms.get(0x65c97).getType=()=>32;assert.equal(g.start().accepted,false);
+});
+
+test('unrelated omitted or altered commodity cannot be hidden in generic owner commit',()=>{
+ for(const mutate of [c=>delete c.before.owner.keepsake,c=>c.after.owner.keepsake++,c=>c.after.owner.gold++,c=>c.after.owner.finished_material++]){
+  const f=fixture(1,4,syntheticRecipe());f.earn();const c=f.command();mutate(c);
+  assert.equal(f.commit(c).ack.status,'held');assert.equal(f.calls.length,0);
+ }
+});
+
+test('form loss after input issue quarantines account and cannot manufacture or replay output',()=>{
+ const f=fixture(1,4,syntheticRecipe());f.earn();const c=f.command();f.commit(c);f.forms.delete(0x102);
+ const held=f.commit(c);assert.equal(held.ack.status,'held');assert.equal(held.ack.effects_issued,true);assert.equal(held.ack.no_effects_issued,false);
+ assert.equal(f.calls.length,1);assert.equal(f.ack().acknowledged,false);assert.equal(f.manager.ownsActor(500),true);
+ f.commit(c);assert.equal(f.calls.length,1);
 });

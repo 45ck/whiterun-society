@@ -3,6 +3,7 @@ from collections import Counter
 import json
 import math
 from statistics import mean,median
+from economy_catalog import apply_recipe, catalog_hash, recipe_hash
 
 
 def number(value):
@@ -120,6 +121,35 @@ def economic_network(state):
         'scope':'Committed physical receipts, including controlled integration experiments. Graph uses complete distinct buyer/seller IDs; unknown commodity labels are not guessed. Turnover is not profit, supply-chain depth or welfare. Seller concentration is transaction-count based, not market power or a target to maximize.'}
 
 
+def owner_recipe_receipt(command):
+    """Validate the complete owner transform; historical proof stays labelled."""
+    before = command.get('before') or {}; after = command.get('after') or {}
+    if set(before) != {'owner'} or set(after) != {'owner'}:
+        return None
+    old, new = before['owner'], after['owner']
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        return None
+    if any(type(value) is not int or value < 0 for row in (old, new) for value in row.values()):
+        return None
+    rid = command.get('recipe_id', 'bread_recipe')
+    has_catalog_proof = 'catalog_hash' in command or 'recipe_hash' in command
+    if has_catalog_proof:
+        try:
+            if command.get('catalog_hash') != catalog_hash() or command.get('recipe_hash') != recipe_hash(rid):
+                return None
+            if apply_recipe(old, rid) != new or old.get('gold') != new.get('gold'):
+                return None
+        except (ValueError, TypeError, KeyError):
+            return None
+        return {'recipe_id': rid, 'evidence': 'validated_catalog_transform'}
+    # Before catalog hashes were deployed, only this fixed recipe existed.
+    # Do not reinterpret a new recipe or extra stock under that old contract.
+    if (rid != 'bread_recipe' or set(old) != {'gold', 'bread', 'grain'} or set(new) != set(old)
+            or old['grain'] < 1 or new != {**old, 'grain': old['grain'] - 1, 'bread': old['bread'] + 2}):
+        return None
+    return {'recipe_id': rid, 'evidence': 'legacy_fixed_bread_transform'}
+
+
 def account_cashflow(state):
     """Reconcile cash legs of retained commits without inventing business profits.
 
@@ -139,6 +169,7 @@ def account_cashflow(state):
             if fingerprint!=unique[event][0]:conflicts.add(event)
         else:unique[event]=(fingerprint,command)
     accounts={};rejected=Counter();kinds=Counter();recognized=0
+    recipe_receipts=Counter();recipe_evidence=Counter()
     valid_gold=lambda x:type(x) is int and x>=0
     valid_id=lambda x:type(x) is int and x>0
     def change(command,role=None):
@@ -172,18 +203,13 @@ def account_cashflow(state):
                 rejected['invalid_owner_cash_leg']+=1;continue
             add(actor,'production_events',1)
         elif kind=='inventory_self_produce_commit':
-            actor=c.get('actor');before=c.get('before') or {};after=c.get('after') or {}
-            old=before.get('owner') or {};new=after.get('owner') or {}
-            items={'gold','bread','grain'}
-            if not (valid_id(actor) and set(before)=={'owner'} and set(after)=={'owner'}
+            actor=c.get('actor');recipe=owner_recipe_receipt(c)
+            if not (valid_id(actor) and recipe is not None
                     and all(key not in c or type(c[key]) is int and c[key]==actor for key in ('custodian','account_actor'))
-                    and set(old)==items and set(new)==items
-                    and all(valid_gold(old[k]) and valid_gold(new[k]) for k in items)
-                    and old['grain']>=1 and new['grain']==old['grain']-1
-                    and new['bread']==old['bread']+2 and new['gold']==old['gold']
                     and ('wage_gold' not in c or type(c['wage_gold']) is int and c['wage_gold']==0)):
                 rejected['invalid_owner_recipe_cash_leg']+=1;continue
             add(actor,'production_events',1)
+            recipe_receipts[recipe['recipe_id']]+=1;recipe_evidence[recipe['evidence']]+=1
         elif kind=='inventory_endowment':
             actor=c.get('actor');grant=(c.get('grant') or {}).get('gold')
             if not valid_id(actor) or not valid_gold(grant) or change(c)!=grant:
@@ -201,6 +227,8 @@ def account_cashflow(state):
         'raw_committed_records':len(records),'duplicate_records_excluded':duplicate_count,
         'record_coverage':rate(recognized,denominator),'missing_id_or_command_records':missing_ids,
         'rejected_records':dict(rejected),'recognized_record_kinds':dict(kinds),
+        'owner_recipe_receipts':dict(recipe_receipts),'owner_recipe_evidence':dict(recipe_evidence),
+        'owner_recipe_scope':'Deduplicated committed owner job recipes with validated complete inventory deltas; legacy fixed bread transforms are distinct from catalog hash validation. No price, profit or autonomy inference.',
         'observed_transfer_balance_septims':sum(r['net_operating_cashflow'] for r in valid) if recognized else None,
         'transfer_balance_scope':'Sum of validated paired cash legs, balanced by validation; not an independent conservation test. Inspect rejected-record coverage.',
         'external_grants_received_septims':sum(r['external_grants_received'] for r in valid) if recognized else None,

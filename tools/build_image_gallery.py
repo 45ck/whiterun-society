@@ -11,6 +11,7 @@ GENERATED.add('independent-lives-metrics.png')
 GENERATED.add('intention-to-consequence.png')
 GENERATED.add('concurrent-resident-lives.png')
 GENERATED.add('independent-owner-work.png')
+GENERATED.add('economy-catalog-flow.png')
 MEASURED={'personal-goals-movement-chart.png','owner-work-fixture-timeline.png'}
 
 def build():

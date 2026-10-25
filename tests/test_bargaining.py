@@ -2,7 +2,9 @@ import copy
 import json
 import unittest
 import test_dynamic_economy as fixtures
-from bargaining import price_choices, own_prices, MAX_ECONOMIC_CALLS
+from bargaining import price_choices, own_prices, MAX_ECONOMIC_CALLS, record_quote, quote_valid
+from economy_catalog import catalog_hash
+from food import allocation
 from metrics import simulation_metrics
 
 
@@ -35,7 +37,7 @@ class BargainingTests(unittest.TestCase):
         for actor,role in ((99,'buyer'),(501,'seller')):
             resident=next(r for r in self.obs['residents'] if r['id']==actor)
             resident['inventory'].update(command['after'][role])
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']={'id':command['id'],'status':'applied','catalog_hash':command['catalog_hash']}
         self.world.observe(self.obs);self.sync()
         return command
 
@@ -62,6 +64,21 @@ class BargainingTests(unittest.TestCase):
         command=self.settle_sale();self.assertEqual(command['cost'],7)
         self.assertEqual(self.world.active['people']['501']['food_policy'],{'mode':'household_all'})
         self.assertTrue(self.world.active['trades'][-1]['reserve_release'])
+
+    def test_private_quote_pins_complete_account_and_catalog_without_weakening_consent(self):
+        seller=self.world.active['people']['501']
+        row=next(r for r in self.obs['residents'] if r['id']==501)
+        plan={'actor':99,'target':501,'unit_price':7,'commodity':'bread'}
+        context={'observed_inventory':copy.deepcopy(row['inventory']),
+                 'own_food_allocation':allocation(seller,row['inventory']),'inventory_catalog_hash':catalog_hash()}
+        record_quote(self.world.active,plan,context,7,'seller-claim')
+        self.assertEqual(plan['counter_quote']['inventory'],row['inventory'])
+        self.assertEqual(plan['counter_quote']['catalog_hash'],catalog_hash())
+        self.assertTrue(quote_valid(self.world.active,plan,self.obs))
+        row['inventory']['grain']+=1
+        self.assertFalse(quote_valid(self.world.active,plan,self.obs))
+        row['inventory']['grain']-=1;plan['counter_quote']['catalog_hash']='0'*64
+        self.assertFalse(quote_valid(self.world.active,plan,self.obs))
 
     def test_unaffordable_counteroffer_can_only_be_declined_or_left(self):
         self.arrive();self.decide('bid_price_2');self.decide('ask_price_50')

@@ -1,6 +1,7 @@
 """Owner-work attendance, inventory settlement and cleanup are separate evidence."""
 import math
 from collections import Counter
+from economy_catalog import catalog_hash, recipe_spec, recipe_hash, apply_recipe, commodity_ids
 
 
 def _number(value):
@@ -18,20 +19,47 @@ def _identity(row):
     if not _number(row.get('work_minutes')) or row['work_minutes'] <= 0:return None
     base = row.get('actor_base_id')
     if base is not None and (type(base) is not int or base <= 0):return None
+    if any(row.get(key) is not None and not isinstance(row[key], str) for key in ('catalog_hash', 'recipe_hash')):return None
     return (identifier, row['actor'], base, row['slot'], *(row[key] for key in keys),
-            row['business_revision'], row['work_minutes'])
+            row['business_revision'], row['work_minutes'], row.get('catalog_hash'), row.get('recipe_hash'))
+
+
+def _recipe(job):
+    """Resolve amounts only from the trusted local catalog, never a model payload."""
+    result = {'id': job.get('recipe_id'), 'catalog_hash': job.get('catalog_hash'),
+              'recipe_hash': job.get('recipe_hash'), 'status': 'legacy_unversioned'}
+    if not job.get('catalog_hash') or not job.get('recipe_hash'):return result
+    if job['catalog_hash'] != catalog_hash():return {**result, 'status': 'catalog_mismatch'}
+    try:spec = recipe_spec(job['recipe_id']);expected = recipe_hash(job['recipe_id'])
+    except (KeyError, ValueError, TypeError):return {**result, 'status': 'unknown_recipe'}
+    if not isinstance(spec, dict):return {**result, 'status': 'unknown_recipe'}
+    if job['recipe_hash'] != expected:return {**result, 'status': 'recipe_mismatch'}
+    limits = spec['work_minutes']
+    if not limits['minimum'] <= job['work_minutes'] <= limits['maximum']:
+        return {**result, 'status': 'work_duration_mismatch'}
+    return {**result, 'status': 'verified', 'version': spec['version'],
+            'inputs': dict(spec['inputs']), 'outputs': dict(spec['outputs'])}
 
 
 def _inventory(value):
-    return isinstance(value, dict) and 'gold' in value and all(
+    return isinstance(value, dict) and set(value) == set(commodity_ids()) and all(
         isinstance(key, str) and type(amount) is int and amount >= 0 for key, amount in value.items())
+
+
+def _qualified_attendance(job):
+    attendance = job.get('attendance') or {}
+    return (job.get('orphan') is not True and _recipe(job)['status'] == 'verified'
+            and _number(job.get('attendance_verified_day')) and _number(attendance.get('worked_minutes'))
+            and attendance['worked_minutes'] >= job['work_minutes']
+            and type(attendance.get('samples')) is int and attendance['samples'] >= 2
+            and isinstance(job.get('attendance_receipt_hash'), str) and bool(job['attendance_receipt_hash']))
 
 
 def _production(job, groups):
     """Only the exact committed job record and reconciled native inventory count."""
     settlement = job.get('settlement') or {}
     commit_id = settlement.get('commit_id')
-    if (job.get('orphan') is True or not isinstance(commit_id, str) or not commit_id
+    if (not _qualified_attendance(job) or settlement.get('phase') != 'committed' or not isinstance(commit_id, str) or not commit_id
             or settlement.get('production_record_id') != commit_id
             or settlement.get('committed_inventory_verified') is not True):return None
     candidates = groups.get(commit_id, [])
@@ -39,18 +67,23 @@ def _production(job, groups):
     record = candidates[0];command = record.get('command') or {};evidence = record.get('evidence') or {}
     ack = evidence.get('ack') or {};before = (command.get('before') or {}).get('owner')
     after = (command.get('after') or {}).get('owner')
-    if (record.get('status') != 'committed' or command.get('kind') != 'inventory_self_produce_commit'
+    if (record.get('status') != 'committed' or record.get('work_job') != job.get('id', job.get('job_id'))
+            or command.get('kind') != 'inventory_self_produce_commit'
             or command.get('id') != commit_id or _identity(command) != _identity(job)
             or _identity(ack) != _identity(job) or ack.get('id') != commit_id or ack.get('commit_id') != commit_id
             or ack.get('status') != 'applied' or ack.get('effects_issued') is not True
             or not isinstance(command.get('attendance_token'), str) or not command['attendance_token']
             or ack.get('attendance_token') != command['attendance_token']
+            or (job.get('attendance') or {}).get('token') != command['attendance_token']
             or ack.get('committed_inventory_verified') is not True or ack.get('mechanism') != 'native_owner_recipe'
             or evidence.get('session') != job.get('session') or not _inventory(before) or not _inventory(after)
-            or set(before) != set(after) or before['gold'] != after['gold']
+            or set(command.get('before') or {}) != {'owner'} or set(command.get('after') or {}) != {'owner'}
             or evidence.get('actual') != command.get('after') or ack.get('inventory') != command.get('after')):return None
-    inputs = {good: before[good] - after[good] for good in before if good != 'gold' and after[good] < before[good]}
-    outputs = {good: after[good] - before[good] for good in before if good != 'gold' and after[good] > before[good]}
+    try:expected_after = apply_recipe(before, job['recipe_id'])
+    except (KeyError, ValueError, TypeError):return None
+    if expected_after != after:return None
+    inputs = {good: before[good] - after[good] for good in before if after[good] < before[good]}
+    outputs = {good: after[good] - before[good] for good in before if after[good] > before[good]}
     return {'id': commit_id, 'inputs': inputs, 'outputs': outputs} if inputs and outputs else None
 
 
@@ -81,22 +114,20 @@ def owner_work_metrics(society, observation, fresh=True):
     rows = [];seen = set();matched = set();commits = {};qualified = set();admitted = set();released = set()
     invalid_commit_claims = 0
     for identity, job in records.items():
+        recipe = _recipe(job)
         proof = _production(job, production)
         if proof:commits[proof['id']] = proof
         elif (job.get('settlement') or {}).get('committed_inventory_verified') is True:invalid_commit_claims += 1
         attendance = job.get('attendance') or {}
-        is_qualified = (job.get('orphan') is not True and _number(job.get('attendance_verified_day'))
-                        and _number(attendance.get('worked_minutes')) and attendance['worked_minutes'] >= job['work_minutes']
-                        and type(attendance.get('samples')) is int and attendance['samples'] >= 2
-                        and isinstance(job.get('attendance_receipt_hash'), str) and bool(job['attendance_receipt_hash']))
+        is_qualified = _qualified_attendance(job)
         if is_qualified:qualified.add(identity)
-        if job.get('orphan') is not True and _number(job.get('accepted_day')):admitted.add(identity)
+        if job.get('orphan') is not True and recipe['status'] == 'verified' and _number(job.get('accepted_day')):admitted.add(identity)
         if job.get('release_verified') is True:released.add(identity)
         if job not in leases or identity in seen:continue
         seen.add(identity)
         matches = native_groups.get(identity, [])
-        observed = (current and job['session'] == session and len(matches) == 1
-                    and capacity is not None and native_capacity == capacity and job['slot'] < capacity)
+        observed = (current and recipe['status'] == 'verified' and job['session'] == session and len(matches) == 1
+                    and capacity is not None and native_capacity == capacity and 0 <= job['slot'] < 128)
         if observed:matched.add(identity)
         physical = matches[0] if observed else {};phase = physical.get('phase')
         settlement = job.get('settlement') or {};saved_phase = job.get('phase')
@@ -124,7 +155,7 @@ def owner_work_metrics(society, observation, fresh=True):
         if is_qualified:minutes = attendance['worked_minutes'];samples = attendance['samples']
         rows.append({'id': identity[0], 'actor': job['actor'], 'slot': job['slot'], 'business_id': job['business_id'],
                      'actor_name': ((society.get('people') or {}).get(str(job['actor'])) or {}).get('profile', {}).get('name'),
-                     'orphan': job.get('orphan') is True, 'native_observed': observed,
+                     'orphan': job.get('orphan') is True, 'native_observed': observed, 'recipe': recipe,
                      'attendance_state': attendance_state, 'settlement_state': settlement_state, 'cleanup_state': cleanup,
                      'work_minutes': job['work_minutes'], 'worked_minutes': minutes if _number(minutes) else None,
                      'attendance_samples': samples if type(samples) is int and samples >= 0 else None,
@@ -132,7 +163,14 @@ def owner_work_metrics(society, observation, fresh=True):
                      'produced_goods': proof['outputs'] if proof else {}, 'consumed_goods': proof['inputs'] if proof else {}})
     outputs = Counter();inputs = Counter()
     for proof in commits.values():outputs.update(proof['outputs']);inputs.update(proof['inputs'])
-    return {'schema_version': 'owner-work-metrics-v1', 'pool_id': saved.get('pool_id'),
+    legacy_records = []
+    for identifier, candidates in production.items():
+        record = candidates[0];command = record.get('command') or {}
+        if command.get('kind') not in ('inventory_self_produce', 'inventory_self_produce_commit'):continue
+        if command.get('catalog_hash') and command.get('recipe_hash'):continue
+        legacy_records.append({'id': identifier, 'recipe_id': command.get('recipe_id'),
+            'status': record.get('status'), 'provenance': 'Legacy unversioned record; not credited as catalog-verified production'})
+    return {'schema_version': 'owner-work-metrics-v2', 'pool_id': saved.get('pool_id'),
             'available': native.get('available') is True, 'fresh': current,
             'configured_capacity': capacity, 'native_capacity': native_capacity,
             'leased_jobs': len(rows), 'native_matched_jobs': len(matched), 'unmeasured_jobs': len(rows) - len(matched),
@@ -141,5 +179,6 @@ def owner_work_metrics(society, observation, fresh=True):
             'jobs': rows, 'retained_jobs': len(records), 'recorded_admissions': len(admitted),
             'qualified_attendance': len(qualified), 'committed_jobs': len(commits), 'released_jobs': len(released),
             'produced_goods': dict(outputs), 'consumed_goods': dict(inputs), 'invalid_commit_claims': invalid_commit_claims,
+            'legacy_production_records': len(legacy_records), 'legacy_records': legacy_records[-32:],
             'invalid_saved_rows': invalid_saved, 'invalid_native_rows': invalid_native,
-            'scope': 'Current owner-work leases plus bounded retained history only; separate work-slot pool. Admission and attendance do not count goods. Outputs require an exact linked committed production record and reconciled native inventory; no GDP or profit inferred. Release and receipt acknowledgement are separate. Productive animation remains unverified; no fixture results are backfilled.'}
+            'scope': 'Current owner-work leases plus bounded retained history only; separate work-slot pool. Admission and attendance do not count goods. Outputs require exact trusted catalog and recipe hashes, recipe-authorized deltas, a linked committed production record and reconciled native inventory; no GDP or profit inferred. Unversioned history is separate and receives no catalog-verified credit. Release and receipt acknowledgement are separate. Productive animation remains unverified; no fixture results are backfilled.'}

@@ -31,6 +31,7 @@ from resident_goals import ResidentGoals
 from activity_jobs import ActivityJobs
 from owner_work_jobs import OwnerWorkJobs
 from activity_leases import activity_conflict
+from economy_catalog import require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
 
 MAX_MARKER = 2**24 - 1
 
@@ -110,6 +111,17 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         # A prepared recipe owns the writer until its exact receipt settles.
         # Do not hide its acknowledgement behind an unrelated conversation.
         effect = self.active.get('pending')
+        if (effect and effect.get('status')=='pending' and effect.get('command',{}).get('kind','').startswith('inventory_')
+            and (effect['command'].get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation))):
+            state=copy.deepcopy(self.active);record=state['pending']
+            record.update(status='held',error='Inventory intent has no matching resolved catalog proof; do not replay or stamp a new identity')
+            job=state.get('work_jobs',{}).get(record.get('work_job'))
+            if job:
+                job['settlement']['phase']='held';job['catalog_held']=True
+                self._hold_owner_job(state,job,record['error'],unreconciled=True)
+            elif state.get('plans'):
+                state['plans'][-1].update(phase='held',error=record['error'])
+            self._write(state,'unbound inventory intent held before execution or settlement');return
         if effect and effect.get('command', {}).get('kind') == 'inventory_self_produce_commit':
             self.observe_owner_work_recipe(observation)
             return
@@ -166,7 +178,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         except ValueError:
             return
         state = copy.deepcopy(self.active)
-        if ack.get('status') == 'applied' and actual == command['after']:
+        if (ack.get('status') == 'applied' and ack.get('catalog_hash') == command['catalog_hash']
+            and actual == command['after']):
             record = state['pending']
             record['status'] = 'committed'
             record['evidence'] = {'actual': actual, 'ack': ack, 'session': session}
@@ -221,6 +234,7 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             raise ValueError('An unsettled trade must be reconciled first')
         if activity_conflict(self.active, actors=(buyer, seller), observation=observation):
             raise ValueError('A trade participant owns an independent activity lease')
+        bound_catalog=require_native_catalog(observation)
         before = snapshot(observation, buyer, seller,commodity)
         cost = quantity * unit_price
         if before['buyer']['gold'] < cost or before['seller'][commodity] < quantity:
@@ -233,8 +247,9 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
         after=copy.deepcopy(before)
         after['buyer']['gold']-=cost;after['seller']['gold']+=cost
         after['buyer'][commodity]+=quantity;after['seller'][commodity]-=quantity
+        if any(n>MAX_STOCK for stock in after.values() for n in stock.values()):raise ValueError('Trade would overflow native inventory')
         command = dict(id=event_id, kind='inventory_trade', buyer=buyer, seller=seller,
-                       quantity=quantity, cost=cost, commodity=commodity, before=before, after=after)
+                       catalog_hash=bound_catalog,quantity=quantity, cost=cost, commodity=commodity, before=before, after=after)
         record = dict(id=event_id, request=request, command=command, status='pending', evidence=None)
         if reserve_consent:record['reserve_release']=copy.deepcopy(reserve_consent)
         state = copy.deepcopy(self.active)
@@ -253,6 +268,8 @@ class TimelineEconomy(Agency, FoodEconomy, Production, MarketDay, Conversation, 
             return {'id': 'checkpoint-' + str(self.transition['next']), 'kind': 'bind_checkpoint',
                     'session': session, **self.transition}
         if self.active and self.active['pending'] and self.active['pending']['status'] == 'pending':
+            command=self.active['pending']['command']
+            if command.get('kind','').startswith('inventory_') and command.get('catalog_hash')!=catalog_hash():return None
             return {**self.active['pending']['command'], 'session': session, 'checkpoint': self.marker}
         foreground_command = self.speech_command(session) or self.agency_command(session)
         if foreground_command:return foreground_command

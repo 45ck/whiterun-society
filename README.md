@@ -10,6 +10,14 @@ Residents should work, trade with one another, consume goods, remember events an
 
 *Generated design illustration; the workbench animation is conceptual, and independent owner-work execution is not yet native-qualified. [Work-state contract and acceptance plan](docs/independent-owner-work.md) · [Full image prompt](docs/images/independent-owner-work.prompt.md).*
 
+**Data-defined economy, source implementation:** a shared versioned catalog now drives commodity identity, owner-recipe quantities, enterprise recipe policies and verified-recipe learning, with hashes pinned to inventory intents. The default remains three commodities and the existing bread recipe; trade/consumption paths are still limited, and native generic production is unqualified. Verified iron-smelting metadata remains disabled pending workstation and knowledge gates. [Data → decision → effect diagram and migration limits](docs/economy-catalog.md) · [Remaining economy gaps](docs/data-driven-economy-gap.md).
+
+![From world state to verified economy: catalog, agent choices and physical receipts](docs/images/economy-catalog-flow.png)
+
+*Generated architecture illustration, not gameplay. Depicted crafting is conceptual; native generic production and smelter access remain unqualified. [Image prompt](docs/images/economy-catalog-flow.prompt.md).*
+
+**Native UI build baseline:** [hosted run 40187718701](https://github.com/45ck/whiterun-society/actions/runs/40187718701) compiled successfully as **`compiled-unqualified`**. It has no input correction or save-compatibility fix and has not been deployed. [Build evidence and limits](docs/native-ui-build.md).
+
 **RTS input follow-up:** camera gestures now preserve the observed pose and reject stale acknowledgements; F8 release and missed mouse-up handling have regression coverage. Native automated input remains intermittent and roster clicking is unqualified. [Runtime evidence and remaining work](docs/rts-input.md).
 
 **RTS controls and charts:** [implementation and runtime qualification](docs/rts-experience.md). Play starts resident decisions; Pause settles the current interaction. Movie view follows current activity, with no automatic tours.
@@ -36,7 +44,7 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Active goal:** a Sims-like society with a functioning economy inside Skyrim, where you can watch individual lives and understand why their decisions change the town. Development includes visual architecture updates, actual game screenshots and, next, recorded demonstrations of conversations and economic consequences.
 
-**Visual documentation:** [all 70 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
+**Visual documentation:** [all 71 finished images](docs/gallery.md) · [gallery and voice examples](https://45ck.github.io/whiterun-society/) · [57 configurable development OKRs](docs/society-okrs.md). Images live in `docs/images`; illustrations and captured prototype interfaces are labelled separately.
 
 **Development prototype, not a complete society mod.** The isolated game starts directly in Whiterun with an observer camera. Actual inventory transfers, paid production, food consumption and generated voiced encounters have been demonstrated. Full daily routines, lip sync and sustained audio stability remain unfinished. The autonomous farm–bakery–household model still runs separately.
 
@@ -259,7 +267,7 @@ The deployer hashes the UI into the bridge revision so HTML changes trigger hot 
 <!-- IMAGE_GALLERY_START -->
 <details>
 
-<summary>Browse every finished project image (70)</summary>
+<summary>Browse every finished project image (71)</summary>
 
 ### Concurrent resident lives
 
@@ -272,6 +280,12 @@ Generated system illustration — not gameplay
 Generated system illustration — not gameplay
 
 ![Economic speech layers](docs/images/economic-speech-layers.png)
+
+### Economy catalog flow
+
+Generated system illustration — not gameplay
+
+![Economy catalog flow](docs/images/economy-catalog-flow.png)
 
 ### Employment encounter loop
 

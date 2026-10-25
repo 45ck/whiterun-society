@@ -5,21 +5,63 @@ The starter recipe and production policy are authored gameplay rules.
 """
 import copy
 import hashlib
-from enterprises import CAPABILITIES, apply_enterprise_change
+from enterprises import executable_capabilities, apply_enterprise_change
+from economy_catalog import recipe_ids, recipe_spec
 from routing import activity_blocker
 from activity_leases import activity_conflict,work_account_conflict
 
 
+def knows_recipe(person, recipe_id):
+    """Knowledge is per recipe; catalog registration teaches nobody."""
+    if recipe_id not in recipe_ids():
+        return False
+    known = person.get('known_recipes', {})
+    entry = known.get(recipe_id, {})
+    recipe = recipe_spec(recipe_id)
+    definition = {key: recipe[key] for key in ('id', 'version', 'inputs', 'outputs')}
+    if entry.get('source') == 'verified_native_production':
+        if 'definition' in entry:return entry['definition'] == definition
+        if recipe_id != 'bread_recipe':return False
+    # Historical bread records predate explicit recipe IDs. Never infer a new
+    # recipe from bread-shaped output or from another resident's participation.
+    return recipe_id == 'bread_recipe' and recipe['inputs'] == {'grain': 1} and recipe['outputs'] == {'bread': 2} and (
+        entry.get('source') == 'verified_native_production' or
+        known.get('bread', {}).get('source') == 'verified_native_production'
+        or any(m.get('kind') in ('paid_work', 'owner_work') and
+               m.get('recipe_id', 'bread_recipe') == 'bread_recipe' and
+               m.get('grain_used') == 1 and m.get('bread_made') == 2
+               for m in person.get('memories', [])))
+
+
+def learn_recipe(person, event_id, recipe_id):
+    recipe = recipe_spec(recipe_id)  # Reject unknown/planned mechanisms.
+    if knows_recipe(person, recipe_id):return
+    person.setdefault('known_recipes', {})[recipe_id] = {
+        'source': 'verified_native_production', 'event_id': event_id,
+        'recipe_id': recipe_id,
+        'definition': {key: recipe[key] for key in ('id', 'version', 'inputs', 'outputs')},
+        'scope': 'Authored learning rule after participation in verified production; not measured skill'}
+    if recipe_id == 'bread_recipe' and set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'}:
+        person['known_recipes'].setdefault('bread', copy.deepcopy(person['known_recipes'][recipe_id]))
+
+
+def recipe_knowledge(person):
+    return {'bread': knows_bread_recipe(person),
+        'recipes': {rid: knows_recipe(person, rid) for rid in sorted(recipe_ids())},
+        'source': 'Own verified production participation; legacy bread records remain readable. Catalog availability does not grant knowledge.'}
+
+
 def knows_bread_recipe(person):
-    return (person.get('known_recipes', {}).get('bread', {}).get('source') == 'verified_native_production'
-        or any(m.get('kind') in ('paid_work', 'owner_work') and m.get('grain_used') == 1
-               and m.get('bread_made') == 2 for m in person.get('memories', [])))
+    if 'bread_recipe' not in recipe_ids():return False
+    recipe=recipe_spec('bread_recipe')
+    return set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'} and knows_recipe(person, 'bread_recipe')
 
 
 def learn_bread_recipe(person, event_id):
-    person.setdefault('known_recipes', {}).setdefault('bread', {
-        'source': 'verified_native_production', 'event_id': event_id,
-        'scope': 'Authored learning rule after participation in verified production; not measured skill'})
+    recipe=recipe_spec('bread_recipe')
+    if set(recipe['inputs']) != {'grain'} or set(recipe['outputs']) != {'bread'}:
+        raise ValueError('Legacy bread learning requires the bread adapter')
+    learn_recipe(person, event_id, 'bread_recipe')
 
 
 def enterprise_choices(state, observation, actor):
@@ -31,7 +73,7 @@ def enterprise_choices(state, observation, actor):
     if any(type(stock.get(k)) is not int or stock[k]<0 for k in ('gold','bread','grain')):return []
     businesses=town.get('businesses',{})
     owned=[(key,b) for key,b in sorted(businesses.items()) if b.get('owner')==actor and b.get('custodian')==actor
-           and b.get('capabilities') and set(b['capabilities']) <= CAPABILITIES]
+           and b.get('capabilities') and set(b['capabilities']) <= executable_capabilities()]
     candidates=owned
     if not owned and len(businesses)<128:
         key='resident-'+str(actor)
@@ -44,7 +86,8 @@ def enterprise_choices(state, observation, actor):
         base={'id':key,'expected_revision':(b or {}).get('revision',0),
             'name':(b or {}).get('name') or (person['profile']['name'][:60]+' provisions'),
             'custodian':actor,'capabilities':sorted(existing),'active':True,
-            'production_policy':copy.deepcopy((b or {}).get('production_policy',{}))}
+            'production_policy':copy.deepcopy((b or {}).get('production_policy',{})),
+            'recipe_policies':copy.deepcopy((b or {}).get('recipe_policies',{}))}
         def add(action,effect,caps=None,active=True):
             spec={**base,'capabilities':sorted(caps if caps is not None else existing),'active':active}
             result.append({'id':action+'_'+key,'effect':effect,'specification':spec})
@@ -57,8 +100,17 @@ def enterprise_choices(state, observation, actor):
             add('offer_food_trade','Register food retail using your own carried bread. Household reserves remain yours and each sale needs separate consent. Registration creates no stall, stock or money.',existing|{'retail_food'})
         if stock['grain']>=1 and 'retail_grain' not in existing:
             add('offer_grain_trade','Register grain supply using your own carried grain. Choose whether to sell when an offer arrives; no resources or sales are created.',existing|{'retail_grain'})
-        if knows_bread_recipe(person) and (stock['grain']>=1 or stock['gold']>=1) and 'bread_recipe' not in existing:
-            add('register_bakery','Register the bread recipe you have already participated in. Use your own funds and inputs; procurement and work remain later decisions. Starter target, wage and duration are authored defaults. No bakery building, equipment, grain or money appears.',existing|{'bread_recipe','retail_food'})
+        for recipe_id in sorted(recipe_ids()):
+            recipe = recipe_spec(recipe_id)
+            can_source_inputs = (all(type(stock.get(k)) is int and stock[k] >= amount
+                                     for k, amount in recipe['inputs'].items()) or stock['gold'] >= 1)
+            if knows_recipe(person, recipe_id) and can_source_inputs and recipe_id not in existing:
+                # Retail remains limited to supported trade protocols; knowing a
+                # transformation alone never grants a new trading mechanism.
+                retail = {'bread': 'retail_food', 'grain': 'retail_grain'}
+                caps = existing | {recipe_id} | {retail[k] for k in recipe['outputs'] if k in retail}
+                action = 'register_bakery' if recipe_id == 'bread_recipe' and set(recipe['inputs']) == {'grain'} and set(recipe['outputs']) == {'bread'} else 'register_recipe_' + recipe_id
+                add(action, 'Register the ' + recipe_id + ' recipe you already know. Use your own funds and inputs; procurement and work remain later decisions. Policy defaults are authored. No building, equipment, stock or money appears.', caps)
     return result
 
 
@@ -67,6 +119,9 @@ def apply_resident_enterprise(state, plan, specification, observation):
     key=specification['id'];old=state['town']['businesses'].get(key)
     if old and (old.get('owner')!=plan['actor'] or old.get('custodian')!=plan['actor']):
         raise ValueError('Resident cannot revise another enterprise')
+    added_recipes=(set(specification['capabilities']) - set((old or {}).get('capabilities', []))) & set(recipe_ids())
+    if any(not knows_recipe(state['people'][str(plan['actor'])], rid) for rid in added_recipes):
+        raise ValueError('Resident has not learned this recipe through verified own participation')
     event_id='resident-enterprise-'+hashlib.sha256(plan['id'].encode()).hexdigest()[:24]
     business,event=apply_enterprise_change(state,event_id,specification,observation,
         'Resident-selected public charter; existing personal inventory only')

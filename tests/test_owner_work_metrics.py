@@ -1,15 +1,18 @@
 import copy
 import time
 import unittest
+from unittest.mock import patch
 
 from owner_work_metrics import owner_work_metrics
 from observer import observer_state
+from economy_catalog import ECONOMY_CATALOG, catalog_hash, recipe_hash, validate_catalog
 
 
 def identity():
     return dict(job_id='work-1', actor=7, actor_base_id=70, slot=0, session='session',
                 epoch='epoch', business_id='business', business_revision=1,
-                recipe_id='bread_recipe', policy_version='policy-v1', work_minutes=30)
+                recipe_id='bread_recipe', policy_version='policy-v1', work_minutes=30,
+                catalog_hash=catalog_hash(), recipe_hash=recipe_hash('bread_recipe'))
 
 
 class OwnerWorkMetricsTests(unittest.TestCase):
@@ -35,7 +38,7 @@ class OwnerWorkMetricsTests(unittest.TestCase):
         ack = dict(identity(), id='commit-1', commit_id='commit-1', status='applied',
                    inventory=copy.deepcopy(after), effects_issued=True, committed_inventory_verified=True,
                    mechanism='native_owner_recipe', attendance_token='private-capability')
-        record = {'id': 'commit-1', 'status': 'committed', 'command': command,
+        record = {'id': 'commit-1', 'status': 'committed', 'work_job': 'work-1', 'command': command,
                   'evidence': {'session': 'session', 'actual': copy.deepcopy(after), 'ack': ack}}
         self.job.update(phase='recipe_committed', settlement={'phase': 'committed', 'commit_id': 'commit-1',
                         'production_record_id': 'commit-1', 'committed_inventory_verified': True})
@@ -107,7 +110,7 @@ class OwnerWorkMetricsTests(unittest.TestCase):
         for key, value in [('actor', 8), ('actor_base_id', 71), ('slot', 1), ('job_id', 'old'),
                            ('session', 'old'), ('epoch', 'old'), ('business_id', 'other'),
                            ('business_revision', 2), ('recipe_id', 'other'), ('policy_version', 'other'),
-                           ('work_minutes', 31)]:
+                           ('work_minutes', 31), ('catalog_hash', 'other'), ('recipe_hash', 'other')]:
             with self.subTest(key=key):
                 observation = copy.deepcopy(self.observation)
                 observation['owner_work_jobs']['jobs'][0][key] = value
@@ -121,6 +124,65 @@ class OwnerWorkMetricsTests(unittest.TestCase):
         self.observation['owner_work_jobs']['jobs'].append(copy.deepcopy(self.native))
         self.assertEqual(owner_work_metrics(self.society, self.observation)['native_matched_jobs'], 0)
 
+    def test_catalog_recipe_pins_and_authorized_deltas_are_required(self):
+        self.committed()
+        for field, value in [('catalog_hash', 'other'), ('recipe_hash', 'other'), ('recipe_id', 'unknown_recipe'), ('work_minutes', 999)]:
+            society = copy.deepcopy(self.society);job = society['owner_work_jobs']['jobs'][0]
+            for row in (job, society['production'][0]['command'], society['production'][0]['evidence']['ack']):row[field] = value
+            result = owner_work_metrics(society, self.observation)
+            self.assertEqual((result['committed_jobs'], result['produced_goods']), (0, {}))
+            self.assertNotEqual(result['jobs'][0]['recipe']['status'], 'verified')
+        for key in ('actual', 'ack'):
+            evidence = self.society['production'][0]['evidence']
+            target = evidence['actual'] if key == 'actual' else evidence['ack']['inventory']
+            target['owner']['bread'] = 200
+        self.society['production'][0]['command']['after']['owner']['bread'] = 200
+        self.assertEqual(owner_work_metrics(self.society, self.observation)['committed_jobs'], 0)
+
+    def test_production_requires_linked_attendance_settlement_and_sole_owner_account(self):
+        self.committed()
+        mutations = [lambda s:s['production'][0].update(work_job='unrelated'),
+            lambda s:s['owner_work_jobs']['jobs'][0]['attendance'].update(token='unrelated'),
+            lambda s:s['owner_work_jobs']['jobs'][0]['attendance'].update(worked_minutes=0),
+            lambda s:s['owner_work_jobs']['jobs'][0].update(attendance_receipt_hash=None),
+            lambda s:s['owner_work_jobs']['jobs'][0]['settlement'].update(phase='pending')]
+        for mutate in mutations:
+            society=copy.deepcopy(self.society);mutate(society)
+            result=owner_work_metrics(society,self.observation)
+            self.assertEqual((result['committed_jobs'],result['produced_goods'],result['invalid_commit_claims']),(0,{},1))
+        record=self.society['production'][0]
+        for account in (record['command']['before'],record['command']['after'],record['evidence']['actual'],record['evidence']['ack']['inventory']):
+            account['unrelated']={'gold':999}
+        self.assertEqual(owner_work_metrics(self.society,self.observation)['committed_jobs'],0)
+
+    def test_legacy_receipts_remain_readable_without_catalog_verification_credit(self):
+        self.committed()
+        for row in (self.job, self.native, self.society['production'][0]['command'], self.society['production'][0]['evidence']['ack']):
+            row.pop('catalog_hash');row.pop('recipe_hash')
+        result = owner_work_metrics(self.society, self.observation)
+        self.assertEqual((result['committed_jobs'], result['produced_goods'], result['recorded_admissions']), (0, {}, 0))
+        self.assertEqual(result['legacy_production_records'], 1)
+        self.assertEqual(result['jobs'][0]['recipe']['status'], 'legacy_unversioned')
+        self.assertIn('not credited', result['legacy_records'][0]['provenance'])
+
+    def test_generic_trusted_recipe_inputs_and_outputs_are_not_bread_constants(self):
+        self.committed()
+        spec = {'id': 'fixture_recipe', 'version': 2, 'inputs': {'bread': 2}, 'outputs': {'grain': 3},
+                'work_minutes': {'minimum': 5, 'default': 30, 'maximum': 120}, 'provenance': 'Test-only authored recipe; never deployed'}
+        record = self.society['production'][0]
+        before = {'owner': {'gold': 11, 'bread': 4, 'grain': 1}};after = {'owner': {'gold': 11, 'bread': 2, 'grain': 4}}
+        record['command'].update(before=before, after=after)
+        record['evidence']['actual'] = copy.deepcopy(after);record['evidence']['ack']['inventory'] = copy.deepcopy(after)
+        catalog = copy.deepcopy(ECONOMY_CATALOG);catalog['recipes'].append(spec)
+        # Supply validated trusted test configuration; exercise the real recipe/delta validator.
+        with patch('economy_catalog.ECONOMY_CATALOG', validate_catalog(catalog)):
+            for row in (self.job, self.native, record['command'], record['evidence']['ack']):
+                row.update(recipe_id='fixture_recipe', catalog_hash=catalog_hash(), recipe_hash=recipe_hash('fixture_recipe'))
+            result = owner_work_metrics(self.society, self.observation)
+        self.assertEqual(result['produced_goods'], {'grain': 3})
+        self.assertEqual(result['consumed_goods'], {'bread': 2})
+        self.assertEqual(result['jobs'][0]['recipe']['version'], 2)
+
     def test_partial_coverage_and_invalid_progress_are_explicit(self):
         self.society['owner_work_jobs']['jobs'].append(dict(self.job, id='work-2', job_id='work-2', actor=8, slot=1))
         result = owner_work_metrics(self.society, self.observation)
@@ -128,6 +190,16 @@ class OwnerWorkMetricsTests(unittest.TestCase):
         for value in (True, float('nan'), -1):
             self.native['worked_minutes'] = value
             self.assertIsNone(owner_work_metrics(self.society, self.observation)['jobs'][0]['worked_minutes'])
+
+    def test_citizen_slot_is_independent_of_configured_work_pool_capacity(self):
+        self.job['slot']=self.native['slot']=19
+        result=owner_work_metrics(self.society,self.observation)
+        self.assertEqual((result['configured_capacity'],result['native_matched_jobs'],result['observed_working']),(4,1,1))
+        self.assertEqual(result['jobs'][0]['worked_minutes'],10)
+        self.job['slot']=self.native['slot']=128
+        result=owner_work_metrics(self.society,self.observation)
+        self.assertEqual(result['native_matched_jobs'],0)
+        self.assertIsNone(result['observed_working'])
 
     def test_orphans_never_import_admission_attendance_or_goods(self):
         self.committed();self.job.update(orphan=True, phase='held', release_verified=True)

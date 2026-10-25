@@ -1,3 +1,4 @@
+from catalog_fixture import native_ack
 import copy
 import unittest
 import test_food
@@ -45,7 +46,7 @@ class ProductionTests(unittest.TestCase):
         self.assertEqual(c['kind'],'inventory_produce')
         before=copy.deepcopy(self.obs)
         for a in self.obs['residents']:a['inventory']=c['after']['worker' if a['id']==108186 else 'employer'].copy()
-        self.obs['ack']={'id':c['id'],'status':'applied'}
+        self.obs['ack']=native_ack(c)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['outcome'],'paid_work_completed')
         self.assertEqual(len(self.world.status()['production']),1)
@@ -57,14 +58,14 @@ class ProductionTests(unittest.TestCase):
 
     def test_ack_without_production_effect_holds_no_success_memory(self):
         self.start_work();c=self.world.pending(self.obs['session'])
-        self.obs['ack']={'id':c['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(c);self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'held')
         self.assertEqual(self.world.status()['production'],[])
 
     def test_explicit_import_is_bounded_persistent_and_separate_from_production(self):
         self.world.setup_production(self.obs);self.sync();c=self.world.pending(self.obs['session'])
         self.obs['residents'][1]['inventory']=c['after']['employer'].copy()
-        self.obs['ack']={'id':c['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(c);self.world.observe(self.obs);self.sync()
         self.assertTrue(self.world.setup_production(self.obs)['duplicate'])
         self.assertEqual(len(self.world.status()['imports']),1)
         self.assertEqual(self.world.status()['production'],[])

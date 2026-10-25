@@ -1,3 +1,4 @@
+from catalog_fixture import native_ack
 import copy
 import unittest
 import test_daily_life
@@ -74,7 +75,7 @@ class LabourTests(unittest.TestCase):
         self.assertEqual(command['worker'],99)
         for a in self.obs['residents']:
             if a['id'] in (99,108149):a['inventory']=command['after']['worker' if a['id']==99 else 'employer'].copy()
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         business=self.world.active['town']['businesses']['business-108149']
         self.assertEqual(business['contracts'][0]['status'],'completed');self.assertEqual(business['workers'],[99])
@@ -110,7 +111,7 @@ class LabourTests(unittest.TestCase):
             'hasOwnedPackage':True,'expectedPackage':99,'aliasesConfirmed':True,
             'adapter':'papyrus-mailbox','actor':99,'target':108149}}
         self.world.observe(self.obs);self.sync()
-        self.obs['ack']={'id':'produce-drift','status':'applied'}
+        self.obs['ack']=native_ack(self.world.pending(self.obs['session']))
         self.world.observe(self.obs);self.sync()
         business=self.world.active['town']['businesses']['business-108149']
         self.assertEqual(business['contracts'][0]['status'],'held')

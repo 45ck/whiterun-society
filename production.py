@@ -1,11 +1,11 @@
 """A finite, explicitly authored paid bread-making contract in the physical world."""
 import copy
-from entrepreneurship import learn_bread_recipe
+from entrepreneurship import learn_recipe
 from labour import settle_contract
-from enterprises import plan_work_policy, current_work_terms
+from enterprises import plan_work_policy, current_work_terms, paid_bread_recipe
 from activity_leases import activity_conflict
 
-ITEMS = ('gold', 'bread', 'grain')
+from economy_catalog import commodity_ids, recipe_spec, recipe_hash, catalog_hash, apply_recipe, require_native_catalog, MAX_STOCK
 
 
 def work_inventory(observation, worker, employer):
@@ -13,10 +13,17 @@ def work_inventory(observation, worker, employer):
     result = {}
     for role, actor in [('worker', worker), ('employer', employer)]:
         inventory = actors.get(actor, {}).get('inventory', {})
-        if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ITEMS):
+        if any(type(inventory.get(k)) is not int or not 0 <= inventory[k] <= MAX_STOCK for k in commodity_ids()):
             raise ValueError('Work requires complete observed inventories')
-        result[role] = {k: inventory[k] for k in ITEMS}
+        result[role] = {k: inventory[k] for k in commodity_ids()}
     return result
+
+
+def production_receipt_matches(command, receipt):
+    """A matching inventory alone cannot certify which recipe actually ran."""
+    fields = ('catalog_hash',) if command.get('kind') == 'inventory_supply' else ('catalog_hash', 'recipe_id', 'recipe_hash')
+    return all(isinstance(command.get(key), str) and bool(command[key]) and receipt.get(key) == command[key]
+               for key in fields)
 
 
 class Production:
@@ -28,11 +35,13 @@ class Production:
             return {'duplicate': True, 'import': self.active['imports'][0]}
         if activity_conflict(self.active,actors=(108186,108149),observation=observation):
             raise ValueError('An independent activity owns a scenario supply participant')
+        require_native_catalog(observation)
         before = work_inventory(observation, 108186, 108149)
+        if before['employer']['grain'] > MAX_STOCK-2:raise ValueError('Scenario grain import would overflow inventory')
         after = copy.deepcopy(before)
         after['employer']['grain'] += 2
         command = {'id':'demo-grain-import-v1', 'kind':'inventory_supply',
-                   'worker':108186, 'employer':108149, 'before':before, 'after':after}
+                   'worker':108186, 'employer':108149, 'before':before, 'after':after, 'catalog_hash':catalog_hash()}
         state = copy.deepcopy(self.active)
         state['pending'] = {'id':command['id'], 'command':command, 'status':'pending',
                            'source':'Explicit demo import: two grain, no gold; not resident production', 'evidence':None}
@@ -44,19 +53,21 @@ class Production:
             raise ValueError('Work requires a current agreed plan and arrival')
         if activity_conflict(self.active,actors=(plan['actor'],plan['target']),observation=observation):
             raise ValueError('An independent activity owns a production participant')
+        require_native_catalog(observation, 'bread_recipe')
+        paid_bread_recipe()
         current_work_terms(self.active, plan)
         terms = plan_work_policy(plan)
         wage = terms['wage_gold']
         before = work_inventory(observation, plan['actor'], plan['target'])
-        if before['employer']['grain'] < 1 or before['employer']['gold'] < wage:
+        if before['employer']['gold'] < wage or before['worker']['gold'] > MAX_STOCK-wage:
             raise ValueError('Employer no longer has the agreed input or wage')
         after = copy.deepcopy(before)
-        after['employer']['grain'] -= 1
-        after['employer']['bread'] += 2
+        after['employer'] = apply_recipe(before['employer'], 'bread_recipe')
         after['employer']['gold'] -= wage
         after['worker']['gold'] += wage
         command = {'id': 'produce-'+plan['id'], 'kind': 'inventory_produce',
                    'worker': plan['actor'], 'employer': plan['target'],
+                   'recipe_id':'bread_recipe','catalog_hash':catalog_hash(),'recipe_hash':recipe_hash('bread_recipe'),
                    'expected_package': plan['travel']['movement']['expectedPackage'],
                    'work_minutes': terms['work_minutes'], 'wage_gold': wage, 'before': before, 'after': after}
         state = copy.deepcopy(self.active)
@@ -71,8 +82,21 @@ class Production:
             return
         command = pending['command']
         try:
+            if not production_receipt_matches(command, ack):
+                raise ValueError('Production receipt catalog or recipe binding is missing or mismatched')
+            require_native_catalog(observation, 'bread_recipe' if command['kind']=='inventory_produce' else None)
+            if command.get('catalog_hash') != catalog_hash():raise ValueError('Historical production intent lacks matching catalog proof')
+            if command['kind']=='inventory_produce' and (command.get('recipe_id') != 'bread_recipe' or command.get('recipe_hash') != recipe_hash('bread_recipe')):
+                raise ValueError('Production recipe proof is absent or stale')
+            if command['kind']=='inventory_produce':paid_bread_recipe()
             actual = work_inventory(observation, command['worker'], command['employer'])
-        except ValueError:
+        except ValueError as error:
+            if pending.get('status')!='held':
+                state=copy.deepcopy(self.active);state['pending'].update(status='held',error=str(error))
+                if command['kind']=='inventory_produce':
+                    state['plans'][-1].update(phase='held',error='Production catalog requires reconciliation')
+                    settle_contract(state,state['plans'][-1],'reconciliation_required')
+                self._write(state,'production held: catalog or inventory proof is unavailable')
             return
         state = copy.deepcopy(self.active)
         state['pending']['evidence'] = {'actual': actual, 'ack': ack, 'session': self.session}
@@ -91,10 +115,13 @@ class Production:
                 self.queue_trade_speech(state,state['plans'][-1],'work_receipt')
             for role, other in [('worker', 'employer'), ('employer', 'worker')]:
                 person = state['people'][str(command[role])]
-                learn_bread_recipe(person,pending['id'])
+                learn_recipe(person,pending['id'],command['recipe_id'])
+                recipe=recipe_spec(command['recipe_id'])
                 person['memories'].append({'event_id': pending['id'], 'kind': 'paid_work',
                     'role': role, 'other': command[other], 'gold': command.get('wage_gold', 2),
-                    'work_minutes': command['work_minutes'], 'grain_used': 1, 'bread_made': 2,
+                    'work_minutes': command['work_minutes'], 'recipe_id':command['recipe_id'],
+                    'inputs':recipe['inputs'],'outputs':recipe['outputs'],
+                    'grain_used':recipe['inputs']['grain'],'bread_made':recipe['outputs']['bread'],
                     'source': 'observed native inventory conversion and wage; work animation unverified'})
                 person['memories'] = person['memories'][-32:]
             self._write(state, 'production and conserved wage observed; both residents remember')

@@ -3,7 +3,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const catalogManifest=require('../config/economy-catalog.json');
 const source = fs.readFileSync(path.join(__dirname,'../bridge/whiterun-society.js'),'utf8')
+  .replace('__ECONOMY_CATALOG_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/economy-catalog.js'),'utf8').split('\nif(typeof module')[0])
+  .replace('__ECONOMY_CATALOG_MANIFEST__',JSON.stringify(catalogManifest))
   .replace('__RESIDENT_CONTROL_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/resident-control.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__SCENE_HANDOFF_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/scene-handoffs.js'),'utf8').split('\nif(typeof module')[0])
   .replace('__CONVERSATION_ATTENDANCE_FACTORY__',fs.readFileSync(path.join(__dirname,'../bridge/conversation-attendance.js'),'utf8').split('\nif(typeof module')[0])
@@ -29,11 +32,13 @@ function harness(nativeGlobal=false,activityRestFactory=null) {
     getPositionX:()=>1,getPositionY:()=>2,getPositionZ:()=>3,setLookAt:(...args)=>looks.push(args)};
   const cell={getName:()=> 'Test cell',getFormID:()=>107135,getNumRefs:filter=>{assert.equal(filter,43);return 1;},getNthRef:()=>actor};
   const player={getFormID:()=>20,getParentCell:()=>cell,is3DLoaded:()=>true,setGhost:()=>{},getPositionX:()=>0,getPositionY:()=>0,getPositionZ:()=>0};
+  const itemForms=Object.fromEntries(catalogManifest.commodities.map(item=>[item.native.local_form_id,{getFormID:()=>item.native.local_form_id,getType:()=>({MISC:32,ALCH:46,INGR:30})[item.native.record_type]}]));
   const sp={storage:{},on:(event,fn)=>{handlers.set(event,fn);return event;},once:(event,fn)=>{handlers.set(event,fn);return event;},
-    unsubscribe:key=>handlers.delete(key), Actor:{from:value=>value},Game:{getPlayer:()=>player,getFormEx:id=>id===123?actor:null},
+    unsubscribe:key=>handlers.delete(key), Actor:{from:value=>value},Game:{getPlayer:()=>player,getFormEx:id=>id===123?actor:itemForms[id]||null},
     enableFreeCamera:()=>{},setFreeCameraPosition:()=>{},
     Debug:{notification:text=>notifications.push(text)},getPlatformVersion:()=> 'mock',printConsole:()=>{},writeLogs:()=>{},
     HttpClient:class { post(route,options) { const body=JSON.parse(options.body);requests.push(body);return Promise.resolve({status:200,body:JSON.stringify({command:respond(body),presentation})}); } }};
+  sp.Game.getFormFromFile=(id,file)=>file==='Skyrim.esm'?itemForms[id]||null:null;
   const compiled=activityRestFactory?source.replace('const activityJobs=createActivityJobsController(()=>sp);','const activityJobs=createActivityJobsController(()=>sp,Date.now,undefined,{restFactory:activityRestFactory});'):source;
   const context=vm.createContext({...nativeGlobal?{skyrimPlatform:sp}:{require:()=>sp},Date:{now:()=>clock},activityRestFactory});
   vm.runInContext(compiled,context);
@@ -46,19 +51,19 @@ test('accepted background rest jobs tick while a disjoint native meal uses the f
  const factory=()=>{let state=null;const lane={ticks:0,available:()=>true,released:()=>true,release(){},reset(){state=null;},cancel(){},status:()=>state,
   step(command){lane.ticks++;state={actor:command.actor,target:command.target,phase:'resting',rested_minutes:lane.ticks/2};return {done:false};}};lanes.push(lane);return lane;};
  const h=harness(false,factory);let bread=1,equipCalls=0,queue=null;
- const food={getFormID:()=>0x65c97},gold={getFormID:()=>0xf};
+ const food={getFormID:()=>0x65c97,getType:()=>46},gold={getFormID:()=>0xf,getType:()=>32},grain={getFormID:()=>0x4b0ba,getType:()=>30};
  const eater={getFormID:()=>200,is3DLoaded:()=>true,isDead:()=>false,isChild:()=>false,
   getItemCount:form=>form===food?bread:10,equipItem:()=>{equipCalls++;bread=0;}};
- h.sp.Game.getFormEx=id=>id===123?h.actor:id===200?eater:id===0x65c97?food:id===0xf?gold:null;
+ h.sp.Game.getFormEx=id=>id===123?h.actor:id===200?eater:id===0x65c97?food:id===0xf?gold:id===0x4b0ba?grain:null;
  const checkpoint={getValue:()=>1};h.sp.GlobalVariable={from:f=>f};
- h.sp.Game.getFormFromFile=(id,file)=>file==='WhiterunSociety.esp'&&id===0x800?checkpoint:null;
+ h.sp.Game.getFormFromFile=(id,file)=>file==='WhiterunSociety.esp'&&id===0x800?checkpoint:file==='Skyrim.esm'?({[0x65c97]:food,[0xf]:gold,[0x4b0ba]:grain})[id]||null:null;
  h.setResponse(body=>{
   if(!queue){
    const jobs=[{job_id:'parallel-a',actor:123,target:586075,slot:0,session:body.session,epoch:'epoch',rest_minutes:30},
                {job_id:'parallel-b',actor:124,target:586076,slot:1,session:body.session,epoch:'epoch',rest_minutes:30}];
    h.setPresentation({society:{checkpoint:1,activity_jobs:{epoch:'epoch',jobs}}});
    queue=jobs.map(job=>({...job,id:'start-'+job.job_id,kind:'activity_start_rest',checkpoint:1}));
-   queue.push({id:'disjoint-meal',kind:'inventory_consume',actor:200,session:body.session,checkpoint:1,before:{bread:1,gold:10},after:{bread:0,gold:10}});
+   queue.push({id:'disjoint-meal',kind:'inventory_consume',actor:200,session:body.session,checkpoint:1,catalog_hash:body.economy_catalog.catalog_hash,before:{bread:1,gold:10,grain:10},after:{bread:0,gold:10,grain:10}});
   }
   if(body.ack?.id===queue[0]?.id)queue.shift();
   return queue[0]||null;
@@ -100,6 +105,29 @@ test('heartbeat is built from observed game state',async()=>{
   assert.equal(h.requests[0].ready,true);
   assert.equal(h.requests[0].residents[0].id,123);
   assert.equal(h.requests[0].selected.id,123);
+  assert.equal(h.requests[0].economy_catalog.available,true);
+  assert.equal(h.requests[0].economy_catalog.type_verified,true);
+  assert.deepEqual(h.requests[0].residents[0].inventory,{bread:null,gold:null,grain:null});
+});
+
+test('unresolved catalog form stays unavailable rather than reporting an empty inventory',async()=>{
+  const h=harness();h.actor.getItemCount=()=>9;
+  const resolve=h.sp.Game.getFormFromFile;
+  h.sp.Game.getFormFromFile=(id,file)=>id===0x4b0ba?null:resolve(id,file);
+  h.handlers.get('update')();await settle();
+  assert.equal(h.requests[0].economy_catalog.available,false);
+  assert.deepEqual(h.requests[0].residents[0].inventory,{bread:9,gold:9,grain:null});
+});
+
+test('experimental perception follows observed residents without a fixed cast or knowledge grant',async()=>{
+  const h=harness();h.actor.hasKeyword=()=>true;h.actor.hasLOS=()=>true;h.actor.getAngleZ=()=>0;
+  h.sp.Keyword={from:()=>({})};
+  h.handlers.get('update')();await settle();
+  assert.deepEqual(Object.keys(h.requests[0].perception),['123']);
+  assert.equal(h.requests[0].perception['123'].available,false);
+  assert.deepEqual(h.requests[0].perception['123'].visible,[]);
+  h.actor.is3DLoaded=()=>false;h.advance();h.handlers.get('update')();await settle();
+  assert.deepEqual(h.requests.at(-1).perception,{});
 });
 
 test('social coordinates include native cell and world identity',async()=>{

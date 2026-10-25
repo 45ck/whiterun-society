@@ -4,6 +4,7 @@ This is not a new standing allocation policy. The consent is bound to the curren
 plan, buyer, seller, price, quantity, policy and observed inventory, then retained
 on the physical trade receipt. A spoken acceptance alone is not this authority.
 """
+from economy_catalog import catalog_hash
 
 
 def reserved_sale_consent(state, event_id, buyer, seller, quantity, unit_price, agency_plan, inventory):
@@ -26,5 +27,6 @@ def reserved_sale_consent(state, event_id, buyer, seller, quantity, unit_price, 
     expected={'plan_id':agency_plan,'trade_id':event_id,'buyer':buyer,'seller':seller,
               'quantity':1,'unit_price':unit_price,
               'policy':state.get('people',{}).get(str(seller),{}).get('food_policy'),
+              'catalog_hash':catalog_hash(),
               'inventory':inventory,'decision_claim_id':source_decision.get('claim_id')}
     return consent if consent==expected else None

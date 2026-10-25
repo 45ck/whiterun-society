@@ -4,6 +4,8 @@ This mixin shares TimelineEconomy's immutable checkpoint protocol. Inference run
 in a separate worker; a persisted claim prevents automatic duplicate model calls.
 """
 import copy
+import hashlib
+import json
 import math
 import secrets
 from decisions import validate_decision
@@ -22,12 +24,25 @@ from owner_production import owner_work_opportunities
 from procurement import grain_procurement
 from bargaining import PRICING_POLICY, own_prices, price_choices, record_quote, accept_quote, quote_valid
 from employment import approach_employer, accept_contract, REVIEW_AFTER_REFUSAL_MINUTES
-from entrepreneurship import enterprise_choices, apply_resident_enterprise, knows_bread_recipe
+from entrepreneurship import enterprise_choices, apply_resident_enterprise, recipe_knowledge
 from context_window import bounded_economic_context
 from trade_memory import remember_refusal_decision
 from activity_leases import reserved_activity_actors
+from economy_catalog import recipe_spec, require_native_catalog, MAX_STOCK, commodity_ids, native_catalog_matches, catalog_hash
 
 TERMINAL = ('complete', 'held')
+
+
+def owner_work_choice_id(job):
+    identity=json.dumps([job['business_id'],job['recipe_id']],separators=(',',':'))
+    return 'work_own_'+hashlib.sha256(identity.encode('utf-8')).hexdigest()[:32]
+
+
+def recipe_quantities(recipe_id):
+    recipe=recipe_spec(recipe_id)
+    describe=lambda side:', '.join(str(n)+' '+key for key,n in sorted(recipe[side].items()))
+    return describe('inputs'),describe('outputs')
+
 
 
 def distance(observation, first, second):
@@ -144,13 +159,15 @@ class Agency:
         stock = allocation(person, inventory)
         targets = {}
         work_options = {}
+        owner_work_actions = []
         price_options = {}
         business_options = {}
         market_options = {}
         if plan['phase'] in ('job_offer', 'job_accept'):
+            require_native_catalog(observation,'bread_recipe')
             current_work_terms(self.active, plan)
-        policy = plan_work_policy(plan)
-        wage, minutes = policy['wage_gold'], policy['work_minutes']
+            policy = plan_work_policy(plan)
+            wage, minutes = policy['wage_gold'], policy['work_minutes']
         def visits():
             if self.active.get('town') is None:
                 rows=[{'id':108156,'name':'Adrianne','action':'visit_adrianne'}] if route_available(observation,actor,108156,state=self.active) else []
@@ -162,9 +179,11 @@ class Agency:
         if plan['phase']=='job_offer':
             options = [{'id':'defer','effect':'Do not offer this job; keep your resources.'}]
             resources = work_inventory(observation, plan['actor'], plan['target'])
-            if resources['employer']['grain'] >= 1 and resources['employer']['gold'] >= wage:
+            if (resources['employer']['grain'] >= policy['grain_per_shift'] and resources['employer']['gold'] >= wage
+                    and resources['employer']['bread'] <= MAX_STOCK-policy['bread_per_shift']
+                    and resources['worker']['gold'] <= MAX_STOCK-wage):
                 worker_name = person_view(self.active,actor,plan['actor'])['name']
-                options.append({'id':'offer_shift','effect':f'Offer {worker_name} {wage} gold from your purse to convert one of your grain into two loaves. They may refuse. Pay only after {minutes} game minutes of qualified work and observed production.'})
+                options.append({'id':'offer_shift','effect':f'Offer {worker_name} {wage} gold from your purse to convert {policy["grain_per_shift"]} of your grain into {policy["bread_per_shift"]} bread. They may refuse. Pay only after {minutes} game minutes of qualified work and observed production.'})
             information = f'Consider paid bread-making to replenish your stock toward your enterprise target of {policy["target_bread"]} loaves. The recipe is authored; no oven animation is implemented. Your household reserve applies to output. Sale prices and sales are not guaranteed, wages cost {wage} gold and grain has an opportunity cost. Use your own remembered trades when judging whether replenishing is worthwhile.'
         elif plan['phase']=='job_accept':
             employer_name = person_view(self.active,actor,plan['target'])['name']
@@ -257,8 +276,11 @@ class Agency:
                     work_options[action]=supplier['own_businesses']
                     options.append({'id':action,'effect':'Visit '+supplier['name']+' as a publicly registered grain seller and choose an affordable bid for one grain. Your bakery input stock is below its authored target. Supplier stock and consent are unknown; this is not a harvest or an automatic sale.'})
                 for job in owner_work_opportunities(self.active,observation,actor):
-                    action='work_own_'+job['business_id'];work_options[action]=job
-                    options.append({'id':action,'effect':f'Spend {job["policy"]["work_minutes"]} game minutes working your own stock where you are. Use one owned grain to produce two loaves. No wage or gold is created or transferred. Output stays yours under your current household policy. Consider fatigue and other needs; the productive animation is not implemented.'})
+                    action=owner_work_choice_id(job)
+                    if action in work_options:raise ValueError('Duplicate owner work choice identity')
+                    work_options[action]=job;owner_work_actions.append(action)
+                    inputs,outputs=recipe_quantities(job['recipe_id'])
+                    options.append({'id':action,'effect':f'Spend {job["policy"]["work_minutes"]} game minutes working your own stock where you are. Use {inputs} to produce {outputs}. No wage or gold is created or transferred. Output stays yours; household food policy applies to food only. Consider fatigue and other needs; the productive animation is not implemented.'})
                 for i, job in enumerate(work_opportunities(self.active, observation, actor)):
                     action = 'seek_work' if i == 0 else 'seek_work_' + job['business_id']
                     work_options[action] = job
@@ -283,6 +305,7 @@ class Agency:
                 'economic_counterparty':counterparty,
                 'own_commitments':copy.deepcopy(person.get('commitments',[])),
                 'observed_inventory': copy.deepcopy(inventory),
+                'inventory_catalog_hash':catalog_hash() if native_catalog_matches(observation) else None,
                 'own_food_allocation': stock,
                 'scenario_state': {'needs': person['needs'], 'source': 'authored society simulation, not Skyrim hunger'},
                 'perception': self._resident_perception(observation, actor),
@@ -290,8 +313,8 @@ class Agency:
                 'own_price_history':own_prices(person,commodity), 'commodity':commodity, 'price_options':price_options,
                 'memories': person['memories'][-8:], 'trust': person['trust'],
                 'my_relationships':person.get('relationships',{}), 'option_targets':targets,
-                'work_options':work_options, 'enterprise_options':business_options, 'market_options':market_options,
-                'own_recipe_knowledge':{'bread':knows_bread_recipe(person),'source':'Own verified production participation; authored learning rule'},
+                'work_options':work_options, 'owner_work_actions':owner_work_actions, 'enterprise_options':business_options, 'market_options':market_options,
+                'own_recipe_knowledge':recipe_knowledge(person),
                 'options': options}
 
     def _resident_perception(self, observation, actor):
@@ -341,6 +364,8 @@ class Agency:
                 raise ValueError('The selected public venue is no longer executable')
         if current['observed_inventory'] != claim['context']['observed_inventory']:
             raise ValueError('Inventory changed while deciding')
+        if current.get('inventory_catalog_hash')!=claim['context'].get('inventory_catalog_hash'):
+            raise ValueError('Inventory catalog changed while deciding')
         if plan.get('commodity','bread')=='bread' and (chosen in ('sell_bread','sell_reserved_bread') or chosen.startswith('ask_price_')) and current['own_food_allocation']!=claim['context']['own_food_allocation']:
             raise ValueError('Household allocation changed while deciding')
         state = copy.deepcopy(self.active)
@@ -370,7 +395,7 @@ class Agency:
             job = current['work_options'][action]
             updated.update(phase='job_offer', target=job['employer'], work_terms=job)
             if updated.get('voiced_trade'):approach_employer(updated)
-        elif action.startswith('work_own_'):
+        elif action in current['owner_work_actions']:
             updated.update(phase='ready_to_self_work',intent='owner_production',own_work_terms=current['work_options'][action])
         elif action == 'offer_shift':
             updated['phase'] = 'job_accept'
@@ -406,7 +431,8 @@ class Agency:
                     'buyer':updated['actor'],'seller':updated['target'],'quantity':1,
                     'unit_price':updated.get('unit_price',3),
                     'policy':copy.deepcopy(state['people'][str(updated['target'])].get('food_policy')),
-                    'inventory':{k:current['observed_inventory'][k] for k in ('gold','bread')},
+                    'inventory':{k:current['observed_inventory'][k] for k in commodity_ids()},
+                    'catalog_hash':current['inventory_catalog_hash'],
                     'decision_claim_id':claim_id}
         elif action == 'decline':
             self._remember_refusal(state, updated)

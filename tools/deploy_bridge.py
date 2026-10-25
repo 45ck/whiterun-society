@@ -3,7 +3,11 @@ import argparse
 import json
 import hashlib
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from economy_catalog import canonical_json, load_catalog
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--root',type=Path,required=True)
@@ -17,6 +21,8 @@ config=json.loads((root/'runtime'/'bridge-config.json').read_text())
 audio_mode=root/'runtime'/'audio-mode.json'
 config['audioDiagnostic']=json.loads(audio_mode.read_text()).get('disabled',False) if audio_mode.exists() else False
 source=(Path(__file__).resolve().parents[1]/'bridge'/'whiterun-society.js').read_text()
+source=source.replace('__ECONOMY_CATALOG_FACTORY__',(Path(__file__).resolve().parents[1]/'bridge'/'economy-catalog.js').read_text(encoding='utf-8').split('\nif(typeof module')[0])
+source=source.replace('__ECONOMY_CATALOG_MANIFEST__',canonical_json(load_catalog()))
 factory=(Path(__file__).resolve().parents[1]/'bridge'/'inventory-transfers.js').read_text().split('\nif (typeof module')[0]
 source=source.replace('__TRANSFER_FACTORY__',factory)
 endowments=(Path(__file__).resolve().parents[1]/'bridge'/'endowments.js').read_text().split('\nif(typeof module')[0]

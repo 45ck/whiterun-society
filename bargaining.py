@@ -5,6 +5,7 @@ Only the resident's own completed transactions supply historical price evidence.
 """
 import copy
 from food import allocation
+from economy_catalog import commodity_ids, catalog_hash, native_catalog_matches
 
 PRICING_POLICY = 'resident-bargaining-v1'
 MAX_ECONOMIC_CALLS = 6
@@ -38,9 +39,10 @@ def quote_valid(state, plan, observation):
     quote = plan.get('counter_quote')
     if not quote:
         return False
+    if quote.get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation):return False
     seller = next((r for r in observation.get('residents', []) if r['id'] == plan['target']), {})
     commodity=plan.get('commodity','bread')
-    inventory = {k: seller.get('inventory', {}).get(k) for k in (('gold','bread','grain') if commodity=='grain' else ('gold','bread'))}
+    inventory = {k: seller.get('inventory', {}).get(k) for k in commodity_ids()}
     person = state['people'].get(str(plan['target']), {})
     return (quote['seller'] == plan['target'] and quote['buyer'] == plan['actor']
             and quote['unit_price'] == plan['unit_price'] and inventory == quote['inventory']
@@ -54,7 +56,8 @@ def record_quote(state, plan, context, price, claim_id):
     person = state['people'][str(plan['target'])]
     stock = context['own_food_allocation'];commodity=plan.get('commodity','bread')
     plan['counter_quote'] = {'buyer': plan['actor'], 'seller': plan['target'], 'unit_price': price,
-        'commodity':commodity,'inventory': {k: context['observed_inventory'][k] for k in (('gold','bread','grain') if commodity=='grain' else ('gold','bread'))},
+        'commodity':commodity,'inventory': {k: context['observed_inventory'][k] for k in commodity_ids()},
+        'catalog_hash':context.get('inventory_catalog_hash'),
         'policy': copy.deepcopy(person.get('food_policy')), 'allocation': copy.deepcopy(stock),
         'release_reserved': commodity=='bread' and stock['allocated'] and stock['for_sale'] < 1, 'claim_id': claim_id}
 
@@ -68,4 +71,5 @@ def accept_quote(state, plan, observation):
         plan['reserve_release'] = {'plan_id': plan['id'], 'trade_id': plan['trade_id'],
             'buyer': plan['actor'], 'seller': plan['target'], 'quantity': 1,
             'unit_price': quote['unit_price'], 'policy': copy.deepcopy(quote['policy']),
+            'catalog_hash':quote['catalog_hash'],
             'inventory': copy.deepcopy(quote['inventory']), 'decision_claim_id': quote['claim_id']}

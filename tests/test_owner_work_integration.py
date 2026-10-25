@@ -10,6 +10,7 @@ import test_owner_production
 from test_conversation import AUDIO,CANDIDATES
 from owner_work_jobs import _identity
 from activity_leases import reserved_activity_actors
+from economy_catalog import catalog_hash
 
 
 class OwnerWorkIntegrationTests(unittest.TestCase):
@@ -22,6 +23,7 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
 
     def setUp(self):
         test_owner_production.OwnerProductionTests.setUp(self)
+        self.actor['baseId']=9099  # Explicit offline native identity fixture.
         self.obs['owner_work_jobs']={'available':True,'capacity':4,'jobs':[],'receipts':[]}
 
     def delegate(self):
@@ -55,7 +57,7 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
         self.actor['inventory']=copy.deepcopy(command['after']['owner'])
         self.obs['ack']={**_identity(job),'id':command['id'],'commit_id':command['id'],'status':'applied',
                          'attendance_token':command['attendance_token'],'inventory':copy.deepcopy(command['after']),
-                         'effects_issued':True,'committed_inventory_verified':True}
+                         'effects_issued':True,'committed_inventory_verified':True,'mechanism':'native_owner_recipe'}
         self.world.observe(self.obs);self.sync()
         return command
 
@@ -93,7 +95,7 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
 
     def test_unrelated_inventory_writer_is_not_overwritten_by_attendance(self):
         job=self.delegate();state=copy.deepcopy(self.world.active)
-        unrelated={'id':'other-consume','status':'pending','command':{'id':'other-consume','kind':'inventory_consume','actor':108186},'evidence':None}
+        unrelated={'id':'other-consume','status':'pending','command':{'id':'other-consume','kind':'inventory_consume','actor':108186,'catalog_hash':catalog_hash()},'evidence':None}
         state['pending']=copy.deepcopy(unrelated)
         self.world._write(state,'Test fixture: independent already-admitted food effect');self.sync()
         self.attendance(job)

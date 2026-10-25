@@ -15,6 +15,22 @@ test('owner work labels keep attendance, settlement and cleanup separate',()=>{
  assert.match(ownerWorkLabel({orphan:true,settlement_state:'committed'}),/release only; no output credited/);
 });
 
+test('versioned recipes render trusted generic quantities and clearly exclude legacy records',()=>{
+ const {ownerRecipeLabel,ownerWorkLabel}=require('../ui/society-dashboard.js');
+ const recipe={id:'grain_recovery',version:'v2',status:'verified',inputs:{bread:2},outputs:{grain:3},catalog_hash:'catalog-pin',recipe_hash:'recipe-pin'};
+ assert.equal(ownerRecipeLabel(recipe),'grain_recovery · v2 · 2 bread → 3 grain');
+ assert.match(ownerWorkLabel({recipe:{status:'legacy_unversioned'},settlement_state:'committed'}),/Legacy recipe record · no catalog-verified output credit/);
+ assert.match(ownerRecipeLabel({status:'catalog_mismatch'}),/verification held · catalog mismatch/);
+ assert.equal(ownerRecipeLabel(null),'Recipe quantities unverified');
+ const {dom,w}=native();try{const d=dashboard();d.owner_work={jobs:[{actor:7,recipe}],consumed_goods:{bread:2},produced_goods:{grain:3},legacy_production_records:1,legacy_records:[{id:'old-record',status:'committed',provenance:'Legacy unversioned record; not credited as catalog-verified production'}]};
+  const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
+  assert.match(root.textContent,/Catalog catalog-pin · recipe recipe-pin/);
+  assert.match(root.textContent,/Verified output: 3 grain/);assert.match(root.textContent,/Verified inputs used: 2 bread/);
+  assert.match(root.textContent,/1 legacy production records excluded from catalog-verified totals/);
+  assert.match(root.textContent,/old-record · committed · Legacy unversioned/);
+ }finally{dom.window.close();}
+});
+
 test('owner work charts show configured capacity, missing observations and verified outputs only',()=>{
  const {dom,w}=native();try{const d=dashboard();d.owner_work={fresh:true,configured_capacity:4,native_capacity:4,leased_jobs:4,native_matched_jobs:1,unmeasured_jobs:3,observed_working:1,awaiting_commit:0,recorded_admissions:4,qualified_attendance:0,committed_jobs:0,released_jobs:0,produced_goods:{},jobs:[{actor:7,actor_name:'<img src=x>',attendance_state:'working',settlement_state:'not_ready',cleanup_state:'reserved',worked_minutes:10,work_minutes:30,attendance_samples:4}]};
   const root=w.document.getElementById('town-charts');w.renderTownCharts(root,d);
@@ -41,6 +57,19 @@ test('background owner work appears in inspector even when another resident owns
   assert.match(text,/Independent owner workAttendance qualified · awaiting inventory commit/);
   assert.match(text,/settlement: awaiting commit/);
   assert.doesNotMatch(text,/Output verified/);
+ }finally{dom.window.close();}
+});
+
+test('legacy owner completion never acquires a current catalog verification label',()=>{
+ const {dom,w}=native();try{
+  const person={profile:{name:'Owner',role:'resident',big_five:{}},needs:{hunger:.2},memories:[],relationships:{}};
+  const plan={id:'legacy-work',actor:7,phase:'complete',outcome:'owner_work_completed',own_work_terms:{policy:{work_minutes:30}}};
+  w.whiterunRender({residents:[{id:7,name:'Owner',isPerson:true,inventory:{gold:2,bread:1}}],trades:[],society:{people:{7:person},town:{residents:{7:{name:'Owner'}}},plan},dashboard:dashboard()});
+  w.whiterunInspectKey(2);
+  const text=w.document.getElementById('resident-inspector').textContent;
+  assert.match(text,/Recipe quantities unverified/);
+  assert.match(text,/Recorded owner-work completion · current catalog verification unavailable/);
+  assert.doesNotMatch(text,/1 grain → 2 bread|Catalog-authorized output verified|Owned output verified/);
  }finally{dom.window.close();}
 });
 test('resident inspector labels controlled business choices separately from model choices',()=>{

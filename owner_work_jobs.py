@@ -11,15 +11,16 @@ import secrets
 import time
 from activity_leases import owner_work_leases, activity_conflict, work_account_conflict
 from enterprises import production_policy
-from entrepreneurship import learn_bread_recipe
+from entrepreneurship import learn_recipe
 from owner_production import owner_work_opportunities
+from economy_catalog import (commodity_ids, recipe_spec, recipe_hash, catalog_hash, apply_recipe,
+                             native_catalog_matches, MAX_STOCK)
 
 SCHEMA = 'owner-work-jobs-v1'
 DEFAULT_CAPACITY = 4
 IDENTITY = ('actor', 'slot', 'session', 'epoch', 'business_id', 'business_revision',
-            'recipe_id', 'policy_version', 'work_minutes')
+            'recipe_id', 'policy_version', 'work_minutes', 'catalog_hash', 'recipe_hash')
 PHASES = ('attendance_verified', 'recipe_committed', 'complete', 'held')
-ITEMS = ('gold', 'bread', 'grain')
 
 
 def _finite(value):return type(value) in (int, float) and math.isfinite(value)
@@ -39,12 +40,13 @@ def _hash(value):
 def _matches(receipt, job):
     if not isinstance(receipt, dict):return False
     actual = {**receipt, 'session': receipt.get('job_session', receipt.get('session'))}
-    return (actual.get('job_id') == job['id'] and all(type(actual.get(k)) is type(job[k]) and actual.get(k) == job[k] for k in IDENTITY)
+    return (actual.get('job_id') == job['id'] and all(
+            type(actual.get(k)) is type(job[k]) and actual.get(k) == job[k] if k in job else actual.get(k) is None for k in IDENTITY)
             and ('actor_base_id' not in job or type(actual.get('actor_base_id')) is int and actual['actor_base_id'] == job['actor_base_id']))
 
 
 def _identity(job):
-    result = {'job_id': job['id'], **{key: job[key] for key in IDENTITY}}
+    result = {'job_id': job['id'], **{key: job[key] for key in IDENTITY if key in job}}
     if 'actor_base_id' in job:result['actor_base_id'] = job['actor_base_id']
     return result
 
@@ -60,17 +62,31 @@ def _record(state, job):
 
 def _current_business(state, job):
     business = state.get('town', {}).get('businesses', {}).get(job['business_id'])
-    return bool(business and business.get('active', True) is True and business.get('owner') == job['actor']
-        and business.get('custodian') == job['actor'] and business.get('revision', 0) == job['business_revision']
-        and 'bread_recipe' in business.get('capabilities', []) and production_policy(business) == job['policy'])
+    try:
+        return bool(business and business.get('active', True) is True and business.get('owner') == job['actor']
+            and business.get('custodian') == job['actor'] and business.get('revision', 0) == job['business_revision']
+            and job['recipe_id'] in business.get('capabilities', []) and production_policy(business,job['recipe_id']) == job['policy'])
+    except (ValueError,KeyError,TypeError):return False
+
+
+def _current_catalog(job):
+    try:return job.get('catalog_hash')==catalog_hash() and job.get('recipe_hash')==recipe_hash(job['recipe_id'])
+    except (KeyError,ValueError):return False
+
+
+def _native_identity_supported(job):
+    return (type(job.get('actor_base_id')) is int and job['actor_base_id']>0
+        and all(isinstance(job.get(key),str) and len(job[key])==64 and all(c in '0123456789abcdef' for c in job[key])
+                for key in ('catalog_hash','recipe_hash')))
 
 
 def _inventory(observation, job):
     actor = next((r for r in observation.get('residents', []) if r.get('id') == job['actor'] and r.get('isPerson') is True), None)
     if not actor or 'actor_base_id' in job and actor.get('baseId') != job['actor_base_id']:return None
     inventory = actor.get('inventory', {})
-    if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ITEMS):return None
-    return {'owner': {k: inventory[k] for k in ITEMS}}
+    items=commodity_ids()
+    if any(type(inventory.get(k)) is not int or not 0<=inventory[k]<=MAX_STOCK for k in items):return None
+    return {'owner': {k: inventory[k] for k in items}}
 
 
 def _attendance_valid(receipt, job, day):
@@ -97,7 +113,9 @@ def _orphan_key(receipt):
     if type(receipt.get('business_revision')) is not int or receipt['business_revision'] < 0:return None
     if type(receipt.get('work_minutes')) is not int or not 5 <= receipt['work_minutes'] <= 120:return None
     if type(receipt.get('release_verified')) is not bool:return None
-    return _hash({key: receipt[key] for key in ('job_id', *IDENTITY)})
+    for key in ('catalog_hash','recipe_hash'):
+        if key in receipt and (not isinstance(receipt[key],str) or len(receipt[key])!=64 or any(c not in '0123456789abcdef' for c in receipt[key])):return None
+    return _hash({key: receipt[key] for key in ('job_id', *IDENTITY) if key in receipt})
 
 
 class OwnerWorkJobs:
@@ -111,7 +129,7 @@ class OwnerWorkJobs:
                         'recipe_prepared_day', 'committed_day', 'settled_day', 'attendance', 'attendance_receipt_hash',
                         'settlement', 'release_verified', 'receipt_acknowledged', 'receipt_hash', 'outcome',
                         'error', 'orphan', 'received_session', 'cancel_requested', 'no_effects_issued',
-                        'effect_unreconciled', 'input_reservation')}}
+                        'effect_unreconciled', 'input_reservation','recipe_definition','catalog_held','capability_source')}}
         records = [*state.get('work_jobs', {}).values(), *state.get('work_orphans', {}).values()]
         return {'schema_version': SCHEMA, 'pool_id': 'citizen-owner-work',
                 'capacity': state.get('work_job_capacity', DEFAULT_CAPACITY), 'epoch': state.get('work_job_epoch'),
@@ -127,12 +145,17 @@ class OwnerWorkJobs:
             raise ValueError('Independent owner work capacity is unavailable')
         if len(owner_work_leases(self.active)) >= capacity:raise ValueError('Independent owner work capacity is leased')
         terms = plan['own_work_terms'];actor_id = plan['actor']
+        if (terms.get('catalog_hash')!=catalog_hash() or terms.get('recipe_hash')!=recipe_hash(terms.get('recipe_id'))
+            or not native_catalog_matches(observation,terms.get('recipe_id'))):
+            raise ValueError('Independent owner work requires the matching resolved native catalog')
         if activity_conflict(self.active, actors=(actor_id,), observation=observation) or work_account_conflict(
                 self.active, actors=(actor_id,), business_ids=(terms['business_id'],), observation=observation):
             raise ValueError('Owner account or enterprise is already leased')
         if terms not in owner_work_opportunities(self.active, observation, actor_id, require_owned=False):
             raise ValueError('Owner production opportunity changed before delegation')
         actor = next(r for r in observation['residents'] if r['id'] == actor_id)
+        if type(actor.get('baseId')) is not int or actor['baseId']<=0:
+            raise ValueError('Independent owner work requires an observed native base identity')
         control = next((r for r in (observation.get('resident_control') or {}).get('activities', []) if r.get('actor') == actor_id), {})
         slot = control.get('slot');day = observation.get('gameDays')
         if type(slot) is not int or not 0 <= slot < 128 or not _finite(day) or day < 0:
@@ -144,13 +167,15 @@ class OwnerWorkJobs:
         state['work_job_capacity'] = capacity
         job_id = 'owner-work-' + hashlib.sha256((epoch + ':' + plan['id']).encode()).hexdigest()[:24]
         if job_id in state.get('work_jobs', {}):raise ValueError('Owner intention may not be delegated twice')
-        policy = copy.deepcopy(terms['policy'])
+        policy = copy.deepcopy(terms['policy']);recipe=recipe_spec(terms['recipe_id'])
         job = {'id': job_id, 'kind': 'owner_production', 'source_plan': plan['id'], 'actor': actor_id,
                'custodian': actor_id, 'account_actor': actor_id, 'slot': slot, 'session': self.session, 'epoch': epoch,
-               'business_id': terms['business_id'], 'business_revision': terms['revision'], 'recipe_id': 'bread_recipe',
+               'business_id': terms['business_id'], 'business_revision': terms['revision'], 'recipe_id': terms['recipe_id'],
+               'catalog_hash':terms['catalog_hash'],'recipe_hash':terms['recipe_hash'],'recipe_definition':recipe,
+               'capability_source':terms['capability_source'],
                'policy_version': 'owner-production-v1:' + _hash(policy)[:16], 'policy': policy,
                'work_minutes': policy['work_minutes'], 'expected_package': terms['expected_package'],
-               'input_reservation': {'grain': 1}, 'phase': 'prepared', 'created_day': day,
+               'input_reservation': copy.deepcopy(recipe['inputs']), 'phase': 'prepared', 'created_day': day,
                'settlement': {'phase': 'not_prepared', 'committed_inventory_verified': False},
                'release_verified': False, 'receipt_acknowledged': False}
         if type(actor.get('baseId')) is int:job['actor_base_id'] = actor['baseId']
@@ -163,12 +188,13 @@ class OwnerWorkJobs:
     def owner_work_pending_command(self):
         if not self.active or self.transition or self.error:return None
         for job in owner_work_leases(self.active):
-            if job.get('receipt_hash') and job.get('release_verified') and not job.get('effect_unreconciled'):
+            if (_native_identity_supported(job) and job.get('receipt_hash') and job.get('release_verified')
+                and not job.get('effect_unreconciled')):
                 command = _command(job, True)
                 if job['session'] != self.session:command.update(session=self.session, job_session=job['session'])
                 return command
         for job in owner_work_leases(self.active):
-            if job['session'] == self.session and job['phase'] == 'prepared':return _command(job)
+            if job['session'] == self.session and job['phase'] == 'prepared' and _current_catalog(job):return _command(job)
         return None
 
     @staticmethod
@@ -195,6 +221,11 @@ class OwnerWorkJobs:
         native = observation.get('owner_work_jobs') or {};ack = observation.get('ack') or {};day = observation.get('gameDays')
         for original in owner_work_leases(self.active):
             receipt = next((r for r in native.get('receipts', []) if _matches(r, original)), None)
+            if not original.get('orphan') and not _current_catalog(original) and not original.get('catalog_held'):
+                state=copy.deepcopy(self.active);job=_record(state,original);job['catalog_held']=True
+                self._hold_owner_job(state,job,'Owner catalog or recipe identity is missing or changed; historical proof cannot authorize new work',
+                    unreconciled=job.get('settlement',{}).get('phase') in ('prepared','held'))
+                self._write(state,'old or unknown owner recipe held without recertifying its catalog');return True
             if (not original.get('orphan') and not original.get('reset_held') and original['session'] != self.session
                 and original['phase'] not in ('complete',)):
                 state = copy.deepcopy(self.active);job = _record(state, original);job['reset_held'] = True
@@ -209,7 +240,8 @@ class OwnerWorkJobs:
                         self._write(state, 'orphan owner task release verified without production credit');return True
                 elif (receipt.get('phase') == 'attendance_verified' and original['phase'] in ('prepared', 'running')):
                     state = copy.deepcopy(self.active);job = _record(state, original)
-                    if _attendance_valid(receipt, job, day) and job['session'] == self.session and not job.get('reset_held'):
+                    if (_attendance_valid(receipt, job, day) and job['session'] == self.session and not job.get('reset_held')
+                        and _current_catalog(job) and native_catalog_matches(observation,job['recipe_id'])):
                         job.update(phase='attendance_verified', attendance=copy.deepcopy(receipt['attendance']),
                             attendance_receipt=_safe(receipt), attendance_receipt_hash=_hash(_safe(receipt)), attendance_verified_day=day)
                     else:self._hold_owner_job(state, job, 'Owner attendance evidence or token is not current and valid')
@@ -248,7 +280,7 @@ class OwnerWorkJobs:
             if key is None or key in self.active.get('work_orphans', {}):continue
             if any(_matches(receipt, j) for j in self.active.get('work_jobs', {}).values()):continue
             state = copy.deepcopy(self.active)
-            job = {'id': receipt['job_id'], **{k: receipt[k] for k in IDENTITY}, 'orphan': True, 'orphan_key': key,
+            job = {'id': receipt['job_id'], **{k: receipt[k] for k in IDENTITY if k in receipt}, 'orphan': True, 'orphan_key': key,
                    'phase': 'held', 'outcome': 'orphan_owner_work_held', 'received_session': self.session,
                    'cancel_requested': True, 'receipt': _safe(receipt), 'receipt_hash': _hash(_safe(receipt)),
                    'effect_unreconciled': receipt.get('effects_issued') is not False,
@@ -269,18 +301,21 @@ class OwnerWorkJobs:
             state = copy.deepcopy(self.active);job = _record(state, original);day = observation.get('gameDays')
             evidence = job['attendance'];actual = _inventory(observation, job)
             current_receipt = next((r for r in (observation.get('owner_work_jobs') or {}).get('receipts', []) if _matches(r, job)), None)
-            valid = (job['session'] == self.session and _current_business(state, job) and actual and actual['owner']['grain'] >= 1
+            valid = (job['session'] == self.session and _current_catalog(job) and native_catalog_matches(observation,job['recipe_id'])
+                     and _current_business(state, job) and actual
                      and current_receipt and _attendance_valid(current_receipt, job, day)
                      and current_receipt['attendance']['token'] == evidence['token'])
+            try:after={'owner':apply_recipe(actual['owner'],job['recipe_id'])} if valid else None
+            except ValueError:valid=False
             if not valid:
                 self._hold_owner_job(state, job, 'Fresh owner stock, charter, identity or attendance permit changed before recipe')
                 self._write(state, 'owner recipe not admitted; no inventory effect');return True
-            after = copy.deepcopy(actual);after['owner']['grain'] -= 1;after['owner']['bread'] += 2
             commit_id = 'owner-recipe-' + job['id']
             command = {'id': commit_id, 'kind': 'inventory_self_produce_commit', **_identity(job),
                        'commit_id': commit_id, 'attendance_token': evidence['token'], 'before': actual, 'after': after}
             state['pending'] = {'id': commit_id, 'command': command, 'status': 'pending', 'evidence': None,
                 'business_id': job['business_id'], 'work_job': job['id'], 'prepared_session': self.session,
+                'recipe_definition':copy.deepcopy(job['recipe_definition']),
                 'source': 'Verified independent owner attendance; single account recipe, zero wage'}
             job.update(phase='recipe_prepared', recipe_prepared_day=day,
                 settlement={'phase': 'prepared', 'commit_id': commit_id, 'committed_inventory_verified': False})
@@ -294,6 +329,12 @@ class OwnerWorkJobs:
         if observation.get('inventory_checkpoint', self.marker) != self.marker:return False
         command = pending['command'];original = self.active.get('work_jobs', {}).get(pending.get('work_job'))
         if original is None:return False
+        if not _current_catalog(original) or not native_catalog_matches(observation,original['recipe_id']):
+            state=copy.deepcopy(self.active);record=state['pending'];job=_record(state,original)
+            record.update(status='held',error='Prepared recipe catalog no longer matches resolved native authority; do not replay')
+            job['settlement']['phase']='held';job['catalog_held']=True
+            self._hold_owner_job(state,job,record['error'],unreconciled=True)
+            self._write(state,'owner recipe catalog mismatch quarantined without inventory credit');return True
         if pending.get('prepared_session') != self.session or observation.get('session') != self.session:
             if pending.get('status') == 'held':return False
             state = copy.deepcopy(self.active);record = state['pending'];job = _record(state, original)
@@ -314,11 +355,17 @@ class OwnerWorkJobs:
             record['status'] = 'committed'
             if not any(r['id'] == record['id'] for r in state.get('production', [])):
                 state.setdefault('production', []).append(copy.deepcopy(record))
-                person = state['people'][str(job['actor'])];learn_bread_recipe(person, record['id'])
-                person['memories'] = (person.get('memories', []) + [{'event_id': record['id'], 'kind': 'owner_work',
-                    'business_id': job['business_id'], 'work_job': job['id'], 'grain_used': 1, 'bread_made': 2,
+                person = state['people'][str(job['actor'])];learn_recipe(person, record['id'],job['recipe_id'])
+                recipe=job['recipe_definition']
+                memory={'event_id': record['id'], 'kind': 'owner_work',
+                    'business_id': job['business_id'], 'work_job': job['id'],'recipe_id':job['recipe_id'],
+                    'catalog_hash':job['catalog_hash'],'recipe_hash':job['recipe_hash'],
+                    'inputs':copy.deepcopy(recipe['inputs']),'outputs':copy.deepcopy(recipe['outputs']),
                     'gold_paid': 0, 'work_minutes': job['work_minutes'],
-                    'source': 'Qualified stationary attendance and observed native recipe; productive animation unverified'}])[-32:]
+                    'source': 'Qualified stationary attendance and observed native recipe; productive animation unverified'}
+                if job['recipe_id']=='bread_recipe' and set(recipe['inputs'])=={'grain'} and set(recipe['outputs'])=={'bread'}:
+                    memory.update(grain_used=recipe['inputs']['grain'],bread_made=recipe['outputs']['bread'])
+                person['memories'] = (person.get('memories', []) + [memory])[-32:]
             job.update(phase='recipe_committed', committed_day=day, effect_unreconciled=False,
                        settlement={'phase': 'committed', 'commit_id': record['id'], 'production_record_id': record['id'],
                                    'committed_inventory_verified': True})

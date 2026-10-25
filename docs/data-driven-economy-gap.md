@@ -1,86 +1,51 @@
-# Data-driven economy: next-slice gap and proposal
+# Data-driven economy: implemented catalog and remaining gaps
 
-**Status: proposed, not implemented.** This is a source-code audit of the next economy slice. The independent owner-work lifecycle has been implemented separately; native acceptance of that slice remains pending. This audit performed no game control, native inventory changes, or runtime catalogue discovery.
+**Implemented in source; deployment and native qualification remain unclaimed.** The versioned catalog, Python/bridge validation, owner-recipe parameterization, catalog-bound inventory intents and recipe-aware charter/knowledge paths now exist. The default catalog still contains exactly **gold, bread and wheat-labelled grain, with one authored bread recipe**. This closes a definition/execution gap without establishing a broader industrial economy. [Architecture and implementation contract](economy-catalog.md).
 
-The present system has dynamic residents, enterprise ownership, leases and policy choices, but its executable commodities and recipes are still narrowly authored in code. A configurable bakery policy is not a general production economy.
+## Built, unqualified and still limited
 
-## Current executable limits
-
-| Area | Current limitation | Source |
+| Area | Implemented source behavior | Remaining boundary |
 | --- | --- | --- |
-| Native observation | The observed commodity map contains only gold, bread and grain, with native form IDs embedded in JavaScript. | `bridge/whiterun-society.js`, `bridge/production.js`, `bridge/inventory-transfers.js` |
-| Enterprise charter | Executable capabilities are `retail_food`, `bread_recipe`, and `retail_grain`. Policy uses `target_bread`, `grain_per_shift`, and `bread_per_shift`; the permitted recipe is exactly one grain into two bread. | `enterprises.py` |
-| Independent owner work | Eligibility, inventory keys, input reservation, output delta, recipe ID, learning and memory all assume bread production. | `owner_production.py`, `owner_work_jobs.py` |
-| Native work permit | Job identity admits `bread_recipe`; the serialized commit validates exactly the gold/bread/grain account and one-grain/two-bread conversion. | `bridge/owner-work-jobs.js`, `bridge/production.js` |
-| Other paid work | The earlier employer/worker flow also implements the bread recipe and its wage transfer. | `production.py`, `labour.py` |
-| Trade and procurement | Seller discovery, commodity snapshots and native trades support bread/grain; procurement specifically seeks grain for bakeries. | `opportunities.py`, `world_economy.py`, `procurement.py`, `bridge/inventory-transfers.js` |
-| Knowledge and founding | Verified recipe learning and bakery registration explicitly reference bread. | `entrepreneurship.py` |
-| Reporting | Several production and cash-flow checks assume bread/grain fields and recipe-specific memory records. | `agency_metrics.py`, `owner_work_metrics.py`, `metrics.py` |
+| Catalog authority | `config/economy-catalog.json`, `economy_catalog.py`, `bridge/economy-catalog.js` validate definitions and canonical hashes; packaging embeds the validated manifest | Not a live hot-edit interface; the running service and bridge must be updated coherently and qualified |
+| Native observation | Configured commodities resolve by plugin/local ID and class/type evidence; unknown counts remain unavailable; duplicate resolved forms fail | Offline master verification does not prove the installed runtime binding or load-order overrides |
+| Owner production | One data-defined input and one distinct output, quantities 1–1,000; complete account checks and unchanged currency; single-use attendance token and serialized commit witness | No multi-input crafting, station-use proof or native generic-recipe acceptance yet |
+| Enterprise policy | Executable recipe capabilities come from the catalog; recipe policies are keyed by registered ID and generic output targets | Existing bread policy fields remain compatibility fields; registration creates no stock, building or tools |
+| Knowledge and decisions | Recipe-specific verified learning, exact definition matching, offered business/recipe action IDs and explicit historical bread aliases | A catalog entry does not teach a recipe. Authored operator charters are not proof of resident learning |
+| Trade and procurement | Bread/grain paths carry catalog proof and preserve the full configured account | New catalog materials do not automatically acquire sellers, buyer demand, price negotiation or procurement routes |
+| Consumption and finite grants | Existing supported actions now carry catalog proof and preserve unrelated configured balances | Consumption is still bread; grants retain original commodity support |
+| Paid work | New bread-production terms pin catalog/recipe hashes and derive quantities from the catalog | Paid-work menus and labour contracts remain bread-oriented, not generic industrial employment |
+| Reporting | Configured mechanisms and deduplicated committed owner transformations are separate; input/output quantities retain their commodity identity | Configuration is not throughput, zero owner wage is not profit, and no new realism or OKR score is claimed |
 
-`metalwork_planned` is a planning label, not an executable recipe or charter capability. Existing coverage deliberately preserves such planned businesses instead of silently converting them into bakeries (`tests/test_entrepreneurship.py`). Registration itself supplies no inputs, tools, money, buildings, or verified knowledge.
+A synthetic **two-grain to three-bread** recipe exercises generic quantities in tests only. It is not in the checked-in runtime catalog. The verified iron conversion below is also not activated. `metalwork_planned` remains a planning label, not an executable charter capability.
 
-Two owner jobs do not require two different recipes: two legitimately configured and funded bakery owners can test concurrent attendance and serialized commits. That proof would establish concurrency, not industrial diversity. A planned workshop must not be relabelled merely to satisfy the test prerequisite.
+## Migration is conservative
 
-## Smallest useful catalogue slice
+New inventory intents require a matching resolved/type-verified native catalog and carry its digest. Owner/paid-production terms also pin recipe identity. Missing or changed catalog proof on an unsettled legacy intent causes a hold; the dispatcher does not stamp it with a new hash or replay it. Old owner jobs without supported proof require explicit reconciliation. Historical receipts and narrowly defined legacy bread knowledge remain readable without claiming modern native evidence.
 
-Introduce **one versioned, validated economy catalogue**, shared by Python and the deployed native bridge. Start by representing the existing three commodities and bread recipe without changing their meaning. Then admit one additional, verified native material conversion. The initial generic engine should support exactly one input commodity and one distinct output commodity per recipe; multi-input crafting is a later extension to the effect journal.
+Catalog changes invalidate recipe hashes because each recipe digest includes the full catalog digest. A configuration edit cannot reinterpret already accepted work. Full configured accounts are required: missing commodity observations are not zero balances. The service loads its catalog at process import and deployment packaging embeds the bridge manifest; editing one JSON file does not update running processes. No blanket live-save migration or native rollout has been qualified by this implementation.
 
-Proposed files:
+## Verified owned-master metadata
 
-- `config/economy-catalog.json`: logical commodity IDs, display labels, native plugin/local-form references, classification and provenance; recipe IDs, input/output quantities, bounded labour policy and revision.
-- `economy_catalog.py` and `bridge/economy-catalog.js`: equivalent validation, canonicalization, lookup and deterministic recipe-delta construction.
-- `tools/deploy_bridge.py`: validate and bundle the same manifest and digest used by the Python service. A mismatch prevents admission.
+The local owned `Skyrim.esm` is **249,753,412 bytes**, SHA-256 `2bbc77fdec35a70ef96b710f8c525e50a1db9e63e11a391a0eb9ee8f56d36107`. Its TES4 record version is **44** and HEDR version decodes to **1.7100000381469727**. Record traversal, compressed-record decoding and subrecord parsing produced the following metadata; game assets were not copied into the repository. [Compact provenance and records](evidence/native-economy-items.json).
 
-The catalogue is reviewed game configuration. Models select currently offered recipe IDs; they do not supply native form IDs, executable code, inventory deltas, or new recipe definitions through an ordinary decision response.
+| Logical use | Plugin-local form ID | Native record / editor ID | Activation boundary |
+| --- | --- | --- | --- |
+| Septims | `Skyrim.esm:0000000F` | MISC / `Gold001` | Existing currency mapping |
+| Bread | `Skyrim.esm:00065C97` | ALCH / `FoodBread01A` | Existing food mapping |
+| Grain label | `Skyrim.esm:0004B0BA` | INGR / `Wheat` | Existing simulation label maps specifically to wheat |
+| Candidate iron ore | `Skyrim.esm:00071CF3` | MISC / `OreIron` | Verified metadata only; not added as executable material |
+| Candidate iron ingot | `Skyrim.esm:0005ACE4` | MISC / `IngotIron` | Verified metadata only; not added as executable material |
 
-Each new job must pin catalogue version/digest, recipe revision/digest, enterprise revision, accepted policy, actor/base identity and native attendance identity. A configuration edit must not reinterpret in-flight work. Historical receipts retain their pinned definitions. Legacy bread records need an explicit compatibility reader rather than an invented modern proof.
+The master contains **COBJ `000A30C3`, `RecipeIngotIron`**, record version 40: one `OreIron` input, one `IngotIron` output, one declared input entry, and zero CTDA condition subrecords. Its workbench keyword is **`000A5CCE`, `CraftingSmelter`**. Zero condition subrecords does not remove that workstation requirement. Current stationary owner attendance does **not** prove access to, operation of, or animation at a smelter. The candidate remains disabled until a station-access gate, an explicit simulation labour policy and appropriate actor recipe knowledge exist and are tested. Native recipe metadata supplies no economic demand, price, profit or autonomous production evidence.
 
-Enterprise policy should express the selected output's stock target rather than a universal `target_bread`. Recipe knowledge and production memories should reference a recipe ID and verified receipt, with an explicit adapter for existing bread memories. A new recipe must not become universally known merely because its catalogue entry exists.
+Local SKSE source declares native `Form.GetType()` and enum values **MISC 32**, **INGR 30**, **Potion/ALCH 46** and **ConstructibleObject 49**. Source hashes are retained in the metadata receipt. No installed SkyrimPlatform SDK declaration was located, and its exact typed casts/getType binding was not invoked. Runtime feature checks must require available, consistent class/type evidence; static enum knowledge is not proof that the installed bridge exposes the method. Load-order overrides remain outside this base-master inspection.
 
-## Preserve the authority and accounting boundaries
+## Native acceptance and remaining economic work
 
-1. Require a valid current enterprise, known/offered recipe and actually observed input stock. Charter registration and catalogue loading create no resources.
-2. Reserve the actor, native inventory account, enterprise revision and required input quantity as **intent**. Do not debit inputs before labour or create a second spendable business wallet.
-3. Count qualified native attendance independently. It establishes stationary labour time; productive animation remains unverified unless separately measured.
-4. Persist the attendance receipt and its single-use native permit. Recheck current charter, identity, catalogue agreement and fresh inventory at the existing exclusive writer boundary.
-5. Derive `before`, input-only intermediate state and `after` from the trusted recipe. Native code independently derives and checks the same states. Preserve the existing issued/observed witness for each inventory leg.
-6. Consume the exact permit for one commit ID before the first native effect. Only a matching commit receipt plus observed final inventory records production. `actual == after` alone remains insufficient.
-7. Keep leases through verified release and durable receipt acknowledgement. Unknown/partial effects, cold controller state, changed sessions and unresolved old-save jobs remain quarantined; they never replay labour or mint a replacement output.
+Focused automated work covers schema rejection, canonical identity, complete-account arithmetic, changed catalog/charter handling, recipe-specific knowledge and synthetic nondefault quantities. Native-controller tests retain single-use permits, input/output witnesses, partial-effect holds, duplicate acknowledgements and release/quarantine behavior. These are source-level tests; final aggregate results belong in the verified build/run record, not an invented total here.
 
-The initial catalogue validator should reject duplicate logical IDs, duplicate native commodity mappings, unresolved recipe references, nonpositive/fractional/overflowing quantities, empty-input recipes, identical input/output commodities and currency creation or consumption by this owner-production primitive. Gold remains unchanged. Approved transformations are authored recipes, not claims of real-world mass conservation or economic calibration.
+Before qualifying native generic production, show the installed catalog resolving with matching hashes and types, then two eligible owners accruing overlapping attendance while a disjoint foreground encounter proceeds. Serialize the final commits and retain exact per-owner before/input-only/after inventories, tokens, receipt hashes, source plans and release acknowledgements. Test changed catalog, missing inputs, partial effects, expired permits, cold restart and old-save restoration without replay. An authored recipe fixture demonstrates mechanics; later unforced choices need separate denominators and evidence.
 
-## Native form verification is a prerequisite
+To make a material supply chain, the next work must connect acquisition, seller discovery, private stock allocation, agreed-price exchange, recipe knowledge, accessible workstations, production and demand. Generalize `opportunities.py`, `world_economy.py`, `procurement.py`, `bridge/inventory-transfers.js` and decision/consent paths deliberately. A new commodity mapping does not provide those mechanisms. Multi-input crafting needs a reviewed multi-leg effect journal; business profit needs costs, revenue and account boundaries rather than a turnover label.
 
-Do not guess a new material's form ID or treat a display name as identity. Resolve the declared plugin/local-form reference in the isolated installation, verify the actual form class and identity, and confirm that the intended native inventory APIs can observe it. Duplicate resolved forms must not masquerade as distinct commodities, especially as an alias for currency.
-
-Missing plugins, unresolved forms, unknown counts or incomplete observations mean **unavailable**, never an observed quantity of zero. No new recipe becomes executable until both service and native bridge agree on the verified catalogue. Any finite demonstration inputs must use the existing explicit, accounted resource-authoring path; ordinary production must not replenish itself.
-
-No such new form verification was performed in this audit.
-
-## Code changes needed for the vertical slice
-
-| Change | Modules |
-| --- | --- |
-| Observe the configured commodity set and report catalogue compatibility | `bridge/whiterun-society.js`, new catalogue loaders, `tools/deploy_bridge.py` |
-| Advertise recipes and compute owner opportunities from charter, knowledge and own stock | `enterprises.py`, `owner_production.py`, `entrepreneurship.py`, `goal_opportunities.py`, relevant `agency.py` context |
-| Pin recipe/catalogue identity and derive saved effects | `owner_work_jobs.py` |
-| Verify pinned identity and parameterize the existing two-leg recipe witness | `bridge/owner-work-jobs.js`, `bridge/production.js` |
-| Record and display verified commodity inputs/outputs without counting admission as production | `agency_metrics.py`, `owner_work_metrics.py`, `metrics.py`, observer/dashboard projection |
-
-The owner-only production slice does **not** automatically add trading, procurement, consumption or paid contracts for every new commodity. A following integration must generalize `opportunities.py`, `world_economy.py`, `procurement.py`, `bridge/inventory-transfers.js` and their decision/consent paths. Retain private-stock boundaries and agreed-price/wage checks. Do not label a new material a functioning supply chain until those exchanges have receipts.
-
-## Required tests and acceptance evidence
-
-- Python/JavaScript catalogue validation and canonical digests agree; unknown recipes, duplicate IDs/forms, currency aliases and invalid quantities fail closed.
-- Existing bread charters, saved jobs, receipts and native behaviour remain compatible without being reseeded.
-- Two different eligible owners select data-defined recipes; both attend independently while final inventory commits remain serialized.
-- Adding a valid test recipe changes offered opportunities and derived deltas without adding an NPC-name branch or recipe-specific execution branch.
-- Insufficient inputs, unavailable forms, incomplete commodity observations, changed ownership/revision and mismatched catalogue hashes cause no effects.
-- Changing configuration during attendance cannot alter the accepted recipe or reuse its token for another recipe.
-- The model cannot inject form IDs, choose an unoffered recipe, change quantities, or turn an input reservation into spendable stock.
-- Duplicate commit, input-call timeout, output-call timeout, inventory drift, cold controller restart and old-save restoration preserve the current no-replay and quarantine guarantees.
-- Production records link catalogue/recipe hashes, exact input/output deltas, native witness, commit ID and source job. No output is counted at admission or attendance completion.
-- Report per-commodity quantities and chain edges; do not add unlike goods as a single physical total or call turnover profit/GDP.
-- Native acceptance must verify the added forms and actual before/input-only/after inventory receipts. Mocked tests alone do not establish this.
-
-This proposal closes a concrete data-model gap. It does not claim that generic recipes, metalworking, new resource sales, or a broader simulated industrial economy already work.
+Keep the [independent owner-work acceptance plan](independent-owner-work.md) and [quantitative roadmap](simulation-roadmap.md) as the next gates. Catalog capacity, generated speech, a local test, and a static master recipe must remain distinct from deployed behavior, actual sales, native station use and a sustained autonomous economy.

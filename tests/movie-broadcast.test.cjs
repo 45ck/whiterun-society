@@ -34,7 +34,7 @@ test('owner work movie frame keeps attendance, uncovered leases and journal prod
  const work={fresh:true,configured_capacity:4,leased_jobs:2,observed_working:1,unmeasured_jobs:1,awaiting_commit:0,committed_jobs:0};
  let frame=movieBroadcastFrames({dashboard:{owner_work:work}}).find(f=>f.title==='Owner work · measured stages');
  assert.equal(frame.value,'1 observed working · 1 unmeasured · 0 awaiting commit');
- assert.match(frame.detail,/2\/4 work slots reserved · 0 linked verified production records/);
+ assert.match(frame.detail,/2\/4 work slots reserved · 0 linked catalog-verified production records/);
  assert.match(frame.detail,/admission and attendance are not output/);
  work.fresh=false;work.observed_working=null;
  frame=movieBroadcastFrames({dashboard:{owner_work:work}}).find(f=>f.title==='Owner work · native telemetry unavailable');

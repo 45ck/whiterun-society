@@ -2,6 +2,7 @@ import copy
 import unittest
 import test_population
 from endowments import CAPACITY
+from catalog_fixture import native_catalog, native_ack
 
 
 class EndowmentTests(unittest.TestCase):
@@ -17,7 +18,7 @@ class EndowmentTests(unittest.TestCase):
         command=self.world.pending(self.obs['session'])
         native=next(a for a in self.obs['residents'] if a['id']==actor)
         native['inventory']=command['after'].copy()
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync();return command
 
     def test_delivery_requires_bound_intent_then_debits_the_finite_pool(self):
@@ -25,9 +26,10 @@ class EndowmentTests(unittest.TestCase):
         self.assertEqual(self.world.pending(self.obs['session'])['kind'],'bind_checkpoint')
         self.assertEqual(self.obs,before);self.sync()
         command=self.world.pending(self.obs['session']);self.assertEqual(command['grant'],{'gold':20,'bread':2,'grain':0})
+        self.assertEqual(command['catalog_hash'],native_catalog()['catalog_hash'])
         self.assertEqual(self.world.active['town']['resource_program']['remaining'],CAPACITY)
         self.obs['residents'][2]['inventory']=command['after'].copy()
-        self.obs['ack']={'id':command['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
         program=self.world.status()['town']['resource_program']
         self.assertEqual(program['remaining'],{'gold':980,'bread':98,'grain':100})
         self.assertEqual(self.world.state(),[]);self.assertEqual(self.world.status()['production'],[])
@@ -48,9 +50,18 @@ class EndowmentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'exhausted'):self.world.plan_endowment(108149,self.obs)
         self.assertEqual(old,self.world.active);self.assertIsNone(self.world.transition)
 
+    def test_endowment_rejects_unverified_catalog_before_reserving_external_resources(self):
+        before=copy.deepcopy(self.world.active)
+        for catalog in (None, {**native_catalog(),'catalog_hash':'other'}, {**native_catalog(),'type_verified':False}):
+            obs=copy.deepcopy(self.obs)
+            if catalog is None:obs.pop('economy_catalog')
+            else:obs['economy_catalog']=catalog
+            with self.assertRaisesRegex(ValueError,'catalog'):self.world.plan_endowment(99,obs)
+            self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
+
     def test_false_acknowledgement_holds_without_debit_or_memory(self):
         self.world.plan_endowment(99,self.obs);self.sync();command=self.world.pending(self.obs['session'])
-        self.obs['ack']={'id':command['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.status()['resource_delivery']['status'],'held')
         self.assertEqual(self.world.active['town']['resource_program']['remaining'],CAPACITY)
         self.assertEqual(self.world.active['people']['99']['memories'],[])
@@ -65,7 +76,7 @@ class EndowmentTests(unittest.TestCase):
         self.obs['residents'][2]['inventory']['gold']=command['after']['gold']
         self.obs['session']='reload-middle';self.world.observe(self.obs)
         self.assertEqual(self.world.pending(self.obs['session'])['id'],command['id'])
-        self.obs['residents'][2]['inventory']=command['after'].copy();self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['residents'][2]['inventory']=command['after'].copy();self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync();self.world.observe(self.obs)
         self.assertEqual(len(self.world.active['town']['resource_program']['grants']),1)
         self.assertEqual(self.world.active['town']['resource_program']['remaining']['gold'],980)
@@ -80,7 +91,7 @@ class EndowmentTests(unittest.TestCase):
         actor=self.obs['residents'].pop(2);actor['loaded']=False
         self.obs['inventory_observations']=[actor]
         self.world.plan_endowment(99,self.obs);self.sync();command=self.world.pending(self.obs['session'])
-        actor['inventory']=command['after'].copy();self.obs['ack']={'id':command['id'],'status':'applied'}
+        actor['inventory']=command['after'].copy();self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertIn('99',self.world.active['town']['resource_program']['grants'])
         self.assertNotIn(99,[a['id'] for a in self.obs['residents']])

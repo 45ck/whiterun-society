@@ -1,10 +1,9 @@
-// Explicit recipe: 1 observed grain + qualified labour -> 2 bread.
-// Agreed wages and attendance are bounded enterprise policy, never model code.
+// Approved catalog recipes and attendance are bounded policy, never model code.
 // Native handles are acquired on each frame. No automatic resource replenishment.
-function createProductionController(platform,now=Date.now){
+function createProductionController(platform,now=Date.now,options={}){
  let active=null;const ownerCommits=new Map();
- const items={gold:0xf,bread:0x65c97,grain:0x4b0ba};
- const equal=(a,b)=>Object.keys(a).every(r=>b[r]&&Object.keys(items).every(k=>a[r][k]===b[r][k]));
+ const catalog=options.catalog||(typeof module!=='undefined'?require('./economy-catalog.js').createEconomyCatalogController(platform):null);
+ const equal=(a,b)=>Object.keys(a).sort().join('|')===Object.keys(b).sort().join('|')&&Object.keys(a).every(r=>b[r]&&catalog.itemIds().every(k=>a[r][k]===b[r][k]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  function ownerAttendance(sp,c){
   const a=c.attendance;
@@ -23,7 +22,7 @@ function createProductionController(platform,now=Date.now){
   reset(){active=null;ownerCommits.clear();},
   status(){return active?{id:active.id,actor:active.actor,expectedPackage:active.package,ownedPackage:!['complete','held'].includes(active.phase)&&active.attendance?.package_owned===true,phase:active.phase,workedMinutes:Math.round(active.days*14400)/10,requiredMinutes:active.minutes,wageGold:active.wage,attendance:active.attendance||null}:null;},
   commitOwnerRecipe(c,workJobs){
-   const identityKeys=['job_id','actor','actor_base_id','slot','session','epoch','business_id','business_revision','recipe_id','policy_version','work_minutes'];
+   const identityKeys=['job_id','actor','actor_base_id','slot','session','epoch','business_id','business_revision','recipe_id','catalog_hash','recipe_hash','policy_version','work_minutes'];
    const identity=Object.fromEntries(identityKeys.map(k=>[k,c[k]]));
    const signature=JSON.stringify([identity,c.id,c.attendance_token,c.before,c.after]);
    let record=ownerCommits.get(c.id),authorized=false;
@@ -43,18 +42,16 @@ function createProductionController(platform,now=Date.now){
    if(permit.continuation&&!record)return fail('Owner effect witness was lost; inventory states cannot authorize replay');
    if(!record&&([...ownerCommits.values()].some(other=>other.phase!=='complete')||active&&active.phase!=='complete'&&(active.phase!=='held'||active.sent)))
     return fail('Another production command owns the inventory writer');
-   if(c.recipe_id!=='bread_recipe'||!c.before||!c.after||[c.before,c.after].some(v=>Object.keys(v).join(',')!=='owner')||
-      [c.before.owner,c.after.owner].some(v=>!v||Object.keys(v).sort().join(',')!=='bread,gold,grain'||Object.values(v).some(n=>!Number.isSafeInteger(n)||n<0))||
-      c.before.owner.grain<1||c.after.owner.gold!==c.before.owner.gold||c.after.owner.grain!==c.before.owner.grain-1||c.after.owner.bread!==c.before.owner.bread+2)
-    return fail('Owner commit must consume one grain, produce two bread and conserve gold');
+   const transformation=catalog?.validateOwnerCommand(c);if(!transformation?.ok)return fail(transformation?.error||'Recipe catalog unavailable');
+   const {input,inputCount,output,outputCount}=transformation;
    const sp=platform(),actor=sp.Actor.from(sp.Game.getFormEx(c.actor));
    if(!actor?.is3DLoaded()||actor.isDead()||actor.isChild()||(actor.getActorBase?.()||actor.getBaseObject?.())?.getFormID()!==c.actor_base_id)
     return fail('Owner commit actor identity unavailable');
-   const forms=Object.fromEntries(Object.entries(items).map(([k,id])=>[k,sp.Game.getFormEx(id)]));
-   if(Object.values(forms).some(f=>!f))return fail('Owner recipe forms unavailable');
+   const resolved=catalog.resolve(),forms=resolved.forms;
+   if(!resolved.available)return fail('Owner recipe forms unavailable or unverified');
    const actual={owner:Object.fromEntries(Object.entries(forms).map(([k,f])=>[k,actor.getItemCount(f)]))};
-   if(Object.values(actual.owner).some(n=>!Number.isSafeInteger(n)||n<0))return fail('Owner inventory observation invalid');
-   const inputUsed=clone(c.before);inputUsed.owner.grain--;
+   if(Object.values(actual.owner).some(n=>!Number.isSafeInteger(n)||n<0||n>2147483647))return fail('Owner inventory observation invalid');
+   const inputUsed=clone(c.before);inputUsed.owner[input]-=inputCount;
    if(!record){
     // In particular, actual==after is NOT success without this command's own
     // surviving effect witness. No cold save or unrelated inventory may mint proof.
@@ -62,7 +59,7 @@ function createProductionController(platform,now=Date.now){
     const consumed=workJobs.beginCommit(c);if(!consumed.ok)return fail(consumed.error);
     record={signature,phase:'committing_input',inputIssued:true,inputObserved:false,outputIssued:false,outputObserved:false,issuedAt:now(),attendance:consumed.attendance};
     ownerCommits.set(c.id,record);
-    try{actor.removeItem(forms.grain,1,true,null);}catch(_){return fail('Owner grain call failed after permit consumption; reconcile inventory');}
+    try{actor.removeItem(forms[input],inputCount,true,null);}catch(_){return fail('Owner input call failed after permit consumption; reconcile inventory');}
     return {done:false};
    }
    if(equal(actual,c.after)){
@@ -81,7 +78,7 @@ function createProductionController(platform,now=Date.now){
     if(!record.outputIssued){
      if(!workJobs.commitProgress(c,'committing_output'))return fail('Owner recipe continuation no longer authorized');
      record.outputIssued=true;record.phase='committing_output';record.issuedAt=now();
-     try{actor.addItem(forms.bread,2,true);}catch(_){return fail('Owner bread call failed after issue; reconcile inventory');}
+     try{actor.addItem(forms[output],outputCount,true);}catch(_){return fail('Owner output call failed after issue; reconcile inventory');}
     }
     return {done:false};
    }
@@ -89,35 +86,44 @@ function createProductionController(platform,now=Date.now){
    return fail('Owner inventory drifted during serialized recipe; reconciliation required');
   },
   step(c){
-   if([...ownerCommits.values()].some(record=>record.phase!=='complete'))return {done:true,ack:{id:c.id,status:'held',no_effects_issued:true,error:'Independent owner recipe owns the inventory writer'}};
-   const sp=platform(),fail=error=>{if(active?.id===c.id)active.phase='held';return {done:true,ack:{id:c.id,status:'held',error,work:this.status(),no_effects_issued:!!active&&active.id===c.id&&!active.sent}};};
+   const pins={catalog_hash:c.catalog_hash,...(c.kind!=='inventory_supply'?{recipe_id:c.recipe_id,recipe_hash:c.recipe_hash}:{})};
+   if([...ownerCommits.values()].some(record=>record.phase!=='complete'))return {done:true,ack:{id:c.id,...pins,status:'held',no_effects_issued:true,error:'Independent owner recipe owns the inventory writer'}};
+   const sp=platform(),fail=error=>{if(active?.id===c.id)active.phase='held';return {done:true,ack:{id:c.id,...pins,status:'held',error,work:this.status(),no_effects_issued:!!active&&active.id===c.id&&!active.sent}};};
+   if(!catalog||catalog.status().available!==true)return fail('Verified economy catalog required');
+   const items=catalog.itemIds();
+   // Existing paid/demo commands remain on their original recipe protocol.
+   // Additional recipes require the hash-bound independent owner permit path.
+   const recipe=catalog.recipe('bread_recipe'),binding=catalog.identity('bread_recipe'),supply=c.kind==='inventory_supply';
+   if(!recipe||c.catalog_hash!==binding.catalog_hash||!supply&&(c.recipe_id!==recipe.id||c.recipe_hash!==binding.recipe_hash))return fail('Current catalog and exact approved recipe binding required');
+   const [input,inputCount]=Object.entries(recipe.inputs)[0],[output,outputCount]=Object.entries(recipe.outputs)[0];
    const own=c.kind==='inventory_self_produce',roles=own?['owner']:['worker','employer'],producer=own?'owner':'employer';
-   if(!c.before||!c.after||[c.before,c.after].some(v=>Object.keys(v).sort().join(',')!==[...roles].sort().join(','))||!roles.every(r=>c.before[r]&&c.after[r]&&Object.keys(items).every(k=>Number.isInteger(c.before[r][k])&&c.before[r][k]>=0&&Number.isInteger(c.after[r][k])&&c.after[r][k]>=0)))return fail('Invalid production inventory contract');
-   const supply=c.kind==='inventory_supply',expected=clone(c.before),wage=own?0:c.wage_gold===undefined?2:c.wage_gold;
+   if(!c.before||!c.after||[c.before,c.after].some(v=>Object.keys(v).sort().join(',')!==[...roles].sort().join(','))||!roles.every(r=>c.before[r]&&c.after[r]&&[c.before[r],c.after[r]].every(v=>Object.keys(v).sort().join('|')===items.join('|'))&&items.every(k=>Number.isSafeInteger(c.before[r][k])&&c.before[r][k]>=0&&c.before[r][k]<=2147483647&&Number.isSafeInteger(c.after[r][k])&&c.after[r][k]>=0&&c.after[r][k]<=2147483647)))return fail('Invalid production inventory contract');
+   const expected=clone(c.before),wage=own?0:c.wage_gold===undefined?2:c.wage_gold;
    if(supply){expected.employer.grain+=2;}
    else{
-    if(!['inventory_produce','inventory_self_produce'].includes(c.kind)||!Number.isInteger(c.work_minutes)||c.work_minutes<5||c.work_minutes>120||!Number.isInteger(wage)||wage<(own?0:1)||wage>20||!Number.isInteger(c.expected_package)||c.expected_package<=0||c.before[producer].grain<1||c.before[producer].gold<wage)return fail('Invalid work terms');
+    if(!['inventory_produce','inventory_self_produce'].includes(c.kind)||!Number.isInteger(c.work_minutes)||c.work_minutes<recipe.work_minutes.minimum||c.work_minutes>recipe.work_minutes.maximum||!Number.isInteger(wage)||wage<(own?0:1)||wage>20||!Number.isInteger(c.expected_package)||c.expected_package<=0||c.before[producer][input]<inputCount||c.before[producer].gold<wage)return fail('Invalid work terms');
     if(own&&(!Number.isInteger(c.actor)||c.actor<=0||!Array.isArray(c.anchor)||c.anchor.length!==3||!c.anchor.every(Number.isFinite)||c.wage_gold!==undefined))return fail('Invalid owner work terms');
-    expected[producer].grain--;expected[producer].bread+=2;
+    expected[producer][input]-=inputCount;expected[producer][output]+=outputCount;
     if(!own){expected.employer.gold-=wage;expected.worker.gold+=wage;}
    }
    if((!own&&c.worker===c.employer)||!equal(expected,c.after))return fail('Invalid recipe or wage effect');
    const worker=sp.Actor.from(sp.Game.getFormEx(own?c.actor:c.worker)),employer=own?worker:sp.Actor.from(sp.Game.getFormEx(c.employer));
    if(!worker||!employer||[worker,employer].some(a=>!a.is3DLoaded()||a.isDead()||a.isChild()))return fail('Work participants unavailable');
-   const forms=Object.fromEntries(Object.entries(items).map(([k,id])=>[k,sp.Game.getFormEx(id)]));
-   if(Object.values(forms).some(f=>!f))return fail('Recipe forms unavailable');
+   const resolved=catalog.resolve(),forms=resolved.forms;
+   if(!resolved.available)return fail('Recipe forms unavailable');
    const read=a=>Object.fromEntries(Object.entries(forms).map(([k,f])=>[k,a.getItemCount(f)]));
    const actual=own?{owner:read(worker)}:{worker:read(worker),employer:read(employer)};
-   if(equal(actual,c.after)){if(active?.id===c.id)active.phase='complete';return {done:true,ack:{id:c.id,status:'applied',inventory:actual,work:this.status(),mechanism:supply?'explicit_demo_import':own?'native_owner_recipe':'native_recipe_and_wage',animation_verified:false}};}
+   if(Object.values(actual).some(account=>Object.values(account).some(n=>!Number.isSafeInteger(n)||n<0||n>2147483647)))return fail('Production inventory observation invalid');
+   if(equal(actual,c.after)){if(active?.id===c.id)active.phase='complete';return {done:true,ack:{id:c.id,status:'applied',catalog_hash:c.catalog_hash,...(!supply?{recipe_id:c.recipe_id,recipe_hash:c.recipe_hash}:{}),inventory:actual,work:this.status(),mechanism:supply?'explicit_demo_import':own?'native_owner_recipe':'native_recipe_and_wage',animation_verified:false}};}
    if(!active||active.id!==c.id)active={id:c.id,actor:own?c.actor:c.worker,package:c.expected_package,phase:supply?'importing':'working',days:0,lastGame:null,sent:null,at:now(),minutes:c.work_minutes,wage};
-   const inputUsed=clone(c.before);inputUsed[producer].grain--;
-   const outputMade=clone(inputUsed);outputMade[producer].bread+=2;
+   const inputUsed=clone(c.before);inputUsed[producer][input]-=inputCount;
+   const outputMade=clone(inputUsed);outputMade[producer][output]+=outputCount;
    const stage=equal(actual,c.before)?'before':!supply&&equal(actual,inputUsed)?'input':!supply&&equal(actual,outputMade)?'output':'unexpected';
    if(stage==='unexpected')return fail('Unexpected inventory during work; reconciliation required');
    if(active.sent&&now()-active.sent.at>5000)return fail('Production effect timed out; no repeated attempt');
    const issue=(leg,fn)=>{if(!active.sent||active.sent.leg!==leg){active.sent={leg,at:now()};fn();}};
    if(supply){issue('import',()=>employer.addItem(forms.grain,2,true));return {done:false};}
-   if(stage==='input'){active.phase='making_output';issue('output',()=>employer.addItem(forms.bread,2,true));return {done:false};}
+   if(stage==='input'){active.phase='making_output';issue('output',()=>employer.addItem(forms[output],outputCount,true));return {done:false};}
    if(stage==='output'){active.phase='paying_wage';issue('wage',()=>employer.removeItem(forms.gold,wage,true,worker));return {done:false};}
    // Once input use is issued, don't reinterpret an asynchronous wait as new labour.
    if(active.sent)return {done:false};
@@ -148,7 +154,7 @@ function createProductionController(platform,now=Date.now){
     active.days+=delta;
    }
    active.lastGame=game;
-   if(active.days>=c.work_minutes/1440){active.phase='using_input';issue('input',()=>employer.removeItem(forms.grain,1,true,null));}
+   if(active.days>=c.work_minutes/1440){active.phase='using_input';issue('input',()=>employer.removeItem(forms[input],inputCount,true,null));}
    return {done:false};
   }
  };

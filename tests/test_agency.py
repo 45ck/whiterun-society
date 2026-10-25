@@ -3,16 +3,17 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
+from catalog_fixture import native_catalog, native_ack
 
 
 class AgencyTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.world = TimelineEconomy(Path(self.temp.name)/'timeline.sqlite')
-        self.obs = {'session': 'a', 'checkpoint': 0, 'ready': True, 'residents': [
-            {'id': 108186, 'x': 1000, 'y': 0, 'z': 0, 'inventory': {'gold': 9, 'bread': 0}},
-            {'id': 108149, 'x': 0, 'y': 0, 'z': 0, 'inventory': {'gold': 10, 'bread': 3}},
-            {'id': 108156, 'x': -1000, 'y': 0, 'z': 0, 'inventory': {'gold': 12, 'bread': 0}}]}
+        self.obs = {'session': 'a', 'checkpoint': 0, 'ready': True, 'economy_catalog': native_catalog(), 'residents': [
+            {'id': 108186, 'x': 1000, 'y': 0, 'z': 0, 'inventory': {'gold': 9, 'bread': 0, 'grain': 0}},
+            {'id': 108149, 'x': 0, 'y': 0, 'z': 0, 'inventory': {'gold': 10, 'bread': 3, 'grain': 0}},
+            {'id': 108156, 'x': -1000, 'y': 0, 'z': 0, 'inventory': {'gold': 12, 'bread': 0, 'grain': 0}}]}
         self.world.observe(self.obs)
         self.world.bootstrap(self.obs)
         self.sync()
@@ -60,9 +61,10 @@ class AgencyTests(unittest.TestCase):
         self.decide('sell_bread')
         command = self.world.pending('a')
         self.assertEqual(command['kind'], 'inventory_trade')
+        self.assertEqual(command['catalog_hash'],native_catalog()['catalog_hash'])
         for index, role in [(0, 'buyer'), (1, 'seller')]:
             self.obs['residents'][index]['inventory'] = command['after'][role]
-        self.obs['ack'] = {'id': 'meal-meal-1', 'status': 'applied'}
+        self.obs['ack'] = native_ack(command)
         self.world.observe(self.obs)
         self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'after_purchase')
@@ -119,8 +121,8 @@ class AgencyTests(unittest.TestCase):
         self.decide('sell_bread')
         command=self.world.pending('a')
         self.assertEqual(command['cost'],5)
-        self.assertEqual(command['after']['buyer'],{'gold':4,'bread':1})
-        self.assertEqual(command['after']['seller'],{'gold':15,'bread':2})
+        self.assertEqual(command['after']['buyer'],{'gold':4,'bread':1,'grain':0})
+        self.assertEqual(command['after']['seller'],{'gold':15,'bread':2,'grain':0})
 
     def test_second_refusal_ends_negotiation_without_duplicate_memories(self):
         self.start(); self.decide('seek_bread'); self.arrive(); self.decide('decline')

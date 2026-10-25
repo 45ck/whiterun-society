@@ -20,6 +20,7 @@ import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from owner_production import owner_work_opportunities
 from owner_work_jobs import IDENTITY
+from economy_catalog import catalog_hash, commodity_ids, native_catalog_matches, recipe_hash, recipe_spec
 from social import social_candidates, SOCIAL_STAGES
 from conversation import validate_candidates
 from dialogue_context import validate_situated_candidates
@@ -30,7 +31,7 @@ from tools.run_conversation import stock_voice
 from tools.voice_worker import VoiceWorker
 
 MODEL = 'authored-owner-work-qualification-v1'
-ITEMS = ('gold', 'bread', 'grain')
+ITEMS = commodity_ids()
 KEYS = (*IDENTITY, 'actor_base_id')
 LINES = (
     'Hello there. It is good to exchange a few words. A brief pause and a little conversation can be pleasant, without any business to settle.',
@@ -46,7 +47,7 @@ def digest(value):
 
 def exact_identity(row, job):
     return (isinstance(row, dict) and row.get('job_id', row.get('id')) == job['job_id']
-            and all(type(row.get(k)) is type(job[k]) and row.get(k) == job[k] for k in KEYS))
+            and all(k in job and type(row.get(k)) is type(job[k]) and row.get(k) == job[k] for k in KEYS))
 
 
 def resident(observation, actor):
@@ -67,6 +68,10 @@ def preflight(state, director_running=False, now=None):
     society, obs = state['society'], state['bridge']['observation']
     capability = obs.get('owner_work_jobs') or {}
     candidates, eligible, gaps = [], [], []
+    if not native_catalog_matches(obs, 'bread_recipe'):gaps.append('Current verified native bread catalog and recipe hashes are required.')
+    recipe = recipe_spec('bread_recipe')
+    if recipe['inputs'] != {'grain': 1} or recipe['outputs'] != {'bread': 2}:
+        gaps.append('This acceptance case requires the existing one-grain two-bread recipe; use a separate case for other conversions.')
     if now is not None:
         seen = state['bridge'].get('last_seen')
         if type(seen) not in (int, float) or not 0 <= now - seen <= 10 or obs.get('ready') is not True:
@@ -84,11 +89,13 @@ def preflight(state, director_running=False, now=None):
         actor = person.get('id')
         if person.get('isPerson') is not True or type(person.get('baseId')) is not int:continue
         for opportunity in owner_work_opportunities(society, obs, actor):
+            if opportunity['recipe_id'] != 'bread_recipe':continue
             control = next((r for r in obs.get('resident_control', {}).get('activities', []) if r.get('actor') == actor), {})
             slot = control.get('slot')
             if type(slot) is not int or not 0 <= slot < 128:continue
             entry = {'actor': actor, 'actor_base_id': person['baseId'], 'slot': slot,
                      'business_id': opportunity['business_id'], 'business_revision': opportunity['revision'],
+                     'recipe_id': opportunity['recipe_id'], 'catalog_hash': opportunity['catalog_hash'], 'recipe_hash': opportunity['recipe_hash'],
                      'policy': opportunity['policy'], 'expected_package': opportunity['expected_package'],
                      'inventory_before': {k:person['inventory'][k] for k in ITEMS}, 'account_actor': actor}
             eligible.append(entry)
@@ -178,7 +185,7 @@ def verify_result(state, admission, source_plans):
     if isinstance(before, dict) and isinstance(after, dict) and set(before) == set(after) == {'owner'}:
         if all(isinstance(v, dict) and set(v) == set(ITEMS) and all(type(v[k]) is int and v[k] >= 0 for k in ITEMS) for v in (before['owner'], after['owner'])):
             delta = {k:after['owner'][k] - before['owner'][k] for k in ITEMS}
-            inventory_valid = delta == {'gold': 0, 'bread': 2, 'grain': -1} and before['owner'] == admission['inventory_before']
+            inventory_valid = delta == {**{k:0 for k in ITEMS}, 'bread': 2, 'grain': -1} and before['owner'] == admission['inventory_before']
     actual = resident(state['bridge']['observation'], admission['actor'])
     attendance = job.get('attendance') or {};minutes = attendance.get('worked_minutes');anchor = attendance.get('anchor')
     attendance_verified = bool(job.get('attendance_receipt_hash') and attendance.get('token') == command.get('attendance_token')
@@ -188,6 +195,8 @@ def verify_result(state, admission, source_plans):
         and type(attendance.get('serial')) is int and 1 <= attendance['serial'] <= 16777215
         and isinstance(anchor, list) and len(anchor) == 3 and all(type(x) in (int, float) and math.isfinite(x) for x in anchor))
     output_verified = bool(exact_identity(job, admission) and exact_identity(command, admission) and exact_identity(ack, admission)
+        and admission['recipe_id'] == 'bread_recipe' and admission['catalog_hash'] == catalog_hash() and admission['recipe_hash'] == recipe_hash('bread_recipe')
+        and native_catalog_matches(state['bridge']['observation'], 'bread_recipe')
         and record.get('status') == 'committed' and command.get('kind') == 'inventory_self_produce_commit' and command.get('id') == commit_id
         and ack.get('id') == commit_id and ack.get('commit_id') == commit_id and ack.get('status') == 'applied'
         and ack.get('effects_issued') is True and ack.get('committed_inventory_verified') is True and ack.get('mechanism') == 'native_owner_recipe'
@@ -221,6 +230,17 @@ def authored_dialogue(stage, context, turn, partner):
     decision = {'action_id': action, 'reason': 'Authored native protocol qualification; not autonomous reasoning', 'emotion': 'calm'}
     validate_decision(decision, context)
     return {**metadata, 'decision': decision}
+
+
+def authored_owner_choice(context, selected):
+    choices = [key for key, terms in context.get('work_options', {}).items()
+        if key in context.get('owner_work_actions', []) and isinstance(terms, dict)
+        and all(terms.get(field) == selected[field] for field in ('business_id', 'recipe_id', 'catalog_hash', 'recipe_hash'))
+        and terms.get('revision') == selected['business_revision']]
+    if len(choices) != 1:raise ValueError('One exact current owner recipe choice is required; no inferred action ID')
+    decision = {'action_id': choices[0], 'reason': 'Authored two-owner native qualification; use existing owned resources only', 'emotion': 'calm'}
+    validate_decision(decision, context)
+    return decision
 
 
 class Qualification:
@@ -284,15 +304,14 @@ class Qualification:
 
     def admit(self, selected):
         state = self.stable();current = preflight(state)['eligible_owners']
-        if not any(all(c.get(k) == selected[k] for k in ('actor', 'actor_base_id', 'slot', 'business_id', 'business_revision', 'policy', 'inventory_before')) for c in current):
+        if not any(all(c.get(k) == selected[k] for k in ('actor', 'actor_base_id', 'slot', 'business_id', 'business_revision', 'recipe_id', 'catalog_hash', 'recipe_hash', 'policy', 'inventory_before')) for c in current):
             raise ValueError('Selected owner, charter or unseeded stock changed before admission')
         plan_id = selected['source_plan'];actor = selected['actor']
         started = self.mutate('/agency/event', {'id': plan_id, 'actor': actor, 'kind': 'need_review'})
         if started.get('duplicate'):raise ValueError('Existing source plan refused; no trial replay')
         self.stable();claim = self.mutate('/agency/claim', {'id': plan_id})['claim'];state = self.stable();plan = state['society'].get('plan') or {}
         if plan.get('id') != plan_id or (plan.get('claim') or {}).get('id') != claim['id']:raise ValueError('Owner decision claim identity changed')
-        decision = {'action_id': 'work_own_' + selected['business_id'], 'reason': 'Authored two-owner native qualification; use existing owned resources only', 'emotion': 'calm'}
-        validate_decision(decision, claim['context'])
+        decision = authored_owner_choice(claim['context'], selected)
         self.mutate('/agency/decision', {'id': plan_id, 'claim_id': claim['id'], 'result': {'model': MODEL, 'attempted': False, 'authored_test_fixture': True, 'model_generated': False, 'decision': decision}})
         until = min(self.deadline, time.monotonic() + 60)
         while time.monotonic() < until:
@@ -306,7 +325,7 @@ class Qualification:
                     saved = {'job_id': job['id'], **{k:job[k] for k in KEYS}, 'source_plan': plan_id, 'inventory_before': selected['inventory_before'],
                              'expected_package': selected['expected_package'],
                              'admission_verified': True, 'admitted_checkpoint': state['society']['checkpoint'], 'admission_plan_phase': plan['phase']}
-                    if any(saved[k] != selected[k] for k in ('actor', 'actor_base_id', 'slot', 'business_id', 'business_revision')):raise ValueError('Delegated owner identity differs from selection')
+                    if any(saved[k] != selected[k] for k in ('actor', 'actor_base_id', 'slot', 'business_id', 'business_revision', 'recipe_id', 'catalog_hash', 'recipe_hash')):raise ValueError('Delegated owner identity differs from selection')
                     self.evidence['admissions'].append(saved);self.save();return
             time.sleep(.15)
         raise TimeoutError('Owner admission timeout; work remains governed by its saved lane')

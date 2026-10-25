@@ -1,4 +1,5 @@
 """Evidence-derived diagnostics, not a synthetic score for human realism."""
+from economy_catalog import recipe_ids, recipe_spec, commodity_ids, catalog_hash
 import math
 from collections import Counter
 from statistics import mean, median
@@ -214,7 +215,12 @@ def simulation_metrics(state):
             'active_enterprises':sum(b.get('active',True) for b in state.get('town',{}).get('businesses',{}).values()),
             'resident_enterprise_changes':sum('actor' in e and 'plan_id' in e for e in state.get('town',{}).get('enterprise_events',[])),
             'operator_enterprise_changes':sum('actor' not in e for e in state.get('town',{}).get('enterprise_events',[])),
-            'supported_production_recipes':1,'supported_sale_goods':2,'supported_supply_chain_transforms':1,
+            'supported_production_recipes':len(recipe_ids()),'supported_sale_goods':2,
+            'supported_supply_chain_transforms':len({(tuple(sorted(recipe_spec(rid)['inputs'].items())),
+                tuple(sorted(recipe_spec(rid)['outputs'].items()))) for rid in recipe_ids()}),
+            'production_catalog':{'catalog_hash':catalog_hash(),'recipe_ids':sorted(recipe_ids()),
+                'commodity_ids':sorted(commodity_ids()),
+                'scope':'Configured executable production catalog, not observed activity or native deployment proof. Sales remain limited to existing food and grain trade protocols; registration grants no stock or knowledge.'},
             'pricing':'Residents choose bids and counteroffers from bounded price options using personal history; legacy fixtures retain 3/5 offers. No market-clearing equilibrium is claimed.',
             'scope':'Physical ledger includes explicitly staged integration experiments; not all outcomes prove autonomous economic behaviour.'},
         'resident_plans':{'terminal':len(terminal_plans),'held':sum(p['phase']=='held' for p in terminal_plans),

@@ -3,12 +3,14 @@
 (() => {
 // The installed Node-backed build exposes native exports as a global.
 let sp = typeof skyrimPlatform !== 'undefined' ? skyrimPlatform : require('skyrimPlatform');
+__ECONOMY_CATALOG_FACTORY__
+const economyCatalog=createEconomyCatalogController(()=>sp,__ECONOMY_CATALOG_MANIFEST__);
 __TRANSFER_FACTORY__
-const transfers=createInventoryTransfers(()=>sp);
+const transfers=createInventoryTransfers(()=>sp,Date.now,{catalog:economyCatalog});
 __ENDOWMENT_FACTORY__
-const endowments=createEndowmentController(()=>sp);
+const endowments=createEndowmentController(()=>sp,Date.now,{catalog:economyCatalog});
 __PRODUCTION_FACTORY__
-const production=createProductionController(()=>sp);
+const production=createProductionController(()=>sp,Date.now,{catalog:economyCatalog});
 __MOVEMENT_FACTORY__
 const movement=createMovementController(()=>sp);
 __PAPYRUS_ROUTER_FACTORY__
@@ -22,7 +24,7 @@ const rest=createRestController(()=>sp);
 __ACTIVITY_JOBS_FACTORY__
 const activityJobs=createActivityJobsController(()=>sp);
 __OWNER_WORK_JOBS_FACTORY__
-const ownerWorkJobs=createOwnerWorkJobsController(()=>sp,Date.now);
+const ownerWorkJobs=createOwnerWorkJobsController(()=>sp,Date.now,{catalog:economyCatalog});
 __ROUTINE_FACTORY__
 const routines=createAgentRoutineController(()=>sp);
 __PARALLEL_ROUTINES_FACTORY__
@@ -37,7 +39,6 @@ let remoteCamera=null,lastPresentationAt=0;
 let movementSource=null;
 let routineRecoveryNeeded=true;
 const config = __BRIDGE_CONFIG__;
-const economyForms={gold:0xf,bread:0x65c97,grain:0x4b0ba};
 const client = new sp.HttpClient('http://127.0.0.1:' + config.port);
 let session = Date.now() + '-' + Math.random();
 let selected = 0;
@@ -410,10 +411,7 @@ on('update', () => {
   function observe(resident) {
     if (resident && resident.getFormID()!==0x14 && !seen.has(resident.getFormID()) && resident.is3DLoaded() && !resident.isDead() && !resident.isChild()) {
       seen.add(resident.getFormID());
-      const inventory={};
-      if (typeof resident.getItemCount==='function') {
-        for (const [item,id] of Object.entries(economyForms)) inventory[item]=resident.getItemCount(sp.Game.getFormEx(id));
-      }
+      const inventory=economyCatalog.readInventory(resident);
       let isPerson=null,isGuard=null,outdoors=null,voiceSex=null,race=null,space=null,baseId=null;
       try{if(typeof resident.getRace==='function'){const nativeRace=resident.getRace();if(nativeRace){const label=typeof nativeRace.getName==='function'?nativeRace.getName():null;race={id:nativeRace.getFormID(),name:typeof label==='string'&&label?label.slice(0,80):null,source:'native Skyrim race; descriptive game metadata only'};}}}catch(_){}
       try{const raw=resident.getActorBase?.()||resident.getBaseObject?.();const base=raw&&sp.ActorBase?.from(raw);baseId=raw?raw.getFormID():null;if(base&&typeof base.getSex==='function')voiceSex=base.getSex();}catch(_){}
@@ -455,13 +453,15 @@ on('update', () => {
       if(!owner||owner.isDead()||owner.isChild()||typeof owner.getItemCount!=='function')continue;
       const keyword=sp.Keyword?.from(sp.Game.getFormEx(0x13794));
       if(!keyword||!owner.hasKeyword(keyword))continue;
-      const inventory={};for(const [item,form] of Object.entries(economyForms))inventory[item]=owner.getItemCount(sp.Game.getFormEx(form));
+      const inventory=economyCatalog.readInventory(owner);
       const base=owner.getActorBase?.()||owner.getBaseObject?.();
       inventoryObservations.push({id,isPerson:true,loaded:owner.is3DLoaded(),baseId:base?base.getFormID():null,inventory});
     }catch(_){} // Missing references are not assigned fictitious empty purses.
   }
   const perception={};
-  for(const id of [108149,108186,108156]){
+  // Diagnose the current observed population, not a named demonstration cast.
+  // This sensor remains unqualified and cannot teach residents hidden facts.
+  for(const {id} of residents.filter(row=>row.isPerson===true)){
     const eye=sp.Actor.from(sp.Game.getFormEx(id));
     const record={available:false,visible:[],source:'experimental engine line of sight; not yet qualified as resident perception'};
     perception[id]=record;
@@ -536,6 +536,7 @@ on('update', () => {
     residentControl.tick(effectiveControl,residents,controlFresh,[...foreground,...activityReserved],[...publicPlaces.filter(p=>p.available),...(restObservation.sites||[]).filter(p=>p.loaded)],[...ownerWorkJobs.holds(),...(plan?[plan]:[])]);
   else residentControl.renew(residents,controlFresh);
   const observation = {
+    economy_catalog:economyCatalog.status(),
     director_control:directorControl,
     player_controls:{request:playerControlRequest,
       movement:controlEnabled('isMovementControlsEnabled'),

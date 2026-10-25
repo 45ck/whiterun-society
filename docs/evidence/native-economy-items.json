@@ -1,0 +1,107 @@
+{
+  "source_plugin": "Skyrim.esm",
+  "source_sha256": "2bbc77fdec35a70ef96b710f8c525e50a1db9e63e11a391a0eb9ee8f56d36107",
+  "header": {
+    "record_flags": 129,
+    "record_version": 44,
+    "hedr": [
+      1.7100000381469727,
+      920181,
+      4278194067
+    ],
+    "file_bytes": 249753412,
+    "hedr_fields": [
+      "version",
+      "record_count",
+      "next_object_id"
+    ]
+  },
+  "items": [
+    {
+      "local_form_id": "000A5CCE",
+      "record_type": "KYWD",
+      "editor_id": "CraftingSmelter",
+      "record_version": 35
+    },
+    {
+      "local_form_id": "0004B0BA",
+      "record_type": "INGR",
+      "editor_id": "Wheat",
+      "record_version": 44
+    },
+    {
+      "local_form_id": "0005ACE4",
+      "record_type": "MISC",
+      "editor_id": "IngotIron",
+      "record_version": 44
+    },
+    {
+      "local_form_id": "0000000F",
+      "record_type": "MISC",
+      "editor_id": "Gold001",
+      "record_version": 44
+    },
+    {
+      "local_form_id": "00065C97",
+      "record_type": "ALCH",
+      "editor_id": "FoodBread01A",
+      "record_version": 44
+    },
+    {
+      "local_form_id": "00071CF3",
+      "record_type": "MISC",
+      "editor_id": "OreIron",
+      "record_version": 44
+    }
+  ],
+  "candidate_recipes": [
+    {
+      "local_form_id": "000A30C3",
+      "record_type": "COBJ",
+      "editor_id": "RecipeIngotIron",
+      "record_version": 40,
+      "inputs": [
+        {
+          "local_form_id": "00071CF3",
+          "count": 1
+        }
+      ],
+      "output_local_form_id": "0005ACE4",
+      "output_count": 1,
+      "workbench_keyword": "000A5CCE",
+      "condition_count": 0,
+      "declared_input_count": 1
+    }
+  ],
+  "verification_method": "Read-only 24-byte TES4/GRUP record traversal; zlib decompression for compressed records; XXXX-aware subrecord parsing. Item editor IDs and record types inspected; COBJ COCT/CNTO/CNAM/NAM1/BNAM and condition count decoded directly. No game assets copied.",
+  "runtime_type_reference": {
+    "source": "Local SKSE64 2.02.06 Papyrus source declarations",
+    "mapping": {
+      "MISC": 32,
+      "INGR": 30,
+      "ALCH": 46,
+      "COBJ": 49
+    },
+    "files": [
+      {
+        "name": "FormType.psc",
+        "sha256": "48f738d1f2a74a025d91827e61481adba3fb1ca2364e24e935a557be4b3e21fb"
+      },
+      {
+        "name": "Form.psc",
+        "sha256": "355d85d10261d07581cb0e2e91bd36b1722273431b76f3492a9ac7c65ca86d2c"
+      }
+    ],
+    "skyrim_platform_types_verified": false,
+    "binding_limit": "SKSE Papyrus declarations verify enum values and native GetType signature; installed SkyrimPlatform typed casts and getType binding have not been invoked or verified here. Runtime feature checks must reject absent or contradictory type evidence."
+  },
+  "limits": [
+    "Skyrim.esm base records only; load-order overrides not evaluated.",
+    "No native invocation, smelter attendance, animation or live inventory transfer tested.",
+    "Existing grain gameplay label refers to Wheat ingredient; no broader grain taxonomy inferred.",
+    "Metadata publication approved; iron recipe activation is not approved by this evidence. Existing three catalog items verified offline."
+  ],
+  "schema_version": 1,
+  "verification_date": "2026-10-25",
+  "candidate_recipe_activation": "Not enabled: native CraftingSmelter requirement, workstation access, authored labour policy and per-actor recipe knowledge must be supported and verified first."
+}

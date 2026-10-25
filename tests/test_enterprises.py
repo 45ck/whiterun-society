@@ -1,3 +1,4 @@
+from catalog_fixture import native_ack
 import copy
 import json
 import unittest
@@ -95,7 +96,7 @@ class EnterpriseTests(unittest.TestCase):
         self.assertEqual(sum(v['gold'] for v in command['before'].values()),sum(v['gold'] for v in command['after'].values()))
         for actor in self.obs['residents']:
             if actor['id'] in (7,8):actor['inventory']=command['after']['employer' if actor['id']==7 else 'worker'].copy()
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.active['town']['businesses']['mill-bakery']['contracts'][0]['status'],'completed')
         memory=next(m for m in self.world.active['people']['8']['memories'] if m['kind']=='paid_work')
@@ -114,7 +115,7 @@ class EnterpriseTests(unittest.TestCase):
 
     def test_attested_pre_effect_interruption_cancels_without_blocking_the_economy(self):
         self.configure();command=self.work()
-        self.obs['ack']={'id':command['id'],'status':'held','no_effects_issued':True,'error':'Attendance interrupted'}
+        self.obs['ack']=native_ack(command,status='held',no_effects_issued=True,error='Attendance interrupted')
         self.world.observe(self.obs);self.sync()
         self.assertIsNone(self.world.active['pending'])
         self.assertEqual(self.world.agency_plan()['outcome'],'work_interrupted')
@@ -129,7 +130,7 @@ class EnterpriseTests(unittest.TestCase):
 
     def test_no_effect_attestation_cannot_override_an_observed_partial_mutation(self):
         self.configure();command=self.work();self.obs['residents'][0]['inventory']['grain']-=1
-        self.obs['ack']={'id':command['id'],'status':'held','no_effects_issued':True}
+        self.obs['ack']=native_ack(command,status='held',no_effects_issued=True)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.active['pending']['status'],'held')
         self.assertNotIn('cancelled_production',self.world.active)

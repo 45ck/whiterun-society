@@ -9,14 +9,16 @@ import tempfile
 import time
 import unittest
 from unittest.mock import Mock, patch
+from catalog_fixture import native_catalog
 
-from tools.qualify_owner_work import (Qualification, authored_dialogue, exact_identity,
+from tools.qualify_owner_work import (Qualification, authored_dialogue, authored_owner_choice, exact_identity,
     main, native_working, overlap_metrics, preflight, qualification_summary, read_plan_proofs, verify_result)
 
 
 def world(actors=(17, 29)):
     society = {'people': {}, 'town': {'businesses': {}, 'residents': {}, 'daily': {'queue': []}}}
     obs = {'ready': True, 'session': 'native-session', 'gameDays': 5., 'residents': [],
+           'economy_catalog': native_catalog(),
            'resident_control': {'activities': []}, 'owner_work_jobs': {'available': True, 'capacity': 4, 'jobs': [], 'receipts': []}}
     for slot, actor in enumerate(actors):
         society['people'][str(actor)] = {'needs': {}, 'agency': {}, 'memories': []}
@@ -35,7 +37,7 @@ def completed_world():
     state = world();owner = preflight(state)['selected_owners'][0]
     job = {'job_id': 'job-a', 'actor': owner['actor'], 'actor_base_id': owner['actor_base_id'], 'slot': owner['slot'],
            'session': 'native-session', 'epoch': 'epoch-a', 'business_id': owner['business_id'], 'business_revision': 3,
-           'recipe_id': 'bread_recipe', 'policy_version': 'policy-a', 'work_minutes': 30,
+           'recipe_id': 'bread_recipe', 'catalog_hash': owner['catalog_hash'], 'recipe_hash': owner['recipe_hash'], 'policy_version': 'policy-a', 'work_minutes': 30,
            'source_plan': owner['source_plan'], 'inventory_before': owner['inventory_before'], 'expected_package': owner['expected_package']}
     before = {'owner': copy.deepcopy(owner['inventory_before'])}
     after = {'owner': {'gold': 9, 'bread': 2, 'grain': 1}}
@@ -234,6 +236,17 @@ class OwnerWorkQualificationTests(unittest.TestCase):
             with patch('tools.qualify_owner_work.CheckpointHTTP') as client, patch.object(Qualification, 'run', return_value={'qualified': False, 'status': 'work_only'}) as trial:
                 result = main(['--root', str(root), '--execute-authorized-trial', '--output', str(root / 'result.json')])
                 self.assertEqual(result, 1);client.return_value.assert_not_called();trial.assert_called_once_with(authorized=True)
+
+    def test_owner_choice_uses_exact_persisted_recipe_and_opaque_action(self):
+        selected = preflight(world())['selected_owners'][0]
+        terms = {**selected, 'revision': selected['business_revision']}
+        context = {'options': [{'id': 'opaque-owner-choice'}, {'id': 'other-recipe'}], 'owner_work_actions': ['opaque-owner-choice', 'other-recipe'],
+            'work_options': {'opaque-owner-choice': terms, 'other-recipe': {**terms, 'recipe_id': 'different'}}}
+        self.assertEqual(authored_owner_choice(context, selected)['action_id'], 'opaque-owner-choice')
+        context['work_options']['other-recipe'] = terms
+        with self.assertRaises(ValueError):authored_owner_choice(context, selected)
+        context['owner_work_actions'] = []
+        with self.assertRaises(ValueError):authored_owner_choice(context, selected)
 
 
 if __name__ == '__main__':unittest.main()

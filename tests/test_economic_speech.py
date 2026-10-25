@@ -1,6 +1,7 @@
 import copy
 import unittest
 import test_agency as fixtures
+from catalog_fixture import native_ack
 
 
 class EconomicSpeechTests(unittest.TestCase):
@@ -38,7 +39,7 @@ class EconomicSpeechTests(unittest.TestCase):
         trade=self.world.pending('a');self.assertEqual(trade['kind'],'inventory_trade')
         self.assertFalse(self.world.agency_plan().get('purchase_completed',False))
         for index,role in ((0,'buyer'),(1,'seller')):self.obs['residents'][index]['inventory']=trade['after'][role]
-        self.obs['ack']={'id':trade['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(trade);self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['economic_speech']['act'],'receipt')
         self.assertEqual(len(self.world.active['trades']),1)
         self.speak();self.decide('keep_food')

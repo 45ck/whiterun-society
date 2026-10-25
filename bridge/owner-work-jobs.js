@@ -1,7 +1,8 @@
 // Attendance only. The existing Citizens self-target mailbox holds each owner;
 // the global inventory writer separately consumes a session-bound work token.
-function createOwnerWorkJobsController(platform,now=Date.now){
- const fields=['job_id','actor','actor_base_id','slot','session','epoch','business_id','business_revision','recipe_id','policy_version','work_minutes'];
+function createOwnerWorkJobsController(platform,now=Date.now,options={}){
+ const catalog=options.catalog||(typeof module!=='undefined'?require('./economy-catalog.js').createEconomyCatalogController(platform):null);
+ const fields=['job_id','actor','actor_base_id','slot','session','epoch','business_id','business_revision','recipe_id','catalog_hash','recipe_hash','policy_version','work_minutes'];
  const jobs=new Map(),acknowledged=new Map();let desired=null,session=null,fresh=false,control=null,sequence=0,capacity=4;
  const copy=x=>JSON.parse(JSON.stringify(x));
  const text=x=>typeof x==='string'&&x.length>0&&x.length<=160;
@@ -9,9 +10,11 @@ function createOwnerWorkJobsController(platform,now=Date.now){
  const key=x=>JSON.stringify([x.session,x.epoch,x.job_id]);
  const same=(a,b)=>fields.every(k=>a[k]===b[k]);
  const valid=x=>text(x.job_id)&&x.job_id.length<=64&&text(x.session)&&text(x.epoch)&&text(x.business_id)&&text(x.policy_version)&&
-  x.recipe_id==='bread_recipe'&&Number.isInteger(x.business_revision)&&x.business_revision>=0&&
+  typeof x.recipe_id==='string'&&/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(x.recipe_id)&&[x.catalog_hash,x.recipe_hash].every(v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v))&&Number.isInteger(x.business_revision)&&x.business_revision>=0&&
   Number.isInteger(x.actor)&&x.actor>0&&Number.isInteger(x.actor_base_id)&&x.actor_base_id>0&&
   Number.isInteger(x.slot)&&x.slot>=0&&x.slot<128&&Number.isInteger(x.work_minutes)&&x.work_minutes>=5&&x.work_minutes<=120;
+ const catalogBinding=x=>{const binding=catalog?.identity(x.recipe_id),recipe=catalog?.recipe(x.recipe_id);return !!binding&&binding.catalog_hash===x.catalog_hash&&binding.recipe_hash===x.recipe_hash&&
+  x.work_minutes>=recipe.work_minutes.minimum&&x.work_minutes<=recipe.work_minutes.maximum;};
  const holdId=job=>'owner-work-'+job.job_id;
  function records(slot){const sp=platform(),get=n=>sp.Game.getFormFromFile?.(0x800+slot*16+n,'WhiterunCitizens.esp');
   return {sp,quest:sp.Quest?.from(get(0)),pkg:get(1),actors:sp.FormList?.from(get(2)),targets:sp.FormList?.from(get(3)),
@@ -57,6 +60,7 @@ function createOwnerWorkJobsController(platform,now=Date.now){
   const row=identity(c),job=jobs.get(key(row));
   if(c.kind!=='inventory_self_produce_commit'||!valid(row)||c.session!==session||!job||!same(job,row)||!text(c.id)||c.attendance_token!==job.attendance?.token)
    return {ok:false,error:'Exact same-session owner attendance token required'};
+  if(!catalogBinding(row)||catalog?.status().available!==true)return {ok:false,error:'Bound recipe catalog or verified native forms unavailable'};
   if(job.commitId){
    if(job.commitId!==c.id||job.commitSignature!==signature(c))return {ok:false,error:'Attendance token already bound to another recipe command'};
    if(job.phase==='held'||job.resetInvalidated)return {ok:false,error:'Owner recipe is quarantined for reconciliation'};
@@ -95,6 +99,7 @@ function createOwnerWorkJobsController(platform,now=Date.now){
    if(!valid(row)||c.session!==session||!current(row)||assignment(row)?.cancel_requested===true||assignment(row)?.phase==='held')return fail('Fresh matching owner-work assignment required');
    if(acknowledged.has(key(row)))return fail('Owner job was already acknowledged; no replay');
    const old=jobs.get(key(row));if(old){if(!same(old,row))return fail('Owner job identity changed');return {done:true,ack:{id:c.id,...row,status:'applied',accepted:true}};}
+   if(!catalogBinding(row)||catalog?.status().available!==true)return fail('Exact recipe catalog and verified commodity forms required');
    if(!available()||jobs.size>=capacity)return fail('Configured owner-work capacity unavailable');
    if(blockedActors.includes(row.actor)||[...jobs.values()].some(job=>job.actor===row.actor||job.slot===row.slot||job.business_id===row.business_id))return fail('Owner actor, account, business or Citizens slot reserved');
    const citizen=control?.activities?.find(a=>a.actor===row.actor&&a.slot===row.slot);
@@ -142,6 +147,7 @@ function createOwnerWorkJobsController(platform,now=Date.now){
     if(job.phase==='held')continue;
     const saved=assignment(job);
     if(!current(job)||saved?.cancel_requested===true||saved?.phase==='held'){hold(job,'Owner assignment withdrawn, stale or epoch changed');continue;}
+    if(!catalogBinding(job)||catalog?.status().available!==true){hold(job,'Owner recipe catalog or native commodity binding changed');continue;}
     const elapsed=now()-job.acceptedAt;
     if(!Number.isFinite(elapsed)||elapsed<0||elapsed>Math.max(300000,job.work_minutes*60000)){hold(job,'Owner work lease elapsed or clock reversed');continue;}
     const s=inspect(job);
@@ -169,7 +175,7 @@ function createOwnerWorkJobsController(platform,now=Date.now){
     }
    }
   },
-  status(){return {available:available(),capacity,citizens_capacity:128,epoch:desired?.epoch||null,session,
+  status(){const economy=catalog?.status();return {available:available()&&economy?.available===true,catalog_hash:economy?.catalog_hash||null,recipe_hashes:economy?.recipe_hashes||{},capacity,citizens_capacity:128,epoch:desired?.epoch||null,session,
    jobs:[...jobs.values()].map(job=>({...identity(job),id:job.job_id,phase:job.phase,worked_minutes:job.worked,samples:job.samples,
     effects_issued:job.effectsIssued,committed_inventory_verified:job.committed,release_verified:job.releaseVerified,release_requested:job.releaseRequested===true})),
    receipts:[...jobs.values()].filter(job=>['attendance_verified','recipe_committed','complete','held'].includes(job.phase)).map(receipt),

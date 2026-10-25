@@ -1,8 +1,10 @@
+from catalog_fixture import native_ack
 import copy
 import unittest
 from unittest.mock import patch
 import test_daily_life as fixtures
 from owner_production import owner_work_opportunities
+from agency import owner_work_choice_id
 from metrics import simulation_metrics
 
 
@@ -31,7 +33,7 @@ class OwnerProductionTests(unittest.TestCase):
         return claim
 
     def decide(self,claim,stationary=True):
-        self.world.finish_plan_decision(self.event['id'],claim['id'],{'model':'test-owner','decision':{'action_id':'work_own_new-owner','reason':'Use my grain','emotion':'calm'}},self.obs);self.sync()
+        self.world.finish_plan_decision(self.event['id'],claim['id'],{'model':'test-owner','decision':{'action_id':owner_work_choice_id({'business_id':'new-owner','recipe_id':'bread_recipe'}),'reason':'Use my grain','emotion':'calm'}},self.obs);self.sync()
         if stationary:self.acquire()
 
     def acquire(self):
@@ -41,11 +43,11 @@ class OwnerProductionTests(unittest.TestCase):
         self.world.observe(self.obs);self.sync()
 
     def test_dynamic_owner_without_money_can_choose_finite_production(self):
-        claim=self.start();self.assertIn('work_own_new-owner',[o['id'] for o in claim['context']['options']])
+        claim=self.start();self.assertIn(owner_work_choice_id({'business_id':'new-owner','recipe_id':'bread_recipe'}),[o['id'] for o in claim['context']['options']])
         before=copy.deepcopy(self.obs);self.decide(claim);command=self.world.pending(self.obs['session'])
         self.assertEqual(command['kind'],'inventory_self_produce');self.assertEqual(command['after']['owner'],{'gold':0,'bread':2,'grain':2})
         self.assertEqual(self.actor['inventory'],next(a['inventory'] for a in before['residents'] if a['id']==99))
-        self.actor['inventory']=command['after']['owner'].copy();self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.actor['inventory']=command['after']['owner'].copy();self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['outcome'],'owner_work_completed')
         self.assertEqual(self.world.active['people']['99']['food_policy'],self.policy)
@@ -70,11 +72,11 @@ class OwnerProductionTests(unittest.TestCase):
         self.assertEqual(self.world.status()['production'],[])
 
     def test_ack_without_output_is_held_not_committed(self):
-        self.decide(self.start());command=self.world.pending(self.obs['session']);self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.decide(self.start());command=self.world.pending(self.obs['session']);self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync();self.assertEqual(self.world.agency_plan()['phase'],'held');self.assertEqual(self.world.status()['production'],[])
 
     def test_interrupted_unstarted_work_preserves_stock_and_can_settle(self):
-        self.decide(self.start());command=self.world.pending(self.obs['session']);self.obs['ack']={'id':command['id'],'status':'held','no_effects_issued':True}
+        self.decide(self.start());command=self.world.pending(self.obs['session']);self.obs['ack']=native_ack(command,status='held',no_effects_issued=True)
         self.world.observe(self.obs);self.sync();self.assertEqual(self.world.agency_plan()['outcome'],'owner_work_interrupted');self.assertIsNone(self.world.active['pending'])
         self.assertEqual(self.actor['inventory'],command['before']['owner']);self.assertEqual(self.world.status()['production'],[])
 

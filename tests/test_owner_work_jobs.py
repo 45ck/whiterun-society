@@ -4,6 +4,7 @@ import unittest
 from owner_work_jobs import OwnerWorkJobs, _identity, _command
 from owner_production import owner_work_opportunities
 from activity_leases import owner_work_leases
+from catalog_fixture import native_catalog
 
 
 class OwnerSavedWorld(OwnerWorkJobs):
@@ -31,6 +32,7 @@ class OwnerWorkJobsTests(unittest.TestCase):
                                             'capabilities': ['bread_recipe']}}, 'daily': {'queue': []}}}
         self.world = OwnerSavedWorld(self.state)
         self.obs = {'session': self.world.session, 'checkpoint': 1, 'gameDays': 3.,
+            'economy_catalog':native_catalog(),
             'residents': [{'id': 1, 'baseId': 101, 'isPerson': True, 'x': 10, 'y': 20, 'z': 30,
                            'inventory': {'gold': 5, 'bread': 0, 'grain': 2},
                            'activity': {'package_id': 9000, 'scene_id': 0, 'in_combat': False, 'sleep_state': 0}}],

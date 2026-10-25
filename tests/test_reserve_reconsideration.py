@@ -5,6 +5,7 @@ import test_economic_speech as speech_fixtures
 from food import allocation
 from metrics import simulation_metrics
 from trade_consent import reserved_sale_consent
+from catalog_fixture import native_ack
 
 
 class ReserveReconsiderationTests(unittest.TestCase):
@@ -32,7 +33,7 @@ class ReserveReconsiderationTests(unittest.TestCase):
     def commit_trade(self):
         command=self.world.pending('a');self.assertEqual(command['kind'],'inventory_trade')
         for index,role in ((0,'buyer'),(1,'seller')):self.obs['residents'][index]['inventory']=command['after'][role].copy()
-        self.obs['ack']={'id':command['id'],'status':'applied'};self.world.observe(self.obs);self.sync()
+        self.obs['ack']=native_ack(command);self.world.observe(self.obs);self.sync()
 
     def test_one_offer_can_be_accepted_without_unlocking_remaining_household_stock(self):
         self.prepare();before=copy.deepcopy(self.obs['residents'])
@@ -80,9 +81,9 @@ class ReserveReconsiderationTests(unittest.TestCase):
         self.world.finish_plan_decision('meal-1',claim['id'],{'decision':{'action_id':'sell_reserved_bread','reason':'Fixture','emotion':'calm'}},self.obs)
         # Prepared checkpoint exists, but no native trade command is dispatched until it binds.
         state=self.world._read(self.world.transition['next'])
-        args=['meal-meal-1',108186,108149,1,3,'meal-1',{'gold':10,'bread':3}]
+        args=['meal-meal-1',108186,108149,1,3,'meal-1',{'gold':10,'bread':3,'grain':0}]
         self.assertIsNotNone(reserved_sale_consent(state,*args))
-        for index,value in enumerate(['another-trade',108156,108186,2,5,'another-plan',{'gold':10,'bread':2}]):
+        for index,value in enumerate(['another-trade',108156,108186,2,5,'another-plan',{'gold':10,'bread':2,'grain':0}]):
             changed=copy.deepcopy(args);changed[index]=value
             self.assertIsNone(reserved_sale_consent(state,*changed))
         for field,value in [('phase','after_purchase'),('actor',108156),('target',108156)]:
@@ -93,7 +94,7 @@ class ReserveReconsiderationTests(unittest.TestCase):
 
     def test_failed_native_transfer_is_not_counted_as_a_sale(self):
         self.prepare();self.decide('sell_reserved_bread');command=self.world.pending('a')
-        self.obs['ack']={'id':command['id'],'status':'applied'}
+        self.obs['ack']=native_ack(command)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'held')
         self.assertEqual(simulation_metrics(self.world.active)['economy']['household_release_sales'],0)

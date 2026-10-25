@@ -6,17 +6,20 @@ effects are held for reconciliation, never silently retried on another save.
 """
 import json
 import sqlite3
+import copy
+from economy_catalog import commodity_ids, require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
 
 
 def snapshot(observation,buyer,seller,commodity='bread'):
     if commodity not in ('bread','grain'):raise ValueError('Unsupported sale commodity')
-    items=('gold','bread','grain') if commodity=='grain' else ('gold','bread')
+    items=commodity_ids()
+    if commodity not in items or 'bread' not in items:raise ValueError('Catalog does not support this legacy commodity trade adapter')
     actors={row['id']:row for row in observation.get('residents',[])}
     result={}
     for role,actor_id in [('buyer',buyer),('seller',seller)]:
         if actor_id not in actors: raise ValueError('Both actors must be observed and loaded')
         inv=actors[actor_id].get('inventory',{})
-        if any(type(inv.get(key)) is not int or inv[key]<0 for key in items):
+        if any(type(inv.get(key)) is not int or not 0<=inv[key]<=MAX_STOCK for key in items):
             raise ValueError('Complete nonnegative inventory observation required')
         result[role]={key:inv[key] for key in items}
     return result
@@ -48,14 +51,17 @@ class WorldEconomy:
                 return dict(old)
             if self.db.execute("SELECT 1 FROM world_commands WHERE status IN ('pending','held')").fetchone():
                 raise ValueError('An unsettled world command must be reconciled first')
+            bound_catalog=require_native_catalog(observation)
             before=snapshot(observation,buyer,seller)
             cost=quantity*unit_price
             if before['buyer']['gold']<cost or before['seller']['bread']<quantity:
                 raise ValueError('Insufficient observed funds or bread')
-            after={'buyer':{'gold':before['buyer']['gold']-cost,'bread':before['buyer']['bread']+quantity},
-                   'seller':{'gold':before['seller']['gold']+cost,'bread':before['seller']['bread']-quantity}}
+            after=copy.deepcopy(before)
+            after['buyer']['gold']-=cost;after['buyer']['bread']+=quantity
+            after['seller']['gold']+=cost;after['seller']['bread']-=quantity
+            if any(n>MAX_STOCK for stock in after.values() for n in stock.values()):raise ValueError('Trade would overflow native inventory')
             command=dict(id=event_id,session=session,kind='inventory_trade',buyer=buyer,seller=seller,
-                         quantity=quantity,cost=cost,before=before,after=after)
+                         catalog_hash=bound_catalog,quantity=quantity,cost=cost,before=before,after=after)
             self.db.execute('INSERT INTO world_commands VALUES (?,?,?,?,?,NULL)',
                 (event_id,session,request,json.dumps(command,sort_keys=True),'pending'))
         return self.get(event_id)
@@ -69,10 +75,12 @@ class WorldEconomy:
                 reason=None
                 command=json.loads(row['command'])
                 ack=observation.get('ack') or {}
-                if session!=row['session']:
+                if command.get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation):
+                    status='held';reason='catalog proof missing or changed; no legacy replay'
+                elif session!=row['session']:
                     status='held';reason='game session changed before settlement'
                 elif ack.get('id')==row['id']:
-                    if ack.get('status')=='applied':
+                    if ack.get('status')=='applied' and ack.get('catalog_hash')==command['catalog_hash']:
                         try: actual=snapshot(observation,command['buyer'],command['seller'])
                         except ValueError: continue  # Wait for the next independent observation.
                         if actual==command['after']: status='committed';reason='acknowledged and observed'
@@ -85,7 +93,9 @@ class WorldEconomy:
 
     def pending(self,session):
         row=self.db.execute("SELECT command FROM world_commands WHERE session=? AND status='pending' LIMIT 1",(session,)).fetchone()
-        return json.loads(row['command']) if row else None
+        if not row:return None
+        command=json.loads(row['command'])
+        return command if command.get('catalog_hash')==catalog_hash() else None
 
     def get(self,event_id):
         row=self.db.execute('SELECT * FROM world_commands WHERE id=?',(event_id,)).fetchone()

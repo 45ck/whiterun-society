@@ -4,15 +4,16 @@ import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
 from food import allocation
+from catalog_fixture import native_catalog, native_ack
 
 
 class FoodTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
         self.world=TimelineEconomy(Path(self.temp.name)/'timeline.sqlite')
-        self.obs={'session':'food-test','checkpoint':0,'ready':True,'residents':[
-            {'id':108186,'x':0,'y':0,'z':0,'inventory':{'gold':12,'bread':1}},
-            {'id':108149,'x':100,'y':0,'z':0,'inventory':{'gold':5,'bread':3}}]}
+        self.obs={'session':'food-test','checkpoint':0,'ready':True,'economy_catalog':native_catalog(),'residents':[
+            {'id':108186,'x':0,'y':0,'z':0,'inventory':{'gold':12,'bread':1,'grain':0}},
+            {'id':108149,'x':100,'y':0,'z':0,'inventory':{'gold':5,'bread':3,'grain':0}}]}
         self.world.observe(self.obs);self.world.bootstrap(self.obs);self.sync()
 
     def tearDown(self):
@@ -53,14 +54,17 @@ class FoodTests(unittest.TestCase):
         self.assertEqual(context['own_food_allocation'],{'allocated':False,'unallocated':1})
 
     def test_consumption_binds_intent_then_observes_effect_before_hunger_changes(self):
+        self.obs['residents'][0]['inventory']['grain']=4
         self.world.begin_plan('food-1',self.obs);self.sync()
         self.decide('eat_bread')
         c=self.world.pending('food-test')
         self.assertEqual(c['kind'],'inventory_consume')
+        self.assertEqual(c['catalog_hash'],native_catalog()['catalog_hash'])
+        self.assertEqual((c['before']['grain'],c['after']['grain']),(4,4))
         self.assertEqual(self.world.status()['people']['108186']['needs']['hunger'],.75)
         before=copy.deepcopy(self.obs)
         self.obs['residents'][0]['inventory']=c['after'].copy()
-        self.obs['ack']={'id':c['id'],'status':'applied'}
+        self.obs['ack']=native_ack(c)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['outcome'],'ate_bread')
         self.assertEqual(self.world.status()['people']['108186']['needs']['hunger'],.15)
@@ -73,11 +77,23 @@ class FoodTests(unittest.TestCase):
 
     def test_ack_without_inventory_effect_cannot_reduce_hunger(self):
         self.world.begin_plan('food-1',self.obs);self.sync();self.decide('eat_bread')
-        c=self.world.pending('food-test');self.obs['ack']={'id':c['id'],'status':'applied'}
+        c=self.world.pending('food-test');self.obs['ack']=native_ack(c)
         self.world.observe(self.obs);self.sync()
         self.assertEqual(self.world.agency_plan()['phase'],'held')
         self.assertEqual(self.world.status()['people']['108186']['needs']['hunger'],.75)
         self.assertEqual(self.world.status()['consumptions'],[])
+
+    def test_consumption_rejects_unverified_catalog_without_food_or_need_effects(self):
+        self.world.begin_plan('food-1',self.obs);self.sync()
+        # Authored ready decision fixture isolates the inventory-intent boundary.
+        self.world.agency_plan()['phase']='ready_to_eat'
+        before=copy.deepcopy(self.world.active)
+        for catalog in (None, {**native_catalog(),'catalog_hash':'other'}, {**native_catalog(),'type_verified':False}):
+            obs=copy.deepcopy(self.obs)
+            if catalog is None:obs.pop('economy_catalog')
+            else:obs['economy_catalog']=catalog
+            with self.assertRaisesRegex(ValueError,'catalog'):self.world.plan_consumption('unverified',obs,108186,'food-1')
+            self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
 
     def test_loading_old_save_removes_later_stock_allocation(self):
         old=copy.deepcopy(self.obs)

@@ -3,6 +3,7 @@ import copy
 import math
 from daily_life import HUNGER_PER_GAME_HOUR
 from activity_leases import activity_conflict
+from economy_catalog import commodity_ids, require_native_catalog, native_catalog_matches, catalog_hash, MAX_STOCK
 
 
 def allocation(person, inventory):
@@ -20,9 +21,9 @@ def own_inventory(observation, actor):
     if not resident:
         raise ValueError('Resident is not observed')
     inventory = resident.get('inventory', {})
-    if any(type(inventory.get(k)) is not int or inventory[k] < 0 for k in ('gold', 'bread')):
+    if any(type(inventory.get(k)) is not int or not 0 <= inventory[k] <= MAX_STOCK for k in commodity_ids()):
         raise ValueError('Complete observed inventory required')
-    return {k: inventory[k] for k in ('gold', 'bread')}
+    return {k: inventory[k] for k in commodity_ids()}
 
 
 class FoodEconomy:
@@ -40,10 +41,13 @@ class FoodEconomy:
             raise ValueError('Consumption needs a current resident decision')
         if activity_conflict(self.active,actors=(actor,),observation=observation):
             raise ValueError('An independent activity owns the consuming resident')
+        bound_catalog=require_native_catalog(observation)
+        if 'bread' not in commodity_ids():raise ValueError('Catalog has no supported bread consumption commodity')
         before = own_inventory(observation, actor)
         if before['bread'] < 1:
             raise ValueError('No carried loaf to consume')
         command = {'id': event_id, 'kind': 'inventory_consume', 'actor': actor,
+                   'catalog_hash':bound_catalog,
                    'before': before, 'after': {**before, 'bread': before['bread']-1}}
         record = {'id': event_id, 'command': command, 'status': 'pending', 'evidence': None}
         state = copy.deepcopy(self.active)
@@ -53,6 +57,11 @@ class FoodEconomy:
 
     def observe_consumption(self, observation):
         pending = self.active['pending']
+        if pending.get('status')=='held':return
+        if pending['command'].get('catalog_hash')!=catalog_hash() or not native_catalog_matches(observation):
+            state=copy.deepcopy(self.active);state['pending'].update(status='held',error='Consumption catalog proof is missing or changed; do not replay')
+            state['plans'][-1].update(phase='held',error=state['pending']['error'])
+            self._write(state,'unbound consumption held without recertifying a legacy effect');return
         ack = observation.get('ack') or {}
         if ack.get('id') != pending['id']:
             return
@@ -63,7 +72,8 @@ class FoodEconomy:
             return
         state = copy.deepcopy(self.active)
         state['pending']['evidence'] = {'actual': actual, 'ack': ack, 'session': self.session}
-        if ack.get('status') == 'applied' and actual == command['after']:
+        if (ack.get('status') == 'applied' and ack.get('catalog_hash') == command['catalog_hash']
+            and actual == command['after']):
             record = state['pending']
             record['status'] = 'committed'
             state.setdefault('consumptions', []).append(record)

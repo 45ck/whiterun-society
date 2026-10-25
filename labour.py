@@ -5,10 +5,14 @@ wages and working hours are authored scenario policy, not discovered economics.
 """
 from routing import route_available
 from knowledge import person_view
-from enterprises import production_policy
+from enterprises import production_policy, paid_bread_recipe
 from employment import recently_refused
+from economy_catalog import native_catalog_matches, commodity_ids, recipe_spec, recipe_hash, catalog_hash, MAX_STOCK
 
 def work_opportunities(state, observation, worker):
+    if not native_catalog_matches(observation, 'bread_recipe'):return []
+    try:recipe = paid_bread_recipe()
+    except ValueError:return []
     town = state.get('town') or {}
     resident = town.get('residents', {}).get(str(worker))
     actors = {a['id']: a for a in observation.get('residents', []) if a.get('isPerson') is True}
@@ -20,16 +24,22 @@ def work_opportunities(state, observation, worker):
         if business.get('active', True) is not True or 'bread_recipe' not in business['capabilities'] or not route_available(observation, worker, employer,state):
             continue
         stock = actors.get(employer, {}).get('inventory', {})
-        if any(type(stock.get(k)) is not int or stock[k] < 0 for k in ('gold', 'bread', 'grain')):
+        if any(type(stock.get(k)) is not int or not 0 <= stock[k] <= MAX_STOCK for k in commodity_ids()):
             continue
-        policy = production_policy(business)
+        try:policy = production_policy(business)
+        except (ValueError, KeyError):continue
         if recently_refused(state, worker, business_id, business.get('revision', 0), observation.get('gameDays')):
             continue
-        if stock['gold'] < policy['wage_gold'] or stock['grain'] < 1 or stock['bread'] >= policy['target_bread']:
+        if stock['gold'] < policy['wage_gold'] or any(stock[k] < n for k, n in recipe['inputs'].items()) or stock['bread'] >= policy['target_bread']:
             continue
+        if any(stock[k] > MAX_STOCK-n for k, n in recipe['outputs'].items()):continue
+        worker_stock=actors[worker].get('inventory',{})
+        if any(type(worker_stock.get(k)) is not int or not 0 <= worker_stock[k] <= MAX_STOCK for k in commodity_ids()):continue
+        if worker_stock['gold'] > MAX_STOCK-policy['wage_gold']:continue
         opportunities.append({'business_id': business_id, 'employer': employer,
             'employer_name': person_view(state,worker,employer)['name'],
-            'revision': business.get('revision', 0), 'policy': policy})
+            'revision': business.get('revision', 0), 'policy': policy,
+            'recipe_id':'bread_recipe','catalog_hash':catalog_hash(),'recipe_hash':recipe_hash('bread_recipe')})
     return opportunities
 
 

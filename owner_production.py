@@ -5,7 +5,9 @@ import time
 from enterprises import production_policy
 from routing import activity_blocker
 from entrepreneurship import learn_bread_recipe
+from production import production_receipt_matches
 from activity_leases import activity_conflict
+from economy_catalog import commodity_ids, recipe_ids, recipe_spec, recipe_hash, catalog_hash, native_catalog_matches, require_native_catalog, MAX_STOCK
 
 
 def owner_work_opportunities(state, observation, actor, *, require_owned=True):
@@ -13,8 +15,7 @@ def owner_work_opportunities(state, observation, actor, *, require_owned=True):
     resident=next((r for r in observation.get('residents',[]) if r['id']==actor and r.get('isPerson') is True),None)
     if not resident or activity_blocker(resident):return []
     inventory=resident.get('inventory',{})
-    if any(type(inventory.get(k)) is not int or inventory[k]<0 for k in ('gold','bread','grain')):return []
-    if inventory['grain']<1:return []
+    if any(type(inventory.get(k)) is not int or not 0<=inventory[k]<=MAX_STOCK for k in commodity_ids()):return []
     control=next((a for a in (observation.get('resident_control') or {}).get('activities',[]) if a.get('actor')==actor),{})
     package=control.get('expectedPackage')
     if type(package) is not int or package<=0:return []
@@ -23,17 +24,25 @@ def owner_work_opportunities(state, observation, actor, *, require_owned=True):
     if any(type(resident.get(k)) not in (int,float) or not math.isfinite(resident[k]) for k in ('x','y','z')):return []
     result=[]
     for key,business in sorted((state.get('town') or {}).get('businesses',{}).items()):
-        if (business.get('active',True) is not True or business.get('owner')!=actor or
-                business['custodian']!=actor or 'bread_recipe' not in business['capabilities']):continue
-        policy=production_policy(business)
-        if inventory['bread']>=policy['target_bread']:continue
-        result.append({'business_id':key,'owner':actor,'revision':business.get('revision',0),
-            'policy':policy,'expected_package':package})
+        if (business.get('active',True) is not True or business.get('owner')!=actor or business['custodian']!=actor):continue
+        for recipe_id in sorted(set(business.get('capabilities',[])) & set(recipe_ids())):
+            if not native_catalog_matches(observation,recipe_id):continue
+            try:recipe=recipe_spec(recipe_id);policy=production_policy(business,recipe_id)
+            except (ValueError,KeyError,TypeError):continue
+            output=next(iter(recipe['outputs']))
+            if any(inventory[item]<count for item,count in recipe['inputs'].items()):continue
+            if any(inventory[item]>MAX_STOCK-count for item,count in recipe['outputs'].items()):continue
+            if inventory[output]>=policy.get('target_output',policy.get('target_bread')):continue
+            result.append({'business_id':key,'owner':actor,'revision':business.get('revision',0),
+                'recipe_id':recipe_id,'catalog_hash':catalog_hash(),'recipe_hash':recipe_hash(recipe_id),
+                'capability_source':'Explicit executable enterprise charter; not inferred personal recipe knowledge',
+                'policy':policy,'expected_package':package})
     return result
 
 
 class OwnerProduction:
     def plan_owner_production(self, observation, plan):
+        require_native_catalog(observation,plan.get('own_work_terms',{}).get('recipe_id','bread_recipe'))
         if (observation.get('owner_work_jobs') or {}).get('available') is True:
             return self.delegate_owner_work(plan, observation)
         self._agency_guard(observation)
@@ -42,6 +51,9 @@ class OwnerProduction:
         if activity_conflict(self.active,actors=(plan['actor'],),observation=observation):
             raise ValueError('An independent activity owns the producing resident')
         terms=plan['own_work_terms']
+        recipe=recipe_spec(terms.get('recipe_id','bread_recipe'))
+        if (set(commodity_ids())!={'gold','bread','grain'} or recipe['inputs']!={'grain':1} or recipe['outputs']!={'bread':2}):
+            raise ValueError('Legacy owner controller supports only its original complete bread account; use independent catalog work')
         if terms not in owner_work_opportunities(self.active,observation,plan['actor'],require_owned=False):
             raise ValueError('Owner production opportunity changed')
         actor=next(a for a in observation['residents'] if a['id']==plan['actor'])
@@ -72,6 +84,8 @@ class OwnerProduction:
         before={'owner':{k:actor['inventory'][k] for k in ('gold','bread','grain')}}
         after=copy.deepcopy(before);after['owner']['grain']-=1;after['owner']['bread']+=2
         command={'id':'produce-'+plan['id'],'kind':'inventory_self_produce','actor':plan['actor'],
+            'catalog_hash':require_native_catalog(observation,terms.get('recipe_id','bread_recipe')),
+            'recipe_id':terms.get('recipe_id','bread_recipe'),'recipe_hash':recipe_hash(terms.get('recipe_id','bread_recipe')),
             'expected_package':terms['expected_package'],'work_minutes':terms['policy']['work_minutes'],
             'anchor':[actor[k] for k in ('x','y','z')],'attendance':attendance,'before':before,'after':after}
         state=copy.deepcopy(self.active)
@@ -82,7 +96,22 @@ class OwnerProduction:
 
     def observe_owner_production(self, observation):
         pending=self.active['pending'];command=pending['command'];ack=observation.get('ack') or {}
+        if pending.get('status')=='held':return
+        try:
+            catalog_ok=(command.get('catalog_hash')==catalog_hash() and
+                command.get('recipe_hash')==recipe_hash(command.get('recipe_id')) and
+                native_catalog_matches(observation,command.get('recipe_id')))
+        except ValueError:catalog_ok=False
+        if not catalog_ok:
+            state=copy.deepcopy(self.active);state['pending'].update(status='held',error='Legacy owner intent has no matching resolved catalog proof; do not replay')
+            state['plans'][-1].update(phase='held',error=state['pending']['error'])
+            self._write(state,'unbound legacy owner intent quarantined without new catalog certification');return
         if ack.get('id')!=command['id']:return
+        if not production_receipt_matches(command,ack):
+            state=copy.deepcopy(self.active)
+            state['pending'].update(status='held',error='Owner receipt catalog or recipe binding is missing or mismatched')
+            state['plans'][-1].update(phase='held',error=state['pending']['error'])
+            self._write(state,'owner production receipt quarantined without exact catalog and recipe binding');return
         actor=next((a for a in observation.get('residents',[]) if a['id']==command['actor']),None)
         if not actor or any(type(actor.get('inventory',{}).get(k)) is not int for k in ('gold','bread','grain')):return
         actual={'owner':{k:actor['inventory'][k] for k in ('gold','bread','grain')}}

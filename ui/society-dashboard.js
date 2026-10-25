@@ -17,6 +17,7 @@ function activityJobLabel(job){
 }
 function ownerWorkLabel(job){
  if(job.orphan)return 'Quarantined work · release only; no output credited';
+ if(job.recipe&&job.recipe.status!=='verified')return ownerRecipeLabel(job.recipe);
  if(job.settlement_state==='committed')return 'Output verified · '+(({held:'release held',releasing:'releasing',released:'release verified',acknowledged:'receipt acknowledged'})[job.cleanup_state]||'cleanup pending');
  if(job.settlement_state==='unverified')return 'Production claim unverified · review required';
  if(job.settlement_state==='effects_observed')return 'Inventory effects observed · journal confirmation pending';
@@ -28,6 +29,13 @@ function ownerWorkLabel(job){
  if(job.attendance_state==='prepared')return 'Work intention saved · admission pending';
  return 'Work attendance unmeasured';
 }
+function ownerRecipeLabel(recipe){
+ if(!recipe)return 'Recipe quantities unverified';
+ if(recipe.status==='legacy_unversioned')return 'Legacy recipe record · no catalog-verified output credit';
+ if(recipe.status!=='verified')return 'Recipe verification held · '+String(recipe.status||'unknown').replaceAll('_',' ');
+ const goods=amounts=>Object.entries(amounts||{}).map(([good,quantity])=>`${quantity} ${good}`).join(' + ');
+ return `${recipe.id} · ${recipe.version} · ${goods(recipe.inputs)} → ${goods(recipe.outputs)}`;
+}
 function renderTownCharts(root,data){
  if(!root||!data)return;
  const signature=JSON.stringify(data);if(root.dataset.snapshot===signature)return;root.dataset.snapshot=signature;
@@ -35,7 +43,7 @@ function renderTownCharts(root,data){
  if(!doc.getElementById('town-chart-style')){
   const style=doc.createElement('style');style.id='town-chart-style';style.textContent=`
   .town-charts{display:grid;gap:16px}.town-charts h3{margin:0 0 9px;font-size:14px;font-weight:600;color:#eee5d5}
-  .town-chart-note{font-size:10px;line-height:1.4;color:#aab9ba;margin:8px 0 0}.town-control{display:flex;align-items:center;gap:13px}
+  .town-chart-note{font-size:10px;line-height:1.4;color:#aab9ba;margin:8px 0 0;overflow-wrap:anywhere}.town-control{display:flex;align-items:center;gap:13px}
   .town-control svg{width:100px;height:100px;flex:none}.town-legend{font-size:11px;display:grid;gap:5px;flex:1}.town-legend div{display:flex;gap:6px;align-items:center}.town-legend b{margin-left:auto;font-weight:600}
   .town-swatch{width:7px;height:7px;border-radius:50%;flex:none}.town-stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.town-stock{padding:10px 7px;border:1px solid #ffffff15;border-radius:8px;background:#ffffff04}.town-stock strong{display:block;font-size:23px;font-weight:500;color:#e0bd72}.town-stock span{font-size:11px;color:#bac5c5}.town-stock small{display:block;font-size:9px;color:#8e9ea2;margin-top:4px}
   .town-need{margin:8px 0}.town-need-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}.town-need-track{height:7px;border-radius:4px;background:#ffffff0d;overflow:hidden}.town-need-fill{height:100%;border-radius:4px;background:#dfa56d}.town-flow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px}.town-flow strong{display:block;color:#9dc9ac;font-size:20px;font-weight:500}.town-tabs{display:flex;gap:5px;margin:5px 0}.town-tabs button{flex:1;background:#ffffff08;border:1px solid #ffffff18;border-radius:6px;padding:7px;color:inherit}
@@ -93,11 +101,15 @@ function renderTownCharts(root,data){
   if(number(work.configured_capacity)>0&&number(work.leased_jobs)>=work.configured_capacity)add(panel,'p','All configured work slots reserved; new work must wait for verified cleanup.','town-chart-note');
   const evidence=detail('Owner-work attendance, settlement and cleanup');
   for(const job of work.jobs||[]){const row=add(evidence,'div',undefined,'town-need');add(row,'strong',job.actor_name||`Resident ${job.actor}`);add(row,'div',ownerWorkLabel(job),'town-chart-note');
+   add(row,'div',ownerRecipeLabel(job.recipe),'town-chart-note');
+   if(job.recipe?.status==='verified')add(row,'div',`Catalog ${job.recipe.catalog_hash} · recipe ${job.recipe.recipe_hash}`,'town-chart-note');
    add(row,'div',`Attendance: ${job.attendance_state} · settlement: ${job.settlement_state} · cleanup: ${job.cleanup_state}`.replaceAll('_',' '),'town-chart-note');
    if(number(job.worked_minutes)!==null)add(row,'div',`${shown(job.worked_minutes)} / ${shown(job.work_minutes)} game min observed attendance · ${shown(job.attendance_samples)} samples`,'town-chart-note');
   }
   metricTiles(evidence,[[shown(work.recorded_admissions),'Retained admission acknowledgements'],[shown(work.qualified_attendance),'Retained qualified attendance'],[shown(work.committed_jobs),'Linked verified production records'],[shown(work.released_jobs),'Retained releases verified']]);
   const outputs=Object.entries(work.produced_goods||{});add(evidence,'p',outputs.length?'Verified output: '+outputs.map(([good,quantity])=>`${quantity} ${good}`).join(' · '):'No verified output counted from linked production receipts.','town-chart-note');
+  const inputs=Object.entries(work.consumed_goods||{});if(inputs.length)add(evidence,'p','Verified inputs used: '+inputs.map(([good,quantity])=>`${quantity} ${good}`).join(' · '),'town-chart-note');
+  if(number(work.legacy_production_records)>0){add(evidence,'p',`${work.legacy_production_records} legacy production records excluded from catalog-verified totals.`,'town-chart-note');for(const record of work.legacy_records||[])add(evidence,'p',`${record.id} · ${record.status} · ${record.provenance}`,'town-chart-note');}
   add(evidence,'p',work.scope||'Retained work evidence only; admissions are not goods, GDP or profit. Productive animation remains unverified.','town-chart-note');
  }
  if(data.spatial){const s=data.spatial,current=s.current||{},movement=s.movement||{},coverage=s.coverage||{},space=section('Movement over time');
@@ -221,4 +233,4 @@ function renderQualityGoals(root,goals){
   }
  }
 }
-if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel};
+if(typeof module!=='undefined')module.exports={renderTownCharts,renderQualityGoals,directorLabel,activityJobLabel,ownerWorkLabel,ownerRecipeLabel};

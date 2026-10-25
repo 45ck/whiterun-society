@@ -14,6 +14,12 @@ Generated system illustration — not gameplay
 
 ![Economic speech layers](images/economic-speech-layers.png)
 
+## Economy catalog flow
+
+Generated system illustration — not gameplay
+
+![Economy catalog flow](images/economy-catalog-flow.png)
+
 ## Employment encounter loop
 
 Generated system illustration — not gameplay

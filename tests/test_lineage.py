@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from lineage import TimelineEconomy
+from catalog_fixture import native_catalog, native_ack
 
 
 class LineageTests(unittest.TestCase):
@@ -10,9 +11,9 @@ class LineageTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.path = Path(self.temp.name) / 'timeline.sqlite'
         self.world = TimelineEconomy(self.path)
-        self.obs = {'session': 'a', 'checkpoint': 0, 'ready': True, 'residents': [
-            {'id': 108186, 'inventory': {'gold': 9, 'bread': 0}},
-            {'id': 108149, 'inventory': {'gold': 10, 'bread': 1}}]}
+        self.obs = {'session': 'a', 'checkpoint': 0, 'ready': True, 'economy_catalog': native_catalog(), 'residents': [
+            {'id': 108186, 'inventory': {'gold': 9, 'bread': 0, 'grain': 0}},
+            {'id': 108149, 'inventory': {'gold': 10, 'bread': 1, 'grain': 0}}]}
         self.world.observe(self.obs)
         self.initial = self.world.bootstrap(self.obs)['checkpoint']
         self.bind()
@@ -37,7 +38,7 @@ class LineageTests(unittest.TestCase):
         command = self.world.pending(self.obs['session'])
         for role, actor in [('buyer', 108186), ('seller', 108149)]:
             next(a for a in self.obs['residents'] if a['id'] == actor)['inventory'] = command['after'][role].copy()
-        self.obs['ack'] = {'id': 'bread-1', 'status': 'applied'}
+        self.obs['ack'] = native_ack(command)
         self.world.observe(self.obs)
         return self.bind()
 
@@ -48,6 +49,48 @@ class LineageTests(unittest.TestCase):
         self.assertEqual(self.world.pending('a')['kind'], 'bind_checkpoint')
         prepared = self.bind()
         self.assertEqual(self.world.pending('a')['checkpoint'], prepared)
+        self.assertEqual(self.world.pending('a')['catalog_hash'],native_catalog()['catalog_hash'])
+
+    def test_fresh_trade_requires_catalog_proof_before_persisting_intent(self):
+        before=copy.deepcopy(self.world.active)
+        for catalog in (None, {**native_catalog(),'catalog_hash':'other'}, {**native_catalog(),'type_verified':False}):
+            obs=copy.deepcopy(self.obs)
+            if catalog is None:obs.pop('economy_catalog')
+            else:obs['economy_catalog']=catalog
+            with self.assertRaisesRegex(ValueError,'catalog'):self.world.plan_trade('unverified',obs,108186,108149)
+            self.assertEqual(self.world.active,before);self.assertIsNone(self.world.transition)
+
+    def test_hashless_pending_is_not_rebound_and_completed_legacy_history_remains_readable(self):
+        self.prepare()
+        self.world.active['pending']['command'].pop('catalog_hash')
+        self.assertIsNone(self.world.pending('a'))
+        self.world.observe(self.obs);self.bind()
+        self.assertEqual(self.world.active['pending']['status'],'held')
+        self.assertNotIn('catalog_hash',self.world.active['pending']['command'])
+        self.assertIn('catalog',self.world.active['pending']['error'])
+        # A historical receipt is readable evidence, never an invitation to dispatch.
+        legacy=copy.deepcopy(self.world.active['pending']);legacy['status']='committed'
+        self.world.active.update(pending=None,trades=[legacy])
+        self.assertEqual(self.world.status()['trades'][0]['status'],'committed')
+        self.assertNotIn('catalog_hash',self.world.status()['trades'][0]['command'])
+        self.assertIsNone(self.world.pending('a'))
+
+    def reject_unbound_ack(self, pin):
+        self.prepare();command=self.world.pending('a')
+        for role,actor in [('buyer',108186),('seller',108149)]:
+            next(a for a in self.obs['residents'] if a['id']==actor)['inventory']=command['after'][role].copy()
+        self.obs['ack']={'id':command['id'],'status':'applied'}
+        if pin is not None:self.obs['ack']['catalog_hash']=pin
+        self.world.observe(self.obs);self.bind()
+        self.assertEqual(self.world.active['pending']['status'],'held')
+        self.assertEqual(self.world.active['trades'],[])
+        self.assertEqual(self.world.active['people']['108186']['memories'],[])
+
+    def test_matching_inventory_without_ack_catalog_proof_does_not_settle(self):
+        self.reject_unbound_ack(None)
+
+    def test_matching_inventory_with_other_ack_catalog_does_not_settle(self):
+        self.reject_unbound_ack('unrelated-catalog')
 
     def test_older_save_restores_old_memories_and_trade_history(self):
         before = copy.deepcopy(self.obs)
@@ -94,7 +137,7 @@ class LineageTests(unittest.TestCase):
         command = self.world.pending('a')
         for role, actor in [('buyer', 108186), ('seller', 108149)]:
             next(a for a in self.obs['residents'] if a['id'] == actor)['inventory'] = command['after'][role]
-        self.obs['ack'] = {'id': 'bread-1', 'status': 'applied'}
+        self.obs['ack'] = native_ack(command)
         self.world.observe(self.obs)
         self.assertIsNotNone(self.world.transition)
         self.world.observe({**old, 'session': 'loaded'})
@@ -105,7 +148,7 @@ class LineageTests(unittest.TestCase):
     def test_duplicate_completion_cannot_duplicate_memories(self):
         self.prepare()
         self.finish()
-        self.obs['ack'] = {'id': 'bread-1', 'status': 'applied'}
+        self.obs['ack'] = native_ack(self.world.active['trades'][-1]['command'])
         self.world.observe(self.obs)
         self.world.plan_trade('bread-1', self.obs, 108186, 108149)
         self.assertEqual(len(self.world.state()), 1)
