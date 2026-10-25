@@ -73,7 +73,8 @@ class BackgroundSocietyTests(unittest.TestCase):
         initiator=self.world.conversation_status()['initiator'];partner=108149 if initiator==501 else 501
         decide('approach_'+str(partner))
         meet=self.world.pending(self.obs['session'])
-        self.obs['ack']={'id':meet['id'],'status':'applied','movement':{'actor':initiator,'target':partner,'ownedPackage':True}}
+        self.obs['ack']={'id':meet['id'],'status':'applied','movement':{'actor':initiator,'target':partner,'ownedPackage':True,
+            'id':meet['id'],'aliasesConfirmed':True,'adapter':'papyrus-mailbox'}}
         self.world.observe(self.obs);self.sync();decide('chat')
         attend=self.world.pending(self.obs['session'])
         self.obs['conversationAttendance']={'id':attend['id'],'phase':'attending','participants':[

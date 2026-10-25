@@ -130,7 +130,8 @@ class DynamicSocialIdentityTests(unittest.TestCase):
         self.assertEqual((command['actor'], command['target']), (99, 501))
         self.assertTrue(command['dynamic'])
         self.obs['ack'] = {'id': command['id'], 'status': 'applied',
-                           'movement': {'actor': 99, 'target': 501, 'ownedPackage': True}}
+                           'movement': {'id': command['id'], 'adapter': 'papyrus-mailbox', 'aliasesConfirmed': True,
+                                        'actor': 99, 'target': 501, 'ownedPackage': True}}
         self.world.observe(self.obs); self.sync()
         response = self.decide('chat')
         self.assertEqual(response['actor_id'], 501)

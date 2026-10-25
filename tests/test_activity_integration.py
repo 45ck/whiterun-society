@@ -159,7 +159,8 @@ class ActivityIntegrationTests(unittest.TestCase):
         self.conversation_choice('approach_' + str(partner))
         command = self.world.pending(self.obs['session'])
         self.obs['ack'] = {'id': command['id'], 'status': 'applied',
-            'movement': {'actor': actor, 'target': partner, 'ownedPackage': True}}
+            'movement': {'id': command['id'], 'adapter': 'papyrus-mailbox', 'aliasesConfirmed': True,
+                         'actor': actor, 'target': partner, 'ownedPackage': True}}
         self.world.observe(self.obs); self.sync(); self.obs.pop('ack', None)
         self.conversation_choice('chat')
         return [actor, partner]

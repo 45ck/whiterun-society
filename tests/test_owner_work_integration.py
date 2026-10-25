@@ -117,7 +117,8 @@ class OwnerWorkIntegrationTests(unittest.TestCase):
              'decision':{'action_id':selected,'reason':'Explicit offline test input','emotion':'calm'}},self.obs);self.sync()
         c=self.world.conversation_status();command=self.world.pending(self.obs['session'])
         self.assertNotIn(job['actor'],c['speakers'])
-        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'actor':c['initiator'],'target':c['partner'],'ownedPackage':True}}
+        self.obs['ack']={'id':command['id'],'status':'applied','movement':{'id':command['id'],
+            'adapter':'papyrus-mailbox','aliasesConfirmed':True,'actor':c['initiator'],'target':c['partner'],'ownedPackage':True}}
         self.world.observe(self.obs);self.sync();decide('chat')
         command=self.world.pending(self.obs['session'])
         attendance={'id':command['id'],'phase':'attending','participants':[{'actor':actor,'loaded':True,'ownedPackage':True} for actor in command['participants']]}

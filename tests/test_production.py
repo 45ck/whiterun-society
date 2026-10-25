@@ -20,7 +20,8 @@ class ProductionTests(unittest.TestCase):
         self.world.begin_plan('job',self.obs, 108186,kind='work_shift');self.sync()
         self.decide('offer_shift','job');self.decide('take_shift','job')
         plan=self.world.agency_plan()
-        self.obs['ack']={'id':plan['travel_id'],'status':'applied','movement':{'hasOwnedPackage':True,'expectedPackage':99}}
+        self.obs['ack']={'id':plan['travel_id'],'status':'applied','movement':{'hasOwnedPackage':True,'expectedPackage':99,
+            'aliasesConfirmed':True,'adapter':'papyrus-mailbox','actor':plan['actor'],'target':plan['target']}}
         self.world.observe(self.obs);self.sync()
 
     def test_offer_and_worker_consent_precede_any_effect(self):

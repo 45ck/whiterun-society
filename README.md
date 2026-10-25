@@ -12,6 +12,8 @@ Residents should work, trade with one another, consume goods, remember events an
 
 **Data-defined economy, source implementation:** a shared versioned catalog now drives commodity identity, owner-recipe quantities, enterprise recipe policies and verified-recipe learning, with hashes pinned to inventory intents. The default remains three commodities and the existing bread recipe; trade/consumption paths are still limited, and native generic production is unqualified. Verified iron-smelting metadata remains disabled pending workstation and knowledge gates. [Data → decision → effect diagram and migration limits](docs/economy-catalog.md) · [Remaining economy gaps](docs/data-driven-economy-gap.md).
 
+**Uniform resident routing, source implementation:** new trips use the same observed mailbox capability for every resident, without a privileged three-NPC route table. Event requests require an explicit resident; population reports distinguish available, unavailable and unmeasured capability. Old fixed journeys require release instead of silent replay, and new conversation meetings bind their participants and session before accepting arrival. This migration is tested separately from native installation; authored demonstration casts and the founding-resource allocation still remain. [Contracts, recovery and remaining exceptions](docs/data-driven-economy-gap.md#npc-identity-migration-and-remaining-exceptions).
+
 ![From world state to verified economy: catalog, agent choices and physical receipts](docs/images/economy-catalog-flow.png)
 
 *Generated architecture illustration, not gameplay. Depicted crafting is conceptual; native generic production and smelter access remain unqualified. [Image prompt](docs/images/economy-catalog-flow.prompt.md).*
