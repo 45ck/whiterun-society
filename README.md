@@ -799,3 +799,8 @@ Captured game or observer interface — historical prototype
 
 </details>
 <!-- IMAGE_GALLERY_END -->
+
+## Development and CI cost
+
+Follow [AGENTS.md](AGENTS.md) and the [CI cost guide](docs/ci-costs.md)
+for focused local checks, candidate batching, retry warnings and required QA.
